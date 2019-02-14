@@ -21,9 +21,9 @@ export function setRW(isRW) {
         console.log('ignoring rw as it was booted rw')
         return;
     }
-    if(isPi){
+    if (isPi) {
         const rwStr = isRW ? "rw" : "ro";
-        const out = execFileSync(`sudo mount -o remount,${rwStr} /`)
-    if (out) console.log("rw out", out.toString());
-}
+        const out = execSync(`sudo mount -o remount,${rwStr} /`, { shell: true })
+        if (out) console.log("rw out", out.toString());
+    }
 }
