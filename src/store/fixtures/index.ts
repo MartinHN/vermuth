@@ -72,8 +72,8 @@ export default class Fixtures extends VuexModule {
 
 
   @Mutation
-  public removeFixture(fixture: FixtureType) {
-    const i = this.fixtures.indexOf(fixture);
+  public removeFixture(pl:{channelName: string}) {
+    const i = this.fixtures.findIndex(f => f.channel.name===pl.channelName);
     if (i >= 0) {this.fixtures.splice(i, 1); }
   }
 

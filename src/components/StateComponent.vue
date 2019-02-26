@@ -1,7 +1,7 @@
 <template>
   <div class="main">
     <!-- States -->
-    <select visible="3" v-model="stateName" >
+    <select size="3" v-model="stateName" >
       <option v-for="n of stateNames" :key="n.id" :value="n">{{n}}</option>
     </select>
     <Button class="add" @click="saveNewState" text="s"></Button>
@@ -39,7 +39,7 @@ export default class ChannelPatch extends Vue {
     this.recallState({name:v})
   }
   saveNewState(){
-    let name= prompt("save new state","state")
+    let name= prompt("save new state",this.stateName)
     if (name == null || name == "") {} 
       else {
         this.saveCurrentState({name});
@@ -57,5 +57,8 @@ div{
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+}
+select{
+  flex:1;
 }
 </style>

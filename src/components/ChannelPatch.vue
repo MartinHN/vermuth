@@ -6,7 +6,7 @@
       <Button class="button addFixture" @click="addFixture()" text="add Channel"/>
       <div class="patchLine" v-for="f in fixtures" :key="f.id" >
          <Button class="button removeChannel " 
-            @click="removeChannel({channelName:f.channel.name})" tabIndex="-1" text=""/>
+            @click="removeFixture({channelName:f.channel.name})" tabIndex="-1" text=""/>
         <input type="text" class="channelName " @change="setChannelName({channel:f.channel,name:$event.target.value})" :value="f.channel.name"  ></input>
         <div class="dimmers">
         <div  v-for="(d,i) in f.dimmers" :key="d.id" class=" dimmerCell" >
@@ -49,6 +49,7 @@ export default class ChannelPatch extends Vue {
   @fixturesModule.Mutation('removeDimmerFromChannel') public removeDimmerFromChannel!: FixtureMethods['removeDimmerFromChannel'];
   @fixturesModule.Mutation('setChannelName') public setChannelName!: FixtureMethods['setChannelName'];
 
+  @fixturesModule.Mutation('removeFixture') public removeFixture!: FixtureMethods['removeFixture'];
 
   @fixturesModule.State('fixtures') private fixtures!: FixtureMethods['fixtures'];
   @fixturesModule.Getter('usedChannels') private usedChannels!: FixtureMethods['usedChannels'];

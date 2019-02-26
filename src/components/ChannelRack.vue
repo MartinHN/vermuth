@@ -2,7 +2,7 @@
   <div class="ChannelRack">
   <div class="header">
     <Button @click="addChannel()" text="addChannel"/>
-    <StateComponent></StateComponent>
+    <StateComponent class="StateComponent"></StateComponent>
     <toggle :showName="true" v-model="showNames" text="showNames" ></toggle> 
     <!-- <toggle name="showValues" v-model="showValues" ></toggle>  -->
   </div>
@@ -68,6 +68,9 @@ export default class ChannelRack extends Vue {
   }
   .channel{
     width:100%;
+  }
+  .StateComponent{
+    flex: 1 1 30%;
   }
 
 </style>
