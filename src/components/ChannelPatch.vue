@@ -30,8 +30,8 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
-import Button from './Button.vue'
-import Numbox from './Numbox.vue'
+import Button from './Button.vue';
+import Numbox from './Numbox.vue';
 import { DirectFixture } from '../api/fixture';
 import FixtureMethods from '../store/fixtures';
 
@@ -39,7 +39,7 @@ import FixtureMethods from '../store/fixtures';
 const fixturesModule = namespace('fixtures');
 
 @Component({
-  components: {Button,Numbox},
+  components: {Button, Numbox},
 })
 export default class ChannelPatch extends Vue {
 

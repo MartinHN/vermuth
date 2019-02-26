@@ -21,7 +21,7 @@ import FixtureMethods from '../store/fixtures';
 const fixturesModule = namespace('fixtures');
 
 @Component({
-  components: {Slider,Button,Toggle},
+  components: {Slider, Button, Toggle},
 })
 export default class FixtureWidget extends Vue {
 
@@ -34,9 +34,9 @@ export default class FixtureWidget extends Vue {
   @Prop() public fixtureProp!: DirectFixture;
   @Prop({default: false})    public showName?: boolean;
   @Prop({default: false})    public showValue?: boolean;
-  
-  get disabledV():boolean{return !this.fixtureProp.channel.enabled}
-  set disabledV(v:boolean){this.setChannelEnabled({channel:this.fixtureProp.channel,value:!v})}
+
+  get disabledV(): boolean {return !this.fixtureProp.channel.enabled; }
+  set disabledV(v: boolean) {this.setChannelEnabled({channel: this.fixtureProp.channel, value: !v}); }
 
   public widgetChanged(v: any): any {
     // this.setChannelValue({channelName: v.source.name, value: v.value});

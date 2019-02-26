@@ -12,14 +12,14 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
-import Button from './Button.vue'
+import Button from './Button.vue';
 
 import StateMethods from '../store/states';
 
 
 const statesModule = namespace('states');
 type ValueOf<T> = T[keyof T];
-type State = ValueOf<StateMethods['states']>
+type State = ValueOf<StateMethods['states']>;
 @Component({
   components: {Button},
 })
@@ -27,21 +27,20 @@ export default class ChannelPatch extends Vue {
 
   @statesModule.Action('saveCurrentState') public saveCurrentState!: StateMethods['saveCurrentState'];
   @statesModule.Action('recallState') public recallState!: StateMethods['recallState'];
-  
+
   @statesModule.Getter('channels') private channels!: StateMethods['channels'];
   @statesModule.Getter('stateNames') private stateNames!: StateMethods['stateNames'];
-  @statesModule.State('stateName') private _stateName!: StateMethods['stateName'];
+  @statesModule.State('stateName') private pStateName!: StateMethods['stateName'];
 
-  get stateName():string{
-    return this._stateName
+  get stateName(): string {
+    return this.pStateName;
   }
-  set stateName(v:string){
-    this.recallState({name:v})
+  set stateName(v: string) {
+    this.recallState({name: v});
   }
-  saveNewState(){
-    let name= prompt("save new state",this.stateName)
-    if (name == null || name == "") {} 
-      else {
+  public saveNewState() {
+    const name = prompt('save new state', this.stateName);
+    if (name === null || name === '') {} else {
         this.saveCurrentState({name});
       }
     }

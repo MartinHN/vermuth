@@ -18,8 +18,8 @@ function getNextChannelName(fl: FixtureType[], name: string, originalName: strin
   if (!fl.find((f) => f.channel.name === name)) {
     return name;
   }
-  function joinNBI(nameBase: string, idx: number): string {
-    return nameBase.length ? nameBase + ' ' + idx : '' + idx;
+  function joinNBI(nameBase: string, pidx: number): string {
+    return nameBase.length ? nameBase + ' ' + pidx : '' + pidx;
   }
 
   const nameSpl = name.split(' ');
@@ -46,34 +46,36 @@ export default class Fixtures extends VuexModule {
   public fixtures = new  Array<FixtureType>();
   // public channels = new  Array<ChannelType>(new ChannelBase('fake'));
   @Mutation
-  public fromObj(js:any){
-    this.fixtures = js.fixtures.map((o:any) => {
-      return DirectFixture.fromObj(o)
-    })
+  public fromObj(js: any) {
+    this.fixtures = js.fixtures.map((o: any) => {
+      return DirectFixture.fromObj(o);
+    });
   }
 
   @Mutation
   public addFixture(pl: {name: string, circs: number[]}) {
     pl = pl || {name: 'channel', circs: [1]};
-    let {name} = pl;
-    const {circs} = pl;
+    let {name, circs} = pl;
+
     if (!name) {name = 'channel'; }
     name = getNextChannelName(this.fixtures, name, name);
 
     const added = new Array<number>();
-    for ( const i in circs) {
-      const n = getNextDimmer(this.fixtures, circs[i], added);
+    circs = circs.map((c) => {
+      const n = getNextDimmer(this.fixtures, c, added);
       added.push(n);
-      circs[i] = n;
-    }
+      return n;
+    });
+
+
 
     this.fixtures.push(new DirectFixture(name, circs));
   }
 
 
   @Mutation
-  public removeFixture(pl:{channelName: string}) {
-    const i = this.fixtures.findIndex(f => f.channel.name===pl.channelName);
+  public removeFixture(pl: {channelName: string}) {
+    const i = this.fixtures.findIndex((f) => f.channel.name === pl.channelName);
     if (i >= 0) {this.fixtures.splice(i, 1); }
   }
 
@@ -116,7 +118,7 @@ export default class Fixtures extends VuexModule {
     const {channelName , value}  = pl;
     const f = this.fixtures.find( (ff) => ff.channel.name === channelName);
     if (f) {
-      
+
       f.sendValue(value);
     }
   }
@@ -135,14 +137,14 @@ export default class Fixtures extends VuexModule {
   }
 
   @Mutation
-  public setChannelEnabled(pl:{channel:ChannelBase, value:boolean}){
+  public setChannelEnabled(pl: {channel: ChannelBase, value: boolean}) {
         const {value} = pl;
-    let { channel}  = pl;
-    if (value !== channel.enabled) {
+        const { channel}  = pl;
+        if (value !== channel.enabled) {
       if (!this.fixtures.find( (f) => f.channel === channel )) {
        console.error('fixture not managed');
       }
-      
+
       channel.enabled = value;
     }
   }

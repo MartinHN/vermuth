@@ -2,7 +2,7 @@
   <div id="app">
     
     <div id="nav">
-      <div id="saved_status">{{saved_status}}</div> | 
+      <div id="savedStatus">{{savedStatus}}</div> | 
       <router-link to="/">Dashboard</router-link> |
       <router-link to="/PatchView">Patch</router-link> |
       <router-link to="/Config">Config</router-link>
@@ -26,7 +26,7 @@ import Store from './store';
 export default class App extends Vue {
 
   // @Mutation('addFixture') public addFixture!: FixtureMethods['addFixture'];
-  @State('saved_status') public saved_status!: string;
+  @State('savedStatus') public savedStatus!: string;
 
 }
 </script>
@@ -55,7 +55,7 @@ export default class App extends Vue {
 #nav a.router-link-exact-active {
   color: #42b983;
 }
-#saved_status{
+#savedStatus{
   display:inline-block;
   align-content: left;
 }

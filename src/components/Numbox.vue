@@ -13,17 +13,17 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 @Component({
   // components:{VueSlideBar}
 })
-export default class Numbox extends Vue{
+export default class Numbox extends Vue {
   @Prop()
- public  name?  :string;
-  @Prop({default :false})public  showName?  :boolean ;// =false;
-  @Prop({default :-Infinity})public  min?  :number ;
-  @Prop({default :+Infinity})public  max?  :number ;
-  
-  @Prop({default:0}) value!:number ;
+ public  name?: string;
+  @Prop({default : false})public  showName?: boolean ; // =false;
+  @Prop({default : -Infinity})public  min?: number ;
+  @Prop({default : +Infinity})public  max?: number ;
 
-  public mounted(){
-    
+  @Prop({default: 0}) public value!: number ;
+
+  public mounted() {
+
   }
 
 }

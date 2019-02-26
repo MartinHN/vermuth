@@ -25,7 +25,7 @@ import FixtureMethods from '../store/fixtures';
 const fixturesModule = namespace('fixtures');
 
 @Component({
-  components: {ChannelWidget, Button, Toggle,StateComponent},
+  components: {ChannelWidget, Button, Toggle, StateComponent},
 })
 export default class ChannelRack extends Vue {
 

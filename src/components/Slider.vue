@@ -14,23 +14,23 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 @Component({
   // components:{VueSlideBar}
 })
-export default class Slider extends Vue{
+export default class Slider extends Vue {
   @Prop()
- public  name?  :string;
-  @Prop({default :false})public  showName?  :boolean ;// =false;
-  @Prop({default :true})public  showValue?  :boolean ;// =false;
-  @Prop({default :Math.log(254)/Math.log(10)})public  precision?  :number; // 255 steps
-  @Prop({default :2})public  displayPrecision?  :number;
-  
-  @Prop({default:0}) value!:number ;
+ public  name?: string;
+  @Prop({default : false})public  showName?: boolean ; // =false;
+  @Prop({default : true})public  showValue?: boolean ; // =false;
+  @Prop({default : Math.log(254) / Math.log(10)})public  precision?: number; // 255 steps
+  @Prop({default : 2})public  displayPrecision?: number;
 
-  public mounted(){
-    
+  @Prop({default: 0}) public value!: number ;
+
+  public mounted() {
+
   }
 
   get valToString(): string {
       return this.value.toFixed(this.displayPrecision);
-    
+
   }
 }
 </script>

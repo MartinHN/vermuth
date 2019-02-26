@@ -21,11 +21,11 @@ export class FixtureBase <C extends ChannelBase, D extends DimmerBase> {
   public setDimmerNum(n: number, index: number) {this.dimmers[index].circ = n; } // vue events compatible
 
 
-  
+
   public addDimmer(n: number): boolean {
-    this.dimmers.push(new this.DimmerClass(n))
-     return true;
-  
+    this.dimmers.push(new this.DimmerClass(n));
+    return true;
+
       }
   public removeDimmer(index: number): boolean {
     if (index === undefined) {index = 0; }
@@ -46,16 +46,16 @@ export class FixtureBase <C extends ChannelBase, D extends DimmerBase> {
 
 export class DirectFixture extends FixtureBase<LogChannel, LogDimmer> {
 
-  constructor( channelName: string,  dimmerCircs: number[] ) {
-      super('direct', new LogChannel(channelName), [], LogDimmer);
-      dimmerCircs.map((d) => this.addDimmer(d));
-     }
-
-     static fromObj(ob:any):DirectFixture{
-      let res =   new DirectFixture(ob.channel.name,ob.dimmers.map((d:any)=>d.circ))
+     public static fromObj(ob: any): DirectFixture {
+      const res =   new DirectFixture(ob.channel.name, ob.dimmers.map((d: any) => d.circ));
       res.channel.enabled = ob.channel.enabled;
       res.channel.value = ob.channel.value;
       return res;
+     }
+
+  constructor( channelName: string,  dimmerCircs: number[] ) {
+      super('direct', new LogChannel(channelName), [], LogDimmer);
+      dimmerCircs.map((d) => this.addDimmer(d));
      }
 
 }

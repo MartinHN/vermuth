@@ -8,19 +8,19 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue ,Watch} from 'vue-property-decorator';
+import { Component, Prop, Vue , Watch} from 'vue-property-decorator';
 
 @Component({})
-export default class Toggle extends Vue{
+export default class Toggle extends Vue {
   @Prop()
-  public text?  :string;
-  @Prop({default:false})
-  public focusable?:boolean;
-  @Prop({default:true})
-  public editable?:boolean;
-  @Prop({default:false})
-  public value  ?:boolean ;
-  
+  public text?: string;
+  @Prop({default: false})
+  public focusable?: boolean;
+  @Prop({default: true})
+  public editable?: boolean;
+  @Prop({default: false})
+  public value  ?: boolean ;
+
 
 
 }
