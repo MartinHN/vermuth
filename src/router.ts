@@ -2,6 +2,8 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import DashBoard from './views/DashBoard.vue';
 import PatchView from './views/PatchView.vue';
+import StateView from './views/StateView.vue';
+import Config from './views/Config.vue';
 
 Vue.use(Router);
 
@@ -13,6 +15,16 @@ export default new Router({
       path: '/',
       name: 'DashBoard',
       component: DashBoard,
+    },
+    {
+      path: '/config',
+      name: 'Config',
+      component: Config,
+    },
+    {
+      path: '/state',
+      name: 'StateView',
+      component: StateView,
     },
     {
       path: '/PatchView',

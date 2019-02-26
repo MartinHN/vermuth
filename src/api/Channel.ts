@@ -5,6 +5,7 @@ export interface ChannelI {
   ctype: string;
   name: string;
   value: ChannelValueType;
+  enabled:boolean;
 
   setValue(v: ChannelValueType): boolean;
   setValueInternal(v: ChannelValueType): boolean;
@@ -12,12 +13,13 @@ export interface ChannelI {
 
 export class ChannelBase implements ChannelI {
   public ctype = 'base';
-  constructor(public name: string, public value: ChannelValueType = 0 ) {}
-  public setValue(v: number) {
+  constructor(public name: string, public value: ChannelValueType = 0 ,public enabled:boolean=true) {
+  }
+  public setValue(v: ChannelValueType) {
     this.value = v;
     return this.setValueInternal(v);
   }
-  public setValueInternal(v: number) {return true; }
+  public setValueInternal(v: ChannelValueType) {return true; }
 }
 
 

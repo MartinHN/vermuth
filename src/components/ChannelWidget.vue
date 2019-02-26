@@ -1,8 +1,9 @@
 <template>
-  <div class="fixtureWidget">
-    <widget type="Slider" @value-change="widgetChanged($event)" :valuestore="fixtureProp.channel.value" :name="fixtureProp.channel.name"  :showName="showName" :showValue="showValue" ></widget>
+  <div class="channelWidget">
+    <Toggle v-model="disabledV" text="disabled"/>
+    <slider class="slider" @input="setChannelValue({channelName:fixtureProp.channel.name,value:$event})" :value="fixtureProp.channel.value" :name="fixtureProp.channel.name"  :showName="showName" :showValue="showValue" ></slider>
     
-    <input type="text" :value="fixtureProp.channel.name" placeholder="ChannelName"  @change="setChannelName({channel:fixtureProp.channel,name:$event.srcElement.value})"></input> 
+    <input type="text" readonly :value="fixtureProp.channel.name" placeholder="ChannelName"  @change="setChannelName({channel:fixtureProp.channel,name:$event.srcElement.value})"></input> 
   </div>
 </template>
 
@@ -10,7 +11,9 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapState, mapActions } from 'vuex';
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
-import Widget from './Widget.vue' ;
+import Slider from './Slider.vue' ;
+import Button from './Button.vue' ;
+import Toggle from './Toggle.vue' ;
 import { DirectFixture } from '../api/fixture';
 import FixtureMethods from '../store/fixtures';
 
@@ -18,22 +21,25 @@ import FixtureMethods from '../store/fixtures';
 const fixturesModule = namespace('fixtures');
 
 @Component({
-  components: {Widget},
+  components: {Slider,Button,Toggle},
 })
 export default class FixtureWidget extends Vue {
 
   @fixturesModule.Getter('usedChannels') public usedChannels!: FixtureMethods['usedChannels'];
   @fixturesModule.Mutation('setChannelValue') public setChannelValue!: FixtureMethods['setChannelValue'];
   @fixturesModule.Mutation('setChannelName') public setChannelName!: FixtureMethods['setChannelName'];
+  @fixturesModule.Mutation('setChannelEnabled') public setChannelEnabled!: FixtureMethods['setChannelEnabled'];
 
 
   @Prop() public fixtureProp!: DirectFixture;
   @Prop({default: false})    public showName?: boolean;
   @Prop({default: false})    public showValue?: boolean;
-
+  
+  get disabledV():boolean{return !this.fixtureProp.channel.enabled}
+  set disabledV(v:boolean){this.setChannelEnabled({channel:this.fixtureProp.channel,value:!v})}
 
   public widgetChanged(v: any): any {
-    this.setChannelValue({channelName: v.source.name, value: v.value});
+    // this.setChannelValue({channelName: v.source.name, value: v.value});
     // console.log('widg ch ', v);
   }
   public changeChannel(v: any): any {
@@ -48,11 +54,15 @@ export default class FixtureWidget extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.fixtureWidget {
+.channelWidget {
   display: flex;
   justify-content: space-around;
   align-items: center;
   background-color: gray;
+
+}
+.channelWidget .slider {
+  flex-basis:70%;
 }
 ul {
   list-style-type: none;

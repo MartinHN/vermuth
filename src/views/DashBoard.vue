@@ -1,16 +1,16 @@
 <template>
   <div class="home">    
-    <FixtureRack />
+    <ChannelRack />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import FixtureRack from '@/components/FixtureRack.vue'; // @ is an alias to /src
+import ChannelRack from '@/components/ChannelRack.vue'; // @ is an alias to /src
 
 @Component({
   components: {
-    FixtureRack,
+    ChannelRack,
   },
 })
 export default class Home extends Vue {}

@@ -1,26 +1,31 @@
 <template>
-  <div class="Widgetrack">
-    <widget v-for="w in widgets" @value-change="widgetChanged($event)" :key="w.id" :name="w.name" :type="w.type" :showName="showNames" :showValue="showValues"></widget>
-    <widget type="Toggle" name="showNames" :showName="true" @value-change="showNames=$event" ></widget> 
-    <widget type="Toggle" name="showValues" :showName="true" @value-change="showValues=$event" ></widget> 
+  <div class="config">
+
+
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import Widget from './Widget.vue' ;
+import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 
+import { DirectFixture } from '../api/fixture';
+import FixtureMethods from '../store/fixtures';
+
+
+const fixturesModule = namespace('fixtures');
 
 @Component({
-  components: {Widget},
+  components: { },
 })
-export default class WidgetRack extends Vue {
+export default class FixtureRack extends Vue {
+
+  // @fixturesModule.Mutation('addFixture') public addFixture!: FixtureMethods['addFixture'];
+  // @fixturesModule.State('fixtures') private fixtures!: FixtureMethods['fixtures'];
 
 
-  private showNames = false;
-  private showValues = true;
 
-  private widgets = new Array<Widget>();
+
 
 }
 

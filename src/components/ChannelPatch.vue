@@ -3,49 +3,57 @@
     ChannelPatch
     <br/>
     <div class="ChannelPatch">
+      <Button class="button addFixture" @click="addFixture()" text="add Channel"/>
       <div class="patchLine" v-for="f in fixtures" :key="f.id" >
-        <input type="text" @change="setChannelName({channel:f.channel,name:$event.srcElement.value})" :value="f.channel.name" ></input>
-        <div  v-for="(d,i) in f.dimmer.circs" :key="d.id" >
-          <widget type="Number" @value-change="linkChannelToDimmer({channelName:f.channel.name,dimmerNum:$event.value,dimmerIdx:i})" :valuestore="d" />
-          <widget v-if="i>0" type="TextButton" :options="{text:'x',size:[10,10]}"  @value-change="$event.value && removeDimmerFromChannel({channelName:f.channel.name,dimmerIdx:i})" />
-          </div>
-          <br/>
-          <widget type="TextButton" :options="{text:'Add'}"  @value-change="$event.value && addChannelToDimmer({channelName:f.channel.name,dimmerNum:0})" />
+         <Button class="button removeChannel " 
+            @click="removeChannel({channelName:f.channel.name})" tabIndex="-1" text=""/>
+        <input type="text" class="channelName " @change="setChannelName({channel:f.channel,name:$event.target.value})" :value="f.channel.name"  ></input>
+        <div class="dimmers">
+        <div  v-for="(d,i) in f.dimmers" :key="d.id" class=" dimmerCell" >
+          <Numbox class="dimmerNum" :value="d.circ" :min="0" :max="255"
+          @input="linkChannelToDimmer({channelName: f.channel.name, dimmerNum: $event.value, dimmerIdx: i})" />
 
+          <Button class="button removeDimmer " v-if="f.dimmers.length>1"
+            @click="removeDimmerFromChannel({channelName:f.channel.name,dimmerIdx:i})" tabIndex="-1" text=""/>
         </div>
       </div>
+        
+        <Button class="addDimmer" @click="addDimmerToChannel({channelName:f.channel.name,dimmerNum:0})" tabIndex="-1">+</Button>
+
+      </div>
     </div>
-  </template>
+  </div>
+</template>
 
-  <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
-  import FixtureWidget from './FixtureWidget.vue' ;
-  import Widget from './Widget.vue' ;
-  import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
-  import { DirectFixture } from '../api/fixture';
-  import FixtureMethods from '../store/fixtures';
+<script lang="ts">
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 
-  const fixturesModule = namespace('fixtures');
-
-  @Component({
-    components: {fixture: FixtureWidget, Widget},
-  })
-  export default class ChannelPatch extends Vue {
-
-    @fixturesModule.Mutation('addFixture') public addFixture!: FixtureMethods['addFixture'];
-    @fixturesModule.Mutation('linkChannelToDimmer') public linkChannelToDimmer!: FixtureMethods['linkChannelToDimmer'];
-    @fixturesModule.Mutation('addChannelToDimmer') public addChannelToDimmer!: FixtureMethods['addChannelToDimmer'];
-    @fixturesModule.Mutation('removeDimmerFromChannel') public removeDimmerFromChannel!: FixtureMethods['removeDimmerFromChannel'];
-    @fixturesModule.Mutation('setChannelName') public setChannelName!: FixtureMethods['setChannelName'];
+import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
+import Button from './Button.vue'
+import Numbox from './Numbox.vue'
+import { DirectFixture } from '../api/fixture';
+import FixtureMethods from '../store/fixtures';
 
 
-    @fixturesModule.State('fixtures') private fixtures!: FixtureMethods['fixtures'];
-    @fixturesModule.Getter('usedChannels') private usedChannels!: FixtureMethods['usedChannels'];
+const fixturesModule = namespace('fixtures');
 
-  }
+@Component({
+  components: {Button,Numbox},
+})
+export default class ChannelPatch extends Vue {
+
+  @fixturesModule.Mutation('addFixture') public addFixture!: FixtureMethods['addFixture'];
+  @fixturesModule.Mutation('linkChannelToDimmer') public linkChannelToDimmer!: FixtureMethods['linkChannelToDimmer'];
+  @fixturesModule.Mutation('addDimmerToChannel') public addDimmerToChannel!: FixtureMethods['addDimmerToChannel'];
+  @fixturesModule.Mutation('removeDimmerFromChannel') public removeDimmerFromChannel!: FixtureMethods['removeDimmerFromChannel'];
+  @fixturesModule.Mutation('setChannelName') public setChannelName!: FixtureMethods['setChannelName'];
 
 
+  @fixturesModule.State('fixtures') private fixtures!: FixtureMethods['fixtures'];
+  @fixturesModule.Getter('usedChannels') private usedChannels!: FixtureMethods['usedChannels'];
+
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -58,19 +66,54 @@
   background-color: gray;
 }
 .patchLine{
+  width: 100%;
+  margin:20px;
+  /*height:100px;*/
   display: flex;
   justify-content: space-between;
   align-items: center;
+  
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+
+
+.dimmerNum{
+  /*width: 30px;*/
+  font-size: x-large;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
+
+.channelName{
+  left: 0;
+  flex:0 0 30%;
+  font-size: x-large;
+  /*display: None;*/
 }
-a {
-  color: #42b983;
+.dimmers{
+  flex:1 1 60%;
+  display:flex;
+  flex-wrap: wrap;
+}
+.dimmerCell{
+  flex:1 1 10%;
+  display: -webkit-inline-box;
+  /*flex-direction:row;*/
+  justify-content: space-around;
+  /*align-content: center;*/
+  align-items: center;
+}
+
+.removeChannel{
+  background-color: red;
+}
+.addDimmer{
+  background-color: green;
+  height:10px;
+  flex:0 0 10px;
+}
+.removeDimmer{
+  left:0;
+  background-color: red;
+  height:10px;
+  width:10px;
+
 }
 </style>
