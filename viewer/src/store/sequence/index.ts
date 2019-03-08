@@ -1,76 +1,125 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators';
-import { Sequence,SequencePlayer } from '../../api/Sequence';
+import { Sequence, SequencePlayer } from '../../api/Sequence';
+import { State } from '../../api/State';
+import { Settable } from '../util';
+import { ChannelBase } from '../../api/Channel';
 
-
-
+const player = new SequencePlayer ();
 
 @Module({namespaced: true})
 export default class Sequences extends VuexModule {
   // public dState: DimmerState;
+
   public sequences = new  Array<Sequence>();
-  public sequenceName = '';
+
+  @Settable()
+  public __curSequence = '';
+
+
+  public selectedState?: State;
 
   @Action
   public fromObj(ob: any) {
-    // if(ob.sequences)ob.sequences.map((o: any) => this.context.commit('addSequence', Sequence.fromObj(o)));
-    if(ob.stateName)this.context.commit('setCurrentSequenceName', ob.stateName);
+    if(ob.sequences){
+      ob.sequences.forEach((o: any) => {
+        const s = Sequence.fromObj(o);
+        if(s){this.context.commit('addSequence', s);}
+      });
+    }
+    // if (ob.curSequenceName) {this.context.commit('set__curSequenceName', ob.curSequenceName); }
   }
 
-  // @Action
-  // public saveCurrentSequence(pl: {name: string}) {
+  @Action
+  public saveCurrentSequence(pl: {name: string}) {
+    pl = pl || {};
+    // if(this.selectedState){
+      // if (!pl.name) {
+      //   pl.name = this.curSequenceName ? this.curSequenceName : 'seq';
+      // }
+      // const c = this.context.getters.sequences;
+      // if(this.selectedState){
+        const seq = new Sequence(pl.name, this.selectedState || '');
+        this.context.commit('addSequence', seq);
+        this.context.commit('set____curSequence', seq);
+      // }
+    }
 
-  //   // const c = this.context.getters.sequences;
-  //   const seq = new Sequence(pl.name);
-  //   this.context.commit('addSequence', seq);
-  //   this.context.commit('setCurrentSequenceName', st.name);
-  // }
+    @Mutation
+    public addSequence(s: Sequence) {
+      if(s){
+        const i = this.sequences.findIndex((ss) => ss.name === s.name);
+        if (i !== -1) {
+          s.name = s.name + '.';
+        }
+        this.sequences.push( s);
+      }
+    }
+    @Mutation
+    public setSequenceName(pl: {sequence: Sequence, value: string} ) {
+      pl.sequence.name = pl.value;
+    }
 
-  // @Mutation
-  // public addSequence(s: Sequence) {
-  //   const i = this.sequences.findIndex((ss) => ss.name === s.name);
-  //   if (i === -1) {
-  //     this.sequences.push( s);
-  //   } else {
-  //     this.sequences.splice(i, 1, s);
-  //   }
-  // }
-
-  // @Mutation
-  // public setCurrentSequenceName(s: string) {
-  //   this.sequenceName = s;
-  // }
-
-  // @Action
-  // public goToSequence(pl: {name: string,settings:any}) {
-  //   const s = this.sequences.find((f) => f.name === pl.name);
-  //   if (s) {
-  //     for (const c of s.channelValues) {
-  //         this.context.commit('fixtures/setChannelValue', c, {root: true});
-  //     }
-  //     for (const c of this.context.getters.channels) {
-  //       const found = s.channelValues.findIndex((cv) => cv.channelName === c.name) !== -1;
-  //       this.context.commit('fixtures/setChannelEnabled', {channel: c, value: found}, {root: true});
-
-  //     }
-  //     this.context.commit('setCurrentStateName', pl.name);
-  //   }
-
-  // }
-
-  // get channels() {
-  //   return this.context.rootGetters['fixtures/usedChannels'];
-
-  // }
-
-  // get stateNames() {
-  //   return this.states.map((s) => s.name);
-  // }
+    @Mutation
+    public setSequenceStateName(pl: {sequence: Sequence, value: string} ) {
+      // const sv = this.availableStates.find((s) => s.name === pl.value);
+      // if (sv) {
+      //   // this.context.commit('setSequenceState', {sequence: pl.sequence, value: sv});
+      // }
+      pl.sequence.stateName = pl.value;
+    }
 
 
 
+    @Mutation
+    public setSequenceTimeIn(pl: {sequence: Sequence, value: number} ) {
+      pl.sequence.timeIn = pl.value;
+    }
+
+    @Mutation
+    public setSequenceTimeOut(pl: {sequence: Sequence, value: number} ) {
+      pl.sequence.timeOut = pl.value;
+    }
+
+
+    @Action
+    public goToSequenceNamed(pl: {name: string}) {
+      const s = this.sequences.find((f) => f.name === pl.name);
+      if (s) {
+        this.context.dispatch('goToSequence', s);
+      }
+    }
+    @Action
+    public goToSequence(s: Sequence) {
+      const st = this;
+      
+      player.goTo(s, this.fixtures,
+        (n:string)=>{return st.context.getters.availableStates.find((s:State)=>s.name===n)},
+        (channel: ChannelBase, value: number) => {
+
+          st.context.commit('fixtures/setChannelValue',{channel,value},{root:true});
+        },
+        () => {
+          this.context.commit('set____curSequence', s);
+        });
+    }
+
+    get fixtures() {
+      return this.context.rootState.fixtures.fixtures;
+
+    }
+
+    get availableStates(): State[] {
+
+      return this.context.rootState.states.states;
+    }
 
 
 
-}
+
+
+
+
+
+  }
 
 

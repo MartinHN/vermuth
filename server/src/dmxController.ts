@@ -37,15 +37,18 @@ class DMXController{
             socket.emit("DMX/SET_PORTLIST",pl)
         });
     })
+
     socket.on('DMX/SET_PORTNAME',(msg:string,cb:Function) =>{
       this.portName = msg;
-      if(this.connectToDevice()){
-        if(cb){cb(msg);}
-        socket.emit('DMX/SET_PORTNAME',msg)
-      }
-      else{
-        socket.emit('DMX/SET_PORTNAME',"")
-      }
+      this.connectToDevice((state:string)=>{
+        if(state === 'open'){
+          if(cb){cb(msg);}
+          socket.emit('DMX/SET_PORTNAME',msg)
+        }
+        else{
+          socket.emit('DMX/SET_PORTNAME',"")
+        }
+      })
     })
     socket.on('DMX/GET_DRIVERLIST',(cb:Function) =>{
       const pl = Object.keys(this.dmx.drivers)
@@ -57,13 +60,15 @@ class DMXController{
 
     socket.on('DMX/SET_DRIVERNAME',(msg:string,cb:Function) =>{
       this.driverName=msg
-      if(this.connectToDevice()){
-        if(cb){cb(msg);}
-        socket.emit('DMX/SET_DRIVERNAME',msg)
-      }
-      else{
-        socket.emit('DMX/SET_DRIVERNAME',"")
-      }
+      this.connectToDevice((state:string)=>{
+        if(state === 'open'){
+          if(cb){cb(msg);}
+          socket.emit('DMX/SET_DRIVERNAME',msg);
+        }
+        else{
+          socket.emit('DMX/SET_DRIVERNAME',"")
+        }
+      })
     })
 
     socket.on('DMX/SET_CIRC',(msg) => {
@@ -84,32 +89,44 @@ class DMXController{
     return res;
   }
 
-  connectToDevice(options = {}){
+  connectToDevice(cb:(msg:string)=>void,options = {}){
     options['universe']=1
     if(this.connected){
       this.dmx.universes[this.universeName].stop();
-      this.dmx.universes[this.universeName].close(()=>{this.connected=false;this.connectToDevice(options);});
+      this.dmx.universes[this.universeName].close(()=>{
+        this.connected=false;
+        this.connectToDevice(cb,options);});
       return false;
     }
     const uri = this.portName+":"+this.driverName
     console.log('trying to connect to '+uri)
     let uni;
-    try{
-     uni = this.dmx.addUniverse(this.universeName, this.driverName, this.portName|| "", options)
-     if(uni && uni.dev && ('isOpen' in uni.dev))
-      {this.connected = uni.dev.isOpen}
-    else{
-      this.connected = true;
+    const successCB = ()=>{
+      console.log('successfully connected to '+uri);
+      this.connected = true;cb('open');this.socket.emit('DMX/SET_ISCONNECTED',this.connected)
     }
-  }catch{
-    this.connected = false;
-  }
-    
-    if(this.connected){console.log('successfully connected to '+uri);}
-    else{console.log('cant connected to '+uri);}
-    this.socket.emit('DMX/SET_ISCONNECTED',this.connected)
-    return this.connected
-  }
+    const errorCB = () =>{
+      console.log('cant connected to '+uri);
+      this.connected = false;
+      cb('close');
+      this.socket.emit('DMX/SET_ISCONNECTED',this.connected)
+    }
+    try{
+      uni = this.dmx.addUniverse(this.universeName, this.driverName, this.portName|| "", options)
+      if(uni && uni.dev){
+        uni.dev.on('open',successCB);
+        uni.dev.on('error',errorCB);
+        uni.dev.on('close',errorCB);
+      }
+      else{
+        successCB()
+      }
+    }catch{
+      errorCB();
+
+    }
+
+    }
 }
 
 export default new DMXController()

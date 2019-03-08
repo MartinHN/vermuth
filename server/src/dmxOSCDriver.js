@@ -48,6 +48,7 @@ OSCDriver.prototype.stop = function () {
 };
 
 OSCDriver.prototype.close = function (cb) {
+  if(this.dev ) this.dev.close()
   this.stop();
   cb(null);
 };

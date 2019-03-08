@@ -1,43 +1,49 @@
 // import { Module , MutationTree, GetterTree, ActionTree} from 'vuex';
-import { DirectFixture } from '../../api/fixture';
+import { FixtureBase, DirectFixture } from '../../api/Fixture';
 import { ChannelBase } from '../../api/Channel';
 import { DimmerBase } from '../../api/Dimmer';
 // import { RootState } from '../types';
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators';
 
-type FixtureType = DirectFixture;
+type FixtureType = FixtureBase;
 type ChannelType = ChannelBase;
 
 function getNextDimmer(fl: FixtureType[], d: number, forbidden?: number[]): number {
-  const dimmersUsed = fl.map((ff) => ff.dimmers).flat().map((dm) => dm.circ).concat(forbidden || []);
+  const dimmersUsed = fl.map((ff) => ff.getAllDimmers()).flat().map((dm) => dm.circ).concat(forbidden || []);
   while (dimmersUsed.indexOf(d) !== -1) {d += 1; }
   return d;
 }
 
-function getNextChannelName(fl: FixtureType[], name: string, originalName: string): string {
-  if (!fl.find((f) => f.channel.name === name)) {
+function getNextUniqueName(nameList: string[], name: string, originalName: string): string {
+  if (name===originalName){
     return name;
   }
+  if(nameList.indexOf(name)===-1){
+    return name;
+  }
+
   function joinNBI(nameBase: string, pidx: number): string {
     return nameBase.length ? nameBase + ' ' + pidx : '' + pidx;
   }
 
   const nameSpl = name.split(' ');
   let idx = nameSpl.length > 0 ? parseInt(nameSpl[nameSpl.length - 1], 10) : NaN;
-  if (isNaN(idx) && fl.find((f) => f.channel.name === name)) {idx = 0; nameSpl.push('0'); }
-  if (!isNaN(idx)) {
-      idx += 1;
-      const nameBase = nameSpl.slice(0, nameSpl.length - 1).join(' ');
-      while (fl.find((f) => f.channel.name === joinNBI(nameBase, idx)) && originalName !== joinNBI(nameBase, idx)) {
-        idx += 1;
-      }
+  if (isNaN(idx)) {idx = 0; nameSpl.push('0'); }
+  
+  idx += 1;
+  const nameBase = nameSpl.slice(0, nameSpl.length - 1).join(' ');
+  while ( (nameList.indexOf(joinNBI(nameBase, idx)) !== -1) && originalName !== joinNBI(nameBase, idx)) {
+    idx += 1;
 
-      name = joinNBI(nameBase, idx);
-    }
+  }
+
+  name = joinNBI(nameBase, idx);
+
 
   return name;
 
 }
+
 
 
 @Module({namespaced: true})
@@ -47,18 +53,23 @@ export default class Fixtures extends VuexModule {
   // public channels = new  Array<ChannelType>(new ChannelBase('fake'));
   @Mutation
   public fromObj(js: any) {
-    this.fixtures = js.fixtures.map((o: any) => {
-      return DirectFixture.fromObj(o);
-    });
+    this.fixtures = [];
+    for (const f of js.fixtures) {
+      const df = FixtureBase.fromObj(f);
+      if (df) {
+        this.fixtures.push(df);
+      }
+    }
+
   }
 
   @Mutation
   public addFixture(pl: {name: string, circs: number[]}) {
-    pl = pl || {name: 'channel', circs: [1]};
+    pl = pl || {name: 'fixture', circs: [1]};
     let {name, circs} = pl;
-
-    if (!name) {name = 'channel'; }
-    name = getNextChannelName(this.fixtures, name, name);
+    if(!circs || !circs.length){circs = [1];}
+    if (!name) {name = 'fixture'; }
+    name = getNextUniqueName(this.fixtures.map(f=>f.name), name, '');
 
     const added = new Array<number>();
     circs = circs.map((c) => {
@@ -66,60 +77,59 @@ export default class Fixtures extends VuexModule {
       added.push(n);
       return n;
     });
-
-
-
     this.fixtures.push(new DirectFixture(name, circs));
   }
 
+  @Mutation
+  public setFixtureName(pl:{fixture:FixtureBase,value:string}){
+    pl.fixture.name = getNextUniqueName(this.fixtures.map(f=>f.name),pl.value,pl.fixture.name)
+  }
 
   @Mutation
-  public removeFixture(pl: {channelName: string}) {
-    const i = this.fixtures.findIndex((f) => f.channel.name === pl.channelName);
+  public removeFixture(pl: {fixture: FixtureType}) {
+    const i = this.fixtures.findIndex((f) => f === pl.fixture);
     if (i >= 0) {this.fixtures.splice(i, 1); }
   }
 
   @Mutation
-  public linkChannelToDimmer(pl: {channelName: string, dimmerNum: number, dimmerIdx: number}) {
-    const {channelName, dimmerIdx} = pl;
+  public linkChannelToDimmer(pl: {channel: ChannelBase, dimmerNum: number, dimmerIdx: number}) {
+    const {channel, dimmerIdx} = pl;
     let {dimmerNum} = pl;
-    const f = this.fixtures.find((ff) => ff.channel.name === channelName);
-    if (f) {
-      if (f.dimmers[dimmerIdx].circ !== dimmerNum) {dimmerNum =  getNextDimmer(this.fixtures, dimmerNum); }
-      f.setDimmerNum(dimmerNum, dimmerIdx);
+
+    if (channel) {
+      if (channel.dimmers[dimmerIdx].circ !== dimmerNum) {
+        dimmerNum =  getNextDimmer(this.fixtures, dimmerNum);
+      }
+      channel.setDimmerNum(dimmerNum, dimmerIdx);
     }
   }
 
   @Mutation
-  public addDimmerToChannel(pl: {channelName: string, dimmerNum: number}) {
+  public addDimmerToChannel(pl: {channel: ChannelBase, dimmerNum: number}) {
     let {dimmerNum} = pl;
-    const {channelName} = pl;
+    const {channel} = pl;
     if (!dimmerNum) {dimmerNum = 1; }
-    const f = this.fixtures.find((ff) => ff.channel.name === channelName);
-    if (f) {
+    if (channel) {
       dimmerNum = getNextDimmer(this.fixtures, dimmerNum);
-      f.addDimmer(dimmerNum);
+      channel.addDimmer(dimmerNum);
     }
   }
 
   @Mutation
-  public removeDimmerFromChannel(pl: {channelName: string, dimmerIdx: number}) {
-    const {channelName, dimmerIdx} = pl;
-    const f = this.fixtures.find((ff) => ff.channel.name === channelName);
-    if (f) {
-      f.removeDimmer(dimmerIdx);
+  public removeDimmerFromChannel(pl: {channel: ChannelBase, dimmerIdx: number}) {
+    const {channel, dimmerIdx} = pl;
+    if (channel) {
+      channel.removeDimmer(dimmerIdx);
     }
   }
 
 
 
   @Mutation
-  public setChannelValue(pl: {channelName: string , value: ChannelBase['value']}) {
-    const {channelName , value}  = pl;
-    const f = this.fixtures.find( (ff) => ff.channel.name === channelName);
-    if (f) {
-
-      f.sendValue(value);
+  public setChannelValue(pl: {channel: ChannelBase , value: ChannelBase['value']}) {
+    const {  value, channel}  = pl;
+    if (channel) {
+      channel.setValue(value);
     }
   }
 
@@ -128,39 +138,47 @@ export default class Fixtures extends VuexModule {
     const {channel} = pl;
     let { name}  = pl;
     if (name !== channel.name) {
-      if (!this.fixtures.find( (f) => f.channel === channel )) {
+      const correspondigFixture = this.fixtures.find( (f) => f.channels.includes(channel) )
+      if (!correspondigFixture) {
        console.error('fixture not managed');
-      }
-      name = getNextChannelName(this.fixtures, name, channel.name);
-      channel.name = name;
+     }
+     else{
+     name = getNextUniqueName(correspondigFixture.channels.map(c=>c.name), name, channel.name);
+     channel.name = name;
     }
-  }
+   }
+ }
 
-  @Mutation
-  public setChannelEnabled(pl: {channel: ChannelBase, value: boolean}) {
-        const {value} = pl;
-        const { channel}  = pl;
-        if (value !== channel.enabled) {
-      if (!this.fixtures.find( (f) => f.channel === channel )) {
-       console.error('fixture not managed');
-      }
+ @Mutation
+ public setChannelEnabled(pl: {channel: ChannelBase, value: boolean}) {
+  const {value} = pl;
+  const { channel}  = pl;
+  if (value !== channel.enabled) {
+    if (!this.fixtures.find( (f) => f.channels.includes(channel) )) {
+     console.error('fixture not managed');
+   }
 
-      channel.enabled = value;
-    }
-  }
+   channel.enabled = value?true:false;
+ }
+}
+
+@Mutation
+public addChannelToFixture(pl:{fixture: FixtureBase}){
+  pl.fixture.addChannel(undefined);
+}
 
 
-  get usedDimmers(): DimmerBase[] {
-    return this.fixtures.map((f) => f.dimmers).flat();
-  }
+get usedDimmers(): DimmerBase[] {
+  return this.fixtures.map((f) => f.getAllDimmers()).flat();
+}
 
-  get usedCircs(): number[] {
-    return Array.from(new Set<number>(this.usedDimmers.map( (d) => d.circ).flat()));
-  }
+get usedCircs(): number[] {
+  return Array.from(new Set<number>(this.usedDimmers.map( (d) => d.circ).flat()));
+}
 
-  get usedChannels(): ChannelBase[] {
-    return this.fixtures.map((f) => f.channel);
-  }
+get usedChannels(): ChannelBase[] {
+  return this.fixtures.map((f) => f.channels).flat();
+}
 
 
 

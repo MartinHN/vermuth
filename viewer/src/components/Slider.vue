@@ -1,9 +1,9 @@
 <template>
   <div class="SliderPH">
-    <input class="slider" type="range" :value="value" @input="$emit('input',$event.target.valueAsNumber)" min="0" max="1" :step="Math.pow(10,-precision)"></input> 
+    <input :class='["slider",{inactive:!enabled}]' type="range" :value="value" @input="$emit('input',$event.target.valueAsNumber)" min="0" max="1" :step="Math.pow(10,-precision)"></input> 
     
-    <div ref="Value" class="value" v-if="showValue">{{valToString}}</div>
-    <div ref="Name" v-if="showName">{{name}}</div>
+    <div ref="Value" class="Value" v-if="showValue">{{valToString}}</div>
+    <div ref="Name" class="Name" v-if="showName">{{name}}</div>
   </div>
 </template>
 
@@ -24,6 +24,7 @@ export default class Slider extends Vue {
 
   @Prop({default: 0}) public value!: number ;
 
+  @Prop({default:true}) public enabled?:boolean;
   public mounted() {
 
   }
@@ -41,15 +42,32 @@ export default class Slider extends Vue {
   position:relative;
   display: inline-block;
 }
-.value{
+.Value{
+  position: absolute;
+  margin-top: -40px;
+  right:100px;
+  /*top:-40px;*/
+  z-index: 200;
+  user-select: none;
+  pointer-events: none;
+  cursor: inherit;
+}
+.Name{
   position: absolute;
   margin-top: -40px;
   margin-left:10px;
   /*top:-40px;*/
   z-index: 200;
-  user-select: none
+  user-select: none;
+  pointer-events: none;
+  cursor: inherit;
 }
-
+.active{
+  background: dodgerblue;
+}
+.inactive{
+  background: #ddd;
+}
 
 input[type="range"] { 
     margin: auto;
@@ -78,12 +96,16 @@ input[type="range"] {
     /*border: 2px solid #999; /* 1 */
 }
 
+.inactive::-webkit-slider-thumb {
+  box-shadow: -100vw 0 0 100vw gray;
+}
+
 ::-moz-range-track {
     height: 40px;
     background: #ddd;
 }
 
-::-moz-range-thumb {
+/*::-moz-range-thumb {
     background: #fff;
     height: 40px;
     width: 20px;
@@ -92,18 +114,18 @@ input[type="range"] {
     box-shadow: -100vw 0 0 100vw dodgerblue;
     box-sizing: border-box;
 }
+*/
+/*::-ms-fill-lower { 
+    background: gray;
+}*/
 
-::-ms-fill-lower { 
-    background: dodgerblue;
-}
-
-::-ms-thumb { 
+/*::-ms-thumb { 
     background: #fff;
     border: 2px solid #999;
     height: 40px;
     width: 20px;
     box-sizing: border-box;
-}
+}*/
 
 ::-ms-ticks-after { 
     display: none; 

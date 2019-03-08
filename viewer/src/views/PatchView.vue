@@ -1,7 +1,7 @@
 <template>
   <div class="about">
     <h1>PatchView</h1>
-    <channel-patch/>
+    <channel-patch></channel-patch>
   </div>
 </template>
 

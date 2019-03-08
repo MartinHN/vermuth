@@ -5,6 +5,9 @@
       <option v-for="n of stateNames" :key="n.id" :value="n">{{n}}</option>
     </select>
     <Button class="add" @click="saveNewState" text="s"></Button>
+    <Button class="rename" @click="renameStatePrompt" text="r"></Button>
+    <Button class="remove" @click="removeStatePrompt" text="-"></Button>
+
 
   </div>
 </template>
@@ -26,6 +29,9 @@ type State = ValueOf<StateMethods['states']>;
 export default class ChannelPatch extends Vue {
 
   @statesModule.Action('saveCurrentState') public saveCurrentState!: StateMethods['saveCurrentState'];
+  @statesModule.Mutation('removeState') public removeState!: StateMethods['removeState'];
+  @statesModule.Mutation('renameState') public renameState!: StateMethods['renameState'];
+  
   @statesModule.Action('recallState') public recallState!: StateMethods['recallState'];
 
   @statesModule.Getter('channels') private channels!: StateMethods['channels'];
@@ -44,6 +50,19 @@ export default class ChannelPatch extends Vue {
         this.saveCurrentState({name});
       }
     }
+    public removeStatePrompt() {
+    const name = prompt('remove state', this.stateName);
+    if (name === null || name === '') {} else {
+        this.removeState({name});
+      }
+    }
+
+    renameStatePrompt(){
+    const name = prompt('rename state', this.stateName);
+    if (name === null || name === '') {} else {
+        this.renameState({oldName:this.stateName,newName:name});
+      }
+    }
 
 
   }
@@ -59,5 +78,9 @@ div{
 }
 select{
   flex:1;
+}
+
+.remove{
+  background-color: red;
 }
 </style>

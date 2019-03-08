@@ -1,11 +1,11 @@
 <template>
   <div class="ServerState">
-    <div ref="connectedState" :style='{"background-color":this.serverConnectionColor}'  >{{connectedState}}</div>
+    <div ref="connectedState" :style='{"background-color":this.serverConnectionColor}'  >{{connectedState}}, {{savedStatus}}</div>
     <!-- <div ref="connectedId">{{connectedId}}</div> -->
-    <select :style='{"background-color":this.portConnectionColor}' :value='displayedPort' @change="$store.dispatch('config/tryConnectPort',$event.target.value)">
+    <select :style='{"background-color":this.portConnectionColor}' :value='displayedPort' @change="$store.dispatch('DMXConfig/tryConnectPort',$event.target.value)">
       <option v-for="p of portlistAndNone" :value="p">{{p}}</option>
     </select>
-    <select :value="selectedDriver" @change="$store.dispatch('config/tryConnectDriver',$event.target.value)">
+    <select :value="selectedDriver" @change="$store.dispatch('DMXConfig/tryConnectDriver',$event.target.value)">
       <option v-for="p of driverlist" :value="p">{{p}}</option>
     </select>
   </div>
@@ -15,7 +15,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 // var VueSlideBar :any = require( 'vue-slide-bar');
-const configModule = namespace('config');
+const configModule = namespace('DMXConfig');
 
 @Component({
   // components:{Toggle}
@@ -27,13 +27,14 @@ export default class Slider extends Vue {
   @configModule.State('portlist') public portlist!: any[];
   @configModule.State('selectedDriver') public selectedDriver!: string;
   @configModule.State('driverlist') public driverlist!: any[];
-  @configModule.State('dmxIsConnected') public dmxIsConnected!:boolean;
+  @configModule.State('dmxIsConnected') public dmxIsConnected!: boolean;
+  @State('savedStatus') public savedStatus!:string;
 
   // @State('connectedId') public connectedId!:number;
 
 
   get serverConnectionColor(): string {
-    if (this.connectedState === "connected") {
+    if (this.connectedState === 'connected') {
       return 'green';
     }
     return 'red';
@@ -45,17 +46,16 @@ export default class Slider extends Vue {
     }
     return 'red';
   }
-  get portlistAndNone():string[]{
-    let res = this.portlist.map(p=>p.comName)
-    res.splice(0,0,"no Port")
-    return res
+  get portlistAndNone(): string[] {
+    const res = this.portlist.map((p) => p.comName);
+    res.splice(0, 0, 'no Port');
+    return res;
 
   }
-  
-  get displayedPort(){
-    if(!this.selectedPort || (this.selectedPort==="none")){return "no Port"}
-    else{return  this.selectedPort}
-    
+
+  get displayedPort() {
+    if (!this.selectedPort || (this.selectedPort === 'none')) {return 'no Port'; } else {return  this.selectedPort; }
+
   }
 
 

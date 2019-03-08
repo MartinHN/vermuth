@@ -1,9 +1,9 @@
 <template>
   <div class="channelWidget">
-    <Toggle v-model="disabledV" text="disabled"/>
-    <slider class="slider" @input="setChannelValue({channelName:fixtureProp.channel.name,value:$event})" :value="fixtureProp.channel.value" :name="fixtureProp.channel.name"  :showName="showName" :showValue="showValue" ></slider>
+    <Toggle v-model="enabledV" text="enabled"/>
+    <slider class="slider" @input="setChannelValue({channel:channelProp,value:$event})" :value="channelProp.value" :name="channelProp.name"  :showName="true" :showValue="true" :enabled="enabledV"></slider>
     
-    <input type="text" readonly :value="fixtureProp.channel.name" placeholder="ChannelName"  @change="setChannelName({channel:fixtureProp.channel,name:$event.srcElement.value})"></input> 
+
   </div>
 </template>
 
@@ -14,7 +14,7 @@ import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 import Slider from './Slider.vue' ;
 import Button from './Button.vue' ;
 import Toggle from './Toggle.vue' ;
-import { DirectFixture } from '../api/fixture';
+import { ChannelBase } from '../api/Channel';
 import FixtureMethods from '../store/fixtures';
 
 
@@ -23,7 +23,7 @@ const fixturesModule = namespace('fixtures');
 @Component({
   components: {Slider, Button, Toggle},
 })
-export default class FixtureWidget extends Vue {
+export default class ChannelWidget extends Vue {
 
   @fixturesModule.Getter('usedChannels') public usedChannels!: FixtureMethods['usedChannels'];
   @fixturesModule.Mutation('setChannelValue') public setChannelValue!: FixtureMethods['setChannelValue'];
@@ -31,21 +31,15 @@ export default class FixtureWidget extends Vue {
   @fixturesModule.Mutation('setChannelEnabled') public setChannelEnabled!: FixtureMethods['setChannelEnabled'];
 
 
-  @Prop() public fixtureProp!: DirectFixture;
+  @Prop() public channelProp!: ChannelBase;
   @Prop({default: false})    public showName?: boolean;
   @Prop({default: false})    public showValue?: boolean;
 
-  get disabledV(): boolean {return !this.fixtureProp.channel.enabled; }
-  set disabledV(v: boolean) {this.setChannelEnabled({channel: this.fixtureProp.channel, value: !v}); }
-
-  public widgetChanged(v: any): any {
-    // this.setChannelValue({channelName: v.source.name, value: v.value});
-    // console.log('widg ch ', v);
+  get enabledV(): boolean {return this.channelProp.enabled; }
+  set enabledV(v: boolean) {this.setChannelEnabled({channel: this.channelProp, value: v}); }
+  get sliderColor():string{
+    return this.enabledV?'inherit':'dark';
   }
-  public changeChannel(v: any): any {
-
-  }
-
 
 
 
@@ -59,20 +53,13 @@ export default class FixtureWidget extends Vue {
   justify-content: space-around;
   align-items: center;
   background-color: gray;
+  width:100%;
 
 }
 .channelWidget .slider {
   flex-basis:70%;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+input{
+      font-size: x-large;
 }
 </style>

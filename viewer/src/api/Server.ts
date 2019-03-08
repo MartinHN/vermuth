@@ -9,9 +9,9 @@ class Server {
 
   }
 
-  public connect(store: any) {
+  public connect(store: any,serverIp:string) {
     this.store = store;
-    const socket = io('http://localhost:3000');
+    const socket = io(`http://${serverIp}:3000`);
     this.socket = socket;
     store.commit('SET_CONNECTED_STATE', 'connecting');
 
