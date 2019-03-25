@@ -6,14 +6,14 @@ import { Settable } from '../util';
 
 @Module({namespaced: true})
 
-export default class config extends VuexModule {
+export default class Config extends VuexModule {
   // public dState: DimmerState;
   @Settable()
-  public autoSave:boolean=false;
-  
+  public autoSave: boolean = false;
+
   @Action
   public fromObj(ob: any) {
-    this.context.commit('set__autoSave',ob.autoSave?true:false)
+    this.context.commit('set__autoSave', ob.autoSave ? true : false);
     // this.selectedPort = ob.selectedPort;
     // this.context.commit('setCurrentStateName', ob.stateName);
   }

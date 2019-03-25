@@ -24,7 +24,7 @@ export default class Slider extends Vue {
 
   @Prop({default: 0}) public value!: number ;
 
-  @Prop({default:true}) public enabled?:boolean;
+  @Prop({default: true}) public enabled?: boolean;
   public mounted() {
 
   }

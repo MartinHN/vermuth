@@ -31,7 +31,7 @@ export default class ChannelPatch extends Vue {
   @statesModule.Action('saveCurrentState') public saveCurrentState!: StateMethods['saveCurrentState'];
   @statesModule.Mutation('removeState') public removeState!: StateMethods['removeState'];
   @statesModule.Mutation('renameState') public renameState!: StateMethods['renameState'];
-  
+
   @statesModule.Action('recallState') public recallState!: StateMethods['recallState'];
 
   @statesModule.Getter('channels') private channels!: StateMethods['channels'];
@@ -57,10 +57,10 @@ export default class ChannelPatch extends Vue {
       }
     }
 
-    renameStatePrompt(){
+    public renameStatePrompt() {
     const name = prompt('rename state', this.stateName);
     if (name === null || name === '') {} else {
-        this.renameState({oldName:this.stateName,newName:name});
+        this.renameState({oldName: this.stateName, newName: name});
       }
     }
 

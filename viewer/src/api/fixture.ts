@@ -12,13 +12,11 @@ type FixtureConstructorI  = (...args: any[]) => FixtureBase;
 const fixtureTypes: {[key: string]: FixtureConstructorI} = {};
 
 export class FixtureBase implements FixtureBaseI {
-
-  protected ftype = "base"
   public static fromObj(ob: any): FixtureBase |undefined {
     if (ob.channels) {
       const cstr = fixtureTypes[ob.ftype];
       if (cstr) {
-        const i = cstr(ob.name,[])
+        const i = cstr(ob.name, []);
         i.channels =   ob.channels.map((c: any) => ChannelBase.fromObj(c));
         return i;
       } else {
@@ -26,6 +24,8 @@ export class FixtureBase implements FixtureBaseI {
       }
     }
   }
+
+  protected ftype = 'base';
 
 
   constructor(public name: string, public channels: ChannelBase[]) {}
@@ -37,8 +37,8 @@ export class FixtureBase implements FixtureBaseI {
   }
 
   public addChannel(c: ChannelBase|undefined) {
-    if(c===undefined){
-      c = new ChannelBase("channel",0,[],true)
+    if (c === undefined) {
+      c = new ChannelBase('channel', 0, [], true);
     }
     this.channels.push(c);
   }
@@ -59,8 +59,8 @@ export class FixtureBase implements FixtureBaseI {
 export class DirectFixture extends FixtureBase {
 
   constructor( channelName: string,  dimmerCircs: number[] ) {
-    super(channelName, [new ChannelBase("channel", 0, dimmerCircs)]);
-    this.ftype = 'direct'
+    super(channelName, [new ChannelBase('channel', 0, dimmerCircs)]);
+    this.ftype = 'direct';
 
   }
 

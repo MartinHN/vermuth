@@ -15,21 +15,21 @@ function getNextDimmer(fl: FixtureType[], d: number, forbidden?: number[]): numb
 }
 
 function getNextUniqueName(nameList: string[], name: string, originalName: string): string {
-  if (name===originalName){
+  if (name === originalName) {
     return name;
   }
-  if(nameList.indexOf(name)===-1){
+  if (nameList.indexOf(name) === -1) {
     return name;
   }
 
-  function joinNBI(nameBase: string, pidx: number): string {
-    return nameBase.length ? nameBase + ' ' + pidx : '' + pidx;
+  function joinNBI(nBase: string, pidx: number): string {
+    return nBase.length ? nBase + ' ' + pidx : '' + pidx;
   }
 
   const nameSpl = name.split(' ');
   let idx = nameSpl.length > 0 ? parseInt(nameSpl[nameSpl.length - 1], 10) : NaN;
   if (isNaN(idx)) {idx = 0; nameSpl.push('0'); }
-  
+
   idx += 1;
   const nameBase = nameSpl.slice(0, nameSpl.length - 1).join(' ');
   while ( (nameList.indexOf(joinNBI(nameBase, idx)) !== -1) && originalName !== joinNBI(nameBase, idx)) {
@@ -51,25 +51,31 @@ export default class Fixtures extends VuexModule {
   // public dState: DimmerState;
   public fixtures = new  Array<FixtureType>();
   // public channels = new  Array<ChannelType>(new ChannelBase('fake'));
-  @Mutation
+  @Action
   public fromObj(js: any) {
+    this.context.commit('fromObjMut', js);
+  }
+  @Mutation
+  public fromObjMut(js: any) {
     this.fixtures = [];
     for (const f of js.fixtures) {
       const df = FixtureBase.fromObj(f);
       if (df) {
         this.fixtures.push(df);
       }
+
     }
 
   }
+
 
   @Mutation
   public addFixture(pl: {name: string, circs: number[]}) {
     pl = pl || {name: 'fixture', circs: [1]};
     let {name, circs} = pl;
-    if(!circs || !circs.length){circs = [1];}
+    if (!circs || !circs.length) {circs = [1]; }
     if (!name) {name = 'fixture'; }
-    name = getNextUniqueName(this.fixtures.map(f=>f.name), name, '');
+    name = getNextUniqueName(this.fixtures.map((f) => f.name), name, '');
 
     const added = new Array<number>();
     circs = circs.map((c) => {
@@ -81,8 +87,8 @@ export default class Fixtures extends VuexModule {
   }
 
   @Mutation
-  public setFixtureName(pl:{fixture:FixtureBase,value:string}){
-    pl.fixture.name = getNextUniqueName(this.fixtures.map(f=>f.name),pl.value,pl.fixture.name)
+  public setFixtureName(pl: {fixture: FixtureBase, value: string}) {
+    pl.fixture.name = getNextUniqueName(this.fixtures.map((f) => f.name), pl.value, pl.fixture.name);
   }
 
   @Mutation
@@ -138,14 +144,13 @@ export default class Fixtures extends VuexModule {
     const {channel} = pl;
     let { name}  = pl;
     if (name !== channel.name) {
-      const correspondigFixture = this.fixtures.find( (f) => f.channels.includes(channel) )
+      const correspondigFixture = this.fixtures.find( (f) => f.channels.includes(channel) );
       if (!correspondigFixture) {
        console.error('fixture not managed');
+     } else {
+       name = getNextUniqueName(correspondigFixture.channels.map((c) => c.name), name, channel.name);
+       channel.name = name;
      }
-     else{
-     name = getNextUniqueName(correspondigFixture.channels.map(c=>c.name), name, channel.name);
-     channel.name = name;
-    }
    }
  }
 
@@ -158,12 +163,12 @@ export default class Fixtures extends VuexModule {
      console.error('fixture not managed');
    }
 
-   channel.enabled = value?true:false;
+    channel.enabled = value ? true : false;
  }
 }
 
 @Mutation
-public addChannelToFixture(pl:{fixture: FixtureBase}){
+public addChannelToFixture(pl: {fixture: FixtureBase}) {
   pl.fixture.addChannel(undefined);
 }
 

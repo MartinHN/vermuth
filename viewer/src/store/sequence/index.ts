@@ -20,10 +20,11 @@ export default class Sequences extends VuexModule {
 
   @Action
   public fromObj(ob: any) {
-    if(ob.sequences){
+    this.context.commit('clearSequences');
+    if (ob.sequences ) {
       ob.sequences.forEach((o: any) => {
         const s = Sequence.fromObj(o);
-        if(s){this.context.commit('addSequence', s);}
+        if (s) {this.context.commit('addSequence', s); }
       });
     }
     // if (ob.curSequenceName) {this.context.commit('set__curSequenceName', ob.curSequenceName); }
@@ -38,15 +39,15 @@ export default class Sequences extends VuexModule {
       // }
       // const c = this.context.getters.sequences;
       // if(this.selectedState){
-        const seq = new Sequence(pl.name, this.selectedState || '');
-        this.context.commit('addSequence', seq);
-        this.context.commit('set____curSequence', seq);
+    const seq = new Sequence(pl.name, this.selectedState || '');
+    this.context.commit('addSequence', seq);
+    this.context.commit('set____curSequence', seq);
       // }
     }
 
     @Mutation
     public addSequence(s: Sequence) {
-      if(s){
+      if (s) {
         const i = this.sequences.findIndex((ss) => ss.name === s.name);
         if (i !== -1) {
           s.name = s.name + '.';
@@ -57,6 +58,11 @@ export default class Sequences extends VuexModule {
     @Mutation
     public setSequenceName(pl: {sequence: Sequence, value: string} ) {
       pl.sequence.name = pl.value;
+    }
+
+    @Mutation
+    public clearSequences( ) {
+      this.sequences = new  Array<Sequence>();
     }
 
     @Mutation
@@ -89,18 +95,27 @@ export default class Sequences extends VuexModule {
       }
     }
     @Action
-    public goToSequence(s: Sequence) {
-      const st = this;
-      
-      player.goTo(s, this.fixtures,
-        (n:string)=>{return st.context.getters.availableStates.find((s:State)=>s.name===n)},
-        (channel: ChannelBase, value: number) => {
+    public goToSequence(sq: Sequence) {
+      const self = this;
 
-          st.context.commit('fixtures/setChannelValue',{channel,value},{root:true});
+      player.goTo(
+        sq,
+        this.fixtures,
+        (n: string) =>
+          self.context.getters.availableStates.find(
+            (st: State) => st.name === n,
+          ),
+        (channel: ChannelBase, value: number) => {
+          self.context.commit(
+            'fixtures/setChannelValue',
+            { channel, value },
+            { root: true },
+          );
         },
         () => {
-          this.context.commit('set____curSequence', s);
-        });
+          this.context.commit('set____curSequence', sq);
+        },
+      );
     }
 
     get fixtures() {

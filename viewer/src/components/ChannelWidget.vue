@@ -37,8 +37,8 @@ export default class ChannelWidget extends Vue {
 
   get enabledV(): boolean {return this.channelProp.enabled; }
   set enabledV(v: boolean) {this.setChannelEnabled({channel: this.channelProp, value: v}); }
-  get sliderColor():string{
-    return this.enabledV?'inherit':'dark';
+  get sliderColor(): string {
+    return this.enabledV ? 'inherit' : 'dark';
   }
 
 

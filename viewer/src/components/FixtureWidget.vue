@@ -29,7 +29,7 @@ export default class FixtureWidget extends Vue {
 
   @fixturesModule.Mutation('addChannelToFixture') public addChannelToFixture!: FixtureMethods['addChannelToFixture'];
   @fixturesModule.Mutation('setFixtureName') public setFixtureName!: FixtureMethods['setFixtureName'];
-  
+
   // @fixturesModule.Mutation('setChannelValue') public setChannelValue!: FixtureMethods['setChannelValue'];
   // @fixturesModule.Mutation('setChannelName') public setChannelName!: FixtureMethods['setChannelName'];
   // @fixturesModule.Mutation('setChannelEnabled') public setChannelEnabled!: FixtureMethods['setChannelEnabled'];

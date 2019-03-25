@@ -36,6 +36,6 @@ export default class Numbox extends Vue {
 }
 input{
   height:100%;
-  font-size:inherit;
+  /*font-size:inherit;*/
 }
 </style>

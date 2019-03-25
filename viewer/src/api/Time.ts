@@ -11,12 +11,12 @@ export function  doTimer(length: number, resolution: number, oninstance: (steps:
   function instance() {
     if (count++ === steps) {
       oninstance(steps, count);
-      if(oncomplete)oncomplete();
+      if (oncomplete) {oncomplete(); }
     } else {
       oninstance(steps, count);
 
       const diff = (new Date().getTime() - start) - (count * speed);
-      window.setTimeout(instance, Math.max(0,speed - diff));
+      window.setTimeout(instance, Math.max(0, speed - diff));
     }
   }
   oninstance(steps, count);

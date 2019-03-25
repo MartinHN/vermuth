@@ -53,10 +53,10 @@ export default class ChannelPatch extends Vue {
   @fixturesModule.Mutation('setChannelName') public setChannelName!: FixtureMethods['setChannelName'];
 
   @fixturesModule.Mutation('removeFixture') public removeFixture!: FixtureMethods['removeFixture'];
+  @fixturesModule.Mutation('setFixtureName') public setFixtureName!: FixtureMethods['setFixtureName'];
 
   @fixturesModule.State('fixtures') private fixtures!: FixtureMethods['fixtures'];
   @fixturesModule.Getter('usedChannels') private usedChannels!: FixtureMethods['usedChannels'];
-  @fixturesModule.Mutation('setFixtureName') public setFixtureName!: FixtureMethods['setFixtureName'];
 
 }
 </script>

@@ -28,7 +28,7 @@ export default class Slider extends Vue {
   @configModule.State('selectedDriver') public selectedDriver!: string;
   @configModule.State('driverlist') public driverlist!: any[];
   @configModule.State('dmxIsConnected') public dmxIsConnected!: boolean;
-  @State('savedStatus') public savedStatus!:string;
+  @State('savedStatus') public savedStatus!: string;
 
   // @State('connectedId') public connectedId!:number;
 
@@ -67,5 +67,6 @@ export default class Slider extends Vue {
 * {
   display : flex;
   flex-direction: column;
+  min-width:100px;
 }
 </style>
