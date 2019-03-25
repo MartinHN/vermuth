@@ -1,38 +1,72 @@
 <template>
-  <v-app>
-    <v-toolbar app>
-      <v-toolbar-title class="headline text-uppercase">
-        <span>Vuetify</span>
-        <span class="font-weight-light">MATERIAL DESIGN</span>
-      </v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn
-        flat
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-      >
-        <span class="mr-2">Latest Release</span>
-      </v-btn>
-    </v-toolbar>
-
-    <v-content>
-      <HelloWorld/>
-    </v-content>
-  </v-app>
+  <div id="app">
+    
+    <div id="nav">
+      <ServerState id="serverState"/>
+      <router-link to="/Sequencer">Sequencer</router-link>
+      <router-link to="/">Dashboard</router-link>
+      <router-link to="/Patch">Patch</router-link>
+      <router-link to="/Config">Config</router-link>
+    </div>
+    
+    <router-view/>
+  </div>
 </template>
+<script lang="ts">
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
+import Server from './api/Server';
+import ServerState from './components/ServerState.vue';
 
-<script>
-import HelloWorld from './components/HelloWorld'
+import Store from './store';
 
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  },
-  data () {
-    return {
-      //
-    }
+
+
+@Component({
+  components: { ServerState},
+})
+export default class App extends Vue {
+
+  // @Mutation('addFixture') public addFixture!: FixtureMethods['addFixture'];
+  @State('savedStatus') public savedStatus!: string;
+  public mounted() {
+    Server.connect(this.$store,window.location.hostname);
   }
 }
 </script>
+<style>
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  background-color: grey;
+  min-height: 100%;
+  min-width: 100%;
+}
+#nav {
+  padding: 10px;
+  display:flex;
+
+  justify-content: space-around;
+}
+
+#nav a {
+  font-weight: bold;
+  color: #2c3e50;
+  flex:1 1 0;
+}
+
+#nav a.router-link-exact-active {
+  color: #42b983;
+}
+#savedStatus{
+  flex: 0 0 30px;
+  /*display:inline-block;*/
+  /*align-content: left;*/
+}
+#serverState{
+    flex:0 0 10px;
+  }
+</style>
