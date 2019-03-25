@@ -35,8 +35,5 @@ export default class TextInput extends Vue {
 
 
 <style scoped>
-v-text-field{
-  
-  
-}
+
 </style>
