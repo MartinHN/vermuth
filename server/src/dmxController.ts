@@ -2,7 +2,7 @@ var DMX = require ('dmx')
 var SerialPort = require('serialport')
 const OSCDriver = require('./dmxOSCDriver')
 const GPIODriver = require('./dmxGPIODriver')
-
+import log from './remoteLogger'
 
 class DMXController{
   public portName= "";
@@ -115,6 +115,7 @@ class DMXController{
     }
     try{
       uni = this.dmx.addUniverse(this.universeName, this.driverName, this.portName|| "", options)
+      log.log("universe "+JSON.stringify(uni))
       if(uni && uni.dev){
         uni.dev.on('open',successCB);
         uni.dev.on('error',errorCB);
@@ -123,7 +124,8 @@ class DMXController{
       else{
         successCB()
       }
-    }catch{
+    }catch(ex){
+      log.error(ex)
       errorCB();
 
     }

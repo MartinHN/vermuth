@@ -3,6 +3,8 @@ import * as http from  'http';
 import * as io from 'socket.io'
 //import {getter, setter} from './types'
 import dmxController from './dmxController'
+import log from './remoteLogger'
+
 var history = require("connect-history-api-fallback");
 // import {diff} from 'json-diff'
 const fs = require('fs');
@@ -59,7 +61,7 @@ function getSessionId(socket){
 }
 ioServer.on('connection', function(socket){
   console.log('a user connected',socket.id);
-
+  log.bindToSocket(socket)
   socket.on('disconnect', ()=>{
     console.log('user disconnected',socket.id);
   });
