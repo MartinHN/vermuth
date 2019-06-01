@@ -38,14 +38,18 @@ fs.writeFile(localStateFile, JSON.stringify({}), { flag: "wx",encoding:'utf-8' }
   if (err) {
     console.log("fileExists");
   }
+  else{
+    console.log("created file");
+  }
+  fs.readFile(localStateFile, 'utf8', (err, data) => {
+    if (err) {
+      return console.log(err);
+    }
+    Object.assign(states, data)
+  });
 });
 
-fs.readFile(localStateFile, 'utf8',  (err,data)=> {
-  if (err) {
-    return console.log(err);
-  }
-  Object.assign(states, data)
-});
+
 
 
 

@@ -1,15 +1,23 @@
 <template>
-  <div class="main">
-    <!-- States -->
-    <select size="3" v-model="stateName" >
-      <option v-for="n of stateNames" :key="n.id" :value="n">{{n}}</option>
-    </select>
-    <Button class="add" @click="saveNewState" text="s"></Button>
-    <Button class="rename" @click="renameStatePrompt" text="r"></Button>
-    <Button class="remove" @click="removeStatePrompt" text="-"></Button>
+  <v-container class="main" fluid pa-1>
+    <v-layout justify-space-between align-center row >
+      <v-flex xs8 >
+        <select size="3" v-model="stateName" >
+          <option v-for="n of stateNames" :key="n.id" :value="n">{{n}}</option>
+        </select>
+      </v-flex>
+      <v-flex xs4>
+        <div id="stateActions">
+          <Button class="add" @click="saveNewState" text="s"></Button>
+          <Button class="rename" @click="renameStatePrompt" text="r"></Button>
+          <Button class="remove" @click="removeStatePrompt" text="-" color='red'></Button>
 
+        </div>
+      </v-flex>
 
-  </div>
+    </v-layout>
+  </v-container>
+  
 </template>
 
 <script lang="ts">
@@ -47,37 +55,43 @@ export default class ChannelPatch extends Vue {
   public saveNewState() {
     const name = prompt('save new state', this.stateName);
     if (name === null || name === '') {} else {
-        this.saveCurrentState({name});
-      }
+      this.saveCurrentState({name});
     }
-    public removeStatePrompt() {
+  }
+  public removeStatePrompt() {
     const name = prompt('remove state', this.stateName);
     if (name === null || name === '') {} else {
-        this.removeState({name});
-      }
+      this.removeState({name});
     }
+  }
 
-    public renameStatePrompt() {
+  public renameStatePrompt() {
     const name = prompt('rename state', this.stateName);
     if (name === null || name === '') {} else {
-        this.renameState({oldName: this.stateName, newName: name});
-      }
+      this.renameState({oldName: this.stateName, newName: name});
     }
-
-
   }
+
+
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-div{
+/*div{
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
 }
+*/
+div{
+  width:100%;
+}
 select{
-  flex:1;
+  height:100%;
+  width:100%;
+  min-width: 20px;
 }
 
 .remove{

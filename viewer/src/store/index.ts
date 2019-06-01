@@ -26,6 +26,7 @@ function builEscapedJSON(content: any, indent?: number) {
       console.log('ignoring', key);
       return undefined;
     } else { return value; }
+
   }
   return JSON.stringify(content, filterPrivate, indent);
 }

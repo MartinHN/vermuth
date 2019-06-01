@@ -2,7 +2,7 @@
   <div class="config">
 
   <Toggle text="autoSave" :value ="autoSave" @change="set__autoSave($event)"/>
-  <Button text="save locally" @click="SAVE_LOCALLY"/>
+  <Button text="save locally"  @click="SAVE_LOCALLY"/>
   <label for="file">Load Locally</label>
   <input type="file" id="file" accept="application/json" text="load locally" @change="loadLocally($event.target.files)"/>
   </div>

@@ -1,10 +1,14 @@
 <template>
-  <div class="toggleContainer">
+  <label :style="{ 'background-color':displayedColor }"  :for="_uid" class="slider round">
+    <!-- <v-checkbox  v-model=value :tabindex="focusable?-1:''" :disabled="!editable"  ></v-checkbox> -->
+    <!-- <label :for="_uid" class="slider round">{{text}}</label> -->
+
+
     <input :id="_uid" type="checkbox" :checked="value" @change="$emit('change', $event.target.checked)" @input="$emit('input', $event.target.checked)" :tabindex="focusable?-1:''" :readonly="!editable" >
-    <label :for="_uid" class="slider round">{{text}}</label>
+    {{text}}</label>
 
     
-  </div>
+  
 </template>
 
 <script lang="ts">
@@ -18,10 +22,15 @@ export default class Toggle extends Vue {
   public focusable?: boolean;
   @Prop({default: true})
   public editable?: boolean;
-  @Prop({default: false})
+ @Prop({default: false})
   public value  ?: boolean ;
+  // public value: boolean = true;
+  @Prop({default: 'transparent'})
+  public color?: string;
 
-
+  get displayedColor() {
+    return this.value ? 'green' : this.color;
+  }
 
 }
 </script>
@@ -30,17 +39,11 @@ export default class Toggle extends Vue {
 <style scoped>
 /*@import url(https://fonts.googleapis.com/css?family=Noto+Sans);*/
 
-*, *::before, *::after {
+/**, *::before, *::after {
   box-sizing: border-box;
 }
 
-
-.toggleContainer {
-  color: #435757;
-  
-  /*font: 1.4em/1 'Noto Sans', sans-serif;*/
-
-}
+*/
 
 input {
   position: absolute;
@@ -48,19 +51,21 @@ input {
 }
 
 label {
-  display: block;
+  /* display: block; */
+  width:100%;
   position: relative;
   margin: 5px;
   padding: 5px 10px 10px 10px;
   border: 2px solid #fff;
   border-radius: 0px;
   color: #fff;
-  background-color:transparent;
+  /*background-color:transparent;*/
   box-shadow: 0 0 20px rgba(0, 0, 0, .2);
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
   transition: background-color .2s, box-shadow .2s;
+  
 }
 
 
@@ -69,9 +74,6 @@ label:hover, input:focus + label {
   box-shadow: 0 0 20px rgba(0, 0, 0, .6);
 }
 
-input:checked + label {
-  background-color: green;
-}
 
 
 </style>

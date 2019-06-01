@@ -1,5 +1,5 @@
 <template>
-  <label :for="_uid" class="buttonPH" :tabindex="focusable?-1:''">
+  <label :style="{ 'background-color':color }"  :for="_uid" class="buttonPH" :tabindex="focusable?-1:''">
     <input :id="_uid" type="button" class="button" @click="$emit('click')" :tabindex="focusable?-1:''"/>
     <!-- <label :for="_uid"> -->
     {{text}}
@@ -16,6 +16,8 @@ export default class Button extends Vue {
   public text?: string;
   @Prop({default: false})
   public focusable?: boolean;
+  @Prop({default: 'transparent'})
+  public color?: string;
 
 }
 </script>
@@ -68,5 +70,6 @@ label{
   user-select: none;
   transition: background-color .2s, box-shadow .2s;
   text-align: center;
+  width:100%;
 }
 </style>

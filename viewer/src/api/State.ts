@@ -1,7 +1,7 @@
 import { ChannelBase } from './Channel';
 import { FixtureBase, fixtureAll } from './Fixture';
 
-type ChannelsValuesDicTypes = Map<string, number>;
+interface ChannelsValuesDicTypes {[id: string]: number; }
 
 export class FixtureState {
   get channelValues(): ChannelsValuesDicTypes {
@@ -9,11 +9,12 @@ export class FixtureState {
   }
   public static fromObj(o: any): FixtureState {
     const res = new FixtureState(o.name);
-    res.pChannelValues = o.pChannelValues; // .map( (oo: any) => res.pChannelValues[oo.channelName]= oo.value)) );
+
+    res.pChannelValues = o.pChannelValues ; // .map( (oo: any) => res.pChannelValues[oo.channelName]= oo.value)) );
     return res;
   }
   public name: string;
-  private pChannelValues: ChannelsValuesDicTypes = new Map<string, number>();
+  private pChannelValues: ChannelsValuesDicTypes = {};
   constructor(fixture: FixtureBase | string) {
     if (typeof fixture === 'string') {
       this.name = fixture;
@@ -21,14 +22,16 @@ export class FixtureState {
       this.name = fixture.name;
       for (const c of fixture.channels) {
         if (c.enabled) {
-          this.pChannelValues.set(c.name, c.value);
+          this.pChannelValues[c.name] =  c.value;
+        } else {
+          delete this.pChannelValues[c.name];
         }
       }
     }
   }
 
   public setAllValues(v: number) {
-    this.pChannelValues.forEach( (_, k, m) => {m.set(k, v); });
+    Object.keys(this.pChannelValues).forEach((k) => { this.pChannelValues[k] = v; });
   }
 }
 
@@ -36,7 +39,7 @@ export class ResolvedFixtureState {
   public channels: { [id: string]: {channel: ChannelBase, value: number }} = {};
 
   constructor(public state: FixtureState, public fixture: FixtureBase) {
-    this.state.channelValues.forEach((cv, k, m) => {
+    Object.entries(this.state.channelValues).forEach(([k, cv]) => {
       const c = this.fixture.getChannelForName(k);
       if (c) {this.channels[c.name] = {channel: c, value: cv}; }
     });

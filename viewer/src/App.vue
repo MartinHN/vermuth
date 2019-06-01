@@ -30,7 +30,7 @@ export default class App extends Vue {
   // @Mutation('addFixture') public addFixture!: FixtureMethods['addFixture'];
   @State('savedStatus') public savedStatus!: string;
   public mounted() {
-    Server.connect(this.$store,window.location.hostname);
+    Server.connect(this.$store, window.location.hostname);
   }
 }
 </script>

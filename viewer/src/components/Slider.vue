@@ -1,6 +1,6 @@
 <template>
   <div class="SliderPH">
-    <input :class='["slider",{inactive:!enabled}]' type="range" :value="value" @input="$emit('input',$event.target.valueAsNumber)" min="0" max="1" :step="Math.pow(10,-precision)"></input> 
+    <input :class='["slider",{inactive:!enabled}]' type="range" :value="value" @input="$emit('input',$event.target.valueAsNumber)" min="0" max="1" :step="Math.pow(10,-precision)">
     
     <div ref="Value" class="Value" v-if="showValue">{{valToString}}</div>
     <div ref="Name" class="Name" v-if="showName">{{name}}</div>
@@ -78,6 +78,9 @@ input[type="range"] {
     width: 100%;
     cursor: pointer;
     border-radius: 0; /* iOS */
+    border: black;
+    border-width: 1px;
+    border-style: solid;
 }
 
 ::-webkit-slider-runnable-track {

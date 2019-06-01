@@ -7,6 +7,7 @@ import {DimmerBase, LogDimmer } from './Dimmer';
 type ChannelValueType = ChannelBase['value'];
 interface FixtureBaseI {
   name: string;
+  enabled: boolean;
 }
 type FixtureConstructorI  = (...args: any[]) => FixtureBase;
 const fixtureTypes: {[key: string]: FixtureConstructorI} = {};
@@ -24,11 +25,13 @@ export class FixtureBase implements FixtureBaseI {
       }
     }
   }
-
+  public enabled = true;
   protected ftype = 'base';
 
 
-  constructor(public name: string, public channels: ChannelBase[]) {}
+  constructor(public name: string, public channels: ChannelBase[]) {
+
+  }
 
   public sendValue(v: ChannelValueType) {
     for (const c of this.channels) {
@@ -41,6 +44,10 @@ export class FixtureBase implements FixtureBaseI {
       c = new ChannelBase('channel', 0, [], true);
     }
     this.channels.push(c);
+    return c;
+  }
+  public removeChannel(c: ChannelBase) {
+    this.channels = this.channels.filter((v) => c !== v);
   }
 
 

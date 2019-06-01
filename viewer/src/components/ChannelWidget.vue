@@ -1,10 +1,17 @@
 <template>
-  <div class="channelWidget">
-    <Toggle v-model="enabledV" text="enabled"/>
-    <slider class="slider" @input="setChannelValue({channel:channelProp,value:$event})" :value="channelProp.value" :name="channelProp.name"  :showName="true" :showValue="true" :enabled="enabledV"></slider>
-    
 
-  </div>
+  <v-container class="channelWidget" fluid pa-1>
+  <v-layout justify-space-between align-center row >
+    <v-flex xs2 >
+      <Toggle v-model="enabledV" text="enabled"/>
+    </v-flex>
+    <v-flex xs10 >
+      <slider class="slider" @input="setChannelValue({channel:channelProp,value:$event})" :value="channelProp.value" :name="channelProp.name"  :showName="true" :showValue="true" :enabled="enabledV"></slider>
+    </v-flex>
+  </v-layout>
+</v-container>
+
+
 </template>
 
 <script lang="ts">
@@ -60,6 +67,6 @@ export default class ChannelWidget extends Vue {
   flex-basis:70%;
 }
 input{
-      font-size: x-large;
+  font-size: x-large;
 }
 </style>

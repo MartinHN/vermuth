@@ -1,6 +1,7 @@
 var DMX = require ('dmx')
 var SerialPort = require('serialport')
 const OSCDriver = require('./dmxOSCDriver')
+const GPIODriver = require('./dmxGPIODriver')
 
 
 class DMXController{
@@ -20,6 +21,7 @@ class DMXController{
   constructor(){
     this.dmx = new DMX()
     this.dmx.registerDriver('QLC',OSCDriver)
+    this.dmx.registerDriver('GPIO',GPIODriver)
     delete this.dmx.drivers['bbdmx']
     DMXController.getAvailableDevices().then((v,err)=>{
       if(err){console.error(err);}

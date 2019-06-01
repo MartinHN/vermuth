@@ -169,7 +169,15 @@ export default class Fixtures extends VuexModule {
 
 @Mutation
 public addChannelToFixture(pl: {fixture: FixtureBase}) {
-  pl.fixture.addChannel(undefined);
+
+  const c = pl.fixture.addChannel(undefined);
+  const n = getNextDimmer(this.fixtures, 0, []);
+  c.addDimmer(n);
+}
+
+@Mutation
+public removeChannel(pl: {channel: ChannelBase, fixture: FixtureBase}) {
+  pl.fixture.removeChannel(pl.channel);
 }
 
 

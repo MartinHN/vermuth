@@ -57,7 +57,10 @@ export default class SequenceComponent extends Vue {
 .main {
   display: flex;
   width:100%;
-  background-color: black;
+  background-color: transparent;
+  border-color: black;
+  border-width: 1px;
+  border-style: solid;
   flex-direction: row;
   justify-content: space-around;
   align-items: center;

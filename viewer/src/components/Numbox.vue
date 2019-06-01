@@ -1,6 +1,6 @@
 <template>
   <div class="NumboxPH">
-    <input class="Numbox" type="number" :value="value" @input="$emit('input',{value:$event.target.valueAsNumber})" @change="$emit('change',{value:$event.target.valueAsNumber})" :min="min" :max="max"></input> 
+    <input class="Numbox" type="number" :value="value" @input="$emit('input',{value:$event.target.valueAsNumber})" @change="$emit('change',{value:$event.target.valueAsNumber})" :min="min" :max="max" />
 
     <div ref="Name" v-if="showName">{{name}}</div>
   </div>
@@ -36,6 +36,8 @@ export default class Numbox extends Vue {
 }
 input{
   height:100%;
+  background-color: #0003;
+  padding-left: 5px;
   /*font-size:inherit;*/
 }
 </style>
