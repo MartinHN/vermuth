@@ -1,7 +1,7 @@
 import * as express from "express";
 import * as http from  'http';
 import * as io from 'socket.io'
-import {getter, setter} from './types'
+//import {getter, setter} from './types'
 import dmxController from './dmxController'
 var history = require("connect-history-api-fallback");
 // import {diff} from 'json-diff'
