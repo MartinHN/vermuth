@@ -6,10 +6,10 @@ function createGpio(i){
   }
   else{
     class Gpio{
-      constructor(i,d){};
+      constructor(public gpionum: Number,d:any){};
 
       pwmWrite(v){
-        console.log(v);
+        console.log("gpio : ",this.gpionum," ->",v);
       }
     }
     return new Gpio(i,"")

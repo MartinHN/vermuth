@@ -1,6 +1,8 @@
 import * as express from "express";
 import * as http from  'http';
 import * as io from 'socket.io'
+import OSCServer from './OSCServer'
+OSCServer.connect(4444);
 //import {getter, setter} from './types'
 import dmxController from './dmxController'
 import log from './remoteLogger'
@@ -47,7 +49,7 @@ fs.writeFile(localStateFile, JSON.stringify({}), { flag: "wx",encoding:'utf-8' }
     if (err) {
       return console.log(err);
     }
-    Object.assign(states, data)
+    Object.assign(states ,  JSON.parse(data))
   });
 });
 

@@ -74,12 +74,16 @@ class DMXController{
     })
 
     socket.on('DMX/SET_CIRC',(msg) => {
-      console.log('set_circ',msg,this.connected)
+      this.setCircs(msg)
+    })
+  }
+
+  setCircs(msg){
+    console.log('set_circ',msg,this.connected)
       if(this.connected){
         // this.dmx.updateAll(this.universeName,msg[0].v)
         this.dmx.update(this.universeName,this.arrayToObj(msg))
       }
-    })
   }
 
   arrayToObj(a:{c:number,v:number}[]){
