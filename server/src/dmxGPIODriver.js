@@ -73,7 +73,7 @@ GPIODriver.prototype.stop = function () {
 };
 
 GPIODriver.prototype.close = function (cb) {
-  if(this.dev ) this.dev.close()
+  
   this.stop();
   cb(null);
 };
