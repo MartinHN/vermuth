@@ -48,6 +48,7 @@ function GPIODriver(options = {}) {
   this.universe = Buffer.alloc(this.bufSize +1);
   this.universe.fill(0);
   this.sendUniverse();
+  this.dev = true;
   
 }
 
