@@ -2,6 +2,8 @@ var DMX = require ('dmx')
 var SerialPort = require('serialport')
 const OSCDriver = require('./dmxOSCDriver')
 const GPIODriver = require('./dmxGPIODriver')
+const SolenoidDriver = require('./dmxSolenoidDriver')
+var io = require('socket.io')
 import log from './remoteLogger'
 
 class DMXController{
@@ -22,6 +24,7 @@ class DMXController{
     this.dmx = new DMX()
     this.dmx.registerDriver('QLC',OSCDriver)
     this.dmx.registerDriver('GPIO',GPIODriver)
+    this.dmx.registerDriver('Solenoid',SolenoidDriver)
     delete this.dmx.drivers['bbdmx']
     DMXController.getAvailableDevices().then((v,err)=>{
       if(err){console.error(err);}
@@ -74,16 +77,24 @@ class DMXController{
     })
 
     socket.on('DMX/SET_CIRC',(msg) => {
-      this.setCircs(msg)
+      this.setCircs(msg,socket)
     })
   }
 
-  setCircs(msg){
+  setCircs(msg,fromSocket){
     console.log('set_circ',msg,this.connected)
       if(this.connected){
         // this.dmx.updateAll(this.universeName,msg[0].v)
         this.dmx.update(this.universeName,this.arrayToObj(msg))
       }
+      if(fromSocket){
+        fromSocket.broadcast.emit("DMX/SET_CIRC",msg)
+      }
+      else{
+        this.socket.server.emit("DMX/SET_CIRC",msg)
+      }
+     
+
   }
 
   arrayToObj(a:{c:number,v:number}[]){

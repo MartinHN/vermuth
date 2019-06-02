@@ -45,9 +45,7 @@ class OSCServer{
         console.log(" Host:", address + ", Port:", udpPort.options.localPort);
       });
     });
-    udpPort.on("bundle", function (bundle) {
-      for(let i in bundle){this.processMsg(bundle[i])}
-    })
+    udpPort.on("bundle", this.processBundle);
     udpPort.on("message", this.processMsg);
 
     udpPort.on("error", function (err) {
@@ -55,16 +53,25 @@ class OSCServer{
     });
     this.udpPort = udpPort
 
-    
+
     udpPort.open();
     
   }
 
   processMsg (msg) {
-      if(msg.address==="/circ"){
-        dmxController.setCircs([{c:msg.args[0],v:msg.args[1]}])
-      }
+    if(msg.address==="/circ"){
+      dmxController.setCircs([{c:msg.args[0],v:msg.args[1]}],null)
     }
+  }
+
+  processBundle(b){
+    for(let i in b.packets){
+      const p = b.packets[i]
+      if(p.packets){this.processBundle(p);}
+      else{this.processMsg(p);}
+    }
+  }
+
 }
 
 export default new OSCServer();

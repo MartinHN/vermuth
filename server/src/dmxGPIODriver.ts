@@ -11,6 +11,9 @@ function createGpio(i){
       pwmWrite(v){
         console.log("gpio : ",this.gpionum," ->",v);
       }
+      digitalWrite(v){
+        console.log("gpio d : ",this.gpionum," ->",v);
+      }
     }
     return new Gpio(i,"")
   }

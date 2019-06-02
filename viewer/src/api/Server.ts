@@ -24,7 +24,7 @@ class Server {
 
       });
 
-      socket.on('DBG',(msg:any)=>{console.error(msg);})
+      socket.on('DBG', (msg: any) => {console.error(msg); });
       // const unsubscribe = store.subscribe((mutation: any, state: any) => {
       //   if (hasRemoteState && mutation.type === 'SET_SAVE_STATUS' && mutation.payload === 'Saved') {
       //     socket.emit('SET_STATE', 'session',state);

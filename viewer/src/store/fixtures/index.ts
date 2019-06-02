@@ -180,6 +180,10 @@ public removeChannel(pl: {channel: ChannelBase, fixture: FixtureBase}) {
   pl.fixture.removeChannel(pl.channel);
 }
 
+@Mutation
+public setDimmerIntValue(pl:{dimmer:DimmerBase,v:number}){
+  pl.dimmer.setIntValue(pl.v);
+}
 
 get usedDimmers(): DimmerBase[] {
   return this.fixtures.map((f) => f.getAllDimmers()).flat();
