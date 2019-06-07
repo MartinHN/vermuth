@@ -28,7 +28,6 @@ export default class Sequencer extends Vue {
 
   @sequenceModule.Mutation('addSequence') public addSequence!: SequenceMethods['addSequence'];
   @sequenceModule.Action('saveCurrentSequence') public saveCurrentSequence!: SequenceMethods['saveCurrentSequence'];
-
   @sequenceModule.State('sequences') public sequences!: SequenceMethods['sequences'];
 
 }
@@ -54,7 +53,7 @@ export default class Sequencer extends Vue {
 }
 
 
-.dimmerNum{
+.circNum{
   /*width: 30px;*/
   font-size: x-large;
 }
@@ -65,12 +64,8 @@ export default class Sequencer extends Vue {
   font-size: x-large;
   /*display: None;*/
 }
-.dimmers{
-  flex:1 1 60%;
-  display:flex;
-  flex-wrap: wrap;
-}
-.dimmerCell{
+
+.circCell{
   flex:1 1 10%;
   display: -webkit-inline-box;
   /*flex-direction:row;*/
@@ -82,16 +77,5 @@ export default class Sequencer extends Vue {
 .removeChannel{
   background-color: red;
 }
-.addDimmer{
-  background-color: green;
-  height:10px;
-  flex:0 0 10px;
-}
-.removeDimmer{
-  left:0;
-  background-color: red;
-  height:10px;
-  width:10px;
 
-}
 </style>

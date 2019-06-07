@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <v-app id="app">
     
     <div id="nav">
       <ServerState id="serverState"/>
@@ -10,7 +10,7 @@
     </div>
     
     <router-view/>
-  </div>
+  </v-app>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';

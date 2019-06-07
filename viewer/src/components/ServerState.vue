@@ -2,12 +2,10 @@
   <div class="ServerState">
     <div ref="connectedState" :style='{"background-color":this.serverConnectionColor}'  >{{connectedState}}, {{savedStatus}}</div>
     <!-- <div ref="connectedId">{{connectedId}}</div> -->
-    <select :style='{"background-color":this.portConnectionColor}' :value='displayedPort' @change="$store.dispatch('DMXConfig/tryConnectPort',$event.target.value)">
-      <option v-for="p of portlistAndNone" :value="p">{{p}}</option>
-    </select>
-    <select :value="selectedDriver" @change="$store.dispatch('DMXConfig/tryConnectDriver',$event.target.value)">
-      <option v-for="p of driverlist" :value="p">{{p}}</option>
-    </select>
+    <v-select :items=portlistAndNone :style='{"background-color":this.portConnectionColor}' :value='displayedPort' @change="$store.dispatch('DMXConfig/tryConnectPort',$event)">
+    </v-select>
+    <v-select :items=driverlist :value="selectedDriver" @change="$store.dispatch('DMXConfig/tryConnectDriver',$event)">
+    </v-select>
   </div>
 </template>
 

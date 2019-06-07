@@ -6,7 +6,7 @@
     <!-- <toggle :showName="true" v-model="showNames" text="showNames" ></toggle> --> 
     <!-- <toggle name="showValues" v-model="showValues" ></toggle>  -->
   </div>
-    <fixture-widget class="channel" v-for="f in fixtures" :key="f.id" :fixtureProp="f" :showName="showNames" :showValue="showValues"></fixture-widget>
+    <fixture-widget class="channel" v-for="f in universe.fixtures" :key="f.id" :fixtureProp="f" :showName="showNames" :showValue="showValues"></fixture-widget>
   </div>
 </template>
 
@@ -33,7 +33,7 @@ export default class ChannelRack extends Vue {
 
   public showNames = false;
   public showValues = true;
-  @fixturesModule.State('fixtures') private fixtures!: FixtureMethods['fixtures'];
+  @fixturesModule.State('universe') private universe!: FixtureMethods['universe'];
 
 
 

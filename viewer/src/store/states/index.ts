@@ -9,7 +9,7 @@ import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators';
 
 @Module({namespaced: true})
 export default class States extends VuexModule {
-  // public dState: DimmerState;
+
   public states = new  Array<State>();
   public stateName = '';
 
@@ -72,9 +72,9 @@ export default class States extends VuexModule {
       }));
       for (const c of this.context.getters.channels) {
         const found = rs.find((r) =>
-          Object.values(r.channels).find(
-
-            (v) => v.channel === c) !== undefined);
+          Object.values(r.channels)
+          .find((v) => v.channel === c) !== undefined,
+          );
         this.context.commit('fixtures/setChannelEnabled', {channel: c, value: found}, {root: true});
 
       }
@@ -93,7 +93,7 @@ export default class States extends VuexModule {
   }
 
   get fixtures() {
-    return this.context.rootState.fixtures.fixtures;
+    return this.context.rootState.fixtures.universe.fixtures;
   }
 
 

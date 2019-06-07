@@ -76,6 +76,13 @@ class DMXController{
       })
     })
 
+    socket.on('DMX/GET_DRIVERNAME',(msg:string,cb:Function) =>{
+      socket.emit('DMX/SET_DRIVERNAME',this.driverName);
+    })
+    socket.on('DMX/GET_PORTNAME',(msg:string,cb:Function) =>{
+      socket.emit('DMX/SET_PORTNAME',this.portName);
+    })
+
     socket.on('DMX/SET_CIRC',(msg) => {
       this.setCircs(msg,socket)
     })
@@ -85,7 +92,7 @@ class DMXController{
     console.log('set_circ',msg,this.connected)
       if(this.connected){
         // this.dmx.updateAll(this.universeName,msg[0].v)
-        this.dmx.update(this.universeName,this.arrayToObj(msg))
+        this.dmx.update(this.universeName,this.arrayToObj(msg,255))
       }
       if(fromSocket){
         fromSocket.broadcast.emit("DMX/SET_CIRC",msg)
@@ -97,10 +104,10 @@ class DMXController{
 
   }
 
-  arrayToObj(a:{c:number,v:number}[]){
+  arrayToObj(a:{c:number,v:number}[],mult:number=1){
     const res = {}
     for(const e of a ){
-      res[e.c] = e.v
+      res[e.c] = e.v*mult
     }
     console.log(res)
     return res;

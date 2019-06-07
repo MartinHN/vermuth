@@ -8,7 +8,7 @@ const player = new SequencePlayer ();
 
 @Module({namespaced: true})
 export default class Sequences extends VuexModule {
-  // public dState: DimmerState;
+
 
   public sequences = new  Array<Sequence>();
 
@@ -119,7 +119,7 @@ export default class Sequences extends VuexModule {
     }
 
     get fixtures() {
-      return this.context.rootState.fixtures.fixtures;
+      return this.context.rootState.fixtures.universe.fixtures;
 
     }
 

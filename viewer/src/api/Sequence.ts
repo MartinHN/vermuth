@@ -10,7 +10,11 @@ export class Sequence {
 
   public static fromObj(o: any): any {
 
-    return new Sequence(o.name, o.stateName);
+    const seq = new Sequence(o.name, o.stateName);
+    seq.timeIn = o.timeIn;
+    seq.timeOut = o.timeOut;
+    seq.hold = o.hold;
+    return seq;
     // o.pChannelValues.map( (oo: any) => res.pChannelValues.push(new ChannelWithValue(oo.channelName, oo.value)) );
     // return res;
   }

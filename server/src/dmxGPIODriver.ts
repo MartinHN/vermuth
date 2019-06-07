@@ -1,6 +1,6 @@
 const isPi = require('detect-rpi')();
 function createGpio(i){
-  if(isPi){
+  if(isPi && (i >=2 || i<=27)){
     const Gpio = require('pigpio').Gpio;
     return new Gpio(i,{mode:Gpio.OUTPUT})
   }
@@ -9,10 +9,10 @@ function createGpio(i){
       constructor(public gpionum: Number,d:any){};
 
       pwmWrite(v){
-        console.log("gpio : ",this.gpionum," ->",v);
+        console.log("fake gpio : ",this.gpionum," ->",v);
       }
       digitalWrite(v){
-        console.log("gpio d : ",this.gpionum," ->",v);
+        console.log("fake gpio d : ",this.gpionum," ->",v);
       }
     }
     return new Gpio(i,"")
@@ -29,7 +29,7 @@ SDA     2     3       4     -     5V
 SCL     3     5       6     -     Ground
         4     7       8     14    TXD
 Ground  -     9       10    15    RXD
-ce1     17    11      12    18    ce0
+ce1     17    11      12    18    ce0    (SOUND????)
         27    13      14    -     Ground
         22    15      16    23  
 3V3     -     17      18    24  
@@ -50,7 +50,7 @@ Ground  -     39      40    21    sclk
 function GPIODriver(deviceId = 'lampignon',options = {}) {
 
   this.gpioInstances = []
-  for (var i = 2 ; i <= 27 ; i++){
+  for (var i = 0 ; i <= 27 ; i++){
     this.gpioInstances.push(createGpio(i))
  }
  this.bufSize = this.gpioInstances.length

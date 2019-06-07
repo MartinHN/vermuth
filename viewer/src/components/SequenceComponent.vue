@@ -3,9 +3,9 @@
     <Button text="Go" @click="goToSequence(sequence)" />
     <text-input :value="seqName" @change="setSequenceName({sequence:sequence,value:$event.target.value})"/>
     <Numbox :value="sequence.timeIn" @change="setSequenceTimeIn({sequence:sequence,value:$event.value})"/>
-    <select  :value="seqStateName" @change="setSequenceStateName({sequence:sequence,value:$event.target.value})" >
-      <option v-for="n of stateNames" :key="n.id" :value="n">{{n}}</option>
-    </select>
+    <v-select :items=stateNames :value="seqStateName" @change="setSequenceStateName({sequence:sequence,value:$event})" >
+      
+    </v-select>
   </div>
 </template>
 
@@ -47,6 +47,8 @@ export default class SequenceComponent extends Vue {
     }
     return 'none';
   }
+
+  
 
 
 }

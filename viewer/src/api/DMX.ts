@@ -1,6 +1,6 @@
 
 // import {Store} from '../store'
-import {UniverseListener} from './Dimmer';
+import {UniverseListener} from './Channel';
 class DMXClient {
   private store: any;
   private socket: any;
@@ -28,13 +28,13 @@ class DMXClient {
         const allChannels = store.getters['fixtures/usedChannels'];
         let found = false;
         for ( const cp of pl) {
-          for ( const i of allDimmers) {
-            if ( i.circ === parseInt(cp.c, 10)) {
-              store.commit('fixtures/setChannelValue', {channel:c, value:cp.v/255});
+          for ( const c of allChannels) {
+            if ( c.circ === parseInt(cp.c, 10)) {
+              store.commit('fixtures/setChannelValue', {channel: c, value: cp.v});
               found = true;
             }
           }
-          if (!found) {console.error('cant set circ', cp, allDimmers); }
+          if (!found) {console.error('cant set circ', cp, allChannels); }
         }
     }));
 
@@ -52,7 +52,10 @@ class DMXClient {
       socket.on('DMX/SET_DRIVERLIST', ((pl: any[]) => {
         store.commit('DMXConfig/set__driverlist', pl);
       }));
-
+      socket.emit('DMX/GET_DRIVERNAME');
+      socket.on('DMX/SET_DRIVERNAME', ((pl: any[]) => {
+        store.commit('DMXConfig/set__selectedDriver', pl);
+      }));
       socket.emit('DMX/GET_PORTNAME');
       socket.on('DMX/SET_PORTNAME', ((pl: any[]) => {
         store.commit('DMXConfig/set__selectedPort', pl);

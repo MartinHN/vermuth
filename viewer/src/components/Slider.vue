@@ -19,7 +19,7 @@ export default class Slider extends Vue {
  public  name?: string;
   @Prop({default : false})public  showName?: boolean ; // =false;
   @Prop({default : true})public  showValue?: boolean ; // =false;
-  @Prop({default : Math.log(254) / Math.log(10)})public  precision?: number; // 255 steps
+  @Prop({default : 3})public  precision?: number; // note 255 steps would be Math.log(254) / Math.log(10)
   @Prop({default : 2})public  displayPrecision?: number;
 
   @Prop({default: 0}) public value!: number ;
@@ -44,20 +44,20 @@ export default class Slider extends Vue {
 }
 .Value{
   position: absolute;
-  margin-top: -40px;
+  margin-top: -30px;
   right:100px;
   /*top:-40px;*/
-  z-index: 200;
+  z-index: 2;
   user-select: none;
   pointer-events: none;
   cursor: inherit;
 }
 .Name{
   position: absolute;
-  margin-top: -40px;
+  margin-top: -30px;
   margin-left:10px;
   /*top:-40px;*/
-  z-index: 200;
+  z-index: 2;
   user-select: none;
   pointer-events: none;
   cursor: inherit;
@@ -69,12 +69,13 @@ export default class Slider extends Vue {
   background: #ddd;
 }
 
+
 input[type="range"] { 
     margin: auto;
     -webkit-appearance: none;
     position: relative;
     overflow: hidden;
-    height: 40px;
+    height: 30px;
     width: 100%;
     cursor: pointer;
     border-radius: 0; /* iOS */
@@ -93,7 +94,7 @@ input[type="range"] {
 ::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 0px; /* 1 */
-    height: 40px;
+    height: 30px;
     background: #fff;
     box-shadow: -100vw 0 0 100vw dodgerblue;
     /*border: 2px solid #999; /* 1 */
@@ -103,32 +104,11 @@ input[type="range"] {
   box-shadow: -100vw 0 0 100vw gray;
 }
 
+
 ::-moz-range-track {
-    height: 40px;
+    height: 30px;
     background: #ddd;
 }
-
-/*::-moz-range-thumb {
-    background: #fff;
-    height: 40px;
-    width: 20px;
-    border: 3px solid #999;
-    border-radius: 0 !important;
-    box-shadow: -100vw 0 0 100vw dodgerblue;
-    box-sizing: border-box;
-}
-*/
-/*::-ms-fill-lower { 
-    background: gray;
-}*/
-
-/*::-ms-thumb { 
-    background: #fff;
-    border: 2px solid #999;
-    height: 40px;
-    width: 20px;
-    box-sizing: border-box;
-}*/
 
 ::-ms-ticks-after { 
     display: none; 
@@ -141,7 +121,7 @@ input[type="range"] {
 ::-ms-track { 
     background: #ddd;
     color: transparent;
-    height: 40px;
+    height: 30px;
     border: none;
 }
 

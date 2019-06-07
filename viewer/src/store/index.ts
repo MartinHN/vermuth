@@ -23,7 +23,7 @@ const configKey = 'config';
 function builEscapedJSON(content: any, indent?: number) {
   function filterPrivate(key: string, value: any) {
     if (key.startsWith('__')) {
-      console.log('ignoring', key);
+      // console.log('ignoring', key);
       return undefined;
     } else { return value; }
 

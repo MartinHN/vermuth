@@ -7,7 +7,7 @@ import { Settable } from '../util';
 @Module({namespaced: true})
 
 export default class Config extends VuexModule {
-  // public dState: DimmerState;
+
   @Settable()
   public autoSave: boolean = false;
 

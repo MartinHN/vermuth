@@ -6,7 +6,7 @@
       <Toggle v-model="enabledV" text="enabled"/>
     </v-flex>
     <v-flex xs10 >
-      <slider class="slider" @input="setChannelValue({channel:channelProp,value:$event})" :value="channelProp.value" :name="channelProp.name"  :showName="true" :showValue="true" :enabled="enabledV"></slider>
+      <slider class="slider" @input="setChannelValue({channel:channelProp,value:$event})" :value="channelProp.floatValue" :name="channelProp.name"  :showName="true" :showValue="true" :enabled="enabledV"></slider>
     </v-flex>
   </v-layout>
 </v-container>

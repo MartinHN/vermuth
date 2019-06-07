@@ -7,7 +7,7 @@ import { Settable } from '../util';
 @Module({namespaced: true})
 
 export default class DMXConfig extends VuexModule {
-  // public dState: DimmerState;
+
   @Settable()
   public portlist = new  Array<any>();
   @Settable()

@@ -22,7 +22,7 @@ export class FixtureState {
       this.name = fixture.name;
       for (const c of fixture.channels) {
         if (c.enabled) {
-          this.pChannelValues[c.name] =  c.value;
+          this.pChannelValues[c.name] =  c.floatValue;
         } else {
           delete this.pChannelValues[c.name];
         }
@@ -46,7 +46,7 @@ export class ResolvedFixtureState {
   }
 
   public applyState() {
-    Object.values(this.channels).map((cv) => {cv.channel.setValue(cv.value); });
+    Object.values(this.channels).map((cv) => {cv.channel.setFloatValue(cv.value); });
   }
   public applyFunction(cb: (channel: ChannelBase, value: number) => void) {
     Object.values(this.channels).map((cv) => {cb(cv.channel, cv.value); });
@@ -65,7 +65,7 @@ export class MergedState {
         for (const i of Object.keys(rfs.channels)) {
           const channelObj = rfs.channels[i];
           const channel = channelObj.channel;
-          const sourcev = channel.value;
+          const sourcev = channel.floatValue;
           const targetv = channelObj.value;
           this.channels.push({channel, sourcev, targetv});
         }

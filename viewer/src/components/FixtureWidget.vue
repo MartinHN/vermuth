@@ -1,7 +1,7 @@
 <template>
-  <div class="fixtureWidget">{{fixtureProp.name}}
-    <!-- <input :value="fixtureProp.name" @change="setFixtureName({fixture:fixtureProp,value:$event.target.value})"/> -->
-    <!-- <Button @click="addChannelToFixture({fixture:fixtureProp})" text="addChannel"/> -->
+  <div class="fixtureWidget">
+    
+    <Slider class="fixtureValue" @input="setFixtureValue({fixture:fixtureProp,value:$event})" :value=fixtureProp.globalValue :enabled=fixtureProp.inSync :name=fixtureProp.name :showName="true" :showValue="true" ></Slider>
     <ChannelWidget v-for="c of fixtureProp.channels" :key='c.id' :channelProp="c" />
 
     
@@ -30,14 +30,13 @@ export default class FixtureWidget extends Vue {
   @fixturesModule.Mutation('addChannelToFixture') public addChannelToFixture!: FixtureMethods['addChannelToFixture'];
   @fixturesModule.Mutation('setFixtureName') public setFixtureName!: FixtureMethods['setFixtureName'];
 
-  // @fixturesModule.Mutation('setChannelValue') public setChannelValue!: FixtureMethods['setChannelValue'];
-  // @fixturesModule.Mutation('setChannelName') public setChannelName!: FixtureMethods['setChannelName'];
-  // @fixturesModule.Mutation('setChannelEnabled') public setChannelEnabled!: FixtureMethods['setChannelEnabled'];
+  @fixturesModule.Mutation('setFixtureValue') public setFixtureValue!: FixtureMethods['setFixtureValue'];
 
 
   @Prop() public fixtureProp!: DirectFixture;
   @Prop({default: false})    public showName?: boolean;
   @Prop({default: false})    public showValue?: boolean;
+
 
   // get disabledV(): boolean {return !this.fixtureProp.channel.enabled; }
   // set disabledV(v: boolean) {this.setChannelEnabled({channel: this.fixtureProp.channel, value: !v}); }
@@ -56,7 +55,9 @@ export default class FixtureWidget extends Vue {
   justify-content: space-around;
   align-items: center;
   background-color: gray;
-
+}
+.fixtureValue{
+  width:100%;
 }
 
 </style>
