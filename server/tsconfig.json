@@ -6,10 +6,12 @@
 "sourceMap": false,
 "inlineSources": true,
 "inlineSourceMap": true,
-"experimentalDecorators":true
+"experimentalDecorators":true,
+"allowJs":true
 },
 "include": [
-"src/**/*.ts"
+"src/**/*.ts",
+"src/**/*.js"
 ],
 "exclude": [
 "node_modules",
