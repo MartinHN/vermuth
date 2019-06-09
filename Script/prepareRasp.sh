@@ -27,3 +27,8 @@ sudo apt-get install pigpio
 #ssh-add -K ~/.ssh/id_rsa
 
 git clone https://github.com/MartinHN/vermuth.git
+
+
+
+### to auto start add following line in /etc/rc.local
+#sudo node /home/pi/vermuth/server/dist/server.js &

@@ -48,7 +48,7 @@ export default class SequenceComponent extends Vue {
     return 'none';
   }
 
-  
+
 
 
 }

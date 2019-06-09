@@ -204,6 +204,9 @@ const store: StoreOptions<RootState> = {
       socket() {
         return Server.getSocket();
       },
+      isConnected(state,getters) {
+        return state.connectedState === 'connected' 
+      },
     },
 
     strict: debug,
