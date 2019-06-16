@@ -47,6 +47,7 @@
                   <div :style="{  display:'flex' ,padding:'10px'}">
                     <Numbox class="circNum" :value="c.circ" :min="0" :max="512" @input="linkChannelToCirc({channel: c, circ: $event.value})" :errMsg='errors[c.circ]' ></Numbox>
                     <Toggle @input=setChannelReactToMaster({channel:c,value:$event}) :value=c.reactToMaster > React to Master</Toggle>
+                    <Toggle text="test" :value="testedChannel===c" @input=testChannel({channel:$event?c:null}) > T </Toggle>
 
                   </div>
                 </v-flex>
@@ -89,6 +90,8 @@ export default class ChannelPatch extends Vue {
   @fixturesModule.Mutation('sefFixtureBaseCirc') public sefFixtureBaseCirc!: FixtureMethods['sefFixtureBaseCirc'];
 
 
+
+
   @fixturesModule.Mutation('linkChannelToCirc') public linkChannelToCirc!: FixtureMethods['linkChannelToCirc'];
   @fixturesModule.Mutation('setChannelName') public setChannelName!: FixtureMethods['setChannelName'];
   @fixturesModule.Mutation('removeChannel') public removeChannel!: FixtureMethods['removeChannel'];
@@ -98,6 +101,11 @@ export default class ChannelPatch extends Vue {
   @fixturesModule.Mutation('setChannelReactToMaster') public setChannelReactToMaster!: FixtureMethods['setChannelReactToMaster'];
 
   @fixturesModule.State('universe') private universe!: FixtureMethods['universe'];
+
+
+  @fixturesModule.State('testedChannel') private testedChannel!: FixtureMethods['testedChannel'];
+@fixturesModule.Mutation('testChannel') public testChannel!: FixtureMethods['testChannel'];
+
   @fixturesModule.Getter('usedChannels') private usedChannels!: FixtureMethods['usedChannels'];
 
 
@@ -106,6 +114,7 @@ export default class ChannelPatch extends Vue {
     this.usedChannels.map( (c) => errs[c.circ] = c.hasDuplicatedCirc ? 'circuit is duplicated' : '');
     return errs;
   }
+
 
 }
 </script>

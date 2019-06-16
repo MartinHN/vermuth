@@ -15,6 +15,7 @@ class DMXController{
   private universeName = "main";
   private availableDevices:any;
   private socket:any;
+  private fixtures : {[id:string] : {[id:string]:number}} = {};
 
   static getAvailableDevices(){
     return SerialPort.list()//.filter(c=>c).map(c=>c.commName)
@@ -88,28 +89,85 @@ class DMXController{
     })
   }
 
-  setCircs(msg,fromSocket){
+  setCircs(msg:{c:number,v:number}[],fromSocket){
     console.log('set_circ',msg,this.connected)
-      if(this.connected){
-        // this.dmx.updateAll(this.universeName,msg[0].v)
-        this.dmx.update(this.universeName,this.arrayToObj(msg,255))
-      }
-      if(fromSocket){
-        fromSocket.broadcast.emit("DMX/SET_CIRC",msg)
-      }
-      else{
-        this.socket.server.emit("DMX/SET_CIRC",msg)
-      }
-     
+    if(this.connected){
+      // this.dmx.updateAll(this.universeName,msg[0].v)
+      this.dmx.update(this.universeName,this.arrayToObj(msg,255))
+    }
+    if(fromSocket){
+      fromSocket.broadcast.emit("DMX/SET_CIRC",msg)
+    }
+    else{
+      this.socket.server.emit("DMX/SET_CIRC",msg)
+    }
+
 
   }
+  setChannelsFromId(msg:{id:string,v:number},fromSocket){
+    console.log('set_fixture',msg,this.connected)
+    if(this.connected && msg.id){
+      // this.dmx.updateAll(this.universeName,msg[0].v)
+      const nSpl = msg.id.split(':')
+      if(nSpl  && nSpl.length>=2){
+        const fix = this.fixtures[nSpl[0]]
+        if(fix){
+          const cN = fix[nSpl[1]]
+          this.setCircs([{c:cN,v:msg.v}],fromSocket)
+        }
+        else{
+          log.error('not found fixture/channel : '+msg.id)
+        }
+      }
 
+      else if(Object.keys(this.fixtures).includes(msg.id)){
+        const channels = []
+        for(let c in this.fixtures[msg.id]){
+          channels.push({c:this.fixtures[msg.id][c],v:msg.v})
+        }
+        this.setCircs(channels,fromSocket)
+      }
+      else{
+        for(let fN in this.fixtures){
+          const f = this.fixtures[fN]
+          for(let c in f){
+            if(c===msg.id){
+              this.setCircs([{c:f[c],v:msg.v}],fromSocket)
+            }
+          }
+        }
+      }
+      
+    }
+  }
+
+
+  // quick hack to get fixture config
+  stateChanged(a:any){
+    if(a && a.fixtures && a.fixtures.universe){
+      this.fixtures = {};
+      const fixtures = a.fixtures.universe.fixtures
+      for(let f of fixtures){
+        this.fixtures[f.name] = {}
+        for (let c of f.channels){
+          this.fixtures[f.name][c.name] = c.circ;
+        }
+
+      }
+      console.log("fixtures : "+JSON.stringify(this.fixtures))
+
+    }
+    else{
+      log.error("can't sync server state with : "+JSON.stringify(a))
+    }
+
+  }
   arrayToObj(a:{c:number,v:number}[],mult:number=1){
     const res = {}
     for(const e of a ){
       res[e.c] = e.v*mult
     }
-    console.log(res)
+    //console.log(res)
     return res;
   }
 
@@ -152,7 +210,7 @@ class DMXController{
 
     }
 
-    }
+  }
 }
 
 export default new DMXController()

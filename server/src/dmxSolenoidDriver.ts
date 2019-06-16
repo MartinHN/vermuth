@@ -23,7 +23,7 @@ function startTimerIfNotRunning(){
 
       for(var i in onGpios){
         if((cD.getTime() - onGpios[i].getTime())>maxOnTime){
-          dmxController.setCircs([{c:i,v:0}],null)
+          dmxController.setCircs([{c:parseInt(i),v:0}],null)
         }
       }
     },maxOnTime)

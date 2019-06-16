@@ -19,6 +19,7 @@ type ChannelType = ChannelBase;
 export default class Fixtures extends VuexModule {
 
   public universe = new Universe();
+  public testedChannel :ChannelBase|undefined = undefined;
 
   @Action
   public fromObj(js: any) {
@@ -120,7 +121,19 @@ public removeChannel(pl: {channel: ChannelBase, fixture: FixtureBase}) {
   pl.fixture.removeChannel(pl.channel);
 }
 
+@Mutation
+public testChannel(pl: { channel: ChannelBase } ) {
+  const { channel } = pl;
+  if ( this.testedChannel) {
+    this.context.commit('setChannelValue', { channel, value: 0.0});
+  }
+  this.testedChannel = channel;
+  if ( this.testedChannel ) {
+  this.context.commit('setChannelValue', { channel, value: 1.0});
+}
 
+
+}
 
 
 
@@ -131,6 +144,8 @@ get usedCircs(): number[] {
 get usedChannels(): ChannelBase[] {
   return this.universe.fixtures.map((f) => f.channels).flat();
 }
+
+
 
 
 

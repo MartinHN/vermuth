@@ -47,7 +47,6 @@ export default class App extends Vue {
    for( let l of links){
 
     if(l.rel==="icon" && (l.href.includes("32x32") || l.href.includes("16x16")) ){
-      debugger
       head.removeChild(l);
     }
    }

@@ -10,7 +10,10 @@ import log from './remoteLogger'
 var history = require("connect-history-api-fallback");
 // import {diff} from 'json-diff'
 const fs = require('fs');
+const path = require('path')
 
+const publicDir = path.resolve(__dirname,'..','public')
+console.log('served Folder  :' + publicDir)
 const debug =  process.env.NODE_ENV !== 'production';
 const PORT = process.env.PORT || 3000;
 
@@ -33,7 +36,7 @@ if(debug){
   console.log(`run viewer on port ${PORT}`)
 }
 // else{
-  app.use(express.static('public'));
+  app.use(express.static(publicDir));
 // }
 const states = {}
 
@@ -76,6 +79,7 @@ ioServer.on('connection', function(socket){
     console.log('setting state: ' + msg);
     states[getSessionId(socket)] = msg;
     fs.writeFile(localStateFile, JSON.stringify(states),'utf8', (v)=>{if(v){console.log('file write error : ',v);}})
+    dmxController.stateChanged(msg)
     console.log('broadcasting state: ' + msg);
     socket.broadcast.emit('SET_STATE',msg)
   });

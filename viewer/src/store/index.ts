@@ -100,6 +100,11 @@ const autosaverPlugin = (pStore: Store<RootState>) => {
       localFS.save(state.config, configKey, () => {
       });
     } else if (!state.loadingState && (state.savedStatus === 'Saved' || state.savedStatus === '' ) && state.config.autoSave && mutation.type.includes('/') ) {
+      if ( mutation.type.endsWith('Value') ) {
+        console.log('ignoring value changes ' + mutation);
+        return;
+      }
+
       pStore.commit('SET_SAVE_STATUS', 'Saving...');
       const ts = localFS.getSessionFromState(state);
 

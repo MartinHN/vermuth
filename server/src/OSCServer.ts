@@ -32,11 +32,18 @@ import log from './remoteLogger'
 class OSCServer{
   udpPort:any
 
-  connect(port){
+  connect(port,broadcast = false){
+    let ip = "0.0.0.0"
+    if(broadcast){
+      // ip = "239.0.0.56"
+      ip = "10.31.15.255"
+    }
     const udpPort = new osc.UDPPort({
-      localAddress: "0.0.0.0",
-      localPort: port
+      localAddress: ip,// broadcast//0.0.0.0",
+      localPort: port,
+      broadcast,
     });
+    console.log(`listening on ${ ip } : ${ port }`)
 
     udpPort.on("ready", function () {
       var ipAddresses = getIPAddresses();
@@ -58,17 +65,24 @@ class OSCServer{
     
   }
 
-  processMsg (msg) {
+  processMsg (msg,time,info) {
     if(msg.address==="/circ"){
       dmxController.setCircs([{c:msg.args[0],v:msg.args[1]}],null)
     }
+    else if(msg.address==="/channel"){
+      dmxController.setChannelsFromId({id:msg.args[0],v:msg.args[1]},null)
+    }
+    else if(msg.address==="/ping"){
+      console.log('rcvd ping from '+JSON.stringify(info));
+       this.udpPort.send({address:"/pong",args:[]},info.address,info.port)
+    }
   }
 
-  processBundle(b){
+  processBundle(b,time,info){
     for(let i in b.packets){
       const p = b.packets[i]
-      if(p.packets){this.processBundle(p);}
-      else{this.processMsg(p);}
+      if(p.packets){this.processBundle(p,time,info);}
+      else{this.processMsg(p,time,info);}
     }
   }
 
