@@ -28,6 +28,9 @@ sudo apt-get install pigpio
 
 git clone https://github.com/MartinHN/vermuth.git
 
+cd vermuth/server
+npm i
+npm run build
 
 
 ### to auto start add following line in /etc/rc.local

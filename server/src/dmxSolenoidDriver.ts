@@ -6,7 +6,7 @@ var SolenoidDriver = function() {};
 const proto = new GPIODriverClass
 
 const onGpios:{[id:number]:Date} = {}
-var maxOnTime = 500;
+var maxOnTime = 30;
 var timer = null;
 function stopTimer(){
   if(timer){
