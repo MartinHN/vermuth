@@ -5,10 +5,11 @@ const GPIODriver = require('./dmxGPIODriver')
 const SolenoidDriver = require('./dmxSolenoidDriver')
 var io = require('socket.io')
 import log from './remoteLogger'
+const isPi = require('detect-rpi')();
 
 class DMXController{
   public portName= "";
-  public driverName= "enttec-open-usb-dmx";
+  public driverName= isPi?"dmxGPIODriver":"enttec-open-usb-dmx";
   public connected = false;
 
   private dmx:any;

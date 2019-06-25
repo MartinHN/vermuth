@@ -20,6 +20,7 @@ export default class Fixtures extends VuexModule {
 
   public universe = new Universe();
   public testedChannel :ChannelBase|undefined = undefined;
+  public driverName = "none";
 
   @Action
   public fromObj(js: any) {
@@ -28,6 +29,7 @@ export default class Fixtures extends VuexModule {
   @Mutation
   public fromObjMut(js: any) {
       this.universe = Universe.fromObj(js.universe);
+      this.driverName = js.driverName;
 
   }
 

@@ -21,7 +21,8 @@ const app = express();
 app.use(history());
 const httpServer = new http.Server(app);
 
-const localStateFile = '/tmp/conduktor.json'
+
+const localStateFile = path.resolve(__dirname,'..','appSettings.json')
 
 const ioServer = io({
   serveClient: false
@@ -35,25 +36,27 @@ ioServer.attach(httpServer,{
 if(debug){
   console.log(`run viewer on port ${PORT}`)
 }
-// else{
-  app.use(express.static(publicDir));
-// }
+
+app.use(express.static(publicDir));
+
 const states = {}
 
 // write empty if non existent
 fs.writeFile(localStateFile, JSON.stringify({}), { flag: "wx",encoding:'utf-8' }, function(err) {
   if (err) {
     console.log("fileExists");
+    fs.readFile(localStateFile, 'utf8', (err, data) => {
+      if (err) {
+        return console.log(err);
+      }
+      Object.assign(states ,  JSON.parse(data))
+    });
+    setStateFromObject(states,null)
   }
   else{
     console.log("created file");
   }
-  fs.readFile(localStateFile, 'utf8', (err, data) => {
-    if (err) {
-      return console.log(err);
-    }
-    Object.assign(states ,  JSON.parse(data))
-  });
+
 });
 
 
@@ -64,6 +67,19 @@ function getSessionId(socket){
   return 'default'
   // return socket.id
 }
+
+function setStateFromObject(msg,socket:any){
+  console.log('setting state: ' + msg);
+  const sessionID = getSessionId(socket)
+  states[sessionID] = msg;
+  states["lastSessionID"] = sessionID; 
+  fs.writeFile(localStateFile, JSON.stringify(states),'utf8', (v)=>{if(v){console.log('file write error : ',v);}})
+  dmxController.stateChanged(msg)
+  console.log('broadcasting state: ' + msg);
+  if(socket)socket.broadcast.emit('SET_STATE',msg)
+
+}
+
 ioServer.on('connection', function(socket){
   console.log('a user connected',socket.id);
   log.bindToSocket(socket)
@@ -76,13 +92,8 @@ ioServer.on('connection', function(socket){
   });
   
   socket.on('SET_STATE', (key,msg) => {
-    console.log('setting state: ' + msg);
-    states[getSessionId(socket)] = msg;
-    fs.writeFile(localStateFile, JSON.stringify(states),'utf8', (v)=>{if(v){console.log('file write error : ',v);}})
-    dmxController.stateChanged(msg)
-    console.log('broadcasting state: ' + msg);
-    socket.broadcast.emit('SET_STATE',msg)
-  });
+   setStateFromObject(msg,socket)
+ });
 
   socket.on('GET_STATE', (key,cb) => {
     const msg = states[getSessionId(socket)]
@@ -102,5 +113,5 @@ ioServer.on('connection', function(socket){
 
 
 httpServer.listen(PORT, () => {
-     console.log(`Server is running in http://localhost:${PORT}`)
+ console.log(`Server is running in http://localhost:${PORT}`)
 })

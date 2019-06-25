@@ -34,7 +34,7 @@ function startTimerIfNotRunning(){
 proto.syncGPIO = function(i){
   const isOn = this.universe[i]>0;
   // console.log("instance",this.gpioInstances)
-  this.gpioInstances[i].digitalWrite(isOn);
+  this.gpioInstances[i].pwmWrite(isOn);
   if(isOn){onGpios[i]=new Date()}
   else{delete onGpios[i]}
   const numOn = Object.keys(onGpios).length;
