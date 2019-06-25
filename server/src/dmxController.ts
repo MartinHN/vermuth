@@ -163,6 +163,8 @@ class DMXController{
     }
 
   }
+
+  
   arrayToObj(a:{c:number,v:number}[],mult:number=1){
     const res = {}
     for(const e of a ){

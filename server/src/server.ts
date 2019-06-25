@@ -50,8 +50,9 @@ fs.writeFile(localStateFile, JSON.stringify({}), { flag: "wx",encoding:'utf-8' }
         return console.log(err);
       }
       Object.assign(states ,  JSON.parse(data))
+      setStateFromObject(states,null)
     });
-    setStateFromObject(states,null)
+    
   }
   else{
     console.log("created file");
