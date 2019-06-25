@@ -39,7 +39,7 @@ if(debug){
 
 app.use(express.static(publicDir));
 
-const states = {}
+let states = {}
 
 // write empty if non existent
 fs.writeFile(localStateFile, JSON.stringify({}), { flag: "wx",encoding:'utf-8' }, function(err) {
@@ -50,7 +50,13 @@ fs.writeFile(localStateFile, JSON.stringify({}), { flag: "wx",encoding:'utf-8' }
         return console.log(err);
       }
       Object.assign(states ,  JSON.parse(data))
-      setStateFromObject(states,null)
+      if(states && states["lastSessionID"]){
+        const lastState = states[states["lastSessionID"]]
+        if(lastState){
+          setStateFromObject(lastState,null)
+        }
+      }
+      
     });
     
   }
@@ -72,10 +78,12 @@ function getSessionId(socket){
 function setStateFromObject(msg,socket:any){
   console.log('setting state: ' + msg);
   const sessionID = getSessionId(socket)
+  states = {}
   states[sessionID] = msg;
   states["lastSessionID"] = sessionID; 
-  fs.writeFile(localStateFile, JSON.stringify(states),'utf8', (v)=>{if(v){console.log('file write error : ',v);}})
   dmxController.stateChanged(msg)
+  fs.writeFile(localStateFile, JSON.stringify(states),'utf8', (v)=>{if(v){console.log('file write error : ',v);}})
+  
   console.log('broadcasting state: ' + msg);
   if(socket)socket.broadcast.emit('SET_STATE',msg)
 
