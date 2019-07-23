@@ -5,24 +5,23 @@ import _ from 'lodash';
 class DMXClient {
   private store: any;
   private socket: any;
-  private fromServer=false;
-  private boundCB:any;
+  private fromServer = false;
+  private boundCB: any;
   private debouncedSaving = _.debounce(() => {
-      this.store.dispatch('states/saveCurrentState',{name:'current'});
+      this.store.dispatch('states/saveCurrentState', {name: 'current' });
     },
-     1000
-     //,{ maxWait:3000, leading: false, trailing: true}
-     )
+    1000);
+
   constructor() {
 
   }
 
-  
 
-  public universeChangedCB (c: number, v: number) {
 
-    if(!this.fromServer && this.socket){
-      //console.log('emitting',c,v)
+  public universeChangedCB(c: number, v: number) {
+
+    if (!this.fromServer && this.socket) {
+      // console.log('emitting',c,v)
       this.socket.emit('DMX/SET_CIRC', [{c, v}]);
     }
 
@@ -32,23 +31,23 @@ class DMXClient {
   public subscribe(socket: any, store: any) {
     this.store = store;
     this.socket = socket;
-    
-    
+
+
     socket.on('disconnect', () => {
       // unsubscribe();
-      if(this.boundCB){
-        UniverseListener.removeListener('channelChanged',this.boundCB);
+      if (this.boundCB) {
+        UniverseListener.removeListener('channelChanged', this.boundCB);
       }
     });
-    
+
     const init =  () => {
       // store.watch(
       //   ()=>{store.})
-      if(!this.boundCB){
-        this.boundCB = this.universeChangedCB.bind(this)
-        UniverseListener.on('channelChanged',this.boundCB)
+      if (!this.boundCB) {
+        this.boundCB = this.universeChangedCB.bind(this);
+        UniverseListener.on('channelChanged', this.boundCB);
       }
-      
+
 
       socket.on('DMX/SET_CIRC', ((pl: any[]) => {
         this.fromServer = true;
@@ -58,7 +57,7 @@ class DMXClient {
           const chI = parseInt(cp.c, 10);
           for ( const c of allChannels) {
             if ( c.circ === chI) {
-              store.commit('fixtures/setChannelValue', {channel: c, value: cp.v,dontNotify:false});
+              store.commit('fixtures/setChannelValue', {channel: c, value: cp.v, dontNotify: false});
               found = true;
             }
           }

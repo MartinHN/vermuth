@@ -20,8 +20,8 @@ import ServerState from './components/ServerState.vue';
 
 import Store from './store';
 
-var originalFaviconNode : any;
-var redFaviconNode : any;
+let originalFaviconNode: any;
+let redFaviconNode: any;
 
 @Component({
   components: { ServerState},
@@ -36,47 +36,47 @@ export default class App extends Vue {
   public mounted() {
     Server.connect(this.$store, window.location.hostname);
     this.removeOldIco();
-    originalFaviconNode = this.loadIconNode("favicon.ico")
-    redFaviconNode = this.loadIconNode("favicon_red.ico")
-    this.changeFavIcon(false)
-  }
-
-  private removeOldIco(){
-    var head = document.head || document.getElementsByTagName('head')[0];
-   const links = head.getElementsByTagName('link')
-   for( let l of links){
-
-    if(l.rel==="icon" && (l.href.includes("32x32") || l.href.includes("16x16")) ){
-      head.removeChild(l);
-    }
-   }
-  }
-  
-  private loadIconNode(src:string) {
-    var link = document.createElement('link');
-    link.id = 'dynamic-favicon';
-    link.rel = 'shortcut icon';
-    link.href = src;
-    var head = document.head || document.getElementsByTagName('head')[0];
-    head.appendChild(link);
-    return link;
+    originalFaviconNode = this.loadIconNode('favicon.ico');
+    redFaviconNode = this.loadIconNode('favicon_red.ico');
+    this.changeFavIcon(false);
   }
 
 
   @Watch('isConnected')
-  public changeFavIcon(value:boolean){
+  public changeFavIcon(value: boolean) {
 
     const oldLink = document.getElementById('dynamic-favicon');
-    var head = document.head || document.getElementsByTagName('head')[0];
+    const head = document.head || document.getElementsByTagName('head')[0];
     if (oldLink) {
       head.removeChild(oldLink);
     }
-    const newLink = value?originalFaviconNode:redFaviconNode
+    const newLink = value ? originalFaviconNode : redFaviconNode;
     head.appendChild(newLink);
-    
-    
-    
 
+
+
+
+  }
+
+  private removeOldIco() {
+    const head = document.head || document.getElementsByTagName('head')[0];
+    const links = head.getElementsByTagName('link');
+    for ( const l of links) {
+
+    if (l.rel === 'icon' && (l.href.includes('32x32') || l.href.includes('16x16')) ) {
+      head.removeChild(l);
+    }
+   }
+  }
+
+  private loadIconNode(src: string) {
+    const link = document.createElement('link');
+    link.id = 'dynamic-favicon';
+    link.rel = 'shortcut icon';
+    link.href = src;
+    const head = document.head || document.getElementsByTagName('head')[0];
+    head.appendChild(link);
+    return link;
   }
 
 

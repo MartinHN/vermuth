@@ -19,8 +19,8 @@ type ChannelType = ChannelBase;
 export default class Fixtures extends VuexModule {
 
   public universe = new Universe();
-  public testedChannel :ChannelBase|undefined = undefined;
-  public driverName = "none";
+  public testedChannel: ChannelBase|undefined = undefined;
+  public driverName = 'none';
 
   @Action
   public fromObj(js: any) {
@@ -76,10 +76,10 @@ export default class Fixtures extends VuexModule {
 
 
   @Mutation
-  public setChannelValue(pl: {channel: ChannelBase , value: ChannelBase['floatValue'],dontNotify: any}) {
-    const {  value, channel,dontNotify}  = pl;
+  public setChannelValue(pl: {channel: ChannelBase , value: ChannelBase['floatValue'], dontNotify: any}) {
+    const {  value, channel, dontNotify}  = pl;
     if (channel) {
-      channel.setValue(value,dontNotify?false:true);
+      channel.setValue(value, dontNotify ? false : true);
     }
   }
 

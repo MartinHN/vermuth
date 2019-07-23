@@ -11,38 +11,37 @@ import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators';
 export default class States extends VuexModule {
 
   public states = new  Array<State>();
-  public currentState = new State("current",[]);
+  public currentState = new State('current', []);
   public stateName = '';
 
   @Action
   public fromObj(ob: any) {
     ob.states.map((o: any) => this.context.commit('addState', State.fromObj(o)));
-    if(ob.currentState){
+    if (ob.currentState) {
       this.context.commit('addState', State.fromObj(ob.currentState));
-      this.context.dispatch('recallState', {name:this.currentState.name});
+      this.context.dispatch('recallState', {name: this.currentState.name});
     }
   }
 
   @Action
   public saveCurrentState(pl: {name: string}) {
-    
+
     const c = this.context.getters.fixtures;
-    
-    if(pl.name!==this.currentState.name){
-      
+
+    if (pl.name !== this.currentState.name) {
+
       const st = new State(pl.name, c);
       this.context.commit('addState', st);
       this.context.commit('setCurrentStateName', st.name);
-    }
-    else{
-      this.context.commit('updateCurrentState',c);
-      
+    } else {
+      this.context.commit('updateCurrentState', c);
+
     }
   }
 
   @Mutation
   public addState(s: State) {
-    if(s.name===this.currentState.name){
+    if (s.name === this.currentState.name) {
       this.currentState = s;
     }
 
@@ -54,7 +53,7 @@ export default class States extends VuexModule {
     }
   }
   @Mutation
-  public updateCurrentState(fixtureList:FixtureBase[]){
+  public updateCurrentState(fixtureList: FixtureBase[]) {
     this.currentState.updateFromFixtures(fixtureList);
   }
 
@@ -86,7 +85,7 @@ export default class States extends VuexModule {
   @Action
   public recallState(pl: {name: string}) {
     let s = this.states.find((f) => f.name === pl.name);
-    if(pl.name===this.currentState.name){
+    if (pl.name === this.currentState.name) {
       s = this.currentState;
     }
     if (s) {
@@ -119,10 +118,10 @@ export default class States extends VuexModule {
   get fixtures() {
     return this.context.rootState.fixtures.universe.fixtures;
   }
-  get cleanStateNames():string[]{
-    return this.states.map((s) => s.name).filter((n) => n!=="current");
-    //return this.stateNames//
-    
+  get cleanStateNames(): string[] {
+    return this.states.map((s) => s.name).filter((n) => n !== 'current');
+    // return this.stateNames//
+
   }
 
 

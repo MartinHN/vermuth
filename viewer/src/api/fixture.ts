@@ -74,7 +74,7 @@ export class FixtureBase implements FixtureBaseI {
   public syncToGlobalValue(v: ChannelValueType) {
     for (const c of this.channels) {
       if (c.reactToMaster) {
-      c.setValue(v,true);
+      c.setValue(v, true);
     }
     }
   }

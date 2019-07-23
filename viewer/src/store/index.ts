@@ -79,14 +79,13 @@ const serverFS = (socket: any) => {
       });
     },
     save: _.debounce((content, key: string, callback?: () => void ) => {
-      if(socket){
+      if (socket) {
         socket.emit('SET_STATE', key, buildEscapedObject(content), () => {
           if (callback) {callback(); }
 
         });
-      }
-      else{
-        //if (callback) {callback("error no socket")}
+      } else {
+        // if (callback) {callback("error no socket")}
       }
     }, 1000, { maxWait: 3000, leading: true, trailing: false }),
   };
@@ -103,15 +102,14 @@ const autosaverPlugin = (pStore: Store<RootState>) => {
   pStore.subscribe((mutation, state: any) => {
     state = state as FullState;
     if (mutation.type === 'SET_CONNECTED_STATE' &&
-     mutation.payload=== 'connected') {
-      pStore.dispatch('LOAD_KEYED_STATE',sessionKey)
-  }
-  else if (mutation.type.startsWith('config')) {
+     mutation.payload === 'connected') {
+      pStore.dispatch('LOAD_KEYED_STATE', sessionKey);
+  } else if (mutation.type.startsWith('config')) {
     localFS.save(state.config, configKey, () => {
     });
   } else if (!state.loadingState && (state.savedStatus === 'Saved' || state.savedStatus === '' ) && state.config.autoSave && mutation.type.includes('/') ) {
     if ( mutation.type.endsWith('Value') ) {
-      //console.log('ignoring value changes ' + mutation);
+      // console.log('ignoring value changes ' + mutation);
       return;
     }
 
@@ -122,7 +120,7 @@ const autosaverPlugin = (pStore: Store<RootState>) => {
       if (!state.syncingFromServer) {
        pStore.dispatch('SAVE_REMOTELY', ts);
      }
-     pStore.commit('SET_SAVE_STATUS', 'Saved');
+      pStore.commit('SET_SAVE_STATUS', 'Saved');
 
    });
 
@@ -167,9 +165,9 @@ const store: StoreOptions<RootState> = {
   },
   actions: {
     LOAD_KEYED_STATE(context, key: string) {
-      let loadFS = localFS.load
-      if(context.getters.socket){
-        loadFS = serverFS(context.getters.socket).load
+      let loadFS = localFS.load;
+      if (context.getters.socket) {
+        loadFS = serverFS(context.getters.socket).load;
       }
       // localFS.load(key)
       loadFS(key)
@@ -224,8 +222,8 @@ const store: StoreOptions<RootState> = {
       socket() {
         return Server.getSocket();
       },
-      isConnected(state,getters) {
-        return state.connectedState === 'connected' 
+      isConnected(state, getters) {
+        return state.connectedState === 'connected';
       },
     },
 
@@ -235,6 +233,6 @@ const store: StoreOptions<RootState> = {
   };
 
 
-  export default new Vuex.Store<RootState>(store);
+export default new Vuex.Store<RootState>(store);
 
 

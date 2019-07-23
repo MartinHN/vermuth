@@ -85,6 +85,13 @@ const fixturesModule = namespace('fixtures');
 })
 export default class ChannelPatch extends Vue {
 
+
+  public get errors() {
+    const errs: {[id: number]: string} = {};
+    this.usedChannels.map( (c) => errs[c.circ] = c.hasDuplicatedCirc ? 'circuit is duplicated' : '');
+    return errs;
+  }
+
   @fixturesModule.Mutation('addFixture') public addFixture!: FixtureMethods['addFixture'];
   @fixturesModule.Mutation('addChannelToFixture') public addChannelToFixture!: FixtureMethods['addChannelToFixture'];
   @fixturesModule.Mutation('sefFixtureBaseCirc') public sefFixtureBaseCirc!: FixtureMethods['sefFixtureBaseCirc'];
@@ -99,21 +106,14 @@ export default class ChannelPatch extends Vue {
   @fixturesModule.Mutation('removeFixture') public removeFixture!: FixtureMethods['removeFixture'];
   @fixturesModule.Mutation('setFixtureName') public setFixtureName!: FixtureMethods['setFixtureName'];
   @fixturesModule.Mutation('setChannelReactToMaster') public setChannelReactToMaster!: FixtureMethods['setChannelReactToMaster'];
+@fixturesModule.Mutation('testChannel') public testChannel!: FixtureMethods['testChannel'];
 
   @fixturesModule.State('universe') private universe!: FixtureMethods['universe'];
 
 
   @fixturesModule.State('testedChannel') private testedChannel!: FixtureMethods['testedChannel'];
-@fixturesModule.Mutation('testChannel') public testChannel!: FixtureMethods['testChannel'];
 
   @fixturesModule.Getter('usedChannels') private usedChannels!: FixtureMethods['usedChannels'];
-
-
-  public get errors() {
-    const errs: {[id: number]: string} = {};
-    this.usedChannels.map( (c) => errs[c.circ] = c.hasDuplicatedCirc ? 'circuit is duplicated' : '');
-    return errs;
-  }
 
 
 }

@@ -53,7 +53,7 @@ export default class ChannelPatch extends Vue {
     this.recallState({name: v});
   }
 
-  
+
   public saveNewState() {
     const name = prompt('save new state', this.stateName);
     if (name === null || name === '') {} else {

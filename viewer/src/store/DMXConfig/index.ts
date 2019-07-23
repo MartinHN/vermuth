@@ -25,7 +25,7 @@ export default class DMXConfig extends VuexModule {
 
     // this.selectedPort = ob.selectedPort;
     // this.selectedDriver = ob.selectedDriver;
-    
+
     // this.context.commit('setCurrentStateName', ob.stateName);
   }
 

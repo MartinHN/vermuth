@@ -46,7 +46,7 @@ export class ResolvedFixtureState {
   }
 
   public applyState() {
-    Object.values(this.channels).map((cv) => {cv.channel.setFloatValue(cv.value,true); });
+    Object.values(this.channels).map((cv) => {cv.channel.setFloatValue(cv.value, true); });
   }
   public applyFunction(cb: (channel: ChannelBase, value: number) => void) {
     Object.values(this.channels).map((cv) => {cb(cv.channel, cv.value); });
@@ -101,11 +101,11 @@ export class State {
   public fixtureStates: FixtureState[] = [];
 
   constructor(public name: string, fixtures: FixtureBase[]) {
-    this.updateFromFixtures(fixtures)
+    this.updateFromFixtures(fixtures);
   }
 
-  public updateFromFixtures( fixtures: FixtureBase[]){
-    this.fixtureStates = []
+  public updateFromFixtures( fixtures: FixtureBase[]) {
+    this.fixtureStates = [];
     for (const f of fixtures) {
       this.fixtureStates.push(new FixtureState(f));
     }
