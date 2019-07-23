@@ -28,8 +28,8 @@ export default class Fixtures extends VuexModule {
   }
   @Mutation
   public fromObjMut(js: any) {
-      this.universe = Universe.fromObj(js.universe);
-      this.driverName = js.driverName;
+    this.universe = Universe.fromObj(js.universe);
+    this.driverName = js.driverName;
 
   }
 
@@ -76,10 +76,10 @@ export default class Fixtures extends VuexModule {
 
 
   @Mutation
-  public setChannelValue(pl: {channel: ChannelBase , value: ChannelBase['floatValue']}) {
-    const {  value, channel}  = pl;
+  public setChannelValue(pl: {channel: ChannelBase , value: ChannelBase['floatValue'],dontNotify: any}) {
+    const {  value, channel,dontNotify}  = pl;
     if (channel) {
-      channel.setValue(value);
+      channel.setValue(value,dontNotify?false:true);
     }
   }
 
@@ -90,62 +90,62 @@ export default class Fixtures extends VuexModule {
     if (name !== channel.name) {
       const correspondigFixture = this.universe.fixtures.find( (f) => f.channels.includes(channel) );
       if (!correspondigFixture) {
-       console.error('fixture not managed');
-     } else {
-       channel.setName(name);
-     }
-   }
- }
-
- @Mutation
- public setChannelEnabled(pl: {channel: ChannelBase, value: boolean}) {
-  const {value} = pl;
-  const { channel}  = pl;
-  if (value !== channel.enabled) {
-    if (!this.universe.fixtures.find( (f) => f.channels.includes(channel) )) {
-     console.error('fixture not managed');
-   }
-
-    channel.enabled = value ? true : false;
- }
-}
-
-@Mutation
-public addChannelToFixture(pl: {fixture: FixtureBase}) {
-
-  const c = pl.fixture.addChannel(undefined);
-
-  c.setCirc(0);
-}
-
-@Mutation
-public removeChannel(pl: {channel: ChannelBase, fixture: FixtureBase}) {
-  pl.fixture.removeChannel(pl.channel);
-}
-
-@Mutation
-public testChannel(pl: { channel: ChannelBase } ) {
-  const { channel } = pl;
-  if ( this.testedChannel) {
-    this.context.commit('setChannelValue', { channel, value: 0.0});
+        console.error('fixture not managed');
+      } else {
+        channel.setName(name);
+      }
+    }
   }
-  this.testedChannel = channel;
-  if ( this.testedChannel ) {
-  this.context.commit('setChannelValue', { channel, value: 1.0});
-}
+
+  @Mutation
+  public setChannelEnabled(pl: {channel: ChannelBase, value: boolean}) {
+    const {value} = pl;
+    const { channel}  = pl;
+    if (value !== channel.enabled) {
+      if (!this.universe.fixtures.find( (f) => f.channels.includes(channel) )) {
+        console.error('fixture not managed');
+      }
+
+      channel.enabled = value ? true : false;
+    }
+  }
+
+  @Mutation
+  public addChannelToFixture(pl: {fixture: FixtureBase}) {
+
+    const c = pl.fixture.addChannel(undefined);
+
+    c.setCirc(0);
+  }
+
+  @Mutation
+  public removeChannel(pl: {channel: ChannelBase, fixture: FixtureBase}) {
+    pl.fixture.removeChannel(pl.channel);
+  }
+
+  @Mutation
+  public testChannel(pl: { channel: ChannelBase } ) {
+    const { channel } = pl;
+    if ( this.testedChannel) {
+      this.context.commit('setChannelValue', { channel, value: 0.0});
+    }
+    this.testedChannel = channel;
+    if ( this.testedChannel ) {
+      this.context.commit('setChannelValue', { channel, value: 1.0});
+    }
 
 
-}
+  }
 
 
 
-get usedCircs(): number[] {
-  return Array.from(new Set<number>(this.usedChannels.map( (ch) => ch.circ).flat()));
-}
+  get usedCircs(): number[] {
+    return Array.from(new Set<number>(this.usedChannels.map( (ch) => ch.circ).flat()));
+  }
 
-get usedChannels(): ChannelBase[] {
-  return this.universe.fixtures.map((f) => f.channels).flat();
-}
+  get usedChannels(): ChannelBase[] {
+    return this.universe.fixtures.map((f) => f.channels).flat();
+  }
 
 
 

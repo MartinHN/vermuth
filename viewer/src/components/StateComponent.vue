@@ -3,7 +3,7 @@
     <v-layout justify-space-between align-center row >
       <v-flex xs8 >
         <select size="3" v-model="stateName" >
-          <option v-for="n of stateNames" :key="n.id" :value="n">{{n}}</option>
+          <option v-for="n of cleanStateNames" :key="n.id" :value="n">{{n}}</option>
         </select>
       </v-flex>
       <v-flex xs4>
@@ -43,7 +43,7 @@ export default class ChannelPatch extends Vue {
   @statesModule.Action('recallState') public recallState!: StateMethods['recallState'];
 
   @statesModule.Getter('channels') private channels!: StateMethods['channels'];
-  @statesModule.Getter('stateNames') private stateNames!: StateMethods['stateNames'];
+  @statesModule.Getter('cleanStateNames') private cleanStateNames!: StateMethods['cleanStateNames'];
   @statesModule.State('stateName') private pStateName!: StateMethods['stateName'];
 
   get stateName(): string {
@@ -52,6 +52,8 @@ export default class ChannelPatch extends Vue {
   set stateName(v: string) {
     this.recallState({name: v});
   }
+
+  
   public saveNewState() {
     const name = prompt('save new state', this.stateName);
     if (name === null || name === '') {} else {

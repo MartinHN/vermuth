@@ -9,7 +9,7 @@ const isPi = require('detect-rpi')();
 
 class DMXController{
   public portName= "";
-  public driverName= isPi?"dmxGPIODriver":"enttec-open-usb-dmx";
+  public driverName= isPi?"dmxGPIODriver":"enttec-usb-dmx-pro";
   public connected = false;
 
   private dmx:any;
@@ -98,6 +98,7 @@ class DMXController{
     }
     if(fromSocket){
       fromSocket.broadcast.emit("DMX/SET_CIRC",msg)
+      console.log('form_',fromSocket.id)
     }
     else{
       if(this.socket)this.socket.server.emit("DMX/SET_CIRC",msg)
@@ -148,13 +149,21 @@ class DMXController{
     if(a && a.fixtures && a.fixtures.universe){
       this.fixtures = {};
       const fixtures = a.fixtures.universe.fixtures
+      const toSet = []
       for(let f of fixtures){
         this.fixtures[f.name] = {}
         for (let c of f.channels){
           this.fixtures[f.name][c.name] = c.circ;
+          if(c._value!==undefined){
+            toSet.push({c:c.circ,v:c._value})
+          }
         }
-
       }
+      if(toSet && toSet.length){
+        console.log("toSet : "+JSON.stringify(toSet))
+        this.setCircs(toSet,undefined)
+      }
+      
       console.log("fixtures : "+JSON.stringify(this.fixtures))
 
     }

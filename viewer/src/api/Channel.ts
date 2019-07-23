@@ -10,7 +10,7 @@ export interface ChannelI {
   enabled: boolean;
   circ: number;
 
-  setValue(v: ChannelValueType): boolean;
+  setValue(v: ChannelValueType,doNotify: boolean): boolean;
   setValueInternal(v: ChannelValueType): boolean;
 }
 
@@ -52,21 +52,21 @@ export class ChannelBase implements ChannelI {
   constructor(public name: string, private __value: ChannelValueType = 0 , public circ: number= 0, public enabled: boolean= true) {
 
   }
-  public setValue(v: ChannelValueType) {
-    return this.setFloatValue(v);
+  public setValue(v: ChannelValueType,doNotify: boolean) {
+    return this.setFloatValue(v,doNotify);
   }
-  public setFloatValue(v: number) {
+  public setFloatValue(v: number,doNotify: boolean) {
     if (this.__value !== v) {
       this.__value = v;
-      UniverseListener.notify(this.trueCirc, this.__value);
+      if(doNotify){UniverseListener.notify(this.trueCirc, this.__value);}
       return true;
     } else {
       return false;
     }
   }
 
-  public setIntValue(nvalue: number) {
-    return this.setFloatValue(nvalue / 255);
+  public setIntValue(nvalue: number,doNotify: boolean) {
+    return this.setFloatValue(nvalue / 255,doNotify);
   }
 
   public setCirc(n: number) {
@@ -121,12 +121,13 @@ export class LogChannel extends ChannelBase {
 
 }
 
-class UniverseListenerClass {
+const EventEmitter = require( 'events' );
+class UniverseListenerClass extends EventEmitter{
   public setListener(f: (c: number, v: number) => void) {
     this.listener = f;
   }
   public notify(c: number, v: number) {
-    this.listener(c, v);
+    this.emit('channelChanged',c, v);
 
   }
   private listener: (c: number, v: number) => void = () => {};

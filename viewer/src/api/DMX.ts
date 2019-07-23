@@ -1,42 +1,72 @@
 
 // import {Store} from '../store'
 import {UniverseListener} from './Channel';
+import _ from 'lodash';
 class DMXClient {
   private store: any;
   private socket: any;
-
+  private fromServer=false;
+  private boundCB:any;
+  private debouncedSaving = _.debounce(() => {
+      this.store.dispatch('states/saveCurrentState',{name:'current'});
+    },
+     1000
+     //,{ maxWait:3000, leading: false, trailing: true}
+     )
   constructor() {
 
+  }
+
+  
+
+  public universeChangedCB (c: number, v: number) {
+
+    if(!this.fromServer && this.socket){
+      //console.log('emitting',c,v)
+      this.socket.emit('DMX/SET_CIRC', [{c, v}]);
+    }
+
+    this.debouncedSaving();
   }
 
   public subscribe(socket: any, store: any) {
     this.store = store;
     this.socket = socket;
-
+    
+    
     socket.on('disconnect', () => {
       // unsubscribe();
-      UniverseListener.setListener((c: number, v: number) => {});
+      if(this.boundCB){
+        UniverseListener.removeListener('channelChanged',this.boundCB);
+      }
     });
-
+    
     const init =  () => {
       // store.watch(
       //   ()=>{store.})
-      UniverseListener.setListener((c: number, v: number) => {
-        socket.emit('DMX/SET_CIRC', [{c, v}]);
-      });
+      if(!this.boundCB){
+        this.boundCB = this.universeChangedCB.bind(this)
+        UniverseListener.on('channelChanged',this.boundCB)
+      }
+      
+
       socket.on('DMX/SET_CIRC', ((pl: any[]) => {
+        this.fromServer = true;
         const allChannels = store.getters['fixtures/usedChannels'];
         let found = false;
         for ( const cp of pl) {
+          const chI = parseInt(cp.c, 10);
           for ( const c of allChannels) {
-            if ( c.circ === parseInt(cp.c, 10)) {
-              store.commit('fixtures/setChannelValue', {channel: c, value: cp.v});
+            if ( c.circ === chI) {
+              store.commit('fixtures/setChannelValue', {channel: c, value: cp.v,dontNotify:false});
               found = true;
             }
           }
           if (!found) {console.error('cant set circ', cp, allChannels); }
+
         }
-    }));
+        this.fromServer = false;
+      }));
 
       socket.emit('DMX/GET_PORTLIST');
       socket.on('DMX/SET_PORTLIST', ((pl: any[]) => {

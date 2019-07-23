@@ -76,6 +76,9 @@ class OSCServer{
       console.log('rcvd ping from '+JSON.stringify(info));
        this.udpPort.send({address:"/pong",args:[]},info.address,info.port)
     }
+    else if(msg.address==="/seq"){
+      // TODO
+    }
   }
 
   processBundle(b,time,info){

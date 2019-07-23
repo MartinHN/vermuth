@@ -1,5 +1,5 @@
 // import { Module , MutationTree, GetterTree, ActionTree} from 'vuex';
-import { DirectFixture } from '../../api/Fixture';
+import { DirectFixture , FixtureBase} from '../../api/Fixture';
 import { State } from '../../api/State';
 
 // import { RootState } from '../types';
@@ -11,30 +11,51 @@ import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators';
 export default class States extends VuexModule {
 
   public states = new  Array<State>();
+  public currentState = new State("current",[]);
   public stateName = '';
 
   @Action
   public fromObj(ob: any) {
     ob.states.map((o: any) => this.context.commit('addState', State.fromObj(o)));
-    this.context.commit('setCurrentStateName', ob.stateName);
+    if(ob.currentState){
+      this.context.commit('addState', State.fromObj(ob.currentState));
+      this.context.dispatch('recallState', {name:this.currentState.name});
+    }
   }
 
   @Action
   public saveCurrentState(pl: {name: string}) {
+    
     const c = this.context.getters.fixtures;
-    const st = new State(pl.name, c);
-    this.context.commit('addState', st);
-    this.context.commit('setCurrentStateName', st.name);
+    
+    if(pl.name!==this.currentState.name){
+      
+      const st = new State(pl.name, c);
+      this.context.commit('addState', st);
+      this.context.commit('setCurrentStateName', st.name);
+    }
+    else{
+      this.context.commit('updateCurrentState',c);
+      
+    }
   }
 
   @Mutation
   public addState(s: State) {
+    if(s.name===this.currentState.name){
+      this.currentState = s;
+    }
+
     const i = this.states.findIndex((ss) => ss.name === s.name);
     if (i === -1) {
       this.states.push( s);
     } else {
       this.states.splice(i, 1, s);
     }
+  }
+  @Mutation
+  public updateCurrentState(fixtureList:FixtureBase[]){
+    this.currentState.updateFromFixtures(fixtureList);
   }
 
   @Mutation
@@ -64,7 +85,10 @@ export default class States extends VuexModule {
 
   @Action
   public recallState(pl: {name: string}) {
-    const s = this.states.find((f) => f.name === pl.name);
+    let s = this.states.find((f) => f.name === pl.name);
+    if(pl.name===this.currentState.name){
+      s = this.currentState;
+    }
     if (s) {
       const rs = s.resolveState(this.context.getters.fixtures);
       rs.map((r) => r.applyFunction((channel, value) => {
@@ -94,6 +118,11 @@ export default class States extends VuexModule {
 
   get fixtures() {
     return this.context.rootState.fixtures.universe.fixtures;
+  }
+  get cleanStateNames():string[]{
+    return this.states.map((s) => s.name).filter((n) => n!=="current");
+    //return this.stateNames//
+    
   }
 
 
