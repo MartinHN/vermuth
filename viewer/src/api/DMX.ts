@@ -23,9 +23,10 @@ class DMXClient {
     if (!this.fromServer && this.socket) {
       // console.log('emitting',c,v)
       this.socket.emit('DMX/SET_CIRC', [{c, v}]);
+      this.debouncedSaving();
     }
 
-    this.debouncedSaving();
+
   }
 
   public subscribe(socket: any, store: any) {

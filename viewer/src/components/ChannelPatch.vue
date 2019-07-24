@@ -7,6 +7,9 @@
         <v-flex xs9 >
           <Button class="button" @click="addFixture()" text="add Fixture"/>
         </v-flex>
+        <v-flex xs2 >
+          <Numbox class="testNum" name="testChannel" showName="1" @input="testDimmerNum($event.value)" />
+        </v-flex>
       </v-layout>
       <div  v-for="f in universe.fixtures" :key="f.id" >
         <v-layout justify-space-between align-center row >
@@ -47,7 +50,7 @@
                   <div :style="{  display:'flex' ,padding:'10px'}">
                     <Numbox class="circNum" :value="c.circ" :min="0" :max="512" @input="linkChannelToCirc({channel: c, circ: $event.value})" :errMsg='errors[c.circ]' ></Numbox>
                     <Toggle @input=setChannelReactToMaster({channel:c,value:$event}) :value=c.reactToMaster > React to Master</Toggle>
-                    <Toggle text="test" :value="testedChannel===c" @input=testChannel({channel:$event?c:null}) > T </Toggle>
+                    <Toggle text="test" :value="testedChannel.trueCirc===c.trueCirc" @input=testDimmerNum({channel:$event?c.trueCirc:-1}) > T </Toggle>
 
                   </div>
                 </v-flex>
@@ -106,7 +109,7 @@ export default class ChannelPatch extends Vue {
   @fixturesModule.Mutation('removeFixture') public removeFixture!: FixtureMethods['removeFixture'];
   @fixturesModule.Mutation('setFixtureName') public setFixtureName!: FixtureMethods['setFixtureName'];
   @fixturesModule.Mutation('setChannelReactToMaster') public setChannelReactToMaster!: FixtureMethods['setChannelReactToMaster'];
-@fixturesModule.Mutation('testChannel') public testChannel!: FixtureMethods['testChannel'];
+@fixturesModule.Action('testDimmerNum') public testDimmerNum!: FixtureMethods['testDimmerNum'];
 
   @fixturesModule.State('universe') private universe!: FixtureMethods['universe'];
 

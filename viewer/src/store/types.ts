@@ -12,7 +12,6 @@ export interface RootState {
     loadingState: boolean;
     syncingFromServer: boolean;
 
-
 }
 
 
@@ -22,4 +21,5 @@ export interface FullState extends RootState {
     fixtures: fixtures;
     sequence: sequence;
     states: states;
+
 }

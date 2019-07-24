@@ -19,8 +19,9 @@ type ChannelType = ChannelBase;
 export default class Fixtures extends VuexModule {
 
   public universe = new Universe();
-  public testedChannel: ChannelBase|undefined = undefined;
+  public testedChannel = new ChannelBase('tested', 0, -1, false);
   public driverName = 'none';
+
 
   @Action
   public fromObj(js: any) {
@@ -33,7 +34,10 @@ export default class Fixtures extends VuexModule {
 
   }
 
-
+  @Mutation
+  public setGrandMaster(v: number) {
+    this.universe.setGrandMaster(v);
+  }
   @Mutation
   public addFixture(pl: {name: string, circs: number[]}) {
     pl = pl || {name: 'fixture', circs: [1]};
@@ -123,18 +127,22 @@ export default class Fixtures extends VuexModule {
     pl.fixture.removeChannel(pl.channel);
   }
 
+  @Action
+  public testDimmerNum(dimmerNum: number  ) {
+
+
+    if (this.testedChannel.circ >= 0) {
+    this.context.commit('setChannelValue', { channel: this.testedChannel, value: 0.0});
+    }
+    this.context.commit('__setTestedChannelDimmer', {dimmerNum});
+    if (this.testedChannel.circ >= 0) {
+    this.context.commit('setChannelValue', { channel: this.testedChannel, value: 1.0});
+    }
+  }
+
   @Mutation
-  public testChannel(pl: { channel: ChannelBase } ) {
-    const { channel } = pl;
-    if ( this.testedChannel) {
-      this.context.commit('setChannelValue', { channel, value: 0.0});
-    }
-    this.testedChannel = channel;
-    if ( this.testedChannel ) {
-      this.context.commit('setChannelValue', { channel, value: 1.0});
-    }
-
-
+  public __setTestedChannelDimmer(pl: { dimmerNum: number } ) {
+    this.testedChannel.circ = pl.dimmerNum;
   }
 
 
@@ -145,6 +153,10 @@ export default class Fixtures extends VuexModule {
 
   get usedChannels(): ChannelBase[] {
     return this.universe.fixtures.map((f) => f.channels).flat();
+  }
+
+  get grandMaster() {
+    return this.universe.grandMaster;
   }
 
 

@@ -13,11 +13,11 @@ class Server {
     this.store = store;
     const socket = io(`http://${serverIp}:3000`);
     this.socket = socket;
-    store.commit('SET_CONNECTED_STATE', 'connecting');
+    store.dispatch('SET_CONNECTED_STATE', 'connecting');
 
     socket.on('connect', () => {
       console.log('connected to server');
-      store.commit('SET_CONNECTED_STATE', 'connected');
+      store.dispatch('SET_CONNECTED_STATE', 'connected');
       let hasRemoteState = false;
       socket.emit('GET_STATE', 'sessionKey', (state: any) => {
 
@@ -37,9 +37,7 @@ class Server {
 
 
       socket.on('SET_STATE', (msg: any) => {
-        store.syncingFromServer = true;
         store.dispatch('SET_SESSION_STATE', msg).then(() => {
-          store.syncingFromServer = false;
           hasRemoteState = true;
       },
         );
@@ -49,7 +47,7 @@ class Server {
       });
       socket.on('disconnect', () => {
         // unsubscribe();
-        store.commit('SET_CONNECTED_STATE', 'disconnected');
+        store.dispatch('SET_CONNECTED_STATE', 'disconnected');
       });
 
       socket.emit('GET_ID');

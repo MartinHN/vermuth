@@ -71,7 +71,7 @@ export class SequencePlayer {
       const nextStateResolved = nextState.resolveState(fl);
       const mergedState = new MergedState(nextStateResolved);
       mergedState.checkIntegrity();
-      doTimer(transitionTime * 1000.0, res,
+      doTimer('seqTransition', transitionTime * 1000.0, res,
         (total: number, t: number) => {
           const pct = t * 1.0 / total;
           const time = t * res;

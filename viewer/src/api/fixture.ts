@@ -97,6 +97,10 @@ export class FixtureBase implements FixtureBaseI {
     return this.channels.find((c) => c.name === n);
   }
 
+  get channelNames() {
+    return this.channels.map((c) => c.name);
+  }
+
 
 
 }

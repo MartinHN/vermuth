@@ -3,7 +3,7 @@ import { getNextUniqueName } from './Utils';
 
 
 export class Universe {
-  public get master() {return this._master; }
+  public get grandMaster() {return this._master; }
 
   public static fromObj(ob: any): Universe {
     const uni = new Universe();
@@ -23,7 +23,7 @@ export class Universe {
   public fixtures = new Array<FixtureBase>();
   private _master = 1.0;
   constructor() {}
-  public setMaster(n: number) {
+  public setGrandMaster(n: number) {
     this._master = n;
     for ( const f of this.fixtures) {
       f.setMaster(this._master);

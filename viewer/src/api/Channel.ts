@@ -49,6 +49,7 @@ export class ChannelBase implements ChannelI {
   public reactToMaster = true;
   private __parentFixture: any;
 
+
   constructor(public name: string, private __value: ChannelValueType = 0 , public circ: number= 0, public enabled: boolean= true) {
 
   }
@@ -76,6 +77,7 @@ export class ChannelBase implements ChannelI {
 
   public setName( n: string ) {
     this.name = n;
+    this.reactToMaster = !['r', 'g', 'b'].includes(this.name);
     this.checkNameDuplicate();
 
   }

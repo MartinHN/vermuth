@@ -66,14 +66,20 @@ const localFS = {
   },
 };
 
+const serverIsConnected = ()=>{
+return Server.getSocket() && Server.getSocket().connected
+}
 
-const serverFS = (socket: any) => {
+
+const serverFS = () => {
+  const socket = Server.getSocket()
   return {
     load(key: string) {
+      
       return new Promise((resolve, reject) => {
         socket.emit('GET_STATE', key, (json: any) => {
-          debugger;
-          resolve(JSON.parse(json));
+          resolve(json);
+          
         });
 
       });
@@ -101,10 +107,7 @@ const autosaverPlugin = (pStore: Store<RootState>) => {
 
   pStore.subscribe((mutation, state: any) => {
     state = state as FullState;
-    if (mutation.type === 'SET_CONNECTED_STATE' &&
-     mutation.payload === 'connected') {
-      pStore.dispatch('LOAD_KEYED_STATE', sessionKey);
-  } else if (mutation.type.startsWith('config')) {
+     if (mutation.type.startsWith('config')) {
     localFS.save(state.config, configKey, () => {
     });
   } else if (!state.loadingState && (state.savedStatus === 'Saved' || state.savedStatus === '' ) && state.config.autoSave && mutation.type.includes('/') ) {
@@ -117,7 +120,7 @@ const autosaverPlugin = (pStore: Store<RootState>) => {
     const ts = localFS.getSessionFromState(state);
 
     localFS.save(ts, sessionKey, () => {
-      if (!state.syncingFromServer) {
+      if (!state.loadingState) {
        pStore.dispatch('SAVE_REMOTELY', ts);
      }
       pStore.commit('SET_SAVE_STATUS', 'Saved');
@@ -140,35 +143,44 @@ const store: StoreOptions<RootState> = {
     sequence,
   },
   state: {
-    version: '1.0.0', // a simple property
+    version: '1.0.0',
     savedStatus: '',
     connectedState: 'not Connected',
     connectedId: -1,
     loadingState: false,
     syncingFromServer: false,
+
   },
   mutations: {
 
     SET_SAVE_STATUS(s, pl) {
       s.savedStatus = pl;
     },
-    SET_CONNECTED_STATE(s, pl) {
-      s.connectedState = pl;
-    },
+
     SET_CONNECTED_ID(s, pl) {
       s.connectedId = pl;
     },
     SET_LOADING_STATE(s, pl) {
       s.loadingState = pl;
     },
+    __SET_CONNECTED_STATE(s, pl) {
+      s.connectedState = pl;
+    },
 
   },
   actions: {
+    SET_CONNECTED_STATE(context, pl) {
+      context.commit('__SET_CONNECTED_STATE',pl)
+      if(serverIsConnected()){
+        context.dispatch('LOAD_KEYED_STATE', sessionKey);
+      }
+    },
     LOAD_KEYED_STATE(context, key: string) {
       let loadFS = localFS.load;
-      if (context.getters.socket) {
-        loadFS = serverFS(context.getters.socket).load;
-      }
+      
+      if (serverIsConnected()) {
+        loadFS = serverFS().load;
+      
       // localFS.load(key)
       loadFS(key)
       .then((newState: any) => {
@@ -179,6 +191,7 @@ const store: StoreOptions<RootState> = {
         }
       })
       .catch((err) => {console.log('can\'t loadState'); });
+      }
     },
     SET_SESSION_STATE(context, newState) {
       if (newState) {
@@ -209,7 +222,7 @@ const store: StoreOptions<RootState> = {
         }
       },
       SAVE_REMOTELY(context, pl: any) {
-        serverFS(context.getters.socket).save(pl, 'session');
+        serverFS().save(pl, 'session');
       },
       SAVE_LOCALLY(context, pl: any) {
         const newStateString = builEscapedJSON(localFS.getSessionFromState(context.state), 2);
@@ -219,9 +232,7 @@ const store: StoreOptions<RootState> = {
 
     },
     getters: {
-      socket() {
-        return Server.getSocket();
-      },
+
       isConnected(state, getters) {
         return state.connectedState === 'connected';
       },

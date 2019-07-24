@@ -6,6 +6,7 @@ OSCServer.connect(4444);
 //import {getter, setter} from './types'
 import dmxController from './dmxController'
 import log from './remoteLogger'
+import { diff } from 'json-diff';
 
 var history = require("connect-history-api-fallback");
 // import {diff} from 'json-diff'
@@ -76,16 +77,24 @@ function getSessionId(socket){
 }
 
 function setStateFromObject(msg,socket:any){
-  console.log('setting state: ' + msg);
+  // console.log('setting state: ' + JSON.stringify(msg));
   const sessionID = getSessionId(socket)
+  const dif = diff(states[sessionID],msg)
+  
+  if(dif!==undefined){
+  console.log('diff',dif);
   states = {}
   states[sessionID] = msg;
   states["lastSessionID"] = sessionID; 
   dmxController.stateChanged(msg)
   fs.writeFile(localStateFile, JSON.stringify(states),'utf8', (v)=>{if(v){console.log('file write error : ',v);}})
   
-  console.log('broadcasting state: ' + msg);
-  if(socket)socket.broadcast.emit('SET_STATE',msg)
+  }
+  if(socket){
+    // console.log('broadcasting state: ' + JSON.stringify(msg.states));
+    socket.broadcast.emit('SET_STATE',msg)
+   
+  }
 
 }
 
@@ -107,7 +116,7 @@ ioServer.on('connection', function(socket){
   socket.on('GET_STATE', (key,cb) => {
     const msg = states[getSessionId(socket)]
     cb(msg);
-    console.log('sending state: ' + msg);
+    // console.log('sending state: ' + JSON.stringify(msg.states));
 
   });
 
@@ -117,9 +126,9 @@ ioServer.on('connection', function(socket){
     }
   })
 
-  dmxController.register(socket)
+  
 });
-
+dmxController.register(ioServer)
 
 httpServer.listen(PORT, () => {
  console.log(`Server is running in http://localhost:${PORT}`)
