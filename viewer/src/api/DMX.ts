@@ -1,6 +1,6 @@
 
 // import {Store} from '../store'
-import {UniverseListener} from './Channel';
+import {UniverseListener} from '@API/Channel';
 import _ from 'lodash';
 class DMXClient {
   private store: any;
@@ -8,7 +8,7 @@ class DMXClient {
   private fromServer = false;
   private boundCB: any;
   private debouncedSaving = _.debounce(() => {
-      this.store.dispatch('states/saveCurrentState', {name: 'current' });
+      this.store.commit('states/saveCurrentState', {name: 'current' });
     },
     1000);
 
@@ -52,13 +52,14 @@ class DMXClient {
 
       socket.on('DMX/SET_CIRC', ((pl: any[]) => {
         this.fromServer = true;
-        const allChannels = store.getters['fixtures/usedChannels'];
+
+        const allChannels = store.getters['universes/usedChannels'];
         let found = false;
         for ( const cp of pl) {
           const chI = parseInt(cp.c, 10);
           for ( const c of allChannels) {
             if ( c.circ === chI) {
-              store.commit('fixtures/setChannelValue', {channel: c, value: cp.v, dontNotify: false});
+              store.commit('universes/setChannelValue', {channel: c, value: cp.v, dontNotify: false});
               found = true;
             }
           }

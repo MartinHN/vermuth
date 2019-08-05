@@ -6,6 +6,7 @@ const SolenoidDriver = require('./dmxSolenoidDriver')
 var io = require('socket.io')
 import log from './remoteLogger'
 const isPi = require('detect-rpi')();
+import { Universe } from "@API/Universe"
 
 class DMXController{
   public portName= "";
@@ -17,6 +18,7 @@ class DMXController{
   private availableDevices:any;
   private __sockets:any = {};
   private __ioServer:any;
+  private __universe:Universe;
   private fixtures : {[id:string] : {[id:string]:number}} = {};
 
   static getAvailableDevices(){
@@ -36,8 +38,10 @@ class DMXController{
     
   }
 
-  register(ioServer:any){
+  register(ioServer:any,uni:Universe){
+    this.__universe = uni
     this.__ioServer = ioServer
+    
     ioServer.on('connection', function(socket){
       this.__sockets[socket.id] = socket;
       socket.on('DMX/GET_PORTLIST',(cb:Function) =>{
@@ -88,9 +92,9 @@ class DMXController{
         socket.emit('DMX/SET_PORTNAME',this.portName);
       })
 
-      socket.on('DMX/SET_CIRC',(msg) => {
-        this.setCircs(msg,socket)
-      })
+      // socket.on('DMX/SET_CIRC',(msg) => {
+      //   this.setCircs(msg,socket)
+      // })
 
       socket.on('disconnect',()=>{
         delete this.__sockets[socket.id]
@@ -101,6 +105,8 @@ class DMXController{
   setCircs(msg:{c:number,v:number}[],fromSocket){
     console.log('set_circ',msg,this.connected)
     if(this.connected){
+      const allC = this.__universe.allChannels
+      msg.map(m=>{allC.map(cc=>{if(cc.circ === m.c){cc.setValue(m.v,false)}})})
       // this.dmx.updateAll(this.universeName,msg[0].v)
       this.dmx.update(this.universeName,this.arrayToObj(msg,255))
     }
@@ -154,45 +160,45 @@ setChannelsFromId(msg:{id:string,v:number},fromSocket){
 
 // quick hack to get fixture config
 stateChanged(a:any){
-  if(a && a.fixtures && a.fixtures.universe){
-    this.fixtures = {};
-    const fixtures = a.fixtures.universe.fixtures
-    const toSet = []
-    for(let f of fixtures){
-      this.fixtures[f.name] = {}
-      for (let c of f.channels){
-        this.fixtures[f.name][c.name] = c.circ;
-        if(c._value!==undefined){
-          toSet.push({c:c.circ,v:c._value})
-        }
-      }
-    }
-    if(toSet && toSet.length){
-      console.log("toSet : "+JSON.stringify(toSet))
-      this.setCircs(toSet,undefined)
-    }
+  // if(a && a.universes && a.universes.universe){
+  //   this.fixtures = {};
+  //   const fixtures = a.universes.universe.fixtures
+  //   const toSet = []
+  //   for(let f of Object.values(fixtures)){
+  //     this.fixtures[f.name] = {}
+  //     for (let c of f.channels){
+  //       this.fixtures[f.name][c.name] = c.circ;
+  //       if(c._value!==undefined){
+  //         toSet.push({c:c.circ,v:c._value})
+  //       }
+  //     }
+  //   }
+  //   if(toSet && toSet.length){
+  //     console.log("toSet : "+JSON.stringify(toSet))
+  //     this.setCircs(toSet,undefined)
+  //   }
 
-    console.log("fixtures : "+JSON.stringify(this.fixtures))
+  //   console.log("fixtures : "+JSON.stringify(this.fixtures))
 
-  }
-  else{
-    log.error("can't sync server state with : "+JSON.stringify(a))
-  }
-  if(!a || !a["driverName"]){
-    a["driverName"] = this.driverName;
-  }
-  else{ 
-    this.driverName = a["driverName"]
-    this.connectToDevice((state:string)=>{
-      if(state === 'open'){
-        // if(cb){cb(msg);}
-        // socket.emit('DMX/SET_DRIVERNAME',msg);
-      }
-      else{
-        // socket.emit('DMX/SET_DRIVERNAME',"")
-      }
-    })
-  }
+  // }
+  // else{
+  //   log.error("can't sync server state with : "+JSON.stringify(a))
+  // }
+  // if(!a || !a["driverName"]){
+  //   a["driverName"] = this.driverName;
+  // }
+  // else{ 
+  //   this.driverName = a["driverName"]
+  //   this.connectToDevice((state:string)=>{
+  //     if(state === 'open'){
+  //       // if(cb){cb(msg);}
+  //       // socket.emit('DMX/SET_DRIVERNAME',msg);
+  //     }
+  //     else{
+  //       // socket.emit('DMX/SET_DRIVERNAME',"")
+  //     }
+  //   })
+  // }
 }
 
 

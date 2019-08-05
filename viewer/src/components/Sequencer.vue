@@ -17,7 +17,7 @@ import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 import Button from './Button.vue';
 import Numbox from './Numbox.vue';
 import SequenceComponent from './SequenceComponent.vue';
-import { Sequence } from '../api/Sequence';
+import { Sequence } from '@API/Sequence';
 import SequenceMethods from '../store/sequence';
 const sequenceModule = namespace('sequence');
 
@@ -28,7 +28,7 @@ export default class Sequencer extends Vue {
 
   @sequenceModule.Mutation('addSequence') public addSequence!: SequenceMethods['addSequence'];
   @sequenceModule.Action('saveCurrentSequence') public saveCurrentSequence!: SequenceMethods['saveCurrentSequence'];
-  @sequenceModule.State('sequences') public sequences!: SequenceMethods['sequences'];
+  @sequenceModule.State('sequenceList') public sequences!: SequenceMethods['sequenceList'];
 
 }
 </script> 

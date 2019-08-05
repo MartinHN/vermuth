@@ -1,17 +1,18 @@
 import { getNextUniqueName } from './Utils';
 import { FixtureBase } from './Fixture';
-
+import { RemoteFunction } from './ServerSync'
 type ChannelValueType = number; // |number[];
 
 export interface ChannelI {
   ctype: string;
   name: string;
   // private __value: ChannelValueType;
-  enabled: boolean;
+  _enabled: boolean;
   circ: number;
 
   setValue(v: ChannelValueType, doNotify: boolean): boolean;
   setValueInternal(v: ChannelValueType): boolean;
+
 }
 
 
@@ -33,29 +34,45 @@ export class ChannelBase implements ChannelI {
   get intValue() {return this.__value * 255; }
   get floatValue() {return this.__value; }
 
-  public static fromObj(ob: any): ChannelBase|undefined {
+  public static createFromObj(ob: any): ChannelBase|undefined {
     const cstr = channelTypes[ob.ctype];
     if (cstr) {
       const c =  new cstr(ob.name, ob.value, ob.circ);
-      c.reactToMaster = ob.reactToMaster;
+      c.configureFromObj(ob)
       return c;
     } else {
       return undefined;
     }
-
   }
+  public set enabled(v:boolean){
+    this._enabled = v
+  }
+  public get enabled(){
+    return this._enabled;
+  }
+
+  public configureFromObj(ob:any){
+    if(ob.name!==undefined)this.name = ob.name;
+    if(ob.value!==undefined)this.setValue( ob.value,false);
+    if(ob.circ!==undefined)this.setCirc( ob.circ);
+    if(ob.reactToMaster!==undefined)this.reactToMaster = ob.reactToMaster;
+  }
+
   public ctype = 'base';
   public hasDuplicatedCirc = false;
   public reactToMaster = true;
   private __parentFixture: any;
 
 
-  constructor(public name: string, private __value: ChannelValueType = 0 , public circ: number= 0, public enabled: boolean= true) {
+  constructor(public name: string, private __value: ChannelValueType = 0 , public circ: number= 0, public _enabled: boolean= true) {
 
   }
+
+  @RemoteFunction()
   public setValue(v: ChannelValueType, doNotify: boolean) {
     return this.setFloatValue(v, doNotify);
   }
+  
   public setFloatValue(v: number, doNotify: boolean) {
     if (this.__value !== v) {
       this.__value = v;
@@ -97,7 +114,7 @@ export class ChannelBase implements ChannelI {
 
   public checkDuplicatedCirc() {
     if (this.__parentFixture && this.__parentFixture.universe ) {
-      for ( const f of this.__parentFixture.universe.fixtures) {
+      for ( const f of this.__parentFixture.universe.fixtureList) {
         for ( const cc of f.channels) {
           if ( this !== cc && cc.trueCirc === this.trueCirc) {
             this.hasDuplicatedCirc = true; return;

@@ -1,7 +1,7 @@
 <template>
   <div class="main">
     <Button text="Go" @click="goToSequence(sequence)" />
-    <text-input :value="seqName" @change="setSequenceName({sequence:sequence,value:$event.target.value})"/>
+    <text-input :value="seqName" @change="setSequenceName({sequence:sequence,value:$event.value})"/>
     <Numbox :value="sequence.timeIn" @change="setSequenceTimeIn({sequence:sequence,value:$event.value})"/>
     <v-select :items=stateNames :value="seqStateName" @change="setSequenceStateName({sequence:sequence,value:$event})" >
       
@@ -15,7 +15,7 @@ import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 import Button from './Button.vue';
 import Numbox from './Numbox.vue';
 import TextInput from './TextInput.vue';
-import { Sequence } from '../api/Sequence';
+import { Sequence } from '@API/Sequence';
 import SequenceMethods from '../store/sequence';
 const sequenceModule = namespace('sequence');
 const stateModule = namespace('states');

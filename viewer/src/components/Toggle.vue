@@ -51,7 +51,7 @@ input {
 }
 
 label {
-  /* display: block; */
+   display: block; 
   width:100%;
   position: relative;
   margin: 5px;

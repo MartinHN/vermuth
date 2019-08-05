@@ -30,27 +30,29 @@ import StateMethods from '../store/states';
 
 const statesModule = namespace('states');
 type ValueOf<T> = T[keyof T];
-type State = ValueOf<StateMethods['states']>;
+// type State = ValueOf<StateMethods['states']>;
 @Component({
   components: {Button},
 })
-export default class ChannelPatch extends Vue {
+export default class StateComponent extends Vue {
 
-  @statesModule.Action('saveCurrentState') public saveCurrentState!: StateMethods['saveCurrentState'];
+  @statesModule.Mutation('saveCurrentState') public saveCurrentState!: StateMethods['saveCurrentState'];
   @statesModule.Mutation('removeState') public removeState!: StateMethods['removeState'];
   @statesModule.Mutation('renameState') public renameState!: StateMethods['renameState'];
 
-  @statesModule.Action('recallState') public recallState!: StateMethods['recallState'];
+  @statesModule.Mutation('recallState') public recallState!: StateMethods['recallState'];
 
   @statesModule.Getter('channels') private channels!: StateMethods['channels'];
   @statesModule.Getter('stateNames') private stateNames!: StateMethods['stateNames'];
-  @statesModule.State('stateName') private pStateName!: StateMethods['stateName'];
+  @statesModule.Getter('loadedStateName') private pStateName!: StateMethods['loadedStateName'];
 
   get stateName(): string {
     return this.pStateName;
   }
   set stateName(v: string) {
+    if (v) {
     this.recallState({name: v});
+  }
   }
 
 

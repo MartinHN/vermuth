@@ -2,14 +2,18 @@
 import Vue from 'vue';
 import Vuex , { StoreOptions, Store } from 'vuex';
 import config from './config';
-import fixtures from './fixtures';
+import universes from './universes';
 import states from './states';
 import sequence from './sequence';
+import rootStateModule from './rootStateModule';
 import DMXConfig from './DMXConfig';
+import { buildEscapedJSON, buildEscapedObject } from '@API/SerializeUtils';
+import { downloadObjectAsJSON } from './util';
 import _ from 'lodash';
 // import {diff} from 'json-diff'
 // import createLogger from '../../../src/plugins/logger'
-import {RootState, FullState} from './types';
+import {FullVueState, RootVueState} from './types';
+import rootState from '@API/RootState';
 import Server from '../api/Server';
 Vue.use(Vuex);
 
@@ -20,20 +24,14 @@ const configKey = 'config';
 
 
 
-function builEscapedJSON(content: any, indent?: number) {
-  function filterPrivate(key: string, value: any) {
-    if (key.startsWith('__')) {
-      // console.log('ignoring', key);
-      return undefined;
-    } else { return value; }
-
-  }
-  return JSON.stringify(content, filterPrivate, indent);
+function   getSessionObject() {
+  return rootState;
 }
 
-function buildEscapedObject(content: any, indent?: number) {
-  return JSON.parse(builEscapedJSON(content));
-}
+const serverIsConnected = () => {
+  return Server.getSocket() && Server.getSocket().connected;
+};
+
 
 const localFS = {
   load(key: string) {
@@ -46,40 +44,23 @@ const localFS = {
 
   save: _.debounce((content, key: string, callback: () => void) => {
 
-    window.localStorage.setItem(key, builEscapedJSON(content));
+    window.localStorage.setItem(key, buildEscapedJSON(content));
     callback();
   }, 1000, { maxWait: 3000 , leading: false, trailing: true}),
 
-
-  getSessionFromState(state: any) {
-    return {fixtures: state.fixtures, sequence: state.sequence, states: state.states};
-  },
-
-  downloadObjectAsJson(exportString: string, exportName: string) {
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(exportString);
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute('href',     dataStr);
-    downloadAnchorNode.setAttribute('download', exportName + '.json');
-    document.body.appendChild(downloadAnchorNode); // required for firefox
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-  },
 };
 
-const serverIsConnected = ()=>{
-return Server.getSocket() && Server.getSocket().connected
-}
 
 
 const serverFS = () => {
-  const socket = Server.getSocket()
+  const socket = Server.getSocket();
   return {
     load(key: string) {
-      
+
       return new Promise((resolve, reject) => {
         socket.emit('GET_STATE', key, (json: any) => {
           resolve(json);
-          
+
         });
 
       });
@@ -99,47 +80,52 @@ const serverFS = () => {
 
 
 
-const autosaverPlugin = (pStore: Store<RootState>) => {
+const autosaverPlugin = (pStore: Store<RootVueState>) => {
   pStore.dispatch('LOAD_KEYED_STATE', sessionKey);
   pStore.dispatch('LOAD_KEYED_STATE', configKey);
 
 
 
-  pStore.subscribe((mutation, state: any) => {
-    state = state as FullState;
-     if (mutation.type.startsWith('config')) {
-    localFS.save(state.config, configKey, () => {
-    });
-  } else if (!state.loadingState && (state.savedStatus === 'Saved' || state.savedStatus === '' ) && state.config.autoSave && mutation.type.includes('/') ) {
-    if ( mutation.type.endsWith('Value') ) {
-      // console.log('ignoring value changes ' + mutation);
+  pStore.subscribe((mutation, state: any ) => {
+    state = state as FullVueState;
+    if (mutation.type.startsWith('config')) {
+      localFS.save(state.config, configKey, () => {});
+    } else if (!state.loadingState && (state.savedStatus === 'Saved' || state.savedStatus === '' ) && state.config.autoSave && mutation.type.includes('/') ) {
+      if ( mutation.type.endsWith('Value') ) {
+        // console.log('ignoring value changes ' + mutation);
+        return;
+      }
+
+
+      const sessionState = getSessionObject();
+      if (!sessionState.isConfigured) {
+        console.error('trying to save before 1rst configure');
+        // debugger
+        return;
+      }
+      pStore.commit('SET_SAVE_STATUS', 'Saving...');
+      localFS.save(sessionState, sessionKey, () => {
+        if (!state.loadingState ) {
+         pStore.dispatch('SAVE_REMOTELY', sessionState);
+       }
+        pStore.commit('SET_SAVE_STATUS', 'Saved');
+
+     });
+
       return;
     }
 
-    pStore.commit('SET_SAVE_STATUS', 'Saving...');
-    const ts = localFS.getSessionFromState(state);
-
-    localFS.save(ts, sessionKey, () => {
-      if (!state.loadingState) {
-       pStore.dispatch('SAVE_REMOTELY', ts);
-     }
-      pStore.commit('SET_SAVE_STATUS', 'Saved');
-
-   });
-
-    return;
-  }
-
-});
+  });
 };
 
 
-const store: StoreOptions<RootState> = {
+const store: StoreOptions<RootVueState> = {
   modules: {
     config,
-    fixtures,
-    states,
     DMXConfig,
+    rootStateModule,
+    universes,
+    states,
     sequence,
   },
   state: {
@@ -149,6 +135,7 @@ const store: StoreOptions<RootState> = {
     connectedId: -1,
     loadingState: false,
     syncingFromServer: false,
+
 
   },
   mutations: {
@@ -170,44 +157,48 @@ const store: StoreOptions<RootState> = {
   },
   actions: {
     SET_CONNECTED_STATE(context, pl) {
-      context.commit('__SET_CONNECTED_STATE',pl)
-      if(serverIsConnected()){
+      context.commit('__SET_CONNECTED_STATE', pl);
+      if (serverIsConnected()) {
         context.dispatch('LOAD_KEYED_STATE', sessionKey);
       }
     },
     LOAD_KEYED_STATE(context, key: string) {
       let loadFS = localFS.load;
-      
-      if (serverIsConnected()) {
-        loadFS = serverFS().load;
-      
-      // localFS.load(key)
-      loadFS(key)
-      .then((newState: any) => {
-        if (key === sessionKey) {
-          context.dispatch('SET_SESSION_STATE', newState);
-        } else if (key === configKey) {
-          context.dispatch('SET_CONFIG_STATE', newState);
-        }
-      })
-      .catch((err) => {console.log('can\'t loadState'); });
+
+      if (serverIsConnected() || key === configKey) {
+        if (key === sessionKey) {loadFS = serverFS().load; }
+        // debugger
+        // localFS.load(key)
+        loadFS(key)
+        .then((newState: any) => {
+          if (key === sessionKey) {
+            context.dispatch('SET_SESSION_STATE', newState);
+          } else if (key === configKey) {
+            context.dispatch('SET_CONFIG_STATE', newState);
+          }
+        })
+        .catch((err) => {
+          debugger;
+          console.log('can\'t loadState');
+        });
       }
     },
     SET_SESSION_STATE(context, newState) {
       if (newState) {
         context.commit('SET_LOADING_STATE', true);
-        ['fixtures', 'states', 'DMXConfig', 'sequence'].forEach((el) => {
-          if (newState[el]) {
-            context.dispatch('' + el + '/fromObj', newState[el]);
-          }
-        });
+        context.dispatch('rootStateModule/configureFromObj', newState);
+        // ['rootState', 'DMXConfig'].forEach((el) => {
+        //   if (newState[el]) {
+        //     context.dispatch('' + el + '/configureFromObj', newState[el]);
+        //   }
+        // });
         context.commit('SET_LOADING_STATE', false);
       }
     },
     UPDATE_SESSION_STATE(context, difObj) {
       // if(difObj){
         // context.commit('SET_LOADING_STATE',true);
-        // context.commit('fixtures/fromObj', difObj.fixtures);
+        // context.commit('universes/fromObj', difObj.universes);
         // context.dispatch('states/fromObj', difObj.states);
         // context.dispatch('DMXConfig/fromObj', difObj.states);
         // context.dispatch('sequence/fromObj', difObj.sequence);
@@ -217,7 +208,7 @@ const store: StoreOptions<RootState> = {
       SET_CONFIG_STATE(context, newState) {
         if (newState) {
           context.commit('SET_LOADING_STATE', true);
-          context.dispatch('config/fromObj', newState);
+          context.dispatch('config/configureFromObj', newState);
           context.commit('SET_LOADING_STATE', false);
         }
       },
@@ -225,8 +216,8 @@ const store: StoreOptions<RootState> = {
         serverFS().save(pl, 'session');
       },
       SAVE_LOCALLY(context, pl: any) {
-        const newStateString = builEscapedJSON(localFS.getSessionFromState(context.state), 2);
-        localFS.downloadObjectAsJson(newStateString, 'state');
+        const newStateString = buildEscapedJSON(getSessionObject(), 2);
+        downloadObjectAsJSON(newStateString, 'state');
       },
 
 
@@ -244,6 +235,6 @@ const store: StoreOptions<RootState> = {
   };
 
 
-export default new Vuex.Store<RootState>(store);
+export default new Vuex.Store<RootVueState>(store);
 
 

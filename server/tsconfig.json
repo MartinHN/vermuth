@@ -1,20 +1,30 @@
 {
-"compilerOptions": {
-"target": "es6",
-"module": "commonjs",
-"outDir": "dist",
-"sourceMap": false,
-"inlineSources": true,
-"inlineSourceMap": true,
-"experimentalDecorators":true,
-"allowJs":true
-},
-"include": [
-"src/**/*.ts",
-"src/**/*.js"
-],
-"exclude": [
-"node_modules",
-".vscode"
-]
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "commonjs",
+    "lib": [
+      "esnext"
+    ],
+    "outDir": "dist",
+    "sourceMap": true,
+    "inlineSources": true,
+    "inlineSourceMap": true,
+    "experimentalDecorators":true,
+    "moduleResolution": "node",
+    "allowJs":true,
+    "baseUrl":".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@API/*": ["../API/*"]
+    },
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.js"
+  ],
+
+  "exclude": [
+    "node_modules",
+    ".vscode"
+  ]
 }

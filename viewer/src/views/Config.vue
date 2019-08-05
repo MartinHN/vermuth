@@ -54,5 +54,7 @@ export default class Config extends Vue {
 </script>
 
 <style scoped>
-  
+  .config{
+    min-height:100%;
+  }
 </style>

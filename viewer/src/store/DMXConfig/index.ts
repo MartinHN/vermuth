@@ -21,7 +21,7 @@ export default class DMXConfig extends VuexModule {
   public dmxIsConnected = false;
 
   @Action
-  public fromObj(ob: any) {
+  public configureFromObj(ob: any) {
 
     // this.selectedPort = ob.selectedPort;
     // this.selectedDriver = ob.selectedDriver;

@@ -16,14 +16,14 @@ export function  doTimer(name: string, length: number, resolution: number, onins
       oninstance(steps, count);
 
       const diff = (new Date().getTime() - start) - (count * speed);
-      timers[name] = window.setTimeout(instance, Math.max(0, speed - diff));
+      timers[name] = setTimeout(instance, Math.max(0, speed - diff));
     }
   }
   oninstance(steps, count);
   if (timers[name]) {
     clearTimeout(timers[name]);
   }
-  timers[name] = window.setTimeout(instance, speed);
+  timers[name] = setTimeout(instance, speed);
 }
 
 class TimeClass {

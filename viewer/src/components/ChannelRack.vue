@@ -8,7 +8,7 @@
   </div>
   <slider class="grandMaster" @input="setGrandMaster($event)" :value="grandMaster" name="grandMaster"  showName="1" showValue="1" ></slider>
 
-    <fixture-widget class="channel" v-for="f in universe.fixtures" :key="f.id" :fixtureProp="f" :showName="showNames" :showValue="showValues"></fixture-widget>
+    <fixture-widget class="channel" v-for="f in universe.fixtureList" :key="f.id" :fixtureProp="f" :showName="showNames" :showValue="showValues"></fixture-widget>
   </div>
 </template>
 
@@ -21,25 +21,25 @@ import Toggle from './Toggle.vue';
 import Slider from './Slider.vue';
 
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
-import { DirectFixture } from '../api/Fixture';
-import FixtureMethods from '../store/fixtures';
+import { DirectFixture } from '@API/Fixture';
+import UniversesMethods from '../store/universes';
 
 
-const fixturesModule = namespace('fixtures');
+const universesModule = namespace('universes');
 
 @Component({
   components: {FixtureWidget, Button, Toggle, StateComponent, Slider},
 })
 export default class ChannelRack extends Vue {
 
-  @fixturesModule.Mutation('addFixture') public addFixture!: FixtureMethods['addFixture'];
+  @universesModule.Mutation('addFixture') public addFixture!: UniversesMethods['addFixture'];
 
   public showNames = false;
   public showValues = true;
-  @fixturesModule.State('universe') private universe!: FixtureMethods['universe'];
-  @fixturesModule.Getter('grandMaster') private grandMaster!: FixtureMethods['grandMaster'];
+  @universesModule.State('universe') private universe!: UniversesMethods['universe'];
+  @universesModule.Getter('grandMaster') private grandMaster!: UniversesMethods['grandMaster'];
 
-  @fixturesModule.Mutation('setGrandMaster') private setGrandMaster!: FixtureMethods['setGrandMaster'];
+  @universesModule.Mutation('setGrandMaster') private setGrandMaster!: UniversesMethods['setGrandMaster'];
 
 
 

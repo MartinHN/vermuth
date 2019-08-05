@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "declaration":true,
+    "strict":false,
+    "outDir": "dist",
+    "sourceMap": false,
+    "inlineSources": true,
+    "inlineSourceMap": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "allowJs":false,
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ]
+  },
+  "include": [
+    "*.ts"
+  ],
+  "exclude": [
+
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "conduktor-API",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "debug": "vue-cli-service build --mode=debug --watch",
+    "watch": "npm run build && rsync -r -e ssh -avz --delete-after  ../server/public pi@lampignon1.local:vermuth/server/"
+  },
+  "dependencies": {
+    "json-diff": "^0.5.4",
+    "lodash": "^4.17.15",
+    "register-service-worker": "^1.5.2",
+    "socket.io-client": "^2.2.0"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.136",
+    "@types/node": "^12.6.8",
+    "@types/socket.io-client": "^1.4.32",
+    "tsconfig-paths-webpack-plugin": "^3.2.0",
+    "typescript": "^3.5.3",
+    "tslib": "^1.10.0"
+  },
+  "engines": {
+    "node": ">=0.10.3 <0.12"
+  }
+}

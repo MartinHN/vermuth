@@ -5,6 +5,8 @@ import OSCServer from './OSCServer'
 OSCServer.connect(4444);
 //import {getter, setter} from './types'
 import dmxController from './dmxController'
+
+import rootState from '@API/RootState'
 import log from './remoteLogger'
 import { diff } from 'json-diff';
 
@@ -81,15 +83,16 @@ function setStateFromObject(msg,socket:any){
   const sessionID = getSessionId(socket)
   const dif = diff(states[sessionID],msg)
   
-  if(dif!==undefined){
-  console.log('diff',dif);
+  // if(dif!==undefined){
+  // console.log('diff',dif);
   states = {}
   states[sessionID] = msg;
-  states["lastSessionID"] = sessionID; 
-  dmxController.stateChanged(msg)
-  fs.writeFile(localStateFile, JSON.stringify(states),'utf8', (v)=>{if(v){console.log('file write error : ',v);}})
+  states["lastSessionID"] = sessionID;
+  rootState.configureFromObj(msg) 
+  // dmxController.stateChanged(msg)
+  fs.writeFile(localStateFile, JSON.stringify(states,null,'  '),'utf8', (v)=>{if(v){console.log('file write error : ',v);}})
   
-  }
+  // }
   if(socket){
     // console.log('broadcasting state: ' + JSON.stringify(msg.states));
     socket.broadcast.emit('SET_STATE',msg)
@@ -98,9 +101,21 @@ function setStateFromObject(msg,socket:any){
 
 }
 
+
 ioServer.on('connection', function(socket){
   console.log('a user connected',socket.id);
   log.bindToSocket(socket)
+  socket.use((packet, next) => {
+    if(packet && packet[0] && packet[0][0]==="/"){
+      const res = rootState.callMethod(packet[0],packet[1])
+      if(res!==undefined){
+        socket.emit(packet[0],res)
+        return
+      }
+      
+    }
+    return next();
+  });
   socket.on('disconnect', ()=>{
     console.log('user disconnected',socket.id);
   });
@@ -115,7 +130,7 @@ ioServer.on('connection', function(socket){
 
   socket.on('GET_STATE', (key,cb) => {
     const msg = states[getSessionId(socket)]
-    cb(msg);
+    cb(msg || {});
     // console.log('sending state: ' + JSON.stringify(msg.states));
 
   });
@@ -128,7 +143,7 @@ ioServer.on('connection', function(socket){
 
   
 });
-dmxController.register(ioServer)
+dmxController.register(ioServer,rootState.universe)
 
 httpServer.listen(PORT, () => {
  console.log(`Server is running in http://localhost:${PORT}`)

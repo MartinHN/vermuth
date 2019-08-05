@@ -11,12 +11,12 @@
           <Numbox class="testNum" name="testChannel" showName="1" @input="testDimmerNum($event.value)" />
         </v-flex>
       </v-layout>
-      <div  v-for="f in universe.fixtures" :key="f.id" >
+      <div  v-for="f in universe.fixtureList" :key="f.id" >
         <v-layout justify-space-between align-center row >
 
           <v-flex xs11 >
             <input :style="{'background-color':'#0003',width:'100%'}" :value="f.name" @change="setFixtureName({fixture:f,value:$event.target.value})"/>
-            <span><Numbox class="baseCirc" :value="f.baseCirc" :min="0" :max="512" @input="sefFixtureBaseCirc({fixture: f, circ: $event.value})"></Numbox></span>
+            <span><Numbox class="baseCirc" :value="f.baseCirc" :min="0" :max="512" @input="setFixtureBaseCirc({fixture: f, circ: $event.value})"></Numbox></span>
           </v-flex>
           <v-flex xs1 >
             <Button class="button removeFixture " color='red' @click="removeFixture({fixture:f})" tabIndex="-1" text="x"/>
@@ -50,7 +50,7 @@
                   <div :style="{  display:'flex' ,padding:'10px'}">
                     <Numbox class="circNum" :value="c.circ" :min="0" :max="512" @input="linkChannelToCirc({channel: c, circ: $event.value})" :errMsg='errors[c.circ]' ></Numbox>
                     <Toggle @input=setChannelReactToMaster({channel:c,value:$event}) :value=c.reactToMaster > React to Master</Toggle>
-                    <Toggle text="test" :value="testedChannel.trueCirc===c.trueCirc" @input=testDimmerNum({channel:$event?c.trueCirc:-1}) > T </Toggle>
+                    <Toggle text="test" :value="universe.testedChannel.trueCirc===c.trueCirc" @input=testDimmerNum({channel:$event?c.trueCirc:-1}) > T </Toggle>
 
                   </div>
                 </v-flex>
@@ -77,11 +77,11 @@ import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 import Button from './Button.vue';
 import Numbox from './Numbox.vue';
 import Toggle from './Toggle.vue';
-import { DirectFixture } from '../api/Fixture';
-import FixtureMethods from '../store/fixtures';
+import { DirectFixture } from '@API/Fixture';
+import UniversesMethods from '../store/universes';
 
 
-const fixturesModule = namespace('fixtures');
+const universesModule = namespace('universes');
 
 @Component({
   components: {Button, Numbox, Toggle},
@@ -95,28 +95,28 @@ export default class ChannelPatch extends Vue {
     return errs;
   }
 
-  @fixturesModule.Mutation('addFixture') public addFixture!: FixtureMethods['addFixture'];
-  @fixturesModule.Mutation('addChannelToFixture') public addChannelToFixture!: FixtureMethods['addChannelToFixture'];
-  @fixturesModule.Mutation('sefFixtureBaseCirc') public sefFixtureBaseCirc!: FixtureMethods['sefFixtureBaseCirc'];
+  @universesModule.Mutation('addFixture') public addFixture!: UniversesMethods['addFixture'];
+  @universesModule.Mutation('addChannelToFixture') public addChannelToFixture!: UniversesMethods['addChannelToFixture'];
+  @universesModule.Mutation('setFixtureBaseCirc') public setFixtureBaseCirc!: UniversesMethods['setFixtureBaseCirc'];
 
 
 
 
-  @fixturesModule.Mutation('linkChannelToCirc') public linkChannelToCirc!: FixtureMethods['linkChannelToCirc'];
-  @fixturesModule.Mutation('setChannelName') public setChannelName!: FixtureMethods['setChannelName'];
-  @fixturesModule.Mutation('removeChannel') public removeChannel!: FixtureMethods['removeChannel'];
+  @universesModule.Mutation('linkChannelToCirc') public linkChannelToCirc!: UniversesMethods['linkChannelToCirc'];
+  @universesModule.Mutation('setChannelName') public setChannelName!: UniversesMethods['setChannelName'];
+  @universesModule.Mutation('removeChannel') public removeChannel!: UniversesMethods['removeChannel'];
 
-  @fixturesModule.Mutation('removeFixture') public removeFixture!: FixtureMethods['removeFixture'];
-  @fixturesModule.Mutation('setFixtureName') public setFixtureName!: FixtureMethods['setFixtureName'];
-  @fixturesModule.Mutation('setChannelReactToMaster') public setChannelReactToMaster!: FixtureMethods['setChannelReactToMaster'];
-@fixturesModule.Action('testDimmerNum') public testDimmerNum!: FixtureMethods['testDimmerNum'];
+  @universesModule.Mutation('removeFixture') public removeFixture!: UniversesMethods['removeFixture'];
+  @universesModule.Mutation('setFixtureName') public setFixtureName!: UniversesMethods['setFixtureName'];
+  @universesModule.Mutation('setChannelReactToMaster') public setChannelReactToMaster!: UniversesMethods['setChannelReactToMaster'];
+@universesModule.Action('testDimmerNum') public testDimmerNum!: UniversesMethods['testDimmerNum'];
 
-  @fixturesModule.State('universe') private universe!: FixtureMethods['universe'];
+  @universesModule.State('universe') private universe!: UniversesMethods['universe'];
 
 
-  @fixturesModule.State('testedChannel') private testedChannel!: FixtureMethods['testedChannel'];
 
-  @fixturesModule.Getter('usedChannels') private usedChannels!: FixtureMethods['usedChannels'];
+
+  @universesModule.Getter('usedChannels') private usedChannels!: UniversesMethods['usedChannels'];
 
 
 }

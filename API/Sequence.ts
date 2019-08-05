@@ -2,22 +2,11 @@ import { State, blackState, ResolvedFixtureState, MergedState } from './State';
 import { DirectFixture } from './Fixture';
 import { ChannelBase } from './Channel';
 import { Time, doTimer } from './Time';
-
+import { RemoteFunction,RemoteValue } from './ServerSync'
 
 
 
 export class Sequence {
-
-  public static fromObj(o: any): any {
-
-    const seq = new Sequence(o.name, o.stateName);
-    seq.timeIn = o.timeIn;
-    seq.timeOut = o.timeOut;
-    seq.hold = o.hold;
-    return seq;
-    // o.pChannelValues.map( (oo: any) => res.pChannelValues.push(new ChannelWithValue(oo.channelName, oo.value)) );
-    // return res;
-  }
 
   public timeIn: number = 0;
   public hold: number = 0;
@@ -25,13 +14,38 @@ export class Sequence {
   public stateName: string = 'none';
   public __state?: State;
   constructor(public name: string, state: string|State) {
+    //debugger
     if (typeof state === 'string') {
       this.stateName = state;
     } else if (state) {
       this.stateName = state.name;
       this.__state = state;
     }
+    else{
+      debugger
+    }
   }
+
+
+  public static createFromObj(o: any): any {
+
+    const seq = new Sequence(o.name || "no name", o.stateName);
+    seq.configureFromObj(o)
+    return seq;
+    // o.pChannelValues.map( (oo: any) => res.pChannelValues.push(new ChannelWithValue(oo.channelName, oo.value)) );
+    // return res;
+  }
+
+  public configureFromObj(o:any){
+    for(const key in this){
+      if(o[key]!==undefined){
+        this[key] = o[key];
+      }
+    }
+
+
+  }
+
 
   public resolveState(stateResolver: (n: string) => State|undefined) {
     if (this.__state && this.__state.name === this.stateName) {
@@ -55,8 +69,10 @@ export class SequencePlayer {
   public curSeq: Sequence = blackSeq;
   public nextSeq: Sequence = blackSeq;
 
+  @RemoteValue()
   public playState: string = 'stopped';
 
+  @RemoteFunction({skipLocal:true})
   public goTo(nSeq: Sequence, fl: DirectFixture[], stateResolver: (n: string) => State|undefined, sendValueCB: (f: ChannelBase, v: number) => void, cb: () => void): void {
     this.nextSeq = nSeq;
     const res = 10;
@@ -93,7 +109,5 @@ export class SequencePlayer {
         );
     }
   }
-
-
 
 }

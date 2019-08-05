@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 import dmxServer from './DMX';
-
+import { bindClientSocket } from '@API/ServerSync';
 
 class Server {
   private store: any;
@@ -16,12 +16,12 @@ class Server {
     store.dispatch('SET_CONNECTED_STATE', 'connecting');
 
     socket.on('connect', () => {
+      bindClientSocket(socket);
       console.log('connected to server');
+
       store.dispatch('SET_CONNECTED_STATE', 'connected');
       let hasRemoteState = false;
       socket.emit('GET_STATE', 'sessionKey', (state: any) => {
-
-
       });
 
       socket.on('DBG', (msg: any) => {console.error(msg); });

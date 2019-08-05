@@ -1,8 +1,9 @@
 // import { Module , MutationTree, GetterTree, ActionTree} from 'vuex';
-import { Universe } from '../../api/Universe';
-import { FixtureBase, DirectFixture } from '../../api/Fixture';
+import { Universe } from '@API/Universe';
+import { FixtureBase, DirectFixture } from '@API/Fixture';
 
-import { ChannelBase } from '../../api/Channel';
+import { ChannelBase } from '@API/Channel.ts';
+import RootState from '@API/RootState.ts';
 
 // import { RootState } from '../types';
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators';
@@ -13,25 +14,18 @@ type ChannelType = ChannelBase;
 
 
 
-
-
 @Module({namespaced: true})
-export default class Fixtures extends VuexModule {
+export default class Universes extends VuexModule {
 
-  public universe = new Universe();
-  public testedChannel = new ChannelBase('tested', 0, -1, false);
-  public driverName = 'none';
-
+  public universe = RootState.universe;
 
   @Action
-  public fromObj(js: any) {
-    this.context.commit('fromObjMut', js);
+  public configureFromObj(js: any) {
+    this.context.commit('configureFromObjMut', js);
   }
   @Mutation
-  public fromObjMut(js: any) {
-    this.universe = Universe.fromObj(js.universe);
-    this.driverName = js.driverName;
-
+  public configureFromObjMut(js: any) {
+    this.universe.configureFromObj(js.universe);
   }
 
   @Mutation
@@ -61,7 +55,7 @@ export default class Fixtures extends VuexModule {
     pl.channel.reactToMaster = pl.value ? true : false;
   }
   @Mutation
-  public sefFixtureBaseCirc(pl: {fixture: FixtureBase, circ: number}) {
+  public setFixtureBaseCirc(pl: {fixture: FixtureBase, circ: number}) {
     pl.fixture.baseCirc = pl.circ;
   }
   @Mutation
@@ -92,7 +86,7 @@ export default class Fixtures extends VuexModule {
     const {channel} = pl;
     const { name}  = pl;
     if (name !== channel.name) {
-      const correspondigFixture = this.universe.fixtures.find( (f) => f.channels.includes(channel) );
+      const correspondigFixture = this.universe.fixtureList.find( (f) => f.channels.includes(channel) );
       if (!correspondigFixture) {
         console.error('fixture not managed');
       } else {
@@ -106,11 +100,11 @@ export default class Fixtures extends VuexModule {
     const {value} = pl;
     const { channel}  = pl;
     if (value !== channel.enabled) {
-      if (!this.universe.fixtures.find( (f) => f.channels.includes(channel) )) {
+      if (!this.universe.fixtureList.find( (f) => f.channels.includes(channel) )) {
         console.error('fixture not managed');
       }
 
-      channel.enabled = value ? true : false;
+      channel.enabled  =  value ? true : false;
     }
   }
 
@@ -127,23 +121,11 @@ export default class Fixtures extends VuexModule {
     pl.fixture.removeChannel(pl.channel);
   }
 
-  @Action
-  public testDimmerNum(dimmerNum: number  ) {
-
-
-    if (this.testedChannel.circ >= 0) {
-    this.context.commit('setChannelValue', { channel: this.testedChannel, value: 0.0});
-    }
-    this.context.commit('__setTestedChannelDimmer', {dimmerNum});
-    if (this.testedChannel.circ >= 0) {
-    this.context.commit('setChannelValue', { channel: this.testedChannel, value: 1.0});
-    }
-  }
-
   @Mutation
-  public __setTestedChannelDimmer(pl: { dimmerNum: number } ) {
-    this.testedChannel.circ = pl.dimmerNum;
+  public testDimmerNum(dimmerNum: number  ) {
+    this.universe.testDimmerNum(dimmerNum);
   }
+
 
 
 
@@ -152,7 +134,7 @@ export default class Fixtures extends VuexModule {
   }
 
   get usedChannels(): ChannelBase[] {
-    return this.universe.fixtures.map((f) => f.channels).flat();
+    return this.universe.fixtureList.map((f) => f.channels).flat();
   }
 
   get grandMaster() {

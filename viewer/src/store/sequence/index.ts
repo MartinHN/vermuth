@@ -1,16 +1,18 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators';
-import { Sequence, SequencePlayer } from '../../api/Sequence';
-import { State } from '../../api/State';
+import RootState from '@API/RootState';
 import { Settable } from '../util';
-import { ChannelBase } from '../../api/Channel';
+import { ChannelBase } from '@API/Channel';
+import { State } from '@API/State' ;
+import { Sequence } from '@API/Sequence';
 
-const player = new SequencePlayer ();
+const player = RootState.sequencePlayer;
 
 @Module({namespaced: true})
 export default class Sequences extends VuexModule {
 
 
-  public sequences = new  Array<Sequence>();
+  public sequenceList = RootState.sequenceList;
+
 
   @Settable()
   public __curSequence = '';
@@ -19,11 +21,11 @@ export default class Sequences extends VuexModule {
   public selectedState?: State;
 
   @Action
-  public fromObj(ob: any) {
+  public configureFromObj(ob: any) {
     this.context.commit('clearSequences');
-    if (ob.sequences ) {
-      ob.sequences.forEach((o: any) => {
-        const s = Sequence.fromObj(o);
+    if (ob.sequenceList ) {
+      ob.sequenceList.forEach((o: any) => {
+        const s = Sequence.createFromObj(o);
         if (s) {this.context.commit('addSequence', s); }
       });
     }
@@ -48,11 +50,11 @@ export default class Sequences extends VuexModule {
     @Mutation
     public addSequence(s: Sequence) {
       if (s) {
-        const i = this.sequences.findIndex((ss) => ss.name === s.name);
+        const i = this.sequenceList.findIndex((ss) => ss.name === s.name);
         if (i !== -1) {
           s.name = s.name + '.';
         }
-        this.sequences.push( s);
+        this.sequenceList.push( s);
       }
     }
     @Mutation
@@ -62,7 +64,7 @@ export default class Sequences extends VuexModule {
 
     @Mutation
     public clearSequences( ) {
-      this.sequences = new  Array<Sequence>();
+      this.sequenceList = new  Array<Sequence>();
     }
 
     @Mutation
@@ -89,7 +91,7 @@ export default class Sequences extends VuexModule {
 
     @Action
     public goToSequenceNamed(pl: {name: string}) {
-      const s = this.sequences.find((f) => f.name === pl.name);
+      const s = this.sequenceList.find((f) => f.name === pl.name);
       if (s) {
         this.context.dispatch('goToSequence', s);
       }
@@ -100,7 +102,7 @@ export default class Sequences extends VuexModule {
 
       player.goTo(
         sq,
-        this.fixtures,
+        this.fixtureList,
         (n: string) =>
           self.context.getters.availableStates.find(
             (st: State) => st.name === n,
@@ -118,8 +120,8 @@ export default class Sequences extends VuexModule {
       );
     }
 
-    get fixtures() {
-      return this.context.rootState.fixtures.universe.fixtures;
+    get fixtureList() {
+      return this.context.rootState.universes.universe.fixtureList;
 
     }
 

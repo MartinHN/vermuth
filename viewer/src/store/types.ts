@@ -1,10 +1,10 @@
+import { Module } from 'vuex';
 import config from './config';
 import DMXConfig from './DMXConfig';
-import fixtures from './fixtures';
-import sequence from './sequence';
-import states from './states';
+import {RootStateType} from '@API/RootState';
 
-export interface RootState {
+
+export interface RootVueState {
     version: string;
     savedStatus: string;
     connectedState: string;
@@ -15,11 +15,9 @@ export interface RootState {
 }
 
 
-export interface FullState extends RootState {
-    config: config;
-    DMXConfig: DMXConfig;
-    fixtures: fixtures;
-    sequence: sequence;
-    states: states;
+export interface FullVueState extends RootVueState {
+    config: Module<config, RootVueState>;
+    DMXConfig: Module<DMXConfig, RootVueState>;
+    rootState: RootStateType;
 
 }

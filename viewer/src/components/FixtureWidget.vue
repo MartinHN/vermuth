@@ -17,24 +17,24 @@ import Slider from './Slider.vue' ;
 import Button from './Button.vue' ;
 import Toggle from './Toggle.vue' ;
 import ChannelWidget from './ChannelWidget.vue';
-import { DirectFixture } from '../api/Fixture';
-import { ChannelBase } from '../api/Channel';
-import FixtureMethods from '../store/fixtures';
-import {rgbToHex, hexToRgb} from '../api/Utils';
+import { DirectFixture } from '@API/Fixture';
+import { ChannelBase } from '@API/Channel';
+import UniversesMethods from '../store/universes';
+import {rgbToHex, hexToRgb} from '@API/ColorUtils';
 import _ from 'lodash';
 
-const fixturesModule = namespace('fixtures');
+const universesModule = namespace('universes');
 
 @Component({
   components: {Slider, Button, Toggle, ChannelWidget},
 })
 export default class FixtureWidget extends Vue {
 
-  @fixturesModule.Mutation('addChannelToFixture') public addChannelToFixture!: FixtureMethods['addChannelToFixture'];
-  @fixturesModule.Mutation('setFixtureName') public setFixtureName!: FixtureMethods['setFixtureName'];
+  @universesModule.Mutation('addChannelToFixture') public addChannelToFixture!: UniversesMethods['addChannelToFixture'];
+  @universesModule.Mutation('setFixtureName') public setFixtureName!: UniversesMethods['setFixtureName'];
 
-  @fixturesModule.Mutation('setFixtureValue') public setFixtureValue!: FixtureMethods['setFixtureValue'];
-  @fixturesModule.Mutation('setChannelValue') public setChannelValue!: FixtureMethods['setChannelValue'];
+  @universesModule.Mutation('setFixtureValue') public setFixtureValue!: UniversesMethods['setFixtureValue'];
+  @universesModule.Mutation('setChannelValue') public setChannelValue!: UniversesMethods['setChannelValue'];
 
 
   @Prop() public fixtureProp!: DirectFixture;
@@ -58,6 +58,15 @@ export default class FixtureWidget extends Vue {
 
 
   }
+  set hexColorValue(c: string) {
+    this.debouncedColorSetter(c);
+
+    // const rgb:any = hexToRgb(c);
+    // for( c of ['r','g','b']){
+    //   this.setChannelValue({channel:this.colorChannels[c],value:rgb[c]/255.0,dontNotify:false});
+    // }
+
+  }
   private debouncedColorSetter = _.debounce((c: string) => {
     const rgb: any = hexToRgb(c);
     for ( c of ['r', 'g', 'b']) {
@@ -67,15 +76,9 @@ export default class FixtureWidget extends Vue {
   },
   50,
   {maxWait: 50});
-  set hexColorValue(c: string) {
 
-    this.debouncedColorSetter(c);
-    // const rgb:any = hexToRgb(c);
-    // for( c of ['r','g','b']){
-    //   this.setChannelValue({channel:this.colorChannels[c],value:rgb[c]/255.0,dontNotify:false});
-    // }
 
-  }
+
   // get disabledV(): boolean {return !this.fixtureProp.channel.enabled; }
   // set disabledV(v: boolean) {this.setChannelEnabled({channel: this.fixtureProp.channel, value: !v}); }
 

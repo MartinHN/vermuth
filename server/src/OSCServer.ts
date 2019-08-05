@@ -1,4 +1,5 @@
 const osc = require('osc');
+import rootState from '@API/RootState'
 
 
 /****************
@@ -66,19 +67,22 @@ class OSCServer{
   }
 
   processMsg (msg,time,info) {
-    if(msg.address==="/circ"){
-      dmxController.setCircs([{c:msg.args[0],v:msg.args[1]}],null)
-    }
-    else if(msg.address==="/channel"){
-      dmxController.setChannelsFromId({id:msg.args[0],v:msg.args[1]},null)
-    }
-    else if(msg.address==="/ping"){
-      console.log('rcvd ping from '+JSON.stringify(info));
-       this.udpPort.send({address:"/pong",args:[]},info.address,info.port)
-    }
-    else if(msg.address==="/seq"){
-      // TODO
-    }
+
+    rootState.callMethod(msg.address,msg.args)
+    // if(msg.address==="/circ"){
+    //   dmxController.setCircs([{c:msg.args[0],v:msg.args[1]}],null)
+    // }
+    // else if(msg.address==="/channel"){
+    //   dmxController.setChannelsFromId({id:msg.args[0],v:msg.args[1]},null)
+    // }
+    // else if(msg.address==="/ping"){
+    //   console.log('rcvd ping from '+JSON.stringify(info));
+    //    this.udpPort.send({address:"/pong",args:[]},info.address,info.port)
+    // }
+    // else if(msg.address==="/seq"){
+    //   // TODO
+    //   RootState.
+    // }
   }
 
   processBundle(b,time,info){

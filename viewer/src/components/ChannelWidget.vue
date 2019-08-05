@@ -21,21 +21,21 @@ import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 import Slider from './Slider.vue' ;
 import Button from './Button.vue' ;
 import Toggle from './Toggle.vue' ;
-import { ChannelBase } from '../api/Channel';
-import FixtureMethods from '../store/fixtures';
+import { ChannelBase } from '@API/Channel';
+import UniversesMethods from '../store/universes';
 
 
-const fixturesModule = namespace('fixtures');
+const universesModule = namespace('universes');
 
 @Component({
   components: {Slider, Button, Toggle},
 })
 export default class ChannelWidget extends Vue {
 
-  @fixturesModule.Getter('usedChannels') public usedChannels!: FixtureMethods['usedChannels'];
-  @fixturesModule.Mutation('setChannelValue') public setChannelValue!: FixtureMethods['setChannelValue'];
-  @fixturesModule.Mutation('setChannelName') public setChannelName!: FixtureMethods['setChannelName'];
-  @fixturesModule.Mutation('setChannelEnabled') public setChannelEnabled!: FixtureMethods['setChannelEnabled'];
+  @universesModule.Getter('usedChannels') public usedChannels!: UniversesMethods['usedChannels'];
+  @universesModule.Mutation('setChannelValue') public setChannelValue!: UniversesMethods['setChannelValue'];
+  @universesModule.Mutation('setChannelName') public setChannelName!: UniversesMethods['setChannelName'];
+  @universesModule.Mutation('setChannelEnabled') public setChannelEnabled!: UniversesMethods['setChannelEnabled'];
 
 
   @Prop() public channelProp!: ChannelBase;
