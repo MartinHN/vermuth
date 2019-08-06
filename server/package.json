@@ -8,7 +8,8 @@
     "start:watch": "nodemon",
     "start:stop": "node --inspect-brk=0.0.0.0:9222 -r tsconfig-paths/register -r ts-node/register ./src/server.ts",
     "build": "tsc",
-    "run": "ts-node src/server.ts -P . --files"
+    "runNBuild": "ts-node src/server.ts -P . --files",
+    "run NODE_ENV=production node dist/server/src/server.js"
   },
   "keywords": [
     "light",
