@@ -1,3 +1,4 @@
+import 'module-alias/register'; // form module resolution
 import * as express from "express";
 import * as http from  'http';
 import * as io from 'socket.io'

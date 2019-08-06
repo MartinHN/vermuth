@@ -12,15 +12,17 @@
     "experimentalDecorators":true,
     "moduleResolution": "node",
     "allowJs":true,
-    "baseUrl":".",
+    "baseUrl":"./src",
     "paths": {
-      "@/*": ["./src/*"],
-      "@API/*": ["../API/*"]
+      "@/*": ["./*"],
+      "@API/*": ["../../API/*"]
     },
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.js"
+    "src/**/*.js",
+    "../API/**/*.ts",
+    "../API/**/*.js",
   ],
 
   "exclude": [
