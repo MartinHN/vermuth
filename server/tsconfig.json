@@ -6,7 +6,7 @@
       "esnext"
     ],
     "outDir": "dist",
-    "sourceMap": true,
+    "sourceMap": false,
     "inlineSources": true,
     "inlineSourceMap": true,
     "experimentalDecorators":true,

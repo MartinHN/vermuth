@@ -42,7 +42,7 @@
 //       configurable: true,
 //       // writable: true,
 //     });
-    
+
 //   }
 // }
 

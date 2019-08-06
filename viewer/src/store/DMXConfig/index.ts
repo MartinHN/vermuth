@@ -1,24 +1,48 @@
 import { Module, VuexModule, Mutation, Action, MutationAction } from 'vuex-module-decorators';
 
 import Server from '../../api/Server';
+import DMXClient from "../../api/DMXClient";
+import { fetchRemote } from "@API/ServerSync";
 // const _ = require('lodash')
 import { Settable } from '../util';
 
-@Module({namespaced: true})
 
+
+@Module({namespaced: true})
 export default class DMXConfig extends VuexModule {
 
-  @Settable()
-  public portlist = new  Array<any>();
-  @Settable()
-  public driverlist = new  Array<any>();
-  @Settable()
-  public selectedPort = '';
-  @Settable()
-  public selectedDriver = '';
+  // @Settable()
+  public get portList(){
+    //fetchRemote(this.dmxClientC,"portList");
+    return this.dmxClientC.portList
+  } ;
+  // @Settable()
+  public get driverList(){
+    return this.dmxClientC.driverList
+  }
+  // @Settable()
+  public get selectedPortName (){
+    return this.dmxClientC.selectedPortName
+  };
+  public set selectedPortName (v:string){
+    this.dmxClientC.selectedPortName = v
+  };
+  public get selectedDriverName (){
+    return this.dmxClientC.selectedDriverName
+  };
+  public set selectedDriverName (v:string){
+    this.dmxClientC.selectedDriverName
+  };
 
-  @Settable()
-  public dmxIsConnected = false;
+  public get dmxIsConnected(){
+    return this.dmxClientC.connected
+  }
+  // @Settable()
+  // public selectedDriver = '';
+
+  public get dmxClientC(){
+    return DMXClient
+  }
 
   @Action
   public configureFromObj(ob: any) {
@@ -34,9 +58,9 @@ export default class DMXConfig extends VuexModule {
   @Action
   public refreshPortList() {
     if (this.isConnected()) {
-      this.rootSocket.emit('DMX/GET_PORTLIST', (pl: any[]) => {
-        this.portlist = pl;
-      });
+      
+        fetchRemote(this.dmxClientC,"portList");
+      
     } else {
       console.error('not connected');
     }
@@ -46,9 +70,7 @@ export default class DMXConfig extends VuexModule {
   @Action
   public refreshDevicesList() {
     if (this.isConnected()) {
-      this.rootSocket.emit('DMX/GET_DRIVERLIST', (pl: any[]) => {
-        this.driverlist = pl;
-      });
+      fetchRemote(this.dmxClientC,"driverList")
     } else {
       console.error('not connected');
     }
@@ -56,15 +78,17 @@ export default class DMXConfig extends VuexModule {
   }
   @Action
   public tryConnectPort(pl: string) {
-    this.context.commit('set__selectedPort', pl);
-    this.rootSocket.emit('DMX/SET_PORTNAME', pl, (res: string) => {
-      this.context.commit('set__selectedPort', res);
-    });
+    this.dmxClientC.selectedPortName = pl
+    // this.context.commit('set__selectedPort', pl);
+    // this.rootSocket.emit('DMX/SET_PORTNAME', pl, (res: string) => {
+    //   this.context.commit('set__selectedPort', res);
+    // });
   }
   @Action
   public tryConnectDriver(pl: string) {
-    this.context.commit('set__selectedDriver', pl);
-    this.rootSocket.emit('DMX/SET_DRIVERNAME', pl);
+    this.dmxClientC.selectedDriverName = pl
+    // this.context.commit('set__selectedDriver', pl);
+    // this.rootSocket.emit('DMX/SET_DRIVERNAME', pl);
   }
 
   get rootSocket() {

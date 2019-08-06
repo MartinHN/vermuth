@@ -179,7 +179,7 @@ const store: StoreOptions<RootVueState> = {
         })
         .catch((err) => {
           debugger;
-          console.log('can\'t loadState');
+          console.log('can\'t loadState',err);
         });
       }
     },
@@ -229,7 +229,7 @@ const store: StoreOptions<RootVueState> = {
       },
     },
 
-    strict: debug,
+    strict: false,
     plugins: [autosaverPlugin],
     // plugins: debug ? [createLogger()] : []
   };

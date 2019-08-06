@@ -7,11 +7,14 @@ OSCServer.connect(4444);
 import dmxController from './dmxController'
 
 import rootState from '@API/RootState'
+rootState.registerDMXController(dmxController)
+
+
 import log from './remoteLogger'
 import { diff } from 'json-diff';
 
 var history = require("connect-history-api-fallback");
-// import {diff} from 'json-diff'
+
 const fs = require('fs');
 const path = require('path')
 
@@ -30,7 +33,8 @@ const localStateFile = path.resolve(__dirname,'..','appSettings.json')
 const ioServer = io({
   serveClient: false
 });
-
+import {bindClientSocket} from "@API/ServerSync"
+bindClientSocket(ioServer)
 ioServer.attach(httpServer,{
   pingInterval: 10000,
   pingTimeout: 5000,
@@ -52,6 +56,7 @@ fs.writeFile(localStateFile, JSON.stringify({}), { flag: "wx",encoding:'utf-8' }
       if (err) {
         return console.log(err);
       }
+      if(data===""){data = "{}"}
       Object.assign(states ,  JSON.parse(data))
       if(states && states["lastSessionID"]){
         const lastState = states[states["lastSessionID"]]
@@ -83,8 +88,8 @@ function setStateFromObject(msg,socket:any){
   const sessionID = getSessionId(socket)
   const dif = diff(states[sessionID],msg)
   
-  // if(dif!==undefined){
-  // console.log('diff',dif);
+  if(dif!==undefined || !rootState.isConfigured){
+  console.log('diff',dif);
   states = {}
   states[sessionID] = msg;
   states["lastSessionID"] = sessionID;
@@ -92,7 +97,10 @@ function setStateFromObject(msg,socket:any){
   // dmxController.stateChanged(msg)
   fs.writeFile(localStateFile, JSON.stringify(states,null,'  '),'utf8', (v)=>{if(v){console.log('file write error : ',v);}})
   
-  // }
+  }
+  else{
+    console.log('no mod from state')
+  }
   if(socket){
     // console.log('broadcasting state: ' + JSON.stringify(msg.states));
     socket.broadcast.emit('SET_STATE',msg)

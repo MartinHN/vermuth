@@ -1,4 +1,5 @@
 const osc = require('osc');
+
 import rootState from '@API/RootState'
 
 
@@ -30,7 +31,7 @@ import rootState from '@API/RootState'
 import dmxController from './dmxController'
 import log from './remoteLogger'
 
-class OSCServer{
+class OSCServer {
   udpPort:any
 
   connect(port,broadcast = false){

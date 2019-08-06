@@ -2,7 +2,7 @@ import { ChannelBase } from './Channel';
 import { Universe } from './Universe';
 import { getNextUniqueName } from './Utils';
 const EventEmitter = require('events').EventEmitter;
-import { RemoteFunction,SetAccessible,AccessibleClass,setChildAccessible } from "./ServerSync"
+import { RemoteFunction, SetAccessible, AccessibleClass, setChildAccessible, nonEnumerable } from './ServerSync';
 
 type ChannelValueType = ChannelBase['__value'];
 interface FixtureBaseI {
@@ -16,49 +16,6 @@ const fixtureTypes: {[key: string]: FixtureConstructorI} = {};
 export class FixtureBase implements FixtureBaseI {
 
 
-
-  public enabled = true;
-  public globalValue = 0;
-  protected ftype = 'base';
-  private _baseCirc = 0;
-  private __universe: Universe | undefined;
-  public events = new EventEmitter()
-
-  @SetAccessible()
-  public readonly channels = new Array<ChannelBase>()
-
-  constructor(public name: string, channels: ChannelBase[]) {
-    if(channels){
-      channels.map(c=>this.addChannel(c))
-    }
-    else{
-      debugger
-    }
-    
-  }
-
-  public static createFromObj(ob: any): FixtureBase |undefined {
-    if (ob.channels!==undefined) {
-      const cstr = fixtureTypes[ob.ftype];
-      if (cstr) {
-        const i = cstr(ob.name, []);
-        i.configureFromObj(ob)
-
-        return i;
-      } else {
-        return undefined;
-      }
-    }
-  }
-  public configureFromObj(ob: any){
-
-    if(ob.baseCirc!==undefined)this.baseCirc = ob.baseCirc;
-    if(ob.channels!==undefined){
-      this.channels.map((c:ChannelBase) => this.removeChannel(c))
-      ob.channels.map((c: any) => this.addChannel(ChannelBase.createFromObj(c)));
-    }
-    if(ob.name!=undefined){this.setName(ob.name);}
-  }
 
 
 
@@ -86,39 +43,90 @@ export class FixtureBase implements FixtureBaseI {
     this.channels.map( (c) => c.setParentFixture(this));
   }
 
+  get channelNames() {
+    return this.channels.map((c) => c.name);
+  }
+
+
+  public static createFromObj(ob: any): FixtureBase |undefined {
+    if (ob.channels !== undefined) {
+      const cstr = fixtureTypes[ob.ftype];
+      if (cstr) {
+        const i = cstr(ob.name, []);
+        i.configureFromObj(ob);
+
+        return i;
+      } else {
+        return undefined;
+      }
+    }
+  }
 
 
 
-  public setName(n: string) {
-    const oldName = this.name
-    this.name = n;
-    if(oldName!==n){
-      this.events.emit('nameChanged',this,oldName)
+
+  public enabled = true;
+  public globalValue = 0;
+
+  @nonEnumerable()
+  public __events = new EventEmitter();
+
+  @SetAccessible()
+  public readonly channels = new Array<ChannelBase>();
+  protected ftype = 'base';
+
+  private _baseCirc = 0;
+
+  @nonEnumerable()
+  private __universe: Universe | undefined;
+
+  constructor(public name: string, channels: ChannelBase[]) {
+    if (channels) {
+      channels.map((c) => this.addChannel(c));
+    } else {
+      debugger;
     }
 
   }
-  public buildAddress(){
-    return "/mainUniverse/"+this.name
+  public configureFromObj(ob: any) {
+
+    if (ob.baseCirc !== undefined) {this.baseCirc = ob.baseCirc; }
+    if (ob.channels !== undefined) {
+      this.channels.map((c: ChannelBase) => this.removeChannel(c));
+      ob.channels.map((c: any) => this.addChannel(ChannelBase.createFromObj(c)));
+    }
+    if (ob.name !== undefined) {this.setName(ob.name); }
+  }
+
+  public setName(n: string) {
+    const oldName = this.name;
+    this.name = n;
+    if (oldName !== n) {
+      this.__events.emit('nameChanged', this, oldName);
+    }
+
+  }
+  public buildAddress() {
+    return '/mainUniverse/' + this.name;
   }
 
 
   @RemoteFunction()
   public setMaster(v: ChannelValueType) {
     this.globalValue = v;
-    //debugger
+    // debugger
     this.syncToGlobalValue(v);
   }
 
   public syncToGlobalValue(v: ChannelValueType) {
-    if(this.channels){
+    if (this.channels) {
       for (const c of this.channels) {
         if (c.reactToMaster) {
           c.setValue(v, true);
         }
       }
-    }
-    else{
-      debugger
+    } else {
+      debugger;
     }
   }
 
@@ -129,22 +137,18 @@ export class FixtureBase implements FixtureBaseI {
     c.setParentFixture (this);
 
     this.channels.push(c);
-    setChildAccessible(this.channels,""+(this.channels.length-1))
+    setChildAccessible(this.channels, '' + (this.channels.length - 1));
     return c;
   }
   public removeChannel(c: ChannelBase) {
     c.setParentFixture (null);
-    const i = this.channels.indexOf(c)
-    if(i>=0)this.channels.splice(i,1)// = this.channels.filter((v) => c !== v); // delete?
+    const i = this.channels.indexOf(c);
+    if (i >= 0) {this.channels.splice(i, 1); }// = this.channels.filter((v) => c !== v); // delete?
   }
 
 
   public getChannelForName(n: string) {
     return this.channels.find((c) => c.name === n);
-  }
-
-  get channelNames() {
-    return this.channels.map((c) => c.name);
   }
 
 

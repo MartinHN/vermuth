@@ -1,13 +1,18 @@
 
-import { Universe } from './Universe'
-import { Sequence,SequencePlayer } from './Sequence'
-import { StateList } from './State'
-import  DMXController  from './DMXController'
-import { RemoteFunction,SetAccessible,AccessibleClass,resolveAccessible,RemoteValue } from "./ServerSync"
-import { buildEscapedJSON } from './SerializeUtils'
+import { Universe } from './Universe';
+import { Sequence, SequencePlayer } from './Sequence';
+import { StateList } from './State';
+import  DMXControllerI  from './DMXControllerI';
+import { bindClientSocket, RemoteFunction, SetAccessible, setChildAccessible, AccessibleClass, resolveAccessible, RemoteValue } from './ServerSync';
+import { buildEscapedJSON } from './SerializeUtils';
+
+import {addProp} from '@API/MemoryUtils';
 
 @AccessibleClass()
 export class RootStateType {
+  public get isConfigured() {
+    return this.__isConfigured;
+  }
   // config: config;
   // DMXConfig: DMXConfig;
   @SetAccessible()
@@ -17,62 +22,79 @@ export class RootStateType {
   public  readonly sequencePlayer = new SequencePlayer();
   @SetAccessible()
   public readonly stateList  = new StateList(this.universe);
-  @SetAccessible()
-  public readonly dmxController  = DMXController;
+
+  public  dmxController?: DMXControllerI;
+
+  @RemoteValue()
+  public testValue = 1;
   private __isConfigured = false;
   private __isRoot = true;
 
-  @RemoteValue()
-  public testValue = 1
-
-  constructor(){
+  constructor() {
 
   }
+  public registerDMXController(d: DMXControllerI) {
+    if (this.dmxController) {
+      debugger;
+      console.error('double registration of dmx controller');
+    }
+    addProp(this, 'dmxController' , d);
+    // debugger
 
-  public configureFromObj(ob: any){
-    let validObj = ob!==undefined
-
-    if(ob.universe!==undefined ){
-      this.universe.configureFromObj(ob.universe)
-    }
-    if(ob.sequenceList!==undefined){
-      this.sequenceList.splice(0,this.sequenceList.length)
-      ob.sequenceList.map((e:any)=>this.sequenceList.push(Sequence.createFromObj(e)))
-    }
-    if(ob.stateList!==undefined){
-      this.stateList.configureFromObj(ob.stateList)
-    }
-    this.__isConfigured = validObj
+    setChildAccessible(this, 'dmxController');
+    bindClientSocket('auto');
   }
-  public get isConfigured(){
-    return this.__isConfigured
+  public configureFromObj(ob: any) {
+    const validObj = ob !== undefined;
+
+    if (ob.universe !== undefined ) {
+      this.universe.configureFromObj(ob.universe);
+    }
+    if (ob.sequenceList !== undefined) {
+      this.sequenceList.splice(0, this.sequenceList.length);
+      ob.sequenceList.map((e: any) => this.sequenceList.push(Sequence.createFromObj(e)));
+    }
+    if (ob.stateList !== undefined) {
+      this.stateList.configureFromObj(ob.stateList);
+    }
+    if (ob.dmxController !== undefined && this.dmxController) {
+      this.dmxController.configureFromObj(ob.dmxController);
+    }
+    bindClientSocket('auto');
+    this.__isConfigured = validObj;
   }
 
-  public callMethod(saddr:string,args:any[]){
-    if(saddr[0]==="/"){
-      let addr = saddr.split("/")
-      if(addr.length && addr[0]==="")addr.shift()
+  public callMethod(saddr: string, args: any[]) {
+    if (saddr[0] === '/') {
+      const addr = saddr.split('/');
+
+      if (addr.length && addr[0] === '') {addr.shift(); }
 
 
-        const {accessible,parent}  = resolveAccessible(this,addr)
+      const {accessible, parent, key}  = resolveAccessible(this, addr);
 
-      if(accessible ){
-        if(accessible && typeof(accessible) === 'function'){
+      if (accessible !== undefined ) {
+        if (typeof(accessible) === 'function') {
 
           return accessible.apply(parent, args);
-        }
-        else{
+        } else if ( (args !== undefined && args !== null)) {
+          if (parent && key) {
+            if (accessible != args) {parent[key] = args; }
+          } else {
+            console.error('malformed Accessible resolution');
+          }
+        } else {
           return accessible;
+
         }
-      }
-      else{
-        console.error("not found accessible for :",addr)
+      } else {
+        console.error('not found accessible for :', saddr);
       }
     }
   }
 
-  public toJSONString(indent?:number){
-    return buildEscapedJSON(this,indent)
+  public toJSONString(indent?: number) {
+    return buildEscapedJSON(this, indent);
   }
 
 }

@@ -2,43 +2,45 @@ import { State, blackState, ResolvedFixtureState, MergedState } from './State';
 import { DirectFixture } from './Fixture';
 import { ChannelBase } from './Channel';
 import { Time, doTimer } from './Time';
-import { RemoteFunction,RemoteValue } from './ServerSync'
-
+import { RemoteFunction, RemoteValue, nonEnumerable } from './ServerSync';
+import rootState from './RootState';
 
 
 export class Sequence {
 
-  public timeIn: number = 0;
-  public hold: number = 0;
-  public timeOut: number = 0;
-  public stateName: string = 'none';
-  public __state?: State;
-  constructor(public name: string, state: string|State) {
-    //debugger
-    if (typeof state === 'string') {
-      this.stateName = state;
-    } else if (state) {
-      this.stateName = state.name;
-      this.__state = state;
-    }
-    else{
-      debugger
-    }
-  }
-
 
   public static createFromObj(o: any): any {
 
-    const seq = new Sequence(o.name || "no name", o.stateName);
-    seq.configureFromObj(o)
+    const seq = new Sequence(o.name || 'no name', o.stateName);
+    seq.configureFromObj(o);
     return seq;
     // o.pChannelValues.map( (oo: any) => res.pChannelValues.push(new ChannelWithValue(oo.channelName, oo.value)) );
     // return res;
   }
 
-  public configureFromObj(o:any){
-    for(const key in this){
-      if(o[key]!==undefined){
+  public timeIn: number = 0;
+  public hold: number = 0;
+  public timeOut: number = 0;
+  public stateName: string = 'none';
+
+  @nonEnumerable()
+  public __state?: State;
+
+  constructor(public name: string, state: string|State) {
+    // debugger
+    if (typeof state === 'string') {
+      this.stateName = state;
+    } else if (state) {
+      this.stateName = state.name;
+      this.__state = state;
+    } else {
+      debugger;
+    }
+  }
+
+  public configureFromObj(o: any) {
+    for (const key in this) {
+      if (o[key] !== undefined) {
         this[key] = o[key];
       }
     }
@@ -72,19 +74,45 @@ export class SequencePlayer {
   @RemoteValue()
   public playState: string = 'stopped';
 
-  @RemoteFunction({skipLocal:true})
-  public goTo(nSeq: Sequence, fl: DirectFixture[], stateResolver: (n: string) => State|undefined, sendValueCB: (f: ChannelBase, v: number) => void, cb: () => void): void {
-    this.nextSeq = nSeq;
-    const res = 10;
-    const transitionTime = Math.max(this.curSeq.timeOut, this.nextSeq.timeIn);
+  @RemoteFunction({skipClientApply: true})
+  public goToStateNamed(name: string, timeIn: number, cb?: () => void): void {
+    const seq = new Sequence('tmp', name);
+    seq.timeIn = timeIn;
+    this.goToSequence(seq);
+  }
+@RemoteFunction({skipClientApply: true})
+  public goToSequenceNamed(name: string, cb?: () => void): void {
 
+    const tSeq = rootState.sequenceList.find((s) => s.name === name);
+    if (!tSeq) {
+      console.error('seq not found');
+      return;
+    }
+    this.goToSequence(tSeq);
+
+  }
+
+
+  private goToSequence(seq: Sequence, cb?: any) {
+    this.nextSeq = seq;
+    const stateResolver = (n: string) => {
+      return rootState.stateList.states[n];
+    };
 
     // const timeOut =  this.curSeq.timeOut*1000;
     const timeIn =  this.nextSeq.timeIn * 1000;
     const nextState = this.nextSeq.resolveState(stateResolver);
+    if (nextState) {
+    this.goToState(nextState, this.nextSeq.timeIn, cb);
+  }
+  }
+
+  private goToState(nextState: State, timeIn: number, cb?: any) {
+    const res = 10;
 
     if (nextState) {
-      const nextStateResolved = nextState.resolveState(fl);
+      const transitionTime = Math.max(this.curSeq.timeOut, timeIn);
+      const nextStateResolved = nextState.resolveState(rootState.stateList.getCurrentFixtureList());
       const mergedState = new MergedState(nextStateResolved);
       mergedState.checkIntegrity();
       doTimer('seqTransition', transitionTime * 1000.0, res,
@@ -98,16 +126,17 @@ export class SequencePlayer {
             if ( ts.sourcev !== ts.targetv) {
               const diff = ts.targetv - ts.sourcev;
               const v = ts.sourcev + pctIn * diff;
-              sendValueCB(ts.channel, v);
+              ts.channel.setFloatValue(v, true);
+
               // channelDic[k].sendValue(v)
             }
 
           }
-
-
         },
+        cb,
         );
     }
   }
+
 
 }

@@ -13,3 +13,43 @@ export function buildEscapedObject(content: any, indent?: number) {
   return JSON.parse(buildEscapedJSON(content));
 }
 
+
+
+export function getCircular(o: any) {
+  const obCache: any[] = [];
+  const leafCache: any[] =  [];
+  const r = (value: any) => {
+    if (value === null) {return; }
+    if (typeof value === 'object' ) {
+      if (obCache.indexOf(value) !== -1) {
+        // Duplicate reference found, discard key
+        debugger;
+        return;
+      }
+      // Store value in our collection
+      obCache.push(value);
+      Object.values(value).map((vv) => r(vv));
+    } else {
+      leafCache.push(value);
+    }
+
+  };
+  r(o);
+  // JSON.stringify(o, (key, value) =>{
+  //   if (typeof value === 'object' && value !== null) {
+  //     if (obCache.indexOf(value) !== -1) {
+  //       // Duplicate reference found, discard key
+  //       debugger
+  //       return;
+  //     }
+  //     // Store value in our collection
+  //     obCache.push(value);
+  //   }
+  //   else{
+  //     leafCache.push(value)
+  //   }
+  //   return value;
+  // });
+  debugger;
+  return obCache.length + leafCache.length;
+}

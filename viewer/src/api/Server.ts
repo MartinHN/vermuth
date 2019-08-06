@@ -1,18 +1,24 @@
 import io from 'socket.io-client';
-import dmxServer from './DMX';
-import { bindClientSocket } from '@API/ServerSync';
+import dmxClient from './DMXClient';
+import { bindClientSocket,nonEnumerable } from '@API/ServerSync';
+import rootState from "@API/RootState"
+import {getCircular} from "@API/SerializeUtils"
 
 class Server {
-  private store: any;
-  private socket: any;
+  @nonEnumerable()
+  private __store: any;
+  @nonEnumerable()
+  private __socket: any;
   constructor() {
+    rootState.registerDMXController(dmxClient)
+    // getCircular(dmxServer)
 
   }
 
   public connect(store: any, serverIp: string) {
-    this.store = store;
+    this.__store = store;
     const socket = io(`http://${serverIp}:3000`);
-    this.socket = socket;
+    this.__socket = socket;
     store.dispatch('SET_CONNECTED_STATE', 'connecting');
 
     socket.on('connect', () => {
@@ -52,13 +58,13 @@ class Server {
 
       socket.emit('GET_ID');
 
-      dmxServer.subscribe(socket, store);
+      dmxClient.subscribe(socket, store);
 
     });
 
   }
   public getSocket() {
-    return this.socket;
+    return this.__socket;
   }
 
 

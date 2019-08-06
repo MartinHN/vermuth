@@ -98,26 +98,9 @@ export default class Sequences extends VuexModule {
     }
     @Action
     public goToSequence(sq: Sequence) {
-      const self = this;
+      player.goToSequenceNamed(sq.name)
 
-      player.goTo(
-        sq,
-        this.fixtureList,
-        (n: string) =>
-          self.context.getters.availableStates.find(
-            (st: State) => st.name === n,
-          ),
-        (channel: ChannelBase, value: number) => {
-          self.context.commit(
-            'fixtures/setChannelValue',
-            { channel, value },
-            { root: true },
-          );
-        },
-        () => {
-          this.context.commit('set____curSequence', sq);
-        },
-      );
+
     }
 
     get fixtureList() {

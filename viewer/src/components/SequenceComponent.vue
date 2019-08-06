@@ -4,7 +4,6 @@
     <text-input :value="seqName" @change="setSequenceName({sequence:sequence,value:$event.value})"/>
     <Numbox :value="sequence.timeIn" @change="setSequenceTimeIn({sequence:sequence,value:$event.value})"/>
     <v-select :items=stateNames :value="seqStateName" @change="setSequenceStateName({sequence:sequence,value:$event})" >
-      
     </v-select>
   </div>
 </template>

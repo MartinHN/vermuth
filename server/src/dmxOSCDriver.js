@@ -1,4 +1,6 @@
 const osc = require('osc');
+const util  = require('util');
+const EventEmitter = require('events').EventEmitter;
 
 function OSCDriver(deviceId = '127.0.0.1', options = {}) {
   const self = this;
@@ -72,5 +74,7 @@ OSCDriver.prototype.updateAll = function (v) {
 OSCDriver.prototype.get = function (c) {
   return this.universe[c];
 };
+
+util.inherits(OSCDriver, EventEmitter);
 
 module.exports = OSCDriver;
