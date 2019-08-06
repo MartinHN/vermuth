@@ -1,6 +1,6 @@
 const debug =  process.env.NODE_ENV !== 'production';
 const PORT = process.env.PORT || 3000;
-if(!debug)require('module-alias/register')(); // form module resolution
+if(!debug)require('module-alias/register'); // form module resolution
 import * as express from "express";
 import * as http from  'http';
 import * as io from 'socket.io'
