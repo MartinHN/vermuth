@@ -1,4 +1,6 @@
-import 'module-alias/register'; // form module resolution
+const debug =  process.env.NODE_ENV !== 'production';
+const PORT = process.env.PORT || 3000;
+if(!debug)require('module-alias/register')(); // form module resolution
 import * as express from "express";
 import * as http from  'http';
 import * as io from 'socket.io'
@@ -21,8 +23,6 @@ const path = require('path')
 
 const publicDir = path.resolve(__dirname,'..','public')
 console.log('served Folder  :' + publicDir)
-const debug =  process.env.NODE_ENV !== 'production';
-const PORT = process.env.PORT || 3000;
 
 const app = express();
 app.use(history());
@@ -95,6 +95,8 @@ function setStateFromObject(msg,socket:any){
   states[sessionID] = msg;
   states["lastSessionID"] = sessionID;
   rootState.configureFromObj(msg) 
+  debugger
+  states[sessionID] = rootState.toJSONObj() // update persistent changes
   // dmxController.stateChanged(msg)
   fs.writeFile(localStateFile, JSON.stringify(states,null,'  '),'utf8', (v)=>{if(v){console.log('file write error : ',v);}})
   

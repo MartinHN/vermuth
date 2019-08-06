@@ -9,7 +9,7 @@
     "debug": "vue-cli-service build --mode=debug --watch",
     "deploy": "npm run build && rsync -r -e ssh -avz --delete-after  ../server/public pi@lampignon1.local:vermuth/server/",
     "deploy2": "npm run build && rsync -r -e ssh -avz --delete-after  ../server/public pi@lampignon2.local:vermuth/server/",
-    "deploylogic": "npm run build && rsync -r -e ssh -avz --delete-after  ../server/public pi@radiologic.local:vermuth/server/"
+    "deploylogic": "npm run build && rsync -r -e ssh -avz --delete-after  ../server/public pi@radiologic.local:Documents/vermuth/server/dist/server/"
   },
   "dependencies": {
     "json-diff": "^0.5.4",

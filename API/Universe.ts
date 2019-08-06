@@ -64,7 +64,7 @@ export class Universe {
       deleteProp(this.fixtures, oldName);
       ff.setName(newName);
       addProp(this.fixtures, newName, ff);
-      setChildAccessible(this, ff.name);
+      setChildAccessible(this.fixtures, ff.name);
     });
     f.universe = this;
   }

@@ -223,6 +223,12 @@ export class StateList {
 
   }
 
+  public getResolvedStateNamed(n:string){
+    const s = this.states[n]
+    return  s.resolveState(this.getCurrentFixtureList());
+
+  }
+
   public getCurrentFixtureList() {
     return this.universe.fixtureList;
   }

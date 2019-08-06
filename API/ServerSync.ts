@@ -21,9 +21,9 @@ function safeBindSocket(s: any) {
       }
     }
     const remotesV = initRemoteValues(o);
-    remotesV.map(f=>f())
+    // remotesV.map(f=>f())
     const remotesF = initRemoteFunctions(o);
-    remotesF.map(f=>f())
+    // remotesF.map(f=>f())
     
     // initRemoteFunction(o)
   };
@@ -107,7 +107,8 @@ export function RemoteFunction(options?: {skipClientApply?: boolean}) {
       }
 
       if (!options || !(isClient && options.skipClientApply) ) {
-        res = method.apply(this, args);
+        debugger
+        res = method.call(this,...args);
       }
 
       return res;
@@ -160,8 +161,8 @@ export function RemoteValue(cb?: Function) {
         enumerable: false,
         configurable: false,
       });
-    } else if (target.__remoteCBs!==undefined) {
-      console.error('weird target __remoteValue already created');
+    } else if (target.__remoteCBs===undefined) {
+      console.error('weird target __remoteValue already created but no __remoteCBs');
       debugger;
     }
     target.__remoteCBs[key] = cb;
@@ -212,9 +213,10 @@ function initRemoteFunction(parent:any,k:string){
   if (parent.__initRemoteFunctionClosures[k]===undefined){
     let registredAddr = '';
     let registeredClientSocket:any = null
-    const listenerFunction = (...args:any[])=>{
+    const method  =parent[k];
+    const listenerFunction = (args:any[])=>{ // socket io send arg as array dont rest out
       AccessibleSettedByServer = parent[k]
-      parent[k](...args);
+      method.call(parent,...args);
       AccessibleSettedByServer = null
     }
     parent.__initRemoteFunctionClosures[k]  = () => {

@@ -4,7 +4,7 @@ import { Sequence, SequencePlayer } from './Sequence';
 import { StateList } from './State';
 import  DMXControllerI  from './DMXControllerI';
 import { bindClientSocket, RemoteFunction, SetAccessible, setChildAccessible, AccessibleClass, resolveAccessible, RemoteValue } from './ServerSync';
-import { buildEscapedJSON } from './SerializeUtils';
+import { buildEscapedJSON,buildEscapedObject } from './SerializeUtils';
 
 import {addProp} from '@API/MemoryUtils';
 
@@ -76,7 +76,7 @@ export class RootStateType {
       if (accessible !== undefined ) {
         if (typeof(accessible) === 'function') {
 
-          return accessible.apply(parent, args);
+          return accessible.apply(parent, ...args);
         } else if ( (args !== undefined && args !== null)) {
           if (parent && key) {
             if (accessible != args) {parent[key] = args; }
@@ -95,6 +95,9 @@ export class RootStateType {
 
   public toJSONString(indent?: number) {
     return buildEscapedJSON(this, indent);
+  }
+  public toJSONObj() {
+    return buildEscapedObject(this);
   }
 
 }

@@ -8,7 +8,7 @@ import { Settable } from '../util';
 export default class Config extends VuexModule {
 
   @Settable()
-  public autoSave: boolean = false;
+  public autoSave: boolean = true;
 
   @Action
   public configureFromObj(ob: any) {

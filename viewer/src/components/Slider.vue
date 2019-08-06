@@ -16,7 +16,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 })
 export default class Slider extends Vue {
   @Prop()
- public  name?: string;
+  public  name?: string;
   @Prop({default : false})public  showName?: boolean ; // =false;
   @Prop({default : true})public  showValue?: boolean ; // =false;
   @Prop({default : 3})public  precision?: number; // note 255 steps would be Math.log(254) / Math.log(10)
@@ -30,7 +30,14 @@ export default class Slider extends Vue {
   }
 
   get valToString(): string {
-      return this.value.toFixed(this.displayPrecision);
+    const valid = !Number.isNaN(this.value)
+    if(!valid){
+      console.error("Nan on slider");
+      debugger
+      return "0"
+    }
+    return this.value.toFixed(this.displayPrecision);
+    
 
   }
 }
@@ -71,33 +78,33 @@ export default class Slider extends Vue {
 
 
 input[type="range"] { 
-    margin: auto;
-    -webkit-appearance: none;
-    position: relative;
-    overflow: hidden;
-    height: 30px;
-    width: 100%;
-    cursor: pointer;
-    border-radius: 0; /* iOS */
-    border: black;
-    border-width: 1px;
-    border-style: solid;
+  margin: auto;
+  -webkit-appearance: none;
+  position: relative;
+  overflow: hidden;
+  height: 30px;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 0; /* iOS */
+  border: black;
+  border-width: 1px;
+  border-style: solid;
 }
 
 ::-webkit-slider-runnable-track {
-    background: #ddd;
+  background: #ddd;
 }
 
 /*
  * 1. Set to 0 width and remove border for a slider without a thumb
  */
-::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 0px; /* 1 */
-    height: 30px;
-    background: #fff;
-    box-shadow: -100vw 0 0 100vw dodgerblue;
-    /*border: 2px solid #999; /* 1 */
+ ::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 0px; /* 1 */
+  height: 30px;
+  background: #fff;
+  box-shadow: -100vw 0 0 100vw dodgerblue;
+  /*border: 2px solid #999; /* 1 */
 }
 
 .inactive::-webkit-slider-thumb {
@@ -106,26 +113,26 @@ input[type="range"] {
 
 
 ::-moz-range-track {
-    height: 30px;
-    background: #ddd;
+  height: 30px;
+  background: #ddd;
 }
 
 ::-ms-ticks-after { 
-    display: none; 
+  display: none; 
 }
 
 ::-ms-ticks-before { 
-    display: none; 
+  display: none; 
 }
 
 ::-ms-track { 
-    background: #ddd;
-    color: transparent;
-    height: 30px;
-    border: none;
+  background: #ddd;
+  color: transparent;
+  height: 30px;
+  border: none;
 }
 
 ::-ms-tooltip { 
-    display: none;
+  display: none;
 }
 </style>

@@ -65,6 +65,8 @@ class DMXController implements DMXControllerI{
     })
   }
 
+
+
   constructor(){
 
     this.dmx.registerDriver('QLC',OSCDriver)
@@ -81,9 +83,13 @@ class DMXController implements DMXControllerI{
     UniverseListener.on('channelChanged', (c,v)=>{this.setCircs([{c,v}],null)});
 
   }
+
+  broadcastState(){
+    // this.ioServer.broadcast("SET_STATE",rootState)
+  }
   configureFromObj(o:any){
     for(const k in this){
-      if(o[k]){
+      if(o[k] && k!=="driverList" && k!=="portList"){
         this[k] = o[k]
       }
     }
