@@ -1,8 +1,10 @@
 var DMX = require ('dmx')
 var SerialPort = require('serialport')
 const OSCDriver = require('./dmxOSCDriver')
+const needCustomPiLibs = process.env.CUSTOM_PI_DRIVERS
 const GPIODriver = require('./dmxGPIODriver')
 const SolenoidDriver = require('./dmxSolenoidDriver')
+
 var io = require('socket.io')
 import log from './remoteLogger'
 const isPi = require('detect-rpi')();
@@ -66,8 +68,10 @@ class DMXController implements DMXControllerI{
   constructor(){
 
     this.dmx.registerDriver('QLC',OSCDriver)
-    this.dmx.registerDriver('GPIO',GPIODriver)
-    this.dmx.registerDriver('Solenoid',SolenoidDriver)
+    if(needCustomPiLibs){
+      this.dmx.registerDriver('GPIO',GPIODriver)
+      this.dmx.registerDriver('Solenoid',SolenoidDriver)
+    }
     delete this.dmx.drivers['bbdmx']
     this.getAvailableDevices().then((v,err)=>{
       if(err){console.error(err);}

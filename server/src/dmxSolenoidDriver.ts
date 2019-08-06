@@ -1,5 +1,7 @@
-const GPIODriverClass = require('./dmxGPIODriver')
 import dmxController from './dmxController'
+if(process.env.CUSTOM_PI_DRIVERS){
+  const GPIODriverClass = require('./dmxGPIODriver')
+
 
 var SolenoidDriver = function() {};
 
@@ -50,3 +52,7 @@ SolenoidDriver.prototype = proto
 
 
 module.exports = SolenoidDriver;
+}
+else{
+  module.exports ={}
+}

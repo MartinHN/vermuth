@@ -1,4 +1,6 @@
-const isPi = require('detect-rpi')();
+if(process.env.CUSTOM_PI_DRIVERS){
+  const isPi = require('detect-rpi')();
+
 function createGpio(i){
   if(isPi && (i >=2 || i<=27)){
     const Gpio = require('pigpio').Gpio;
@@ -106,3 +108,7 @@ GPIODriver.prototype.get = function (c) {
 };
 
 module.exports = GPIODriver;
+}
+else{
+  module.exports = {};
+}
