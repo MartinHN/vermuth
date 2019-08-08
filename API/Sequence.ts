@@ -1,7 +1,7 @@
 import { State, blackState, ResolvedFixtureState, MergedState } from './State';
 import { DirectFixture } from './Fixture';
 import { ChannelBase } from './Channel';
-import { Time, doTimer } from './Time';
+import {  doTimer } from './Time';
 import { RemoteFunction, RemoteValue, nonEnumerable } from './ServerSync';
 import rootState from './RootState';
 
@@ -22,6 +22,7 @@ export class Sequence {
   public hold: number = 0;
   public timeOut: number = 0;
   public stateName: string = 'none';
+  
 
   @nonEnumerable()
   public __state?: State;
@@ -100,7 +101,7 @@ export class SequencePlayer {
     };
 
     // const timeOut =  this.curSeq.timeOut*1000;
-    const timeIn =  this.nextSeq.timeIn * 1000;
+    const timeIn =  this.nextSeq.timeIn ;
     const nextState = this.nextSeq.resolveState(stateResolver);
     if (nextState) {
     this.goToState(nextState, this.nextSeq.timeIn, cb);
@@ -108,24 +109,24 @@ export class SequencePlayer {
   }
 
   private goToState(nextState: State, timeIn: number, cb?: any) {
-    const res = 10;
+    const res = 50; // ms between steps
 
     if (nextState) {
       const transitionTime = Math.max(this.curSeq.timeOut, timeIn);
       const nextStateResolved = nextState.resolveState(rootState.stateList.getCurrentFixtureList());
       const mergedState = new MergedState(nextStateResolved);
       mergedState.checkIntegrity();
-      doTimer('seqTransition', transitionTime * 1000.0, res,
+       doTimer('seqTransition', transitionTime * 1000.0, res,
         (total: number, t: number) => {
           const pct = t * 1.0 / total;
           const time = t * res;
-          const pctIn = timeIn > 0 ? (1 - Math.max(0, (timeIn - time) / timeIn)) : 1;
+          // const pctIn = timeIn > 0 ? (1 - Math.max(0, (timeIn - time) / timeIn)) : 1;
           // const pctOut = timeOut>0?Math.max(0,(timeOut-time)/timeOut):0;
 
           for (const ts of mergedState.channels) {
             if ( ts.sourcev !== ts.targetv) {
               const diff = ts.targetv - ts.sourcev;
-              const v = ts.sourcev + pctIn * diff;
+              const v = ts.sourcev + pct * diff;
               ts.channel.setFloatValue(v, true);
 
               // channelDic[k].sendValue(v)

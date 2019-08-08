@@ -28,13 +28,13 @@ class DMXClient implements DMXControllerI {
   @RemoteValue()
   public selectedPortName ="none";
   // @RemoteValue()
-  public portList:string[] = [];
+  public portNameList:string[] = [];
   @RemoteValue()
   public selectedDriverName:string = "none";
   // @RemoteValue()
   public driverList:string[] = [];
   @RemoteValue()
-  public connected:boolean = false;
+  public __connected:boolean = false;
 
   @RemoteFunction()
   setCircs(msg: Array<{c: number, v: number}>, fromSocket:any){};

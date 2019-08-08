@@ -1,6 +1,6 @@
 
 const isClient = process.env.VUE_APP_ISCLIENT;
-console.log("process env",process.env) // totaly unsafe code but well...
+//console.log("process env",process.env) // totaly unsafe code but well...
 function getVue() {
   if (!isClient) {return false; }
   try {

@@ -64,7 +64,7 @@ export class RootStateType {
     this.__isConfigured = validObj;
   }
 
-  public callMethod(saddr: string, args: any[]) {
+  public callMethod(saddr: string, args: any[]) {// args is passed as array
     if (saddr[0] === '/') {
       const addr = saddr.split('/');
 
@@ -75,8 +75,12 @@ export class RootStateType {
 
       if (accessible !== undefined ) {
         if (typeof(accessible) === 'function') {
-
-          return accessible.apply(parent, ...args);
+          // if(args && args.length){
+            return accessible.call(parent, ...args);
+          // }
+          // else{
+          //   return accessible.apply(parent);
+          // }
         } else if ( (args !== undefined && args !== null)) {
           if (parent && key) {
             if (accessible != args) {parent[key] = args; }

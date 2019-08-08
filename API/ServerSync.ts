@@ -107,7 +107,7 @@ export function RemoteFunction(options?: {skipClientApply?: boolean}) {
       }
 
       if (!options || !(isClient && options.skipClientApply) ) {
-        debugger
+        // debugger
         res = method.call(this,...args);
       }
 

@@ -61,7 +61,8 @@ export class ChannelBase implements ChannelI {
   private __value: ChannelValueType = 0;
 
   constructor(public name: string, __value: ChannelValueType  , public circ: number= 0, public _enabled: boolean= true) {
-    this.__value = __value;
+    if(!__value)__value = 0 // ensure numeric
+    this.setValueChecking(__value)
   }
 
   public configureFromObj(ob: any) {
@@ -83,7 +84,7 @@ export class ChannelBase implements ChannelI {
     }
     if (this.__value !== v) {
 
-      this.__value = v;
+      this.setValueChecking(v);
       if (doNotify) {UniverseListener.notify(this.trueCirc, this.__value); }
       return true;
     } else {
@@ -131,6 +132,17 @@ export class ChannelBase implements ChannelI {
       }
     }
     this.hasDuplicatedCirc = false;
+  }
+
+  private setValueChecking(__value){
+    if(__value===undefined){
+      debugger
+      console.error("undefined val")
+      this.__value = 0;
+    }
+    else{
+      this.__value = __value;
+    }
   }
 
 

@@ -9,7 +9,7 @@ export function  doTimer(name: string, length: number, resolution: number, onins
   const start = new Date().getTime();
 
   function instance() {
-    if (count++ === steps) {
+    if (++count === steps) {
       oninstance(steps, count);
       if (oncomplete) {oncomplete(); }
     } else {
@@ -20,19 +20,17 @@ export function  doTimer(name: string, length: number, resolution: number, onins
     }
   }
   oninstance(steps, count);
-  if (timers[name]) {
-    clearTimeout(timers[name]);
-  }
+  stopTimer(name)
   timers[name] = setTimeout(instance, speed);
 }
 
-class TimeClass {
-
-  constructor() {
-
+export function stopTimer(name:string){
+    if (timers[name]) {
+    clearTimeout(timers[name]);
+    delete timers[name]
   }
-
 }
 
 
-export const Time = new TimeClass();
+
+

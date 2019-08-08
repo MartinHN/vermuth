@@ -14,7 +14,7 @@ export default class DMXConfig extends VuexModule {
   // @Settable()
   public get portList(){
     //fetchRemote(this.dmxClientC,"portList");
-    return this.dmxClientC.portList
+    return this.dmxClientC.portNameList
   } ;
   // @Settable()
   public get driverList(){
@@ -59,7 +59,7 @@ export default class DMXConfig extends VuexModule {
   public refreshPortList() {
     if (this.isConnected()) {
       
-        fetchRemote(this.dmxClientC,"portList");
+        fetchRemote(this.dmxClientC,"portNameList");
       
     } else {
       console.error('not connected');
