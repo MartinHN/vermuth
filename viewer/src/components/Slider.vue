@@ -30,14 +30,14 @@ export default class Slider extends Vue {
   }
 
   get valToString(): string {
-    const valid = !Number.isNaN(this.value)
-    if(!valid){
-      console.error("Nan on slider");
-      debugger
-      return "0"
+    const valid = !Number.isNaN(this.value) && this.value.toFixed;
+    if (!valid) {
+      console.error('Nan on slider');
+      debugger;
+      return '0';
     }
     return this.value.toFixed(this.displayPrecision);
-    
+
 
   }
 }

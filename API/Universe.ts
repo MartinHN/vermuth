@@ -2,7 +2,7 @@ import { FixtureBase } from './Fixture';
 import { ChannelBase } from './Channel';
 import { getNextUniqueName } from './Utils';
 import { addProp, deleteProp } from './MemoryUtils';
-import { SetAccessible, setChildAccessible, AccessibleClass } from './ServerSync';
+import { SetAccessible, setChildAccessible, AccessibleClass ,RemoteFunction} from './ServerSync';
 
 @AccessibleClass()
 export class Universe {
@@ -88,11 +88,16 @@ export class Universe {
       }
     }
   }
+
   public get allChannels() {
     // console.log('fliiiiist',this.fixtureList.map(f=>f.channels))
     return this.fixtureList.map((f) => f.channels).flat();
   }
 
+  @RemoteFunction({sharedFunction: true})
+  public setAllColor(color:{r:number,g:number,b:number}){
+    this.fixtureList.map((f) => f.setColor(color));
+  }
 
   public testDimmerNum(d: number) {
     if (this.testedChannel.circ >= 0) {

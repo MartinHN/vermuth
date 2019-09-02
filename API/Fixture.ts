@@ -2,7 +2,7 @@ import { ChannelBase } from './Channel';
 import { Universe } from './Universe';
 import { getNextUniqueName } from './Utils';
 const EventEmitter = require('events').EventEmitter;
-import { RemoteFunction, SetAccessible, AccessibleClass, setChildAccessible, nonEnumerable } from './ServerSync';
+import { RemoteFunction, RemoteValue, SetAccessible, AccessibleClass, setChildAccessible, nonEnumerable } from './ServerSync';
 
 type ChannelValueType = ChannelBase['__value'];
 interface FixtureBaseI {
@@ -64,8 +64,9 @@ export class FixtureBase implements FixtureBaseI {
 
 
 
-
+  @RemoteValue()
   public enabled = true;
+  @RemoteValue()
   public globalValue = 0;
 
   @nonEnumerable()
@@ -75,6 +76,7 @@ export class FixtureBase implements FixtureBaseI {
   public readonly channels = new Array<ChannelBase>();
   protected ftype = 'base';
 
+  @RemoteValue()
   private _baseCirc = 0;
 
   @nonEnumerable()
@@ -90,7 +92,7 @@ export class FixtureBase implements FixtureBaseI {
   }
   public configureFromObj(ob: any) {
 
-    if (ob.baseCirc !== undefined) {this.baseCirc = ob.baseCirc; }
+    if (ob._baseCirc !== undefined) {this.baseCirc = ob._baseCirc; }
     if (ob.channels !== undefined) {
       this.channels.map((c: ChannelBase) => this.removeChannel(c));
       ob.channels.map((c: any) => this.addChannel(ChannelBase.createFromObj(c)));
@@ -111,12 +113,22 @@ export class FixtureBase implements FixtureBaseI {
   }
 
 
-  @RemoteFunction()
+  @RemoteFunction({sharedFunction: true})
   public setMaster(v: ChannelValueType) {
     this.globalValue = v;
     // debugger
     this.syncToGlobalValue(v);
   }
+
+  @RemoteFunction({sharedFunction: true})
+  public setColor(c:{r:number,g:number,b:number}){
+    for(const ch of this.channels ){
+      if(ch.name==="r"){ch.setValue(c.r,false);}
+      else if(ch.name==="g"){ch.setValue(c.g,false);}
+      else if(ch.name==="b"){ch.setValue(c.b,false);}
+    }
+  }
+  
 
   public syncToGlobalValue(v: ChannelValueType) {
     if (this.channels) {

@@ -90,7 +90,8 @@ const autosaverPlugin = (pStore: Store<RootVueState>) => {
     state = state as FullVueState;
     if (mutation.type.startsWith('config')) {
       localFS.save(state.config, configKey, () => {});
-    } else if (!state.loadingState && (state.savedStatus === 'Saved' || state.savedStatus === '' ) && state.config.autoSave && mutation.type.includes('/') ) {
+    } 
+    else if (!state.loadingState && (state.savedStatus === 'Saved' || state.savedStatus === '' ) && state.config.autoSave && mutation.type.includes('/') ) {
       if ( mutation.type.endsWith('Value') ) {
         // console.log('ignoring value changes ' + mutation);
         return;
@@ -108,7 +109,7 @@ const autosaverPlugin = (pStore: Store<RootVueState>) => {
         if (!state.loadingState ) {
          pStore.dispatch('SAVE_REMOTELY', sessionState);
        }
-        pStore.commit('SET_SAVE_STATUS', 'Saved');
+       pStore.commit('SET_SAVE_STATUS', 'Saved');
 
      });
 
@@ -179,7 +180,7 @@ const store: StoreOptions<RootVueState> = {
         })
         .catch((err) => {
           debugger;
-          console.log('can\'t loadState',err);
+          console.log('can\'t loadState', err);
         });
       }
     },
@@ -188,53 +189,53 @@ const store: StoreOptions<RootVueState> = {
         context.commit('SET_LOADING_STATE', true);
         context.dispatch('rootStateModule/configureFromObj', newState);
         // ['rootState', 'DMXConfig'].forEach((el) => {
-        //   if (newState[el]) {
-        //     context.dispatch('' + el + '/configureFromObj', newState[el]);
-        //   }
-        // });
-        context.commit('SET_LOADING_STATE', false);
-      }
-    },
-    UPDATE_SESSION_STATE(context, difObj) {
-      // if(difObj){
-        // context.commit('SET_LOADING_STATE',true);
-        // context.commit('universes/fromObj', difObj.universes);
-        // context.dispatch('states/fromObj', difObj.states);
-        // context.dispatch('DMXConfig/fromObj', difObj.states);
-        // context.dispatch('sequence/fromObj', difObj.sequence);
-        // context.commit('SET_LOADING_STATE',false);
-        // }
-      },
-      SET_CONFIG_STATE(context, newState) {
-        if (newState) {
-          context.commit('SET_LOADING_STATE', true);
-          context.dispatch('config/configureFromObj', newState);
-          context.commit('SET_LOADING_STATE', false);
-        }
-      },
-      SAVE_REMOTELY(context, pl: any) {
-        serverFS().save(pl, 'session');
-      },
-      SAVE_LOCALLY(context, pl: any) {
-        const newStateString = buildEscapedJSON(getSessionObject(), 2);
-        downloadObjectAsJSON(newStateString, 'state');
-      },
+          //   if (newState[el]) {
+            //     context.dispatch('' + el + '/configureFromObj', newState[el]);
+            //   }
+            // });
+            context.commit('SET_LOADING_STATE', false);
+          }
+        },
+        UPDATE_SESSION_STATE(context, difObj) {
+          // if(difObj){
+            // context.commit('SET_LOADING_STATE',true);
+            // context.commit('universes/fromObj', difObj.universes);
+            // context.dispatch('states/fromObj', difObj.states);
+            // context.dispatch('DMXConfig/fromObj', difObj.states);
+            // context.dispatch('sequence/fromObj', difObj.sequence);
+            // context.commit('SET_LOADING_STATE',false);
+            // }
+          },
+          SET_CONFIG_STATE(context, newState) {
+            if (newState) {
+              context.commit('SET_LOADING_STATE', true);
+              context.dispatch('config/configureFromObj', newState);
+              context.commit('SET_LOADING_STATE', false);
+            }
+          },
+          SAVE_REMOTELY(context, pl: any) {
+            serverFS().save(pl, 'session');
+          },
+          SAVE_LOCALLY(context, pl: any) {
+            const newStateString = buildEscapedJSON(getSessionObject(), 2);
+            downloadObjectAsJSON(newStateString, 'state');
+          },
 
 
-    },
-    getters: {
+        },
+        getters: {
 
-      isConnected(state, getters) {
-        return state.connectedState === 'connected';
-      },
-    },
+          isConnected(state, getters) {
+            return state.connectedState === 'connected';
+          },
+        },
 
-    strict: false,
-    plugins: [autosaverPlugin],
-    // plugins: debug ? [createLogger()] : []
-  };
+        strict: false,
+        plugins: [autosaverPlugin],
+        // plugins: debug ? [createLogger()] : []
+      };
 
 
-export default new Vuex.Store<RootVueState>(store);
+      export default new Vuex.Store<RootVueState>(store);
 
 

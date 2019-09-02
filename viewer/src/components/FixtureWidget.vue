@@ -34,6 +34,8 @@ export default class FixtureWidget extends Vue {
   @universesModule.Mutation('setFixtureName') public setFixtureName!: UniversesMethods['setFixtureName'];
 
   @universesModule.Mutation('setFixtureValue') public setFixtureValue!: UniversesMethods['setFixtureValue'];
+  @universesModule.Mutation('setFixtureColor') public setFixtureColor!: UniversesMethods['setFixtureColor'];
+  
   @universesModule.Mutation('setChannelValue') public setChannelValue!: UniversesMethods['setChannelValue'];
 
 
@@ -68,10 +70,9 @@ export default class FixtureWidget extends Vue {
 
   }
   private debouncedColorSetter = _.debounce((c: string) => {
-    const rgb: any = hexToRgb(c);
-    for ( c of ['r', 'g', 'b']) {
-      this.setChannelValue({channel: this.colorChannels[c], value: rgb[c] / 255.0, dontNotify: false});
-    }
+    const color: any = hexToRgb(c,true)
+    this.setFixtureColor({fixture:this.fixtureProp,color})
+
 
   },
   50,

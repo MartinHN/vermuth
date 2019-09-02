@@ -1,7 +1,7 @@
 const osc = require('osc');
 
 import rootState from '@API/RootState'
-
+import { callAnyAccessibleFromRemote } from '@API/ServerSync'
 
 /****************
  * OSC Over UDP *
@@ -54,8 +54,8 @@ class OSCServer {
         console.log(" Host:", address + ", Port:", udpPort.options.localPort);
       });
     });
-    udpPort.on("bundle", this.processBundle);
-    udpPort.on("message", this.processMsg);
+    udpPort.on("bundle", this.processBundle.bind(this));
+    udpPort.on("message", this.processMsg.bind(this));
 
     udpPort.on("error", function (err) {
       console.error(err);
@@ -68,22 +68,17 @@ class OSCServer {
   }
 
   processMsg (msg,time,info) {
+    if(msg.address==="/ping"){
+      this.udpPort.send({address:"/pong"})
+      return
+    }
+    else if(msg.address==="/allColors"){
+      dmxController.setAllColor({r:msg.args[0],g:msg.args[1],b:msg.args[2]})
+    }
+    else{
+      callAnyAccessibleFromRemote(rootState,msg.address,msg.args,true)
+    }
 
-    rootState.callMethod(msg.address,msg.args)
-    // if(msg.address==="/circ"){
-    //   dmxController.setCircs([{c:msg.args[0],v:msg.args[1]}],null)
-    // }
-    // else if(msg.address==="/channel"){
-    //   dmxController.setChannelsFromId({id:msg.args[0],v:msg.args[1]},null)
-    // }
-    // else if(msg.address==="/ping"){
-    //   console.log('rcvd ping from '+JSON.stringify(info));
-    //    this.udpPort.send({address:"/pong",args:[]},info.address,info.port)
-    // }
-    // else if(msg.address==="/seq"){
-    //   // TODO
-    //   RootState.
-    // }
   }
 
   processBundle(b,time,info){

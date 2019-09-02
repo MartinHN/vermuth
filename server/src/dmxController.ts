@@ -66,10 +66,12 @@ class DMXController implements DMXControllerI{
       SerialPort.list().then((l)=>{
         this.availableDevices = l;
         this.portNameList = l.map(c=>c.comName);
+        
         resolve(l)
         // console.log(this.portNameList);
       }).
       catch(e=>{
+        console.error(e)
         reject(e)
       })
     })
@@ -104,15 +106,16 @@ class DMXController implements DMXControllerI{
 
   watchSerialPorts(){
     if(!this.__portWatch){
-      this.__portWatch = setInterval(()=>{
+      const fn = ()=>{
         this.registerAvailableDevices().then(()=>{
           if(!this.__connected && this.selectedPortName in this.portNameList){
             this.connectToDevice()
           }
           
         })
-      },
-      2000)
+      }
+      fn()
+      this.__portWatch = setInterval(fn,2000)
     }
 
   }
@@ -135,8 +138,13 @@ class DMXController implements DMXControllerI{
     }.bind(this))
   }
 
+  setAllColor(color:{r:number,g:number,b:number}){
+    if(this.__universe){
+      this.__universe.setAllColor(color)
+    }
+  }
   setCircs(msg:{c:number,v:number}[],fromSocket){
-    console.log('set_circ',msg,this.__connected)
+    // console.log('set_circ',msg,this.__connected)
 
     const allC = this.__universe.allChannels
     // msg.map(m=>{allC.map(cc=>{if(cc.circ === m.c){cc.setValue(m.v,false)}})})
@@ -146,6 +154,7 @@ class DMXController implements DMXControllerI{
       // debugger
 
     }else{
+
       this.dmx.update(this.universeName,this.arrayToObj(msg,255))
     }
     
@@ -204,16 +213,8 @@ class DMXController implements DMXControllerI{
       console.log('successfully connected to '+uri);
       this.dmx.update(this.universeName,this.activeChannels.map(c=>{return [c.trueCirc,c.intValue]}))
       
-    
-      // if(this.__ioServer)this.__ioServer.emit('DMX/SET_ISCONNECTED',this.__connected);
-    }
-    const errorCB = () =>{
-      this.watchSerialPorts()
-      console.log('cant connect to '+uri);
-      this.__connected = false;
-      this.dmx.close()
-      // this.selectedDriverName = ""
 
+      // if(this.__ioServer)this.__ioServer.emit('DMX/SET_ISCONNECTED',this.__connected);
     }
     const closeCB = ()=>{
       console.log('connection closed '+uri);
@@ -221,6 +222,16 @@ class DMXController implements DMXControllerI{
       // this.selectedDriverName = ""
 
     }
+    const errorCB = () =>{
+      this.watchSerialPorts()
+      console.log('cant connect to '+uri);
+      this.__connected = false;
+      this.dmx.universes[this.universeName].stop();
+      this.dmx.universes[this.universeName].close(closeCB)
+      // this.selectedDriverName = ""
+
+    }
+    
     try{
       uni = this.dmx.addUniverse(this.universeName, this.selectedDriverName, this.selectedPortName|| "", options)
       //log.log("universe "+JSON.stringify(uni))

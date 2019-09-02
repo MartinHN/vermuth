@@ -5,11 +5,12 @@ import * as express from "express";
 import * as http from  'http';
 import * as io from 'socket.io'
 import OSCServer from './OSCServer'
-OSCServer.connect(4444);
+OSCServer.connect(11000);
 //import {getter, setter} from './types'
 import dmxController from './dmxController'
 
 import rootState from '@API/RootState'
+import { callAnyAccessibleFromRemote } from '@API/ServerSync'
 rootState.registerDMXController(dmxController)
 
 
@@ -22,7 +23,7 @@ const fs = require('fs');
 const path = require('path')
 
 const publicDir = path.resolve(__dirname,'..','public')
-console.log('served Folder  :' + publicDir)
+console.log('served Folder  :' + publicDir,__dirname)
 
 const app = express();
 app.use(history());
@@ -95,7 +96,6 @@ function setStateFromObject(msg,socket:any){
   states[sessionID] = msg;
   states["lastSessionID"] = sessionID;
   rootState.configureFromObj(msg) 
-  debugger
   states[sessionID] = rootState.toJSONObj() // update persistent changes
   // dmxController.stateChanged(msg)
   fs.writeFile(localStateFile, JSON.stringify(states,null,'  '),'utf8', (v)=>{if(v){console.log('file write error : ',v);}})
@@ -112,21 +112,32 @@ function setStateFromObject(msg,socket:any){
 
 }
 
-
+if(debug && process.env.LOG_SOCKET_FILE){
+    const logFile =  process.env.LOG_SOCKET_FILE
+    fs.unlinkSync(logFile)
+}
 ioServer.on('connection', function(socket){
-  console.log('a user connected',socket.id);
+  console.log('a user connected',socket.id,debug);
   log.bindToSocket(socket)
+  if(debug ){
+    const log = require('@API/Logger').default
+    socket.use((packet,next)=>{
+      log.log("client >> server "+JSON.stringify(packet)+"\n")
+      next()
+    })
+  }
   socket.use((packet, next) => {
     if(packet && packet[0] && packet[0][0]==="/"){
-      const res = rootState.callMethod(packet[0],packet[1])
-      if(res!==undefined){
+      const res = callAnyAccessibleFromRemote(rootState,packet[0],packet[1])
+      if(res!==undefined && !packet[1]){//catch only getters (not function)
         socket.emit(packet[0],res)
-        return
+        // return
       }
       
     }
     return next();
   });
+
   socket.on('disconnect', ()=>{
     console.log('user disconnected',socket.id);
   });

@@ -20,14 +20,14 @@ export function  doTimer(name: string, length: number, resolution: number, onins
     }
   }
   oninstance(steps, count);
-  stopTimer(name)
+  stopTimer(name);
   timers[name] = setTimeout(instance, speed);
 }
 
-export function stopTimer(name:string){
+export function stopTimer(name: string) {
     if (timers[name]) {
     clearTimeout(timers[name]);
-    delete timers[name]
+    delete timers[name];
   }
 }
 

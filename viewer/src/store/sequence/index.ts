@@ -98,7 +98,7 @@ export default class Sequences extends VuexModule {
     }
     @Action
     public goToSequence(sq: Sequence) {
-      player.goToSequenceNamed(sq.name)
+      player.goToSequenceNamed(sq.name);
 
 
     }

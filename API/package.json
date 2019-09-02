@@ -3,11 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "debug": "vue-cli-service build --mode=debug --watch",
-    "watch": "npm run build && rsync -r -e ssh -avz --delete-after  ../server/public pi@lampignon1.local:vermuth/server/"
+    "build": "",
+    "lint": "tslint --project . --fix"
   },
   "dependencies": {
     "json-diff": "^0.5.4",

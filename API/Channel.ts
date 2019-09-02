@@ -61,8 +61,8 @@ export class ChannelBase implements ChannelI {
   private __value: ChannelValueType = 0;
 
   constructor(public name: string, __value: ChannelValueType  , public circ: number= 0, public _enabled: boolean= true) {
-    if(!__value)__value = 0 // ensure numeric
-    this.setValueChecking(__value)
+    if (!__value) {__value = 0; } // ensure numeric
+    this.setValueChecking(__value);
   }
 
   public configureFromObj(ob: any) {
@@ -72,12 +72,9 @@ export class ChannelBase implements ChannelI {
     if (ob.reactToMaster !== undefined) {this.reactToMaster = ob.reactToMaster; }
   }
 
+
   @RemoteFunction()
-  public setValue(v: ChannelValueType, doNotify: boolean) {
-    return this.setFloatValue(v, doNotify);
-  }
-  @RemoteFunction()
-  public setFloatValue(v: number, doNotify: boolean) {
+  public setValue(v: number, doNotify: boolean) {
     if (Number.isNaN(v)) {
       console.error('Nan error');
       return false;
@@ -92,12 +89,12 @@ export class ChannelBase implements ChannelI {
     }
   }
 
-  public setIntValue(nvalue: number, doNotify: boolean) {
-    return this.setFloatValue(nvalue / 255, doNotify);
-  }
 
+  @RemoteFunction()
   public setCirc(n: number) {
+    UniverseListener.notify(this.trueCirc, 0);
     this.circ = n;
+    UniverseListener.notify(this.trueCirc, this.__value);
     this.checkDuplicatedCirc();
   }
 
@@ -134,13 +131,12 @@ export class ChannelBase implements ChannelI {
     this.hasDuplicatedCirc = false;
   }
 
-  private setValueChecking(__value){
-    if(__value===undefined){
-      debugger
-      console.error("undefined val")
-      this.__value = 0;
-    }
-    else{
+  private setValueChecking(__value: number) {
+    if (typeof __value !== 'number') {
+      console.error('wrong valval');
+      debugger;
+      // this.__value = 0;
+    } else {
       this.__value = __value;
     }
   }

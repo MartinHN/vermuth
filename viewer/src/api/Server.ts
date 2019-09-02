@@ -1,8 +1,8 @@
 import io from 'socket.io-client';
 import dmxClient from './DMXClient';
-import { bindClientSocket,nonEnumerable } from '@API/ServerSync';
-import rootState from "@API/RootState"
-import {getCircular} from "@API/SerializeUtils"
+import { bindClientSocket, nonEnumerable } from '@API/ServerSync';
+import rootState from '@API/RootState';
+import {getCircular} from '@API/SerializeUtils';
 
 class Server {
   @nonEnumerable()
@@ -10,7 +10,7 @@ class Server {
   @nonEnumerable()
   private __socket: any;
   constructor() {
-    rootState.registerDMXController(dmxClient)
+    rootState.registerDMXController(dmxClient);
     // getCircular(dmxServer)
 
   }

@@ -1,10 +1,10 @@
 
 import { Universe } from './Universe';
-import { Sequence, SequencePlayer } from './Sequence';
+import { Sequence, sequencePlayer } from './Sequence';
 import { StateList } from './State';
-import  DMXControllerI  from './DMXControllerI';
+import DMXControllerI from './DMXControllerI';
 import { bindClientSocket, RemoteFunction, SetAccessible, setChildAccessible, AccessibleClass, resolveAccessible, RemoteValue } from './ServerSync';
-import { buildEscapedJSON,buildEscapedObject } from './SerializeUtils';
+import { buildEscapedJSON, buildEscapedObject } from './SerializeUtils';
 
 import {addProp} from '@API/MemoryUtils';
 
@@ -17,9 +17,10 @@ export class RootStateType {
   // DMXConfig: DMXConfig;
   @SetAccessible()
   public readonly universe = new Universe();
+  @SetAccessible()
   public readonly sequenceList = new Array<Sequence>();
   @SetAccessible()
-  public  readonly sequencePlayer = new SequencePlayer();
+  public readonly sequencePlayer = sequencePlayer;
   @SetAccessible()
   public readonly stateList  = new StateList(this.universe);
 
@@ -83,7 +84,7 @@ export class RootStateType {
           // }
         } else if ( (args !== undefined && args !== null)) {
           if (parent && key) {
-            if (accessible != args) {parent[key] = args; }
+            if (accessible !== args) {parent[key] = args; }
           } else {
             console.error('malformed Accessible resolution');
           }

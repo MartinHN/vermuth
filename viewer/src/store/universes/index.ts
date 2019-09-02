@@ -49,15 +49,21 @@ export default class Universes extends VuexModule {
   public setFixtureValue(pl: {fixture: FixtureBase, value: number}) {
     pl.fixture.setMaster(pl.value);
   }
+    @Mutation
+  public setFixtureColor(pl: {fixture: FixtureBase, color: {r:number,g:number,b:number} }) {
+    pl.fixture.setColor(pl.color);
+  }
 
   @Mutation
   public setChannelReactToMaster(pl: {channel: ChannelBase, value: boolean}) {
     pl.channel.reactToMaster = pl.value ? true : false;
   }
+
   @Mutation
   public setFixtureBaseCirc(pl: {fixture: FixtureBase, circ: number}) {
     pl.fixture.baseCirc = pl.circ;
   }
+  
   @Mutation
   public removeFixture(pl: {fixture: FixtureType}) {
     this.universe.removeFixture(pl.fixture);

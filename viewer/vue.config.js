@@ -1,6 +1,6 @@
 module.exports = {
   runtimeCompiler: true,
-  outputDir: "../server/public",
+  outputDir: "../server/dist/server/public",
 
   chainWebpack(config) {
     config.resolve.alias.delete("@")

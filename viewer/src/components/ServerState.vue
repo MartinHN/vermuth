@@ -12,7 +12,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
-import DMXClient from '../api/DMXClient'
+import DMXClient from '../api/DMXClient';
 // var VueSlideBar :any = require( 'vue-slide-bar');
 const configModule = namespace('DMXConfig');
 
@@ -31,7 +31,7 @@ export default class ServerState extends Vue {
 
   // @State('connectedId') public connectedId!:number;
 
-  get client(){
+  get client() {
     return DMXClient;
   }
   get serverConnectionColor(): string {
@@ -48,9 +48,10 @@ export default class ServerState extends Vue {
     return 'red';
   }
   get portListAndNone(): string[] {
-    let res :string[]= []
-    if(this.portList)
-      res = this.portList.slice();//.map((p) => p.comName);
+    let res: string[] = [];
+    if (this.portList) {
+      res = this.portList.slice();
+    }// .map((p) => p.comName);
     res.splice(0, 0, 'no Port');
     return res;
 
