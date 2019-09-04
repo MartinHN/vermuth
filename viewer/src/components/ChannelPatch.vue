@@ -7,6 +7,8 @@
         <v-flex xs9 >
           <Button class="button" @click="addFixture()" text="add Fixture"/>
         </v-flex>
+        
+
         <v-flex xs2 >
           <Numbox class="testNum" name="testChannel" showName="1" @input="testDimmerNum($event.value)" />
         </v-flex>
@@ -14,7 +16,7 @@
       <div  v-for="f in universe.fixtureList" :key="f.id" >
         <v-layout justify-space-between align-center row >
 
-          <v-flex xs11 >
+          <v-flex xs9 >
             <input :style="{'background-color':'#0003',width:'100%'}" :value="f.name" @change="setFixtureName({fixture:f,value:$event.target.value})"/>
             <span><Numbox class="baseCirc" :value="f.baseCirc" :min="0" :max="512" @input="setFixtureBaseCirc({fixture: f, circ: $event.value})"></Numbox></span>
           </v-flex>
@@ -24,6 +26,9 @@
           <v-flex xs1 >
             <Button class="button addChannel" color='green' @click="addChannelToFixture({fixture:f})" text="+ Channel"/>
           </v-flex>
+          <v-flex xs1 >
+          <Button class="button" @click="duplicateFixture({fixture:f})" text="duplicate Fixture"/>
+        </v-flex>
 
         </v-layout>
 
@@ -48,9 +53,9 @@
 
                 <v-flex xs3 >
                   <div :style="{  display:'flex' ,padding:'10px'}">
-                    <Numbox class="circNum" :value="c.circ" :min="0" :max="512" @input="linkChannelToCirc({channel: c, circ: $event.value})" :errMsg='errors[c.circ]' ></Numbox>
+                    <Numbox class="circNum" :value="c.circ" :min="0" :max="512" @input="linkChannelToCirc({channel: c, circ: $event.value})" :errMsg='c.hasDuplicatedCirc===true?"duplicated":""' ></Numbox>
                     <Toggle @input=setChannelReactToMaster({channel:c,value:$event}) :value=c.reactToMaster > React to Master</Toggle>
-                    <Toggle text="test" :value="universe.testedChannel.trueCirc===c.trueCirc" @input=testDimmerNum({channel:$event?c.trueCirc:-1}) > T </Toggle>
+                    <Toggle text="test" :value="universe.testedChannel.circ===c.trueCirc" @input=testDimmerNum({channel:$event?c.trueCirc:-1}) > T </Toggle>
 
                   </div>
                 </v-flex>
@@ -94,8 +99,9 @@ export default class ChannelPatch extends Vue {
     this.usedChannels.map( (c) => errs[c.circ] = c.hasDuplicatedCirc ? 'circuit is duplicated' : '');
     return errs;
   }
-
+  
   @universesModule.Mutation('addFixture') public addFixture!: UniversesMethods['addFixture'];
+  @universesModule.Mutation('duplicateFixture') public duplicateFixture!: UniversesMethods['duplicateFixture'];
   @universesModule.Mutation('addChannelToFixture') public addChannelToFixture!: UniversesMethods['addChannelToFixture'];
   @universesModule.Mutation('setFixtureBaseCirc') public setFixtureBaseCirc!: UniversesMethods['setFixtureBaseCirc'];
 
@@ -109,7 +115,7 @@ export default class ChannelPatch extends Vue {
   @universesModule.Mutation('removeFixture') public removeFixture!: UniversesMethods['removeFixture'];
   @universesModule.Mutation('setFixtureName') public setFixtureName!: UniversesMethods['setFixtureName'];
   @universesModule.Mutation('setChannelReactToMaster') public setChannelReactToMaster!: UniversesMethods['setChannelReactToMaster'];
-@universesModule.Action('testDimmerNum') public testDimmerNum!: UniversesMethods['testDimmerNum'];
+@universesModule.Mutation('testDimmerNum') public testDimmerNum!: UniversesMethods['testDimmerNum'];
 
   @universesModule.State('universe') private universe!: UniversesMethods['universe'];
 

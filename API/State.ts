@@ -2,7 +2,9 @@ import { ChannelBase } from './Channel';
 import { FixtureBase } from './Fixture';
 import { Universe } from './Universe';
 import {deleteProp, addProp} from './MemoryUtils';
-import { sequencePlayer } from "./Sequence"
+import { sequencePlayer } from "./Sequence";
+import { nonEnumerable } from "./ServerSync";
+
 interface ChannelsValuesDicTypes {[id: string]: number; }
 
 export class FixtureState {
@@ -167,10 +169,15 @@ export class StateList {
   public states: {[key: string]: State} = {};
   public currentState = new State('current', [], true);
   public loadedStateName = '';
-
-  constructor(public universe: Universe) {
+  @nonEnumerable() 
+  private __universe:Universe;
+  constructor(uni: Universe) {
+    this.__universe=uni
     this.addState(blackState);
     this.addState(fullState);
+  }
+  get universe(){
+    return this.__universe;
   }
 
   public configureFromObj(ob: any) {

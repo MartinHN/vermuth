@@ -21,8 +21,13 @@ export class FixtureBase implements FixtureBaseI {
 
 
   public set baseCirc(n: number) {
+    const changed = n!=this._baseCirc
     this._baseCirc = n;
-    this.channels.map( (c) => c.checkDuplicatedCirc());
+    
+    if(this.universe && changed){
+      this.universe.checkDuplicatedCirc()
+      this.universe.updateChannelsValues()
+    }
   }
   public get baseCirc() {return this._baseCirc; }
 
@@ -46,7 +51,9 @@ export class FixtureBase implements FixtureBaseI {
   get channelNames() {
     return this.channels.map((c) => c.name);
   }
-
+  get channelsState(){
+    return this.channels.map((c) => c.getState());
+  }
 
   public static createFromObj(ob: any): FixtureBase |undefined {
     if (ob.channels !== undefined) {
@@ -70,7 +77,7 @@ export class FixtureBase implements FixtureBaseI {
   public globalValue = 0;
 
   @nonEnumerable()
-  public __events = new EventEmitter();
+  public __events;
 
   @SetAccessible()
   public readonly channels = new Array<ChannelBase>();
@@ -83,6 +90,7 @@ export class FixtureBase implements FixtureBaseI {
   private __universe: Universe | undefined;
 
   constructor(public name: string, channels: ChannelBase[]) {
+    this.__events = new EventEmitter();
     if (channels) {
       channels.map((c) => this.addChannel(c));
     } else {
@@ -112,6 +120,26 @@ export class FixtureBase implements FixtureBaseI {
     return '/mainUniverse/' + this.name;
   }
 
+  public get colorChannels(){
+    let cch:{r?:ChannelBase,g?:ChannelBase,b?:ChannelBase} = {}
+    for(const ch of this.channels ){
+      const code = ch.colorChannelCode
+      if(code){
+        cch[code]=ch;
+      }
+    }
+    return cch
+  }
+
+
+  public get hasColorChannels(){
+    const ch = this.colorChannels
+    return (ch.r) && (ch.g) && (ch.b);
+  }
+
+  public get dimmerChannel(){
+    return this.channels.find(e=>e.name=="dim" || e.name=="dimmer")
+  }
 
   @RemoteFunction({sharedFunction: true})
   public setMaster(v: ChannelValueType) {
@@ -122,13 +150,14 @@ export class FixtureBase implements FixtureBaseI {
 
   @RemoteFunction({sharedFunction: true})
   public setColor(c:{r:number,g:number,b:number}){
-    for(const ch of this.channels ){
-      if(ch.name==="r"){ch.setValue(c.r,false);}
-      else if(ch.name==="g"){ch.setValue(c.g,false);}
-      else if(ch.name==="b"){ch.setValue(c.b,false);}
+    if(this.colorChannels!=={}){
+      if(this.colorChannels.r)this.colorChannels.r.setValue(c.r,false);
+      if(this.colorChannels.g)this.colorChannels.g.setValue(c.g,false);
+      if(this.colorChannels.b)this.colorChannels.b.setValue(c.b,false);
     }
+
   }
-  
+
 
   public syncToGlobalValue(v: ChannelValueType) {
     if (this.channels) {

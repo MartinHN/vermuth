@@ -1,15 +1,15 @@
 <template>
 
   <v-container class="channelWidget" fluid pa-1>
-  <v-layout justify-space-between align-center row >
-    <v-flex xs2 >
-      <Toggle v-model="enabledV" text="enabled"/>
-    </v-flex>
-    <v-flex xs10 >
-      <slider class="slider" @input="setChannelValue({channel:channelProp,value:$event})" :value="channelProp.floatValue" :name="channelProp.name"  :showName="true" :showValue="true" :enabled="enabledV"></slider>
-    </v-flex>
-  </v-layout>
-</v-container>
+    <v-layout justify-space-between align-center row >
+      <v-flex xs2 >
+        <Toggle v-model="enabledV" text="enabled"/>
+      </v-flex>
+      <v-flex xs10 >
+        <slider class="slider" @input="setChannelValue({channel:channelProp,value:$event})" :value="channelProp.floatValue" :name="displayedName"  :showName="true" :showValue="true" :enabled="enabledV"></slider>
+      </v-flex>
+    </v-layout>
+  </v-container>
 
 
 </template>
@@ -41,7 +41,12 @@ export default class ChannelWidget extends Vue {
   @Prop() public channelProp!: ChannelBase;
   @Prop({default: false})    public showName?: boolean;
   @Prop({default: false})    public showValue?: boolean;
+  @Prop() public overrideName?:string;
 
+  get displayedName(){
+    if( this.overrideName){return this.overrideName;}
+    else{return this.channelProp.name;}
+  }
   get enabledV(): boolean {return this.channelProp.enabled; }
   set enabledV(v: boolean) {this.setChannelEnabled({channel: this.channelProp, value: v}); }
   get sliderColor(): string {

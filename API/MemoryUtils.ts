@@ -31,3 +31,14 @@ export function addProp(o: any, p: string, v: any) {
     o[p] = v;
   }
 }
+
+
+export function nextTick(cb:any){
+  const Vue = getVue();
+  if (Vue) {
+    Vue.nextTick(cb)
+  }
+  else{
+    process.nextTick(cb)
+  }
+}

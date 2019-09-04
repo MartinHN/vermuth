@@ -9,7 +9,7 @@ import {getCircular} from '@API/SerializeUtils';
 @Module({namespaced: true})
 export default class RootStateModule extends VuexModule {
 
-  public root = rootState;
+  // public root = rootState;
   public hasBeenConfigured = false;
 
   @Action
@@ -18,7 +18,7 @@ export default class RootStateModule extends VuexModule {
   }
   @Mutation
   public configureFromObjMut(js: any) {
-    this.root.configureFromObj(js);
+    rootState.configureFromObj(js);
     // getCircular(this.root)
     this.hasBeenConfigured = true;
   }

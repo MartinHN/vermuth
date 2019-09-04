@@ -41,6 +41,13 @@ export default class Universes extends VuexModule {
     this.universe.addFixture(new DirectFixture(name, circs));
   }
 
+  @Mutation 
+  public duplicateFixture(pl:{fixture:FixtureBase}){
+    const {fixture} = pl;
+    const clone = new DirectFixture(fixture.name,[])
+    this.universe.addFixture(clone); // register accessible before config
+    clone.configureFromObj(fixture)
+  }
   @Mutation
   public setFixtureName(pl: {fixture: FixtureBase, value: string}) {
     pl.fixture.setName(pl.value);
@@ -53,6 +60,10 @@ export default class Universes extends VuexModule {
   public setFixtureColor(pl: {fixture: FixtureBase, color: {r:number,g:number,b:number} }) {
     pl.fixture.setColor(pl.color);
   }
+  @Mutation
+  public setAllColor(pl: { color: {r:number,g:number,b:number} }) {
+    this.universe.setAllColor(pl.color);
+  }
 
   @Mutation
   public setChannelReactToMaster(pl: {channel: ChannelBase, value: boolean}) {
@@ -63,7 +74,7 @@ export default class Universes extends VuexModule {
   public setFixtureBaseCirc(pl: {fixture: FixtureBase, circ: number}) {
     pl.fixture.baseCirc = pl.circ;
   }
-  
+
   @Mutation
   public removeFixture(pl: {fixture: FixtureType}) {
     this.universe.removeFixture(pl.fixture);

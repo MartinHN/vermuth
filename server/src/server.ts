@@ -1,4 +1,5 @@
 const debug =  process.env.NODE_ENV !== 'production';
+const logClientMessages = process.env.LOG_MSG
 const PORT = process.env.PORT || 3000;
 if(!debug)require('module-alias/register'); // form module resolution
 import * as express from "express";
@@ -59,7 +60,7 @@ fs.writeFile(localStateFile, JSON.stringify({}), { flag: "wx",encoding:'utf-8' }
         return console.log(err);
       }
       if(data===""){data = "{}"}
-      Object.assign(states ,  JSON.parse(data))
+        Object.assign(states ,  JSON.parse(data))
       if(states && states["lastSessionID"]){
         const lastState = states[states["lastSessionID"]]
         if(lastState){
@@ -91,15 +92,15 @@ function setStateFromObject(msg,socket:any){
   const dif = diff(states[sessionID],msg)
   
   if(dif!==undefined || !rootState.isConfigured){
-  console.log('diff',dif);
-  states = {}
-  states[sessionID] = msg;
-  states["lastSessionID"] = sessionID;
-  rootState.configureFromObj(msg) 
-  states[sessionID] = rootState.toJSONObj() // update persistent changes
-  // dmxController.stateChanged(msg)
-  fs.writeFile(localStateFile, JSON.stringify(states,null,'  '),'utf8', (v)=>{if(v){console.log('file write error : ',v);}})
-  
+    console.log('diff',dif);
+    states = {}
+    states[sessionID] = msg;
+    states["lastSessionID"] = sessionID;
+    rootState.configureFromObj(msg) 
+    states[sessionID] = rootState.toJSONObj() // update persistent changes
+    // dmxController.stateChanged(msg)
+    fs.writeFile(localStateFile, JSON.stringify(states,null,'  '),'utf8', (v)=>{if(v){console.log('file write error : ',v);}})
+    
   }
   else{
     console.log('no mod from state')
@@ -107,14 +108,14 @@ function setStateFromObject(msg,socket:any){
   if(socket){
     // console.log('broadcasting state: ' + JSON.stringify(msg.states));
     socket.broadcast.emit('SET_STATE',msg)
-   
+    
   }
 
 }
 
 if(debug && process.env.LOG_SOCKET_FILE){
-    const logFile =  process.env.LOG_SOCKET_FILE
-    fs.unlinkSync(logFile)
+  const logFile =  process.env.LOG_SOCKET_FILE
+  fs.unlinkSync(logFile)
 }
 ioServer.on('connection', function(socket){
   console.log('a user connected',socket.id,debug);
@@ -122,7 +123,9 @@ ioServer.on('connection', function(socket){
   if(debug ){
     const log = require('@API/Logger').default
     socket.use((packet,next)=>{
-      log.log("client >> server "+JSON.stringify(packet)+"\n")
+      if(logClientMessages){
+        log.log("client >> server "+JSON.stringify(packet)+"\n")
+      }
       next()
     })
   }

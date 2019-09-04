@@ -50,9 +50,9 @@ export default class Slider extends Vue {
   display: inline-block;
 }
 .Value{
-  position: absolute;
+  position: relative;
   margin-top: -30px;
-  right:100px;
+  margin-right:-50%;
   /*top:-40px;*/
   z-index: 2;
   user-select: none;
@@ -61,8 +61,8 @@ export default class Slider extends Vue {
 }
 .Name{
   position: absolute;
-  margin-top: -30px;
-  margin-left:10px;
+  margin-top: -1.5rem;
+  margin-left: 1rem;
   /*top:-40px;*/
   z-index: 2;
   user-select: none;

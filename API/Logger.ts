@@ -1,6 +1,7 @@
 const isClient = process.env.VUE_APP_ISCLIENT;
 
 
+
 class MyLogger {
   public dbgStream?: any;
 

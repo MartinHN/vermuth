@@ -1,9 +1,18 @@
 <template>
-  <div class="fixtureWidget">
-    
-    <Slider class="fixtureValue" @input="setFixtureValue({fixture:fixtureProp,value:$event})" :value=fixtureProp.globalValue :enabled=fixtureProp.inSync :name=fixtureProp.name :showName="true" :showValue="true" ></Slider>
-    <input type="color" v-if="colorChannels.r!==undefined" v-model=hexColorValue></input>
-    <ChannelWidget v-for="c of fixtureProp.channels" :key='c.id' :channelProp="c" />
+  <div class="fixtureWidget" >
+    <div style="display:flex;width:100%">
+      <!-- <Slider style="flex:1 0 75%" class="fixtureValue" @input="setFixtureValue({fixture:fixtureProp,value:$event})" :value=fixtureProp.globalValue :enabled=fixtureProp.inSync :name=fixtureProp.name :showName="true" :showValue="true" ></Slider> -->
+      <ChannelWidget v-if=dimmerChannel :channelProp=dimmerChannel :overrideName="fixtureProp.name" style="width:100%"></ChannelWidget>
+      <input type="color" v-if=" fixtureProp.hasColorChannels" v-model=hexColorValue></input>
+    </div>
+    <div style="display:flex;width:100%" v-if="(!miniMode && fixtureProp.hasColorChannels)" >
+      <ChannelWidget v-for="c of colorChannels" :key='c.id' :channelProp="c" />
+    </div>
+    <div v-if=!miniMode style="width:100%">
+
+      <ChannelWidget style="width:100%" v-for="c of otherChannels" :key='c.id' :channelProp="c" />
+
+    </div>
 
     
   </div>
@@ -42,22 +51,37 @@ export default class FixtureWidget extends Vue {
   @Prop() public fixtureProp!: DirectFixture;
   @Prop({default: false})    public showName?: boolean;
   @Prop({default: false})    public showValue?: boolean;
+  @Prop ({default: false}) public miniMode?:boolean;
 
   get colorChannels(): any {
-    return {
-      r: this.fixtureProp.channels.find((n) => n.name === 'r') ,
-      g: this.fixtureProp.channels.find((n) => n.name === 'g') ,
-      b: this.fixtureProp.channels.find((n) => n.name === 'b'),
-    };
-
-
+    return this.fixtureProp.colorChannels
+  }
+  get dimmerChannel(): any {
+    return this.fixtureProp.dimmerChannel
   }
 
+  get otherChannels(){
+    const nonOtherNames:string[] = []
+    for(const c of ["r","g","b"]){
+      if(this.colorChannels[c]){
+        nonOtherNames.push(this.colorChannels[c].name)
+      }
+    }
+    if(this.dimmerChannel){nonOtherNames.push(this.dimmerChannel.name)}
+    const ot = []
+    for( const ch of this.fixtureProp.channels){
+      if(! nonOtherNames.find(n=>n===ch.name)){
+        ot.push(ch)
+      }
+    }
+    return ot
+  }
   get hexColorValue(): string {
-    return rgbToHex(this.colorChannels.r.intValue,
-      this.colorChannels.g.intValue,
-      this.colorChannels.b.intValue);
-
+    const cch = this.colorChannels
+    
+    return rgbToHex(cch.r?cch.r.intValue:0,
+      cch.g?cch.g.intValue:0,
+      cch.b?cch.b.intValue:0);
 
   }
   set hexColorValue(c: string) {
@@ -65,28 +89,28 @@ export default class FixtureWidget extends Vue {
 
     // const rgb:any = hexToRgb(c);
     // for( c of ['r','g','b']){
-    //   this.setChannelValue({channel:this.colorChannels[c],value:rgb[c]/255.0,dontNotify:false});
-    // }
+      //   this.setChannelValue({channel:this.colorChannels[c],value:rgb[c]/255.0,dontNotify:false});
+      // }
+
+    }
+    private debouncedColorSetter = _.debounce((c: string) => {
+      const color: any = hexToRgb(c,true)
+      this.setFixtureColor({fixture:this.fixtureProp,color})
+
+
+    },
+    50,
+    {maxWait: 50});
+
+
+
+    // get disabledV(): boolean {return !this.fixtureProp.channel.enabled; }
+    // set disabledV(v: boolean) {this.setChannelEnabled({channel: this.fixtureProp.channel, value: !v}); }
+
+
+
 
   }
-  private debouncedColorSetter = _.debounce((c: string) => {
-    const color: any = hexToRgb(c,true)
-    this.setFixtureColor({fixture:this.fixtureProp,color})
-
-
-  },
-  50,
-  {maxWait: 50});
-
-
-
-  // get disabledV(): boolean {return !this.fixtureProp.channel.enabled; }
-  // set disabledV(v: boolean) {this.setChannelEnabled({channel: this.fixtureProp.channel, value: !v}); }
-
-
-
-
-}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

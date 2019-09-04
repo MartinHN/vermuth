@@ -54,8 +54,8 @@ label {
    display: block; 
   width:100%;
   position: relative;
-  margin: 5px;
-  padding: 5px 10px 10px 10px;
+  /*margin: 5px;
+  padding: 5px 10px 10px 10px;*/
   border: 2px solid #fff;
   border-radius: 0px;
   color: #fff;

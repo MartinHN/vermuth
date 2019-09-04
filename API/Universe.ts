@@ -1,5 +1,5 @@
 import { FixtureBase } from './Fixture';
-import { ChannelBase } from './Channel';
+import { ChannelBase,UniverseListener } from './Channel';
 import { getNextUniqueName } from './Utils';
 import { addProp, deleteProp } from './MemoryUtils';
 import { SetAccessible, setChildAccessible, AccessibleClass ,RemoteFunction} from './ServerSync';
@@ -11,19 +11,27 @@ export class Universe {
   public driverName = 'none';
   @SetAccessible()
   public readonly fixtures: {[id: string]: FixtureBase} = {};
+  @SetAccessible()
+  public readonly groups: {[id: string]: string[]} = {};
+
+
   private _master = 1.0;
   constructor() {
   }
 
-  public get grandMaster() {return this._master; }
-  public get fixtureList() {return Object.values(this.fixtures); }
-// singleton guard
-  // public static createFromObj(ob: any): Universe {
-  //   const uni = new Universe();
-  //   uni.configureFromObj(ob)
-  //   return uni;
 
-  // }
+  public get grandMaster() {return this._master; }
+  public get groupNames(){ return Object.keys(this.groups)}
+  public addGroup(name:string,nl:string[]){
+    addProp(this.groups, name, nl);
+    setChildAccessible(this.groups, name);
+  }
+  public removeGroup(name:string){deleteProp(this.groups, name);}
+
+  public get fixtureList() {return Object.values(this.fixtures); }
+  // singleton guard
+  // public static createFromObj(ob: any): Universe 
+
   public configureFromObj(ob: any) {
     if (ob.driverName) {
       this.setDriverName(ob.driverName);
@@ -36,6 +44,12 @@ export class Universe {
           this.addFixture(df);
         }
       }
+      if(ob.groups){
+        Object.keys(this.groups).map((g)=>this.removeGroup(g));
+        for( const g in Object.keys(ob.groups)){
+          this.addGroup(g,ob.groups[g])
+        }
+      }
     } else {
       console.error('parsing error', JSON.stringify(ob));
     }
@@ -43,6 +57,29 @@ export class Universe {
 
   }
 
+  public checkDuplicatedCirc() {
+
+    const allChs = this.allChannels
+    for ( const c of allChs) {
+      c.hasDuplicatedCirc = false;
+    }
+    for ( let i =0 ; i < allChs.length; i++) {
+
+      const c = allChs[i]
+      for(let j=i+1 ; j<allChs.length;j++){
+        const cc = allChs[j]
+        if(c.isSameAs(cc)){
+          console.error("bug in duplicatedCircCheck")
+        }
+        if(c.trueCirc===cc.trueCirc){
+          c.hasDuplicatedCirc = true;
+          cc.hasDuplicatedCirc = true;
+        }
+      }
+    }
+    
+
+  }
   public setDriverName(n: string) {
     this.driverName  = n;
   }
@@ -92,6 +129,16 @@ export class Universe {
   public get allChannels() {
     // console.log('fliiiiist',this.fixtureList.map(f=>f.channels))
     return this.fixtureList.map((f) => f.channels).flat();
+  }
+  public updateChannelsValues(){
+    const chs = this.allChannels;
+    let i = 1;
+    while(i<=512){
+      const ch = chs.find(c=>c.trueCirc===i);
+      const v=ch?ch.floatValue:0
+      UniverseListener.notify(i, v);
+      i++
+    }
   }
 
   @RemoteFunction({sharedFunction: true})

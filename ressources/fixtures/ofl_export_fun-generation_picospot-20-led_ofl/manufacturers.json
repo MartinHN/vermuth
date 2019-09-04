@@ -1,0 +1,7 @@
+{
+  "$schema": "https://raw.githubusercontent.com/OpenLightingProject/open-fixture-library/schema-12.1.0/schemas/manufacturers.json",
+  "fun-generation": {
+    "name": "Fun Generation",
+    "website": "https://www.thomann.de/intl/fun_generation.html"
+  }
+}

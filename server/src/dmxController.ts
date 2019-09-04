@@ -4,6 +4,7 @@ const OSCDriver = require('./dmxOSCDriver')
 const needCustomPiLibs = process.env.CUSTOM_PI_DRIVERS
 const GPIODriver = require('./dmxGPIODriver')
 const SolenoidDriver = require('./dmxSolenoidDriver')
+const LoggerDriver = require('./dmxLoggerDriver')
 
 var io = require('socket.io')
 import log from './remoteLogger'
@@ -44,7 +45,7 @@ class DMXController implements DMXControllerI{
   public __connected = false;
 
   @nonEnumerable()
-  private dmx = new DMX();
+  private dmx;
 
   private universeName = "main";
   @nonEnumerable()
@@ -80,8 +81,10 @@ class DMXController implements DMXControllerI{
 
 
   constructor(){
-
+    debugger
+    this.dmx = new DMX()
     this.dmx.registerDriver('QLC',OSCDriver)
+    this.dmx.registerDriver('Logger',LoggerDriver)
     if(needCustomPiLibs){
       this.dmx.registerDriver('GPIO',GPIODriver)
       this.dmx.registerDriver('Solenoid',SolenoidDriver)
@@ -98,7 +101,7 @@ class DMXController implements DMXControllerI{
   }
   configureFromObj(o:any){
     for(const k in this){
-      if(o[k] && k!=="driverList" && k!=="portNameList"){
+      if(o[k] && k!=="driverList" && k!=="portNameList" && Object.getOwnPropertyDescriptor(o, k).enumerable){
         this[k] = o[k]
       }
     }
