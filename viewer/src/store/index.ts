@@ -90,8 +90,7 @@ const autosaverPlugin = (pStore: Store<RootVueState>) => {
     state = state as FullVueState;
     if (mutation.type.startsWith('config')) {
       localFS.save(state.config, configKey, () => {});
-    } 
-    else if (!state.loadingState && (state.savedStatus === 'Saved' || state.savedStatus === '' ) && state.config.autoSave && mutation.type.includes('/') ) {
+    } else if (!state.loadingState && (state.savedStatus === 'Saved' || state.savedStatus === '' ) && state.config.autoSave && mutation.type.includes('/') ) {
       if ( mutation.type.endsWith('Value') ) {
         // console.log('ignoring value changes ' + mutation);
         return;
@@ -109,7 +108,7 @@ const autosaverPlugin = (pStore: Store<RootVueState>) => {
         if (!state.loadingState ) {
          pStore.dispatch('SAVE_REMOTELY', sessionState);
        }
-       pStore.commit('SET_SAVE_STATUS', 'Saved');
+        pStore.commit('SET_SAVE_STATUS', 'Saved');
 
      });
 
@@ -193,7 +192,7 @@ const store: StoreOptions<RootVueState> = {
             //     context.dispatch('' + el + '/configureFromObj', newState[el]);
             //   }
             // });
-            context.commit('SET_LOADING_STATE', false);
+        context.commit('SET_LOADING_STATE', false);
           }
         },
         UPDATE_SESSION_STATE(context, difObj) {
@@ -236,6 +235,6 @@ const store: StoreOptions<RootVueState> = {
       };
 
 
-      export default new Vuex.Store<RootVueState>(store);
+export default new Vuex.Store<RootVueState>(store);
 
 

@@ -39,7 +39,7 @@
                 <v-flex xs1 >
                 </v-flex>
                 <v-flex xs1 >
-                  <Button class="button removeChannel " color='red'  @click="removeChannel({channel:c,fixture:f})" tabIndex="-1" text=""></Button>
+                  <Button class="button removeChannel " color='red' @click="removeChannel({channel:c,fixture:f})" tabIndex="-1" text="-"></Button>
                 </v-flex>
                 <v-flex xs11>
                   <input type="text" :style="{'background-color':'#0003',width:'100%'}" class="channelName " @change="setChannelName({channel:c,name:$event.target.value})" :value="c.name"  >
@@ -99,7 +99,7 @@ export default class ChannelPatch extends Vue {
     this.usedChannels.map( (c) => errs[c.circ] = c.hasDuplicatedCirc ? 'circuit is duplicated' : '');
     return errs;
   }
-  
+
   @universesModule.Mutation('addFixture') public addFixture!: UniversesMethods['addFixture'];
   @universesModule.Mutation('duplicateFixture') public duplicateFixture!: UniversesMethods['duplicateFixture'];
   @universesModule.Mutation('addChannelToFixture') public addChannelToFixture!: UniversesMethods['addChannelToFixture'];

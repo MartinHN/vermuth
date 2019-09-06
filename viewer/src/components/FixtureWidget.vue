@@ -44,44 +44,44 @@ export default class FixtureWidget extends Vue {
 
   @universesModule.Mutation('setFixtureValue') public setFixtureValue!: UniversesMethods['setFixtureValue'];
   @universesModule.Mutation('setFixtureColor') public setFixtureColor!: UniversesMethods['setFixtureColor'];
-  
+
   @universesModule.Mutation('setChannelValue') public setChannelValue!: UniversesMethods['setChannelValue'];
 
 
   @Prop() public fixtureProp!: DirectFixture;
   @Prop({default: false})    public showName?: boolean;
   @Prop({default: false})    public showValue?: boolean;
-  @Prop ({default: false}) public miniMode?:boolean;
+  @Prop ({default: false}) public miniMode?: boolean;
 
   get colorChannels(): any {
-    return this.fixtureProp.colorChannels
+    return this.fixtureProp.colorChannels;
   }
   get dimmerChannel(): any {
-    return this.fixtureProp.dimmerChannel
+    return this.fixtureProp.dimmerChannel;
   }
 
-  get otherChannels(){
-    const nonOtherNames:string[] = []
-    for(const c of ["r","g","b"]){
-      if(this.colorChannels[c]){
-        nonOtherNames.push(this.colorChannels[c].name)
+  get otherChannels() {
+    const nonOtherNames: string[] = [];
+    for (const c of ['r', 'g', 'b']) {
+      if (this.colorChannels[c]) {
+        nonOtherNames.push(this.colorChannels[c].name);
       }
     }
-    if(this.dimmerChannel){nonOtherNames.push(this.dimmerChannel.name)}
-    const ot = []
-    for( const ch of this.fixtureProp.channels){
-      if(! nonOtherNames.find(n=>n===ch.name)){
-        ot.push(ch)
+    if (this.dimmerChannel) {nonOtherNames.push(this.dimmerChannel.name); }
+    const ot = [];
+    for ( const ch of this.fixtureProp.channels) {
+      if (! nonOtherNames.find((n) => n === ch.name)) {
+        ot.push(ch);
       }
     }
-    return ot
+    return ot;
   }
   get hexColorValue(): string {
-    const cch = this.colorChannels
-    
-    return rgbToHex(cch.r?cch.r.intValue:0,
-      cch.g?cch.g.intValue:0,
-      cch.b?cch.b.intValue:0);
+    const cch = this.colorChannels;
+
+    return rgbToHex(cch.r ? cch.r.intValue : 0,
+      cch.g ? cch.g.intValue : 0,
+      cch.b ? cch.b.intValue : 0);
 
   }
   set hexColorValue(c: string) {
@@ -94,8 +94,8 @@ export default class FixtureWidget extends Vue {
 
     }
     private debouncedColorSetter = _.debounce((c: string) => {
-      const color: any = hexToRgb(c,true)
-      this.setFixtureColor({fixture:this.fixtureProp,color})
+      const color: any = hexToRgb(c, true);
+      this.setFixtureColor({fixture: this.fixtureProp, color});
 
 
     },

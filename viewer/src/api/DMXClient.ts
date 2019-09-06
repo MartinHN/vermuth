@@ -93,13 +93,13 @@ class DMXClient implements DMXControllerI {
 
     socket.on('disconnect', () => {
       // unsubscribe();
-      
+
     });
 
     const init =  () => {
       // store.watch(
       //   ()=>{store.})
-      
+
 
       fetchRemote(this, 'portNameList');
       fetchRemote(this, 'driverNameList');

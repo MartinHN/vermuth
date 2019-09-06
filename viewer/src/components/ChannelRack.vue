@@ -44,7 +44,7 @@ import Toggle from './Toggle.vue';
 import Slider from './Slider.vue';
 
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
-import { DirectFixture ,FixtureBase} from '@API/Fixture';
+import { DirectFixture , FixtureBase} from '@API/Fixture';
 import UniversesMethods from '../store/universes';
 
 
@@ -61,71 +61,69 @@ export default class ChannelRack extends Vue {
   public showValues = true;
   public miniMode = false;
   public showSelected = false;
-  private selectedFixtureNames:string[] = [];
-  private pselectedGroupNames:string[] = [];
+  private selectedFixtureNames: string[] = [];
+  private pselectedGroupNames: string[] = [];
   @universesModule.State('universe') private universe!: UniversesMethods['universe'];
   @universesModule.Getter('grandMaster') private grandMaster!: UniversesMethods['grandMaster'];
 
   @universesModule.Mutation('setGrandMaster') private setGrandMaster!: UniversesMethods['setGrandMaster'];
   @universesModule.Mutation('setAllColor') private setAllColor!: UniversesMethods['setAllColor'];
 
-  setAllColorHex(h:string){
-    const color = hexToRgb(h,true);
-    if(color){
-      this.setAllColor({color})
+  public setAllColorHex(h: string) {
+    const color = hexToRgb(h, true);
+    if (color) {
+      this.setAllColor({color});
     }
   }
-  
-  public get selectedGroupNames(){
+
+  public get selectedGroupNames() {
     return this.pselectedGroupNames;
   }
-  public set selectedGroupNames(v:string[]){
-    this.pselectedGroupNames = v
-    this.syncGroupSelection()
+  public set selectedGroupNames(v: string[]) {
+    this.pselectedGroupNames = v;
+    this.syncGroupSelection();
   }
-  public syncGroupSelection(){
-    const toSel:{[id:string]: boolean} = {}
-    const lastSel = this.selectedGroupNames
-    for(const g of this.selectedGroupNames){
-      for(const f  of this.universe.groups[g]){
-        toSel[f] = true
+  public syncGroupSelection() {
+    const toSel: {[id: string]: boolean} = {};
+    const lastSel = this.selectedGroupNames;
+    for (const g of this.selectedGroupNames) {
+      for (const f  of this.universe.groups[g]) {
+        toSel[f] = true;
       }
     }
-    const toSelL = Object.keys(toSel)
-    this.selectedFixtureNames = toSelL
+    const toSelL = Object.keys(toSel);
+    this.selectedFixtureNames = toSelL;
   }
-  public selectAll(){
-    this.selectedFixtureNames=this.universe.fixtureList.map(e=>e.name)
+  public selectAll() {
+    this.selectedFixtureNames = this.universe.fixtureList.map((e) => e.name);
   }
-  public needDisplay(f:FixtureBase){
-    if(!this.showSelected){return true;}
-    if(this.selectedFixtureNames && this.selectedFixtureNames.length==0){
+  public needDisplay(f: FixtureBase) {
+    if (!this.showSelected) {return true; }
+    if (this.selectedFixtureNames && this.selectedFixtureNames.length === 0) {
       return true;
-    }
-    else{
-      return this.selectedFixtureNames.find(fn=>fn===f.name)
+    } else {
+      return this.selectedFixtureNames.find((fn) => fn === f.name);
     }
   }
-  public get firstGroupSelected(){
-    return this.selectedGroupNames.length>0?this.selectedGroupNames[0]:""
+  public get firstGroupSelected() {
+    return this.selectedGroupNames.length > 0 ? this.selectedGroupNames[0] : '';
   }
 
 
-  public addGroup(){
-    if(this.selectedFixtureNames && this.selectedFixtureNames.length>0){
-      const gname = prompt('save new group', "group");
-      if(gname){
-        this.universe.addGroup(gname,this.selectedFixtureNames)
+  public addGroup() {
+    if (this.selectedFixtureNames && this.selectedFixtureNames.length > 0) {
+      const gname = prompt('save new group', 'group');
+      if (gname) {
+        this.universe.addGroup(gname, this.selectedFixtureNames);
       }
-    }
-    else{
-      alert("no fixtures selected")
+    } else {
+      alert('no fixtures selected');
     }
   }
-  public removeGroup(){
+  public removeGroup() {
     const gname = prompt('remove group', this.firstGroupSelected);
-    if(gname){
-      this.universe.removeGroup(gname)
+    if (gname) {
+      this.universe.removeGroup(gname);
     }
   }
 

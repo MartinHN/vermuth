@@ -41,11 +41,10 @@ export default class ChannelWidget extends Vue {
   @Prop() public channelProp!: ChannelBase;
   @Prop({default: false})    public showName?: boolean;
   @Prop({default: false})    public showValue?: boolean;
-  @Prop() public overrideName?:string;
+  @Prop() public overrideName?: string;
 
-  get displayedName(){
-    if( this.overrideName){return this.overrideName;}
-    else{return this.channelProp.name;}
+  get displayedName() {
+    if ( this.overrideName) {return this.overrideName; } else {return this.channelProp.name; }
   }
   get enabledV(): boolean {return this.channelProp.enabled; }
   set enabledV(v: boolean) {this.setChannelEnabled({channel: this.channelProp, value: v}); }

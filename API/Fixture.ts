@@ -116,6 +116,7 @@ export class FixtureBase implements FixtureBaseI {
     }
 
   }
+
   public buildAddress() {
     return '/mainUniverse/' + this.name;
   }
@@ -130,7 +131,6 @@ export class FixtureBase implements FixtureBaseI {
     }
     return cch;
   }
-
 
   public get hasColorChannels() {
     const ch = this.colorChannels;
@@ -176,11 +176,12 @@ export class FixtureBase implements FixtureBaseI {
       c = new ChannelBase('channel', 0, 0, true);
     }
     c.setParentFixture (this);
-
     this.channels.push(c);
     setChildAccessible(this.channels, '' + (this.channels.length - 1));
     return c;
   }
+
+
   public removeChannel(c: ChannelBase) {
     c.setParentFixture (null);
     const i = this.channels.indexOf(c);
