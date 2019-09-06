@@ -192,7 +192,7 @@ class DMXController implements DMXControllerI{
   connectToDevice(options?:any){
     options = options || {}
     options['universe']=1
-    if(this.__connected){
+    if(this.__connected && this.dmx.universes[this.universeName]){
       this.dmx.universes[this.universeName].stop();
       this.dmx.universes[this.universeName].close(()=>{
         this.__connected=false;
