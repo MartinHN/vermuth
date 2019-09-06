@@ -2,8 +2,8 @@ import { ChannelBase } from './Channel';
 import { FixtureBase } from './Fixture';
 import { Universe } from './Universe';
 import {deleteProp, addProp} from './MemoryUtils';
-import { sequencePlayer } from "./Sequence";
-import { nonEnumerable } from "./ServerSync";
+import { sequencePlayer } from './Sequence';
+import { nonEnumerable } from './ServerSync';
 
 interface ChannelsValuesDicTypes {[id: string]: number; }
 
@@ -152,7 +152,7 @@ export class State {
     return res;
   }
   public recall(context: FixtureBase[], cb: (channel: ChannelBase, value: number) => void | undefined) {
-    sequencePlayer.stopIfPlaying()
+    sequencePlayer.stopIfPlaying();
     const rs = this.resolveState(context);
     if (cb) {
       rs.map((s) => s.applyFunction(cb));
@@ -169,14 +169,14 @@ export class StateList {
   public states: {[key: string]: State} = {};
   public currentState = new State('current', [], true);
   public loadedStateName = '';
-  @nonEnumerable() 
-  private __universe:Universe;
+  @nonEnumerable()
+  private __universe: Universe;
   constructor(uni: Universe) {
-    this.__universe=uni
+    this.__universe = uni;
     this.addState(blackState);
     this.addState(fullState);
   }
-  get universe(){
+  get universe() {
     return this.__universe;
   }
 
@@ -219,7 +219,7 @@ export class StateList {
     }
   }
   public recallState(s: State) {
-    sequencePlayer.stopIfPlaying()
+    sequencePlayer.stopIfPlaying();
     const rs = s.resolveState(this.getCurrentFixtureList());
     rs.map((r) => r.applyFunction((channel, value) => channel.setValue( value, true)));
     for (const c of this.universe.allChannels) {

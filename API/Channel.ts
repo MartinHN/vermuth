@@ -27,18 +27,27 @@ export class ChannelBase implements ChannelI {
 
 
 
+  get trueCirc() {
+    let baseCirc = 0;
+    if (this.__parentFixture && !isNaN(this.__parentFixture.baseCirc)) {
+      baseCirc = this.__parentFixture.baseCirc;
+    } else {
+      console.error(this.__parentFixture ? 'NaN parent baseCirc' : 'no parent');
+    }
+    return baseCirc + this.circ;
+  }
 
-  public ctype = 'base';
-  public hasDuplicatedCirc = false;
-  public reactToMaster = true;
-  @nonEnumerable()
-  private __parentFixture: any;
+  get intValue() {return this.__value * 255; }
+  get floatValue() {return this.__value; }
+  public set enabled(v: boolean) {
+    this._enabled = v;
+  }
+  public get enabled() {
+    return this._enabled;
+  }
 
-  private __value: ChannelValueType = 0;
-
-  constructor(public name: string, __value: ChannelValueType  , public circ: number= 0, public _enabled: boolean= true) {
-    if (!__value) {__value = 0; } // ensure numeric
-    this.setValueChecking(__value);
+  public get colorChannelCode() {
+      if (this.name === 'r' || this.name === 'red' ) {return 'r'; } else if (this.name === 'g' || this.name === 'green') {return 'g'; } else if (this.name === 'b' || this.name === 'blue') {return 'b'; } else { return null; }
   }
 
 
@@ -54,34 +63,28 @@ export class ChannelBase implements ChannelI {
   }
 
 
+
+
+  public ctype = 'base';
+  public hasDuplicatedCirc = false;
+  public reactToMaster = true;
+  @nonEnumerable()
+  private __parentFixture: any;
+
+  private __value: ChannelValueType = 0;
+
+  constructor(public name: string, __value: ChannelValueType  , public circ: number= 0, public _enabled: boolean= true) {
+    if (!__value) {__value = 0; } // ensure numeric
+    this.setValueChecking(__value);
+  }
+
+
   public configureFromObj(ob: any) {
 
     if (ob.name !== undefined) {this.name = ob.name; }
     if (ob.value !== undefined) {this.setValue( ob.value, false); }
     if (ob.circ !== undefined) {this.setCirc( ob.circ); }
     if (ob.reactToMaster !== undefined) {this.reactToMaster = ob.reactToMaster; }
-  }
-
-
-
-  get trueCirc() {
-    let baseCirc = 0;
-    if (this.__parentFixture && !isNaN(this.__parentFixture.baseCirc)) {
-      baseCirc = this.__parentFixture.baseCirc;
-    }
-    else{
-      console.error(this.__parentFixture?"NaN parent baseCirc": "no parent")
-    }
-    return baseCirc + this.circ;
-  }
-
-  get intValue() {return this.__value * 255; }
-  get floatValue() {return this.__value; }
-  public set enabled(v: boolean) {
-    this._enabled = v;
-  }
-  public get enabled() {
-    return this._enabled;
   }
 
 
@@ -102,22 +105,15 @@ export class ChannelBase implements ChannelI {
     }
   }
 
-  public isSameAs(c:ChannelBase){
-    return c===this || ( (this.name===c.name) && (this.__parentFixture.name===c.__parentFixture.name))
+  public isSameAs(c: ChannelBase) {
+    return c === this || ( (this.name === c.name) && (this.__parentFixture.name === c.__parentFixture.name));
   }
   @RemoteFunction()
   public setCirc(n: number) {
     UniverseListener.notify(this.trueCirc, 0);
     this.circ = n;
     UniverseListener.notify(this.trueCirc, this.__value);
-    if(this.__parentFixture && this.__parentFixture.universe ){this.__parentFixture.universe.checkDuplicatedCirc();}
-  }
-
-  public get colorChannelCode(){
-      if(this.name==="r" || this.name==="red" ){return "r"}
-      else if(this.name==="g" || this.name==="green"){return "g"}
-      else if(this.name==="b" || this.name==="blue"){return "b"}
-      else return null
+    if (this.__parentFixture && this.__parentFixture.universe ) {this.__parentFixture.universe.checkDuplicatedCirc(); }
   }
 
   public setName( n: string ) {
@@ -135,17 +131,20 @@ export class ChannelBase implements ChannelI {
   public setValueInternal(v: ChannelValueType) {return true; }
 
   public setParentFixture(f: FixtureBase|null) {
-    if(f && this.__parentFixture){
-      if(f.name!==this.__parentFixture.name){
-        debugger
+    if (f && this.__parentFixture) {
+      if (f.name !== this.__parentFixture.name) {
+        debugger;
       }
     }
     this.__parentFixture = f;
     this.checkNameDuplicate();
-    if(this.__parentFixture && this.__parentFixture.universe){this.__parentFixture.universe.checkDuplicatedCirc();}
+    if (this.__parentFixture && this.__parentFixture.universe) {this.__parentFixture.universe.checkDuplicatedCirc(); }
+  }
+  public getState() {
+    return {trueCirc: this.trueCirc, value: this.floatValue, name: this.name};
   }
 
-  
+
 
   private setValueChecking(__value: number) {
     if (typeof __value !== 'number') {
@@ -155,9 +154,6 @@ export class ChannelBase implements ChannelI {
     } else {
       this.__value = __value;
     }
-  }
-  public getState(){
-    return {trueCirc:this.trueCirc,value:this.floatValue,name:this.name}
   }
 
 

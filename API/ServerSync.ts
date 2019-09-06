@@ -3,7 +3,7 @@ const logServerMessages = process.env.LOG_MSG;
 let clientSocket: any = null ;
 // let ioServer: any = null;
 const listenedNodes: {[id: string]: any} = {};
-import {addProp,nextTick} from './MemoryUtils';
+import {addProp, nextTick} from './MemoryUtils';
 let allListeners: {[id: string]: Function} = {};
 let AccessibleSettedByServer: any = null;
 let lockCallbacks = 0;
@@ -18,7 +18,7 @@ export function bindClientSocket(s: any) {
       const log = require('./Logger').default;
       console.log('highjacking server socket');
       const nF = (e: string, a: any, l: any) => {
-        if(logServerMessages){
+        if (logServerMessages) {
           log.log('server >> client : ' + e + ' : ' + a + '\n');
         }
         emitF.apply(boundSocket, [e, a, l]);
@@ -67,7 +67,7 @@ const rebuildAccessiblesDebounced = _.debounce(rebuildAccessibles,
   );
 
 
-export function callAnyAccessibleFromRemote(root: any, saddr: string, args: any[],fromOSC?:boolean) {// args is passed as array
+export function callAnyAccessibleFromRemote(root: any, saddr: string, args: any[], fromOSC?: boolean) {// args is passed as array
   if (saddr[0] === '/') {
     const addr = saddr.split('/');
 
@@ -83,10 +83,10 @@ export function callAnyAccessibleFromRemote(root: any, saddr: string, args: any[
       }
       if (typeof(accessible) === 'function') { // call method
 
-        if(!fromOSC)AccessibleSettedByServer = saddr;
+        if (!fromOSC) {AccessibleSettedByServer = saddr; }
         const res =  accessible.call(parent, ...args);
-        if(!fromOSC)AccessibleSettedByServer = null;
-        return res
+        if (!fromOSC) {AccessibleSettedByServer = null; }
+        return res;
 
       } else if ( (args !== undefined && args !== null)) { // set value
         if (parent && key) {
@@ -111,7 +111,7 @@ function safeBindSocket(s: any) {
 
 }
 
-function buildAddressFromObj(o: any,errorIfEmpty = true) {
+function buildAddressFromObj(o: any, errorIfEmpty = true) {
   let insp = o;
   let addr = [];
   let found;
@@ -143,7 +143,7 @@ function buildAddressFromObj(o: any,errorIfEmpty = true) {
   } else if (insp && insp.__isRoot) {
     return '';
   } else {
-    if(errorIfEmpty){
+    if (errorIfEmpty) {
       // throw new Error(
       console.error(
         'can\'t find address on object' + o);
@@ -159,7 +159,7 @@ function buildAddressFromObj(o: any,errorIfEmpty = true) {
 export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunction?: boolean}) {
   return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value;
-    let registeredAddr:string = ""
+    let registeredAddr: string = '';
 
     if (target.__remoteFunctions === undefined) {
       Object.defineProperty(target, '__remoteFunctions', {
@@ -176,19 +176,19 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
     descriptor.value = function(...args: any[]) {
       // target.notifyRemote()
       let res: any;
-      if(lockCallbacks===0){
+      if (lockCallbacks === 0) {
         if (clientSocket ) {
           // nextTick(()=>{
-            const regF = (allowUnhooked:boolean)=>{
-              const pAddr =  buildAddressFromObj(this,!allowUnhooked)
-              if(pAddr===null && allowUnhooked){
-                nextTick(()=>regF(false))
-                return
+            const regF = (allowUnhooked: boolean) => {
+              const pAddr =  buildAddressFromObj(this, !allowUnhooked);
+              if (pAddr === null && allowUnhooked) {
+                nextTick(() => regF(false));
+                return;
               }
               const addr = pAddr + '/' + propertyKey;
 
               // @ts-ignore
-              if(registeredAddr!==addr){
+              if (registeredAddr !== addr) {
                 Object.defineProperty(this, '__emitF', {
                   value: _.debounce((addr: any, args: any) => {
                     clientSocket.emit(addr, args);
@@ -198,17 +198,17 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
                   configurable: false,
                   writable: true,
                 });
-                registeredAddr = addr
+                registeredAddr = addr;
               }
               // @ts-ignore
-              if (this.__emitF && (AccessibleSettedByServer !== addr ) ){
+              if (this.__emitF && (AccessibleSettedByServer !== addr ) ) {
                 // @ts-ignore
-                res = this.__emitF(addr,args)
+                res = this.__emitF(addr, args);
               } else {
                 // console.warn("avoid feedback");
               }
-            }
-            regF(true)
+            };
+            regF(true);
             // })
 
           } else  {
@@ -218,21 +218,21 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
         }
 
 
-        if (!options || !(isClient && options.skipClientApply) ) {
+      if (!options || !(isClient && options.skipClientApply) ) {
           // debugger
-          if (options && options.sharedFunction) {lockCallbacks +=1 }
-            res = method.call(this, ...args);
-          if (options && options.sharedFunction){lockCallbacks -=1;}
+          if (options && options.sharedFunction) {lockCallbacks += 1; }
+          res = method.call(this, ...args);
+          if (options && options.sharedFunction) {lockCallbacks -= 1; }
         }
 
-        return res;
+      return res;
       };
     };
   }
 
 
 
-  export function SetAccessible() {
+export function SetAccessible() {
 
     return function(target: any, key: string | symbol) {
       const val = target[key];
@@ -253,7 +253,7 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
 
 
 
-  export function RemoteValue(cb?: Function) {
+export function RemoteValue(cb?: Function) {
 
     return function(target: any, key: string | symbol) {
       const val = target[key];
@@ -288,14 +288,14 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
   }
 
 
-  function initAccessibles(parent: any) {
+function initAccessibles(parent: any) {
     if (parent.__accessibleMembers) {
       for (const k of Object.keys(parent.__accessibleMembers)) {
         setChildAccessible(parent, k);
       }
     }
   }
-  function initRemoteValues(parent: any) {
+function initRemoteValues(parent: any) {
     const res = [];
     if (parent.__remoteValues) {
       for (const k in parent.__remoteValues) {
@@ -304,7 +304,7 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
     }
     return res;
   }
-  function initRemoteFunctions(parent: any) {
+function initRemoteFunctions(parent: any) {
     const res = [];
     if (parent.__remoteFunctions) {
       for (const k in parent.__remoteFunctions) {
@@ -313,7 +313,7 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
     }
     return res;
   }
-  function initRemoteFunction(parent: any, k: string) {
+function initRemoteFunction(parent: any, k: string) {
 
     if (parent.__initRemoteFunctionClosures === undefined) {
       Object.defineProperty(parent, '__initRemoteFunctionClosures', {
@@ -339,7 +339,7 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
         AccessibleSettedByServer = null;
       };
       parent.__initRemoteFunctionClosures[k]  = () => {
-        nextTick(()=>{
+        nextTick(() => {
           const a = buildAddressFromObj(parent) + '/' + k;
           if (registredAddr !== a || clientSocket !== registeredClientSocket) {
             if (clientSocket && isClient) {// only client need to specify (server use middleware)
@@ -353,13 +353,13 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
           allListeners[a] = listenerFunction;
 
         });
-      }
+      };
 
     }
     return parent.__initRemoteFunctionClosures[k];
 
   }
-  function initRemoteValue(parent: any, k: string) {
+function initRemoteValue(parent: any, k: string) {
     // if (isClient) {
       if (parent.initValueClosures === undefined) {
         Object.defineProperty(parent, 'initValueClosures',
@@ -387,8 +387,8 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
         };
 
         const registerListener = (deferIfUnattached = true) => {
-          nextTick(()=>{
-            const pAddr = buildAddressFromObj(parent)
+          nextTick(() => {
+            const pAddr = buildAddressFromObj(parent);
             const a =  pAddr + '/' + k;
             if (registredAddr !== a || clientSocket !== registeredClientSocket) {
               if (clientSocket && isClient) {// only client need to specify (server use middleware)
@@ -403,7 +403,7 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
             }
             allListeners[a] = listenerFunction;
 
-          })
+          });
         };
         const getter = () => {
           return storedValue;
@@ -420,18 +420,18 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
 
             }
           };
-          const emitF = isClient ? (addr: any, args: any) => {
+        const emitF = isClient ? (addr: any, args: any) => {
             clientSocket.emit(addr, args);
           } :
           _.debounce((addr: any, args: any) => {
             clientSocket.emit(addr, args);
           }, 50,
           {trailing: true, maxWait: 100});
-          const setter = (v: any) => {
+        const setter = (v: any) => {
 
 
             registerListener();
-            if(lockCallbacks===0){
+            if (lockCallbacks === 0) {
               if (clientSocket ) {
                 // listenedNodes[addr] = true
                 // debugger
@@ -443,32 +443,32 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
                   if (cb) {cb(parent, v); }
                   // if (!settingFromRemote) {
 
-                    emitF(registredAddr, v);
+                  emitF(registredAddr, v);
 
                     // } else {
                       //   console.warn('avoid fb value');
                       // }
                     }
                   }
-                };
-              }
-              Object.defineProperty(parent, k, {
+                }
+              };
+        Object.defineProperty(parent, k, {
                 get: getter,
                 set: setter,
                 enumerable: true,
                 configurable: true,
               });
-              parent.__remoteValues[k] = fetchFunction;
-              parent.initValueClosures[k] = registerListener;
+        parent.__remoteValues[k] = fetchFunction;
+        parent.initValueClosures[k] = registerListener;
 
             }
 
-            return parent.initValueClosures[k];
+      return parent.initValueClosures[k];
 
 
           }
 
-          export function setChildAccessible(parent: any, k: string|symbol) {
+export function setChildAccessible(parent: any, k: string|symbol) {
             // if (!parent[k].__accessibleParent) {
               Object.defineProperty(parent[k], '__accessibleParent', {
                 value: parent,
@@ -495,19 +495,19 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
               // if(parent[k] ){
                 //   debugger
                 // }
-                parent.__accessibleMembers[k] = parent[k] || parent.__accessibleMembers[k];
+              parent.__accessibleMembers[k] = parent[k] || parent.__accessibleMembers[k];
 
                 // } else {
                   //   parent[k].__accessibleParent = parent;
                   //   parent[k].__accessibleName = k;
                   // }
-                  rebuildAccessiblesDebounced(); // debounced
+              rebuildAccessiblesDebounced(); // debounced
                 }
 
 
 
-                const allAccessibles = new Set<any>();
-                export function AccessibleClass<T extends new(...args: any[]) => {}>() {
+const allAccessibles = new Set<any>();
+export function AccessibleClass<T extends new(...args: any[]) => {}>() {
                   return function<T extends new(...args: any[]) => {}>(constructor: T) {
                     return class extends constructor {
 
@@ -537,34 +537,34 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
                   };
                 }
 
-                export function fetchRemote(o: any, k: string, cb?: Function) {
+export function fetchRemote(o: any, k: string, cb?: Function) {
                   if (o.__remoteValues !== undefined && o.__remoteValues[k]) {
                     o.__remoteValues[k](cb);
                   }
                 }
 
-                export function nonEnumerable() {
+export function nonEnumerable() {
                   return function(target: any, key: string | symbol) {
 
                     Object.defineProperty(target, key, {
-                      set:(value)=>{
-                        Object.defineProperty(target, key,{
+                      set: (value) => {
+                        Object.defineProperty(target, key, {
                           value,
                           enumerable: false,
                           configurable: false,
-                          writable:true
-                        } )
+                          writable: true,
+                        } );
                       },
                       enumerable: false,
-                      configurable: true
+                      configurable: true,
                     });
 
 
 
-                  }
+                  };
                 }
 
-                export function resolveAccessible(parent: any , addr: string[]) {
+export function resolveAccessible(parent: any , addr: string[]) {
                   const oriAddr = addr.slice();
                   let inspA = addr.shift();
                   if (inspA) {

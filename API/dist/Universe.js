@@ -1,8 +1,7 @@
 "use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") { r = Reflect.decorate(decorators, target, key, desc); } else { for (var i = decorators.length - 1; i >= 0; i--) { if (d = decorators[i]) { r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r; } } }
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -11,22 +10,22 @@ var Channel_1 = require("./Channel");
 var Utils_1 = require("./Utils");
 var MemoryUtils_1 = require("./MemoryUtils");
 var ServerSync_1 = require("./ServerSync");
-var Universe = /** @class */ (function () {
+var Universe = /** @class */ (function() {
     function Universe() {
-        this.testedChannel = new Channel_1.ChannelBase('tested', 0, -1, false);
-        this.driverName = 'none';
+        this.testedChannel = new Channel_1.ChannelBase("tested", 0, -1, false);
+        this.driverName = "none";
         this.fixtures = {};
         this._master = 1.0;
     }
     Object.defineProperty(Universe.prototype, "grandMaster", {
-        get: function () { return this._master; },
+        get: function() { return this._master; },
         enumerable: true,
-        configurable: true
+        configurable: true,
     });
     Object.defineProperty(Universe.prototype, "fixtureList", {
-        get: function () { return Object.values(this.fixtures); },
+        get: function() { return Object.values(this.fixtures); },
         enumerable: true,
-        configurable: true
+        configurable: true,
     });
     // singleton guard
     // public static createFromObj(ob: any): Universe {
@@ -34,57 +33,56 @@ var Universe = /** @class */ (function () {
     //   uni.configureFromObj(ob)
     //   return uni;
     // }
-    Universe.prototype.configureFromObj = function (ob) {
+    Universe.prototype.configureFromObj = function(ob) {
         var _this = this;
         if (ob.driverName) {
             this.setDriverName(ob.driverName);
         }
         if (ob.fixtures) {
-            this.fixtureList.map(function (f) { return _this.removeFixture(f); });
+            this.fixtureList.map(function(f) { return _this.removeFixture(f); });
             for (var f in Object.values(ob.fixtures)) {
                 var df = Fixture_1.FixtureBase.createFromObj(f);
                 if (df) {
                     this.addFixture(df);
                 }
             }
-        }
-        else {
-            console.error('parsing error', JSON.stringify(ob));
+        } else {
+            console.error("parsing error", JSON.stringify(ob));
         }
     };
-    Universe.prototype.setDriverName = function (n) {
+    Universe.prototype.setDriverName = function(n) {
         this.driverName = n;
     };
-    Universe.prototype.setGrandMaster = function (n) {
+    Universe.prototype.setGrandMaster = function(n) {
         this._master = n;
         for (var _i = 0, _a = this.fixtureList; _i < _a.length; _i++) {
             var f = _a[_i];
             f.setMaster(this._master);
         }
     };
-    Universe.prototype.addFixture = function (f) {
+    Universe.prototype.addFixture = function(f) {
         var _this = this;
-        f.name = Utils_1.getNextUniqueName(this.fixtureList.map(function (ff) { return ff.name; }), f.name);
+        f.name = Utils_1.getNextUniqueName(this.fixtureList.map(function(ff) { return ff.name; }), f.name);
         MemoryUtils_1.addProp(this.fixtures, f.name, f);
-        f.events.on('nameChanged', function (ff, oldName) {
-            var newName = Utils_1.getNextUniqueName(_this.fixtureList.filter(function (f) { return f !== ff; }).map(function (f) { return f.name; }), ff.name);
+        f.events.on("nameChanged", function(ff, oldName) {
+            var newName = Utils_1.getNextUniqueName(_this.fixtureList.filter(function(f) { return f !== ff; }).map(function(f) { return f.name; }), ff.name);
             MemoryUtils_1.deleteProp(_this.fixtures, oldName);
             ff.setName(newName);
             MemoryUtils_1.addProp(_this.fixtures, newName, ff);
         });
         f.universe = this;
     };
-    Universe.prototype.removeFixture = function (f) {
+    Universe.prototype.removeFixture = function(f) {
         MemoryUtils_1.deleteProp(this.fixtures, f.name);
     };
-    Universe.prototype.getNextCirc = function (d, forbidden) {
-        var circsUsed = this.fixtureList.map(function (ff) { return ff.channels; }).flat().map(function (ch) { return ch.trueCirc; }).concat(forbidden || []);
+    Universe.prototype.getNextCirc = function(d, forbidden) {
+        var circsUsed = this.fixtureList.map(function(ff) { return ff.channels; }).flat().map(function(ch) { return ch.trueCirc; }).concat(forbidden || []);
         while (circsUsed.indexOf(d) !== -1) {
             d += 1;
         }
         return d;
     };
-    Universe.prototype.checkCircsValidity = function () {
+    Universe.prototype.checkCircsValidity = function() {
         var usedChannels = [];
         for (var _i = 0, _a = this.fixtureList; _i < _a.length; _i++) {
             var f = _a[_i];
@@ -98,13 +96,13 @@ var Universe = /** @class */ (function () {
         }
     };
     Object.defineProperty(Universe.prototype, "allChannels", {
-        get: function () {
-            return this.fixtureList.map(function (f) { return f.channels; }).flat();
+        get: function() {
+            return this.fixtureList.map(function(f) { return f.channels; }).flat();
         },
         enumerable: true,
-        configurable: true
+        configurable: true,
     });
-    Universe.prototype.testDimmerNum = function (d) {
+    Universe.prototype.testDimmerNum = function(d) {
         if (this.testedChannel.circ >= 0) {
             this.testedChannel.setValue(0.0, true);
         }
@@ -113,11 +111,11 @@ var Universe = /** @class */ (function () {
             this.testedChannel.setValue(1.0, true);
         }
     };
-    Universe.prototype.setTestedChannelDimmer = function (dimmerNum) {
+    Universe.prototype.setTestedChannelDimmer = function(dimmerNum) {
         this.testedChannel.circ = dimmerNum;
     };
     __decorate([
-        ServerSync_1.SetAccessible()
+        ServerSync_1.SetAccessible(),
     ], Universe.prototype, "fixtures", void 0);
     return Universe;
 }());

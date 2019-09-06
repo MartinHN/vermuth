@@ -21,12 +21,12 @@ export class FixtureBase implements FixtureBaseI {
 
 
   public set baseCirc(n: number) {
-    const changed = n!=this._baseCirc
+    const changed = n != this._baseCirc;
     this._baseCirc = n;
-    
-    if(this.universe && changed){
-      this.universe.checkDuplicatedCirc()
-      this.universe.updateChannelsValues()
+
+    if (this.universe && changed) {
+      this.universe.checkDuplicatedCirc();
+      this.universe.updateChannelsValues();
     }
   }
   public get baseCirc() {return this._baseCirc; }
@@ -51,7 +51,7 @@ export class FixtureBase implements FixtureBaseI {
   get channelNames() {
     return this.channels.map((c) => c.name);
   }
-  get channelsState(){
+  get channelsState() {
     return this.channels.map((c) => c.getState());
   }
 
@@ -77,7 +77,7 @@ export class FixtureBase implements FixtureBaseI {
   public globalValue = 0;
 
   @nonEnumerable()
-  public __events;
+  public __events = new EventEmitter();
 
   @SetAccessible()
   public readonly channels = new Array<ChannelBase>();
@@ -90,7 +90,7 @@ export class FixtureBase implements FixtureBaseI {
   private __universe: Universe | undefined;
 
   constructor(public name: string, channels: ChannelBase[]) {
-    this.__events = new EventEmitter();
+
     if (channels) {
       channels.map((c) => this.addChannel(c));
     } else {
@@ -120,25 +120,25 @@ export class FixtureBase implements FixtureBaseI {
     return '/mainUniverse/' + this.name;
   }
 
-  public get colorChannels(){
-    let cch:{r?:ChannelBase,g?:ChannelBase,b?:ChannelBase} = {}
-    for(const ch of this.channels ){
-      const code = ch.colorChannelCode
-      if(code){
-        cch[code]=ch;
+  public get colorChannels() {
+    const cch: {r?: ChannelBase, g?: ChannelBase, b?: ChannelBase} = {};
+    for (const ch of this.channels ) {
+      const code = ch.colorChannelCode;
+      if (code) {
+        cch[code] = ch;
       }
     }
-    return cch
+    return cch;
   }
 
 
-  public get hasColorChannels(){
-    const ch = this.colorChannels
+  public get hasColorChannels() {
+    const ch = this.colorChannels;
     return (ch.r) && (ch.g) && (ch.b);
   }
 
-  public get dimmerChannel(){
-    return this.channels.find(e=>e.name=="dim" || e.name=="dimmer")
+  public get dimmerChannel() {
+    return this.channels.find((e) => e.name == 'dim' || e.name == 'dimmer');
   }
 
   @RemoteFunction({sharedFunction: true})
@@ -149,11 +149,11 @@ export class FixtureBase implements FixtureBaseI {
   }
 
   @RemoteFunction({sharedFunction: true})
-  public setColor(c:{r:number,g:number,b:number}){
-    if(this.colorChannels!=={}){
-      if(this.colorChannels.r)this.colorChannels.r.setValue(c.r,false);
-      if(this.colorChannels.g)this.colorChannels.g.setValue(c.g,false);
-      if(this.colorChannels.b)this.colorChannels.b.setValue(c.b,false);
+  public setColor(c: {r: number, g: number, b: number}) {
+    if (this.colorChannels !== {}) {
+      if (this.colorChannels.r) {this.colorChannels.r.setValue(c.r, false); }
+      if (this.colorChannels.g) {this.colorChannels.g.setValue(c.g, false); }
+      if (this.colorChannels.b) {this.colorChannels.b.setValue(c.b, false); }
     }
 
   }

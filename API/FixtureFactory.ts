@@ -1,43 +1,44 @@
-import { Fixture } from './Fixture';
+import { FixtureBase } from './Fixture';
 import { RemoteFunction, RemoteValue, SetAccessible, AccessibleClass, setChildAccessible, nonEnumerable } from './ServerSync';
 const fs = require('fs');
 
+const directoryPath = '';
 @AccessibleClass()
 export class FixtureFactory  {
+  public AllFixtures: any = {};
+  constructor(public paths: string[]) {
 
-  constructor(public paths:string[]){
-    this.AllFixtures = {}
-    this.parseAllJSONs()
+    this.parseAllJSONs();
   }
-  public parseAllJSONs(){
-    this.AllFixtures = {}
-    const truPaths = paths.filter(p=>fs.exists(p))
-    for (const  p of truPaths){
-      files = fs.readdirSync(directoryPath, {withFileType:"json"})
-      files.forEach( (file) =>{
-        const jd = JSON.parse(file)
-        const ob = {}
-        for( const a of ["name","categories","fixtureKey","modes"]){
-          if(a in jd){ob[a] = jd[a]}
+  public parseAllJSONs() {
+    this.AllFixtures = {};
+    const truPaths = this.paths.filter((p) => fs.exists(p));
+    for (const  p of truPaths) {
+      const files = fs.readdirSync(directoryPath, {withFileType: 'json'});
+      files.forEach( (file) => {
+        const jd = JSON.parse(file);
+        const ob = {filepath:file};
+        for ( const a of ['name', 'categories', 'fixtureKey', 'modes']) {
+          if (a in jd) {ob[a] = jd[a]; }
         }
-        ob["filePath"] = file
-        this.AllFixtures[jd.fixtureKey] = ob
         
-      });
+        this.AllFixtures[jd.fixtureKey] = ob;
+
     });
-}
-public generateForKey(fixtureKey:string,mode?:string){
-  if( fixtureKey in this.AllFixtures){
-    const fix = this.AllFixtures
-    if(!mode && ("modes" in fix)){
-      mode = Object.keys(fix.modes)[0]
     }
+  }
+  public generateForKey(fixtureKey: string, mode?: string) {
+    if ( fixtureKey in this.AllFixtures) {
+      const fix = this.AllFixtures;
+      if (!mode && ('modes' in fix)) {
+        mode = Object.keys(fix.modes)[0];
+      }
+
+    }
+  }
+
+  public getAvailableFlat() {
 
   }
-} 
-
-public getAvailableFlat(){
-
-}
 
 }

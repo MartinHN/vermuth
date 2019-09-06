@@ -6,17 +6,15 @@ function getVue() {
         return false;
     }
     try {
-        return require('vue').default;
-    }
-    catch (e) { }
+        return require("vue").default;
+    } catch (e) { }
     return false;
 }
 function deleteProp(o, p) {
     var Vue = getVue();
     if (Vue) {
         Vue.delete(o, p);
-    }
-    else {
+    } else {
         delete o[p];
     }
 }
@@ -25,8 +23,7 @@ function addProp(o, p, v) {
     var Vue = getVue();
     if (Vue) {
         Vue.set(o, p, v);
-    }
-    else {
+    } else {
         o[p] = v;
     }
 }

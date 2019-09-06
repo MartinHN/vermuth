@@ -4,7 +4,7 @@ var isClient = process.env.VUE_APP_ISCLIENT;
 var clientSocket = null;
 function bindClientSocket(s) {
     if (!isClient) {
-        throw " can't bind client socket on server";
+        throw new Error(" can't bind client socket on server");
     }
     if (clientSocket !== null) {
         console.error("reassigning socket");
@@ -18,18 +18,15 @@ function buildAddressFromObj(o) {
     while (insp) {
         if (insp.accessibleName) {
             addr.push(insp.accessibleName);
-        }
-        else if (Array.isArray(insp.accessibleParent)) {
+        } else if (Array.isArray(insp.accessibleParent)) {
             addr.push("" + insp.accessibleParent.indexOf(insp));
-        }
-        else if (insp in Object.values(insp.accessibleParent)) {
-            var pair = Object.entries(insp.accessibleParent).find(function (_a) {
+        } else if (insp in Object.values(insp.accessibleParent)) {
+            var pair = Object.entries(insp.accessibleParent).find(function(_a) {
                 var k = _a[0], v = _a[1];
                 return v === insp;
             });
             addr.push(pair[0]);
-        }
-        else {
+        } else {
             console.error("");
             debugger;
         }
@@ -38,14 +35,13 @@ function buildAddressFromObj(o) {
     if (addr) {
         addr = addr.reverse();
         return "/" + addr.join("/");
-    }
-    else {
-        throw "can't find address on object" + o;
+    } else {
+        throw new Error("can't find address on object" + o);
         return "/noaddress";
     }
 }
 function DirectRemoteFunction(options) {
-    return function (target, propertyKey, descriptor) {
+    return function(target, propertyKey, descriptor) {
         var method = descriptor.value;
         if (!isClient) {
             if (!target.remoteFunctions) {
@@ -53,14 +49,13 @@ function DirectRemoteFunction(options) {
             }
             target.remoteFunctions[propertyKey] = method;
         }
-        descriptor.value = function () {
+        descriptor.value = function() {
             // target.notifyRemote()
             if (isClient) {
                 if (clientSocket) {
                     var addr = buildAddressFromObj(this) + "/" + propertyKey;
                     clientSocket.emit(addr, arguments);
-                }
-                else {
+                } else {
                     console.error("can't reach server on DirectRemoteFunction : ", propertyKey);
                 }
             }
@@ -74,7 +69,7 @@ function DirectRemoteFunction(options) {
 }
 exports.DirectRemoteFunction = DirectRemoteFunction;
 function SetAccessible() {
-    return function (target, key) {
+    return function(target, key) {
         var val = target[key];
         if (!target.accessibleMembers) {
             Object.defineProperty(target, "accessibleMembers", {

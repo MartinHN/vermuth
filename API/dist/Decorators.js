@@ -2,12 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var isClient = process.env.VUE_APP_ISCLIENT;
 function RemoteFunction1(options) {
-    return function (target, propertyKey, descriptor) {
+    return function(target, propertyKey, descriptor) {
         var method = descriptor.value;
-        console.log('eval');
-        descriptor.value = function () {
+        console.log("eval");
+        descriptor.value = function() {
             // target.notifyRemote()
-            console.log('caled');
+            console.log("caled");
             return method.apply(this, arguments);
         };
     };

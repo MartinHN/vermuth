@@ -5,16 +5,16 @@ function getNextUniqueName(nameList, name) {
         return name;
     }
     function joinNBI(nBase, pidx) {
-        return nBase.length ? nBase + ' ' + pidx : '' + pidx;
+        return nBase.length ? nBase + " " + pidx : "" + pidx;
     }
-    var nameSpl = name.split(' ');
+    var nameSpl = name.split(" ");
     var idx = nameSpl.length > 0 ? parseInt(nameSpl[nameSpl.length - 1], 10) : NaN;
     if (isNaN(idx)) {
         idx = 0;
-        nameSpl.push('0');
+        nameSpl.push("0");
     }
     idx += 1;
-    var nameBase = nameSpl.slice(0, nameSpl.length - 1).join(' ');
+    var nameBase = nameSpl.slice(0, nameSpl.length - 1).join(" ");
     while ((nameList.indexOf(joinNBI(nameBase, idx)) !== -1)) {
         idx += 1;
     }

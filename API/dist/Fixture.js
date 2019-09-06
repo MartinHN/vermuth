@@ -1,75 +1,74 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
+var __extends = (this && this.__extends) || (function() {
+    var extendStatics = function(d, b) {
         extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            ({ __proto__: [] } instanceof Array && function(d, b) { d.__proto__ = b; }) ||
+            function(d, b) { for (var p in b) { if (b.hasOwnProperty(p)) { d[p] = b[p]; } } };
         return extendStatics(d, b);
     };
-    return function (d, b) {
+    return function(d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") { r = Reflect.decorate(decorators, target, key, desc); } else { for (var i = decorators.length - 1; i >= 0; i--) { if (d = decorators[i]) { r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r; } } }
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Channel_1 = require("./Channel");
-var EventEmitter = require('events').EventEmitter;
+var EventEmitter = require("events").EventEmitter;
 var ServerSync_1 = require("./ServerSync");
 var fixtureTypes = {};
-var FixtureBase = /** @class */ (function () {
+var FixtureBase = /** @class */ (function() {
     function FixtureBase(name, channels) {
         var _this = this;
         this.name = name;
         this.enabled = true;
         this.globalValue = 0;
-        this.ftype = 'base';
+        this.ftype = "base";
         this._baseCirc = 0;
         this.events = new EventEmitter();
         this.channels = new Array();
-        channels.map(function (c) { return _this.addChannel(c); });
+        channels.map(function(c) { return _this.addChannel(c); });
         ServerSync_1.initAccessibles(this);
     }
-    FixtureBase.createFromObj = function (ob) {
+    FixtureBase.createFromObj = function(ob) {
         if (ob.channels) {
             var cstr = fixtureTypes[ob.ftype];
             if (cstr) {
                 var i = cstr(ob.name, []);
                 i.configureFromObj(ob);
                 return i;
-            }
-            else {
+            } else {
                 return undefined;
             }
         }
     };
-    FixtureBase.prototype.configureFromObj = function (ob) {
+    FixtureBase.prototype.configureFromObj = function(ob) {
         var _this = this;
-        if (ob.baseCirc)
+        if (ob.baseCirc) {
             this.baseCirc = ob.baseCirc;
+        }
         if (ob.channels) {
-            this.channels.map(function (c) { return _this.removeChannel(c); });
-            ob.channels.map(function (c) { return _this.addChannel(Channel_1.ChannelBase.createFromObj(c)); });
+            this.channels.map(function(c) { return _this.removeChannel(c); });
+            ob.channels.map(function(c) { return _this.addChannel(Channel_1.ChannelBase.createFromObj(c)); });
         }
     };
     Object.defineProperty(FixtureBase.prototype, "baseCirc", {
-        get: function () { return this._baseCirc; },
-        set: function (n) {
+        get: function() { return this._baseCirc; },
+        set: function(n) {
             this._baseCirc = n;
-            this.channels.map(function (c) { return c.checkDuplicatedCirc(); });
+            this.channels.map(function(c) { return c.checkDuplicatedCirc(); });
         },
         enumerable: true,
-        configurable: true
+        configurable: true,
     });
     Object.defineProperty(FixtureBase.prototype, "inSync", {
-        get: function () {
-            for (var _i = 0, _a = this.channels.filter(function (cc) { return cc.reactToMaster; }); _i < _a.length; _i++) {
+        get: function() {
+            for (var _i = 0, _a = this.channels.filter(function(cc) { return cc.reactToMaster; }); _i < _a.length; _i++) {
                 var c = _a[_i];
                 if (c.floatValue !== this.globalValue) {
                     return false;
@@ -78,35 +77,35 @@ var FixtureBase = /** @class */ (function () {
             return true;
         },
         enumerable: true,
-        configurable: true
+        configurable: true,
     });
     Object.defineProperty(FixtureBase.prototype, "universe", {
-        get: function () {
+        get: function() {
             return this.__universe;
         },
-        set: function (uni) {
+        set: function(uni) {
             var _this = this;
             this.__universe = uni;
-            this.channels.map(function (c) { return c.setParentFixture(_this); });
+            this.channels.map(function(c) { return c.setParentFixture(_this); });
         },
         enumerable: true,
-        configurable: true
+        configurable: true,
     });
-    FixtureBase.prototype.setName = function (n) {
+    FixtureBase.prototype.setName = function(n) {
         var oldName = this.name;
         this.name = n;
         if (oldName !== n) {
-            this.events.emit('nameChanged', this, oldName);
+            this.events.emit("nameChanged", this, oldName);
         }
     };
-    FixtureBase.prototype.buildAddress = function () {
+    FixtureBase.prototype.buildAddress = function() {
         return "/mainUniverse/" + this.name;
     };
-    FixtureBase.prototype.setMaster = function (v) {
+    FixtureBase.prototype.setMaster = function(v) {
         this.globalValue = v;
         this.syncToGlobalValue(v);
     };
-    FixtureBase.prototype.syncToGlobalValue = function (v) {
+    FixtureBase.prototype.syncToGlobalValue = function(v) {
         for (var _i = 0, _a = this.channels; _i < _a.length; _i++) {
             var c = _a[_i];
             if (c.reactToMaster) {
@@ -114,58 +113,59 @@ var FixtureBase = /** @class */ (function () {
             }
         }
     };
-    FixtureBase.prototype.addChannel = function (c) {
+    FixtureBase.prototype.addChannel = function(c) {
         if (c === undefined) {
-            c = new Channel_1.ChannelBase('channel', 0, 0, true);
+            c = new Channel_1.ChannelBase("channel", 0, 0, true);
         }
         c.setParentFixture(this);
         this.channels.push(c);
         return c;
     };
-    FixtureBase.prototype.removeChannel = function (c) {
+    FixtureBase.prototype.removeChannel = function(c) {
         c.setParentFixture(null);
         var i = this.channels.indexOf(c);
-        if (i >= 0)
-            this.channels.splice(i, 1); // = this.channels.filter((v) => c !== v); // delete?
+        if (i >= 0) {
+            this.channels.splice(i, 1);
+        } // = this.channels.filter((v) => c !== v); // delete?
     };
-    FixtureBase.prototype.getChannelForName = function (n) {
-        return this.channels.find(function (c) { return c.name === n; });
+    FixtureBase.prototype.getChannelForName = function(n) {
+        return this.channels.find(function(c) { return c.name === n; });
     };
     Object.defineProperty(FixtureBase.prototype, "channelNames", {
-        get: function () {
-            return this.channels.map(function (c) { return c.name; });
+        get: function() {
+            return this.channels.map(function(c) { return c.name; });
         },
         enumerable: true,
-        configurable: true
+        configurable: true,
     });
     __decorate([
-        ServerSync_1.SetAccessible()
+        ServerSync_1.SetAccessible(),
     ], FixtureBase.prototype, "channels", void 0);
     __decorate([
-        ServerSync_1.DirectRemoteFunction()
+        ServerSync_1.DirectRemoteFunction(),
     ], FixtureBase.prototype, "setMaster", null);
     return FixtureBase;
 }());
 exports.FixtureBase = FixtureBase;
-var DirectFixture = /** @class */ (function (_super) {
+var DirectFixture = /** @class */ (function(_super) {
     __extends(DirectFixture, _super);
     function DirectFixture(channelName, circs) {
-        var _this = _super.call(this, channelName, circs.map(function (c) { return new Channel_1.ChannelBase('channel', 0, c); })) || this;
-        _this.ftype = 'direct';
+        var _this = _super.call(this, channelName, circs.map(function(c) { return new Channel_1.ChannelBase("channel", 0, c); })) || this;
+        _this.ftype = "direct";
         return _this;
     }
     return DirectFixture;
 }(FixtureBase));
 exports.DirectFixture = DirectFixture;
-fixtureTypes.direct = function () {
+fixtureTypes.direct = function() {
     var args = [];
     for (var _i = 0; _i < arguments.length; _i++) {
         args[_i] = arguments[_i];
     }
     return new DirectFixture(args[0], args[1]);
 };
-console.log('started');
-var f = new DirectFixture('lala', [0]);
+console.log("started");
+var f = new DirectFixture("lala", [0]);
 console.log("setName");
 f.setName("lala");
 // const  allCircs  = new Array(512).fill(0).map((_, idx) => idx);

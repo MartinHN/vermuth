@@ -1,28 +1,27 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
+var __extends = (this && this.__extends) || (function() {
+    var extendStatics = function(d, b) {
         extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            ({ __proto__: [] } instanceof Array && function(d, b) { d.__proto__ = b; }) ||
+            function(d, b) { for (var p in b) { if (b.hasOwnProperty(p)) { d[p] = b[p]; } } };
         return extendStatics(d, b);
     };
-    return function (d, b) {
+    return function(d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") { r = Reflect.decorate(decorators, target, key, desc); } else { for (var i = decorators.length - 1; i >= 0; i--) { if (d = decorators[i]) { r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r; } } }
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Utils_1 = require("./Utils");
 var ServerSync_1 = require("./ServerSync");
 var channelTypes = {};
-var ChannelBase = /** @class */ (function () {
+var ChannelBase = /** @class */ (function() {
     function ChannelBase(name, __value, circ, _enabled) {
         if (__value === void 0) { __value = 0; }
         if (circ === void 0) { circ = 0; }
@@ -31,12 +30,12 @@ var ChannelBase = /** @class */ (function () {
         this.__value = __value;
         this.circ = circ;
         this._enabled = _enabled;
-        this.ctype = 'base';
+        this.ctype = "base";
         this.hasDuplicatedCirc = false;
         this.reactToMaster = true;
     }
     Object.defineProperty(ChannelBase.prototype, "trueCirc", {
-        get: function () {
+        get: function() {
             var baseCirc = 0;
             if (this.__parentFixture && this.__parentFixture.baseCirc) {
                 baseCirc = this.__parentFixture.baseCirc;
@@ -44,89 +43,91 @@ var ChannelBase = /** @class */ (function () {
             return baseCirc + this.circ;
         },
         enumerable: true,
-        configurable: true
+        configurable: true,
     });
     Object.defineProperty(ChannelBase.prototype, "intValue", {
-        get: function () { return this.__value * 255; },
+        get: function() { return this.__value * 255; },
         enumerable: true,
-        configurable: true
+        configurable: true,
     });
     Object.defineProperty(ChannelBase.prototype, "floatValue", {
-        get: function () { return this.__value; },
+        get: function() { return this.__value; },
         enumerable: true,
-        configurable: true
+        configurable: true,
     });
-    ChannelBase.createFromObj = function (ob) {
+    ChannelBase.createFromObj = function(ob) {
         var cstr = channelTypes[ob.ctype];
         if (cstr) {
             var c = new cstr(ob.name, ob.value, ob.circ);
             c.configFromObj(ob);
             return c;
-        }
-        else {
+        } else {
             return undefined;
         }
     };
     Object.defineProperty(ChannelBase.prototype, "enabled", {
-        get: function () {
+        get: function() {
             return this._enabled;
         },
-        set: function (v) {
+        set: function(v) {
             this._enabled = v;
         },
         enumerable: true,
-        configurable: true
+        configurable: true,
     });
-    ChannelBase.prototype.configFromObj = function (ob) {
-        if (ob.name)
+    ChannelBase.prototype.configFromObj = function(ob) {
+        if (ob.name) {
             this.name = ob.name;
-        if (ob.value)
+        }
+        if (ob.value) {
             this.setValue(ob.value, false);
-        if (ob.circ)
+        }
+        if (ob.circ) {
             this.setCirc(ob.circ);
-        if (ob.reactToMaster)
+        }
+        if (ob.reactToMaster) {
             this.reactToMaster = ob.reactToMaster;
+        }
     };
-    ChannelBase.prototype.setValue = function (v, doNotify) {
+    ChannelBase.prototype.setValue = function(v, doNotify) {
         return this.setFloatValue(v, doNotify);
     };
-    ChannelBase.prototype.setFloatValue = function (v, doNotify) {
+    ChannelBase.prototype.setFloatValue = function(v, doNotify) {
         if (this.__value !== v) {
             this.__value = v;
             if (doNotify) {
                 exports.UniverseListener.notify(this.trueCirc, this.__value);
             }
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     };
-    ChannelBase.prototype.setIntValue = function (nvalue, doNotify) {
+    ChannelBase.prototype.setIntValue = function(nvalue, doNotify) {
         return this.setFloatValue(nvalue / 255, doNotify);
     };
-    ChannelBase.prototype.setCirc = function (n) {
+    ChannelBase.prototype.setCirc = function(n) {
         this.circ = n;
         this.checkDuplicatedCirc();
     };
-    ChannelBase.prototype.setName = function (n) {
+    ChannelBase.prototype.setName = function(n) {
         this.name = n;
-        this.reactToMaster = !['r', 'g', 'b'].includes(this.name);
+        this.reactToMaster = !["r", "g", "b"].includes(this.name);
         this.checkNameDuplicate();
     };
-    ChannelBase.prototype.checkNameDuplicate = function () {
+    ChannelBase.prototype.checkNameDuplicate = function() {
         var _this = this;
         if (this.__parentFixture) {
-            this.name = Utils_1.getNextUniqueName(this.__parentFixture.channels.filter(function (c) { return c !== _this; }).map(function (c) { return c.name; }), this.name);
+            this.name = Utils_1.getNextUniqueName(this.__parentFixture.channels.filter(function(c) { return c !== _this; }).map(function(c) { return c.name; }), this.name);
         }
     };
-    ChannelBase.prototype.setValueInternal = function (v) { return true; };
-    ChannelBase.prototype.setParentFixture = function (f) {
+    ChannelBase.prototype.setValueInternal = function(v) { return true; };
+    ChannelBase.prototype.setParentFixture = function(f) {
         this.__parentFixture = f;
         this.checkNameDuplicate();
         this.checkDuplicatedCirc();
     };
-    ChannelBase.prototype.checkDuplicatedCirc = function () {
+    ChannelBase.prototype.checkDuplicatedCirc = function() {
         if (this.__parentFixture && this.__parentFixture.universe) {
             for (var _i = 0, _a = this.__parentFixture.universe.fixtureList; _i < _a.length; _i++) {
                 var f = _a[_i];
@@ -142,40 +143,40 @@ var ChannelBase = /** @class */ (function () {
         this.hasDuplicatedCirc = false;
     };
     __decorate([
-        ServerSync_1.DirectRemoteFunction()
+        ServerSync_1.DirectRemoteFunction(),
     ], ChannelBase.prototype, "setValue", null);
     return ChannelBase;
 }());
 exports.ChannelBase = ChannelBase;
 // register type
 channelTypes.base = ChannelBase.prototype.constructor;
-var LogChannel = /** @class */ (function (_super) {
+var LogChannel = /** @class */ (function(_super) {
     __extends(LogChannel, _super);
     function LogChannel() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.ctype = 'logChanel';
+        _this.ctype = "logChanel";
         return _this;
     }
-    LogChannel.prototype.setValueInternal = function (v) {
-        console.log('set channel' + v);
+    LogChannel.prototype.setValueInternal = function(v) {
+        console.log("set channel" + v);
         return true;
     };
     return LogChannel;
 }(ChannelBase));
 exports.LogChannel = LogChannel;
-var EventEmitter = require('events');
-var UniverseListenerClass = /** @class */ (function (_super) {
+var EventEmitter = require("events");
+var UniverseListenerClass = /** @class */ (function(_super) {
     __extends(UniverseListenerClass, _super);
     function UniverseListenerClass() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.listener = function () { };
+        _this.listener = function() { };
         return _this;
     }
-    UniverseListenerClass.prototype.setListener = function (f) {
+    UniverseListenerClass.prototype.setListener = function(f) {
         this.listener = f;
     };
-    UniverseListenerClass.prototype.notify = function (c, v) {
-        this.emit('channelChanged', c, v);
+    UniverseListenerClass.prototype.notify = function(c, v) {
+        this.emit("channelChanged", c, v);
     };
     return UniverseListenerClass;
 }(EventEmitter));

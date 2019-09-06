@@ -33,12 +33,12 @@ export function addProp(o: any, p: string, v: any) {
 }
 
 
-export function nextTick(cb:any){
+export function nextTick(cb: any) {
   const Vue = getVue();
   if (Vue) {
-    Vue.nextTick(cb)
-  }
-  else{
-    process.nextTick(cb)
+    Vue.nextTick(cb);
+  } else {
+    // @ts-ignore
+    process.nextTick(cb);
   }
 }

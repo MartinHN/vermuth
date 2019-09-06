@@ -17,7 +17,7 @@ class MyLogger {
   public log(txt) {
     console.log( txt);
     if (this.dbgStream) {
-      
+
       this.dbgStream.write(txt);
     }
   }
