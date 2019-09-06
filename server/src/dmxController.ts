@@ -81,7 +81,7 @@ class DMXController implements DMXControllerI{
 
 
   constructor(){
-    debugger
+    
     this.dmx = new DMX()
     this.dmx.registerDriver('QLC',OSCDriver)
     this.dmx.registerDriver('Logger',LoggerDriver)

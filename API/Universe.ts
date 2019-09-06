@@ -97,7 +97,7 @@ export class Universe {
     addProp(this.fixtures, f.name, f);
     setChildAccessible(this.fixtures, f.name);
     f.__events.on('nameChanged', (ff: FixtureBase, oldName: string) => {
-      const newName = getNextUniqueName(this.fixtureList.filter((f) => f !== ff).map((f) => f.name), ff.name);
+      const newName = getNextUniqueName(this.fixtureList.filter((fff) => fff !== ff).map((fff) => fff.name), ff.name);
       deleteProp(this.fixtures, oldName);
       ff.setName(newName);
       addProp(this.fixtures, newName, ff);

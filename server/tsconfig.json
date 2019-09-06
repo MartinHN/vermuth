@@ -9,7 +9,6 @@
     "sourceMap": false,
     "inlineSources": true,
     "inlineSourceMap": true,
-    "emitDecoratorMetadata": true,
     "experimentalDecorators":true,
     "moduleResolution": "node",
     "allowJs":true,
