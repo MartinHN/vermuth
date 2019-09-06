@@ -17,8 +17,11 @@
         <v-layout justify-space-between align-center row >
 
           <v-flex xs9 >
-            <input :style="{'background-color':'#0003',width:'100%'}" :value="f.name" @change="setFixtureName({fixture:f,value:$event.target.value})"/>
-            <span><Numbox class="baseCirc" :value="f.baseCirc" :min="0" :max="512" @input="setFixtureBaseCirc({fixture: f, circ: $event.value})"></Numbox></span>
+            <span style="display:flex;width:100%">
+            <input :style="{'background-color':'#0003','flex': '1 1 50%'}" :value="f.name" @change="setFixtureName({fixture:f,value:$event.target.value})"/>
+            
+              <div style=""> base Channel </div>
+              <Numbox class="baseCirc" :value="f.baseCirc" :min="0" :max="512" @input="setFixtureBaseCirc({fixture: f, circ: $event.value})"></Numbox></span>
           </v-flex>
           <v-flex xs1 >
             <Button class="button removeFixture " color='red' @click="removeFixture({fixture:f})" tabIndex="-1" text="x"/>
