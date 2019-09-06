@@ -16,10 +16,6 @@ const fixtureTypes: {[key: string]: FixtureConstructorI} = {};
 export class FixtureBase implements FixtureBaseI {
 
 
-
-
-
-
   public set baseCirc(n: number) {
     const changed = n != this._baseCirc;
     this._baseCirc = n;

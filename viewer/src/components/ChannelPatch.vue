@@ -13,7 +13,7 @@
           <Numbox class="testNum" name="testChannel" showName="1" @input="testDimmerNum($event.value)" />
         </v-flex>
       </v-layout>
-      <div  v-for="f in universe.fixtureList" :key="f.id" >
+      <div  v-for="f in universe.sortedFixtureList" :key="f.name" >
         <v-layout justify-space-between align-center row >
 
           <v-flex xs9 >
@@ -38,7 +38,7 @@
               <v-layout  align-center row >
                 <v-flex xs1 >
                 </v-flex>
-                <v-flex xs1 >
+                <v-flex xs1 v-if="f.channels.length>1">
                   <Button class="button removeChannel " color='red' @click="removeChannel({channel:c,fixture:f})" tabIndex="-1" text="-"></Button>
                 </v-flex>
                 <v-flex xs11>

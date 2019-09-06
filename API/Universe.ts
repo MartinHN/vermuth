@@ -1,6 +1,6 @@
 import { FixtureBase } from './Fixture';
 import { ChannelBase, UniverseListener } from './Channel';
-import { getNextUniqueName } from './Utils';
+import { getNextUniqueName ,compareValues} from './Utils';
 import { addProp, deleteProp } from './MemoryUtils';
 import { SetAccessible, setChildAccessible, AccessibleClass , RemoteFunction} from './ServerSync';
 
@@ -9,8 +9,10 @@ export class Universe {
 
   public readonly testedChannel = new ChannelBase('tested', 0, -1, false);
   public driverName = 'none';
+
   @SetAccessible()
   public readonly fixtures: {[id: string]: FixtureBase} = {};
+  
   @SetAccessible()
   public readonly groups: {[id: string]: string[]} = {};
 
@@ -29,6 +31,8 @@ export class Universe {
   public removeGroup(name: string) {deleteProp(this.groups, name); }
 
   public get fixtureList() {return Object.values(this.fixtures); }
+  public get sortedFixtureList() {return this.fixtureList.slice().sort(compareValues("name","asc"));}
+  
   // singleton guard
   // public static createFromObj(ob: any): Universe
 

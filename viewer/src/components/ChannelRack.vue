@@ -11,7 +11,7 @@
     <div style="display:flex;flex-direction:row;width:100%">
       <div>
         <select class="selectclass" multiple  v-model="selectedFixtureNames" style="width:100%">
-          <option v-for="n of universe.fixtureList.map(e=>e.name)" :key="n.id" :value="n">{{n}}</option>
+          <option v-for="n of universe.sortedFixtureList.map(e=>e.name)" :key="n.id" :value="n">{{n}}</option>
         </select>
         <Button text="selectAll" @click="selectAll()"></Button>
         <toggle style="min-height:20px" text="show selected" v-model="showSelected" ></toggle>
@@ -28,7 +28,7 @@
           <slider style="flex:1 0 75%" class="grandMaster" @input="setGrandMaster($event)" :value="grandMaster" name="grandMaster"  showName="1" showValue="1" ></slider>
           <input type="color" @input="setAllColorHex($event.target.value)"></input>
         </div>
-        <fixture-widget v-if="needDisplay(f)" style="margin:10px 0 0 0;width:100%" class="channel" v-for="f in universe.fixtureList" :key="f.id" :fixtureProp="f" :showName="showNames" :showValue="showValues" :miniMode="miniMode"></fixture-widget>
+        <fixture-widget v-if="needDisplay(f)" style="margin:10px 0 0 0;width:100%" class="channel" v-for="f in universe.sortedFixtureList" :key="f.id" :fixtureProp="f" :showName="showNames" :showValue="showValues" :miniMode="miniMode"></fixture-widget>
       </div>
     </div>
   </div>
