@@ -229,8 +229,10 @@ class DMXController implements DMXControllerI{
       this.watchSerialPorts()
       console.log('cant connect to '+uri);
       this.__connected = false;
+      if( this.dmx.universes[this.universeName]){
       this.dmx.universes[this.universeName].stop();
       this.dmx.universes[this.universeName].close(closeCB)
+    }
       // this.selectedDriverName = ""
 
     }

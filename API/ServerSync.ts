@@ -37,7 +37,7 @@ const rebuildAccessibles = () => {
   const f = (o: any) => {
     if (o === undefined) {
       console.error('accessible parsing error');
-      debugger;
+      //debugger;
       return;
     }
     if (o.__accessibleMembers) {

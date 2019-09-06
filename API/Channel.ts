@@ -133,7 +133,7 @@ export class ChannelBase implements ChannelI {
   public setParentFixture(f: FixtureBase|null) {
     if (f && this.__parentFixture) {
       if (f.name !== this.__parentFixture.name) {
-        debugger;
+       // debugger;
       }
     }
     this.__parentFixture = f;
