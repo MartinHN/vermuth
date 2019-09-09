@@ -28,10 +28,10 @@ export function getNextUniqueName(nameList: string[], name: string): string {
 }
 
 // function for dynamic sorting
-export function compareValues(key:string, order='asc') {
-  return function(a:any, b:any) {
+export function compareValues(key: string, order= 'asc') {
+  return (a: any, b: any) => {
 
-    if(!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
+    if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
       // property doesn't exist on either object
       return 0;
     }
@@ -48,7 +48,7 @@ export function compareValues(key:string, order='asc') {
       comparison = -1;
     }
     return (
-      (order == 'desc') ? (comparison * -1) : comparison
+      (order === 'desc') ? (comparison * -1) : comparison
     );
   };
 }

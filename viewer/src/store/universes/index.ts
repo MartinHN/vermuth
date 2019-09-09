@@ -46,10 +46,10 @@ export default class Universes extends VuexModule {
     const {fixture} = pl;
     const clone = new DirectFixture(fixture.name, []);
     this.universe.addFixture(clone); // register accessible before config
-    const oldName = fixture.name
-    fixture.name = clone.name
+    const oldName = fixture.name;
+    fixture.name = clone.name;
     clone.configureFromObj(fixture);
-    fixture.name = oldName
+    fixture.name = oldName;
   }
   @Mutation
   public setFixtureName(pl: {fixture: FixtureBase, value: string}) {

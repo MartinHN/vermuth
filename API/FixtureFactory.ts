@@ -17,11 +17,11 @@ export class FixtureFactory  {
       const files = fs.readdirSync(directoryPath, {withFileType: 'json'});
       files.forEach( (file) => {
         const jd = JSON.parse(file);
-        const ob = {filepath:file};
+        const ob = {filepath: file};
         for ( const a of ['name', 'categories', 'fixtureKey', 'modes']) {
           if (a in jd) {ob[a] = jd[a]; }
         }
-        
+
         this.AllFixtures[jd.fixtureKey] = ob;
 
     });

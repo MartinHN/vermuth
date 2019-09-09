@@ -1,6 +1,6 @@
 import { FixtureBase } from './Fixture';
 import { ChannelBase, UniverseListener } from './Channel';
-import { getNextUniqueName ,compareValues} from './Utils';
+import { getNextUniqueName , compareValues} from './Utils';
 import { addProp, deleteProp } from './MemoryUtils';
 import { SetAccessible, setChildAccessible, AccessibleClass , RemoteFunction} from './ServerSync';
 
@@ -12,7 +12,7 @@ export class Universe {
 
   @SetAccessible()
   public readonly fixtures: {[id: string]: FixtureBase} = {};
-  
+
   @SetAccessible()
   public readonly groups: {[id: string]: string[]} = {};
 
@@ -31,8 +31,8 @@ export class Universe {
   public removeGroup(name: string) {deleteProp(this.groups, name); }
 
   public get fixtureList() {return Object.values(this.fixtures); }
-  public get sortedFixtureList() {return this.fixtureList.slice().sort(compareValues("name","asc"));}
-  
+  public get sortedFixtureList() {return this.fixtureList.slice().sort(compareValues('name', 'asc')); }
+
   // singleton guard
   // public static createFromObj(ob: any): Universe
 
@@ -50,7 +50,7 @@ export class Universe {
       }
       if (ob.groups) {
         Object.keys(this.groups).map((g) => this.removeGroup(g));
-        for ( const g in Object.keys(ob.groups)) {
+        for ( const g of Object.keys(ob.groups)) {
           this.addGroup(g, ob.groups[g]);
         }
       }

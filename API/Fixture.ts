@@ -17,7 +17,7 @@ export class FixtureBase implements FixtureBaseI {
 
 
   public set baseCirc(n: number) {
-    const changed = n != this._baseCirc;
+    const changed = n !== this._baseCirc;
     this._baseCirc = n;
 
     if (this.universe && changed) {
@@ -134,7 +134,7 @@ export class FixtureBase implements FixtureBaseI {
   }
 
   public get dimmerChannel() {
-    return this.channels.find((e) => e.name == 'dim' || e.name == 'dimmer');
+    return this.channels.find((e) => e.name === 'dim' || e.name === 'dimmer');
   }
 
   @RemoteFunction({sharedFunction: true})

@@ -4,7 +4,7 @@ let clientSocket: any = null ;
 // let ioServer: any = null;
 const listenedNodes: {[id: string]: any} = {};
 import {addProp, nextTick} from './MemoryUtils';
-let allListeners: {[id: string]: Function} = {};
+let allListeners: {[id: string]: (args: any[]) => void} = {};
 let AccessibleSettedByServer: any = null;
 let lockCallbacks = 0;
 import * as _ from 'lodash';
@@ -37,12 +37,12 @@ const rebuildAccessibles = () => {
   const f = (o: any) => {
     if (o === undefined) {
       console.error('accessible parsing error');
-      //debugger;
+      // debugger;
       return;
     }
     if (o.__accessibleMembers) {
-      for ( const a in o.__accessibleMembers) {
-        f(o[a]);
+      for ( const a of Object.values(o.__accessibleMembers)) {
+        f(a);
       }
     }
     const remotesV = initRemoteValues(o);
@@ -77,7 +77,7 @@ export function callAnyAccessibleFromRemote(root: any, saddr: string, args: any[
     const {accessible, parent, key}  = resolveAccessible(root, addr);
 
     if (accessible !== undefined ) {
-      if (AccessibleSettedByServer == addr ) {
+      if (AccessibleSettedByServer === addr ) {
         console.warn('avoid feedback');
         return;
       }
@@ -157,7 +157,7 @@ function buildAddressFromObj(o: any, errorIfEmpty = true) {
 
 
 export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunction?: boolean}) {
-  return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
     const method = descriptor.value;
     let registeredAddr: string = '';
 
@@ -185,25 +185,25 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
                 nextTick(() => regF(false));
                 return;
               }
-              const addr = pAddr + '/' + propertyKey;
+              const raddr = pAddr + '/' + propertyKey;
 
               // @ts-ignore
-              if (registeredAddr !== addr) {
+              if (registeredAddr !== raddr) {
                 Object.defineProperty(this, '__emitF', {
-                  value: _.debounce((addr: any, args: any) => {
-                    clientSocket.emit(addr, args);
+                  value: _.debounce((addr: any, targs: any) => {
+                    clientSocket.emit(addr, targs);
                   }, isClient ? 10 : 10 + Math.random() * 5,
                   {trailing: true, maxWait: isClient ? 30 : 30}),
                   enumerable: false,
                   configurable: false,
                   writable: true,
                 });
-                registeredAddr = addr;
+                registeredAddr = raddr;
               }
               // @ts-ignore
-              if (this.__emitF && (AccessibleSettedByServer !== addr ) ) {
+              if (this.__emitF && (AccessibleSettedByServer !== raddr ) ) {
                 // @ts-ignore
-                res = this.__emitF(addr, args);
+                res = this.__emitF(raddr, args);
               } else {
                 // console.warn("avoid feedback");
               }
@@ -234,7 +234,7 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
 
 export function SetAccessible() {
 
-    return function(target: any, key: string | symbol) {
+    return (target: any, key: string | symbol) => {
       const val = target[key];
       if (target.__accessibleMembers === undefined) {
         Object.defineProperty(target, '__accessibleMembers', {
@@ -253,9 +253,9 @@ export function SetAccessible() {
 
 
 
-export function RemoteValue(cb?: Function) {
+export function RemoteValue(cb?: (parent: any, value: any) => void) {
 
-    return function(target: any, key: string | symbol) {
+    return (target: any, key: string | symbol) => {
       const val = target[key];
       if (target.__remoteValues === undefined) {
         Object.defineProperty(target, '__remoteValues', {
@@ -298,7 +298,7 @@ function initAccessibles(parent: any) {
 function initRemoteValues(parent: any) {
     const res = [];
     if (parent.__remoteValues) {
-      for (const k in parent.__remoteValues) {
+      for (const k of Object.keys(parent.__remoteValues)) {
         res.push(initRemoteValue(parent, k));
       }
     }
@@ -307,7 +307,7 @@ function initRemoteValues(parent: any) {
 function initRemoteFunctions(parent: any) {
     const res = [];
     if (parent.__remoteFunctions) {
-      for (const k in parent.__remoteFunctions) {
+      for (const k of Object.keys(parent.__remoteFunctions)) {
         res.push(initRemoteFunction(parent, k));
       }
     }
@@ -408,7 +408,7 @@ function initRemoteValue(parent: any, k: string) {
         const getter = () => {
           return storedValue;
         };
-        const fetchFunction = (cb: Function) => {
+        const fetchFunction = (cb: (...args: any[]) => any) => {
           // listenedNodes[addr] = true
           registerListener();
           if (clientSocket ) {
@@ -507,8 +507,9 @@ export function setChildAccessible(parent: any, k: string|symbol) {
 
 
 const allAccessibles = new Set<any>();
-export function AccessibleClass<T extends new(...args: any[]) => {}>() {
-                  return function<T extends new(...args: any[]) => {}>(constructor: T) {
+export function AccessibleClass() {
+                  // return function<T extends new(...args: any[]) => {}>(constructor: T) {
+                    return <T extends new(...args: any[]) => {}>(constructor: T) => {
                     return class extends constructor {
 
                       private __remoteValues: any;
@@ -537,14 +538,14 @@ export function AccessibleClass<T extends new(...args: any[]) => {}>() {
                   };
                 }
 
-export function fetchRemote(o: any, k: string, cb?: Function) {
+export function fetchRemote(o: any, k: string, cb?: (...args: any[]) => any) {
                   if (o.__remoteValues !== undefined && o.__remoteValues[k]) {
                     o.__remoteValues[k](cb);
                   }
                 }
 
 export function nonEnumerable() {
-                  return function(target: any, key: string | symbol) {
+                  return (target: any, key: string | symbol) => {
 
                     Object.defineProperty(target, key, {
                       set: (value) => {
