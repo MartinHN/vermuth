@@ -63,7 +63,7 @@ export default class ChannelWidget extends Vue {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  background-color: gray;
+  /*background-color: gray;*/
   width:100%;
 
 }

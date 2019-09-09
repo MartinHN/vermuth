@@ -12,7 +12,7 @@ const isPi = require('detect-rpi')();
 import { Universe } from "@API/Universe"
 import {UniverseListener} from "@API/Channel"
 import rootState from "@API/RootState"
-import DMXControllerI from "@API/DMXControllerI"
+import { DMXControllerI,needSerialPort } from "@API/DMXControllerI"
 import { AccessibleClass,nonEnumerable,RemoteValue } from "@API/ServerSync"
 
 
@@ -81,7 +81,7 @@ class DMXController implements DMXControllerI{
 
 
   constructor(){
-    
+
     this.dmx = new DMX()
     this.dmx.registerDriver('QLC',OSCDriver)
     this.dmx.registerDriver('Logger',LoggerDriver)
@@ -90,6 +90,7 @@ class DMXController implements DMXControllerI{
       this.dmx.registerDriver('Solenoid',SolenoidDriver)
     }
     delete this.dmx.drivers['bbdmx']
+    delete this.dmx.drivers['null']
     this.watchSerialPorts()
     this.driverList = Object.keys(this.dmx.drivers)
     UniverseListener.on('channelChanged', (c,v)=>{this.setCircs([{c,v}],null)});
@@ -192,50 +193,60 @@ class DMXController implements DMXControllerI{
   connectToDevice(options?:any){
     options = options || {}
     options['universe']=1
-    if(this.__connected && this.dmx.universes[this.universeName]){
-      this.dmx.universes[this.universeName].stop();
-      this.dmx.universes[this.universeName].close(()=>{
-        this.__connected=false;
-        this.connectToDevice(options);});
-      return false;
-    }
-    const uri = this.selectedPortName+":"+this.selectedDriverName
-    if(!this.selectedDriverName){
-      console.error('no device selected for enttec')
-      return
-    }
-    if((""+this.selectedDriverName).startsWith("enttec") && !this.selectedPortName && this.selectedPortName!=="none"){
-      console.error('no device selected for enttec')
-      return
-    }
-    console.log('trying to connect to '+uri)
     let uni;
     const successCB = ()=>{
       this.stopWatchSerialPorts()
       this.__connected = true
       console.log('successfully connected to '+uri);
       this.dmx.update(this.universeName,this.activeChannels.map(c=>{return [c.trueCirc,c.intValue]}))
-      
-
-      // if(this.__ioServer)this.__ioServer.emit('DMX/SET_ISCONNECTED',this.__connected);
     }
     const closeCB = ()=>{
       console.log('connection closed '+uri);
       this.__connected = false;
-      // this.selectedDriverName = ""
-
     }
+
     const errorCB = () =>{
       this.watchSerialPorts()
       console.log('cant connect to '+uri);
       this.__connected = false;
       if( this.dmx.universes[this.universeName]){
-      this.dmx.universes[this.universeName].stop();
-      this.dmx.universes[this.universeName].close(closeCB)
+        this.dmx.universes[this.universeName].stop();
+        this.dmx.universes[this.universeName].close(closeCB)
+      }
     }
-      // this.selectedDriverName = ""
+    if(this.__connected && this.dmx.universes[this.universeName]){
+      const cuni = this.dmx.universes[this.universeName]
 
+      if(cuni && cuni.dev && cuni.dev.removeAllListeners){
+        cuni.dev.removeAllListeners('open');
+        cuni.dev.removeAllListeners('error');
+        cuni.dev.removeAllListeners('close');
+      }
+
+      this.dmx.universes[this.universeName].stop();
+      this.dmx.universes[this.universeName].close(()=>{
+        this.__connected=false;
+        this.connectToDevice(options);});
+      return false;
     }
+
+    const uri = this.selectedPortName+":"+this.selectedDriverName
+    if(!this.selectedDriverName){
+      console.error('no device selected for enttec')
+      this.__connected = false
+      return
+    }
+    if(needSerialPort(this.selectedDriverName)&& !this.selectedPortName && this.selectedPortName!=="none"){
+      console.error('no device selected for enttec')
+      this.__connected = false
+      return
+    }
+    console.log('trying to connect to '+uri)
+
+
+    // this.selectedDriverName = ""
+
+    
     
     try{
       uni = this.dmx.addUniverse(this.universeName, this.selectedDriverName, this.selectedPortName|| "", options)

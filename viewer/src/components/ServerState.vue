@@ -2,9 +2,10 @@
   <div class="ServerState">
     <div ref="connectedState" :style='{"background-color":this.serverConnectionColor}'  >{{connectedState}}, {{savedStatus}}</div>
     <!-- <div ref="connectedId">{{connectedId}}</div> -->
-    <v-select :items=portListAndNone :style='{"background-color":this.portConnectionColor}' :value='displayedPort' @change="$store.dispatch('DMXConfig/tryConnectPort',$event)">
+    <Button style="width:20%" text="Save" @click="SAVE_SESSION()"></Button>
+    <v-select :items=driverList :value="selectedDriverName" :style='{"background-color":this.dmxConnectionColor}' @change="$store.dispatch('DMXConfig/tryConnectDriver',$event)">
     </v-select>
-    <v-select :items=driverList :value="selectedDriverName" @change="$store.dispatch('DMXConfig/tryConnectDriver',$event)">
+    <v-select v-if="displaySerialPort" :items=portListAndNone :style='{"background-color":this.dmxConnectionColor}' :value='displayedPort' @change="$store.dispatch('DMXConfig/tryConnectPort',$event)">
     </v-select>
   </div>
 </template>
@@ -13,11 +14,14 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 import DMXClient from '../api/DMXClient';
+// import GlobalMethods from '../store';
+import { needSerialPort } from '@API/DMXControllerI'
+import Button from './Button.vue';
 // var VueSlideBar :any = require( 'vue-slide-bar');
 const configModule = namespace('DMXConfig');
 
 @Component({
-  // components:{Toggle}
+  components:{ Button }
 })
 export default class ServerState extends Vue {
   @State('connectedState') public connectedState!: string;
@@ -28,9 +32,11 @@ export default class ServerState extends Vue {
   @configModule.Getter('driverList') public driverList!: string[];
   @configModule.Getter('dmxIsConnected') public dmxIsConnected!: boolean;
   @State('savedStatus') public savedStatus!: string;
+  @Action('SAVE_SESSION') public SAVE_SESSION!: ()=>void;
 
   // @State('connectedId') public connectedId!:number;
-
+  
+  
   get client() {
     return DMXClient;
   }
@@ -41,7 +47,7 @@ export default class ServerState extends Vue {
     return 'red';
   }
 
-  get portConnectionColor(): string {
+  get dmxConnectionColor(): string {
     if (this.dmxIsConnected ) {
       return 'green';
     }
@@ -62,6 +68,10 @@ export default class ServerState extends Vue {
 
   }
 
+  get displaySerialPort(){
+    return needSerialPort(this.selectedDriverName)
+  }
+
 
 }
 </script>
@@ -70,7 +80,7 @@ export default class ServerState extends Vue {
 <style scoped>
 * {
   display : flex;
-  flex-direction: column;
+  flex-direction: row;
   min-width:100px;
 }
 </style>

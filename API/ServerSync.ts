@@ -376,11 +376,12 @@ function initRemoteValue(parent: any, k: string) {
         let registeredClientSocket = {};
         const listenerFunction = (msg: any) => {
 
-          storedValue = msg;
-
+          
 
           // addProp(parent,k,msg);
           parent[k] = msg;
+          storedValue = msg;
+
 
 
 

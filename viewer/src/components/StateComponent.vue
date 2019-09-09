@@ -8,8 +8,8 @@
       </v-flex>
       <v-flex xs4>
         <div id="stateActions">
-          <Button class="add" @click="saveNewState" text="s"></Button>
-          <Button class="rename" @click="renameStatePrompt" text="r"></Button>
+          <Button class="add" @click="saveNewState" text="save"></Button>
+          <Button class="rename" @click="renameStatePrompt" text="rename"></Button>
           <Button class="remove" @click="removeStatePrompt" text="-" color='red'></Button>
 
         </div>

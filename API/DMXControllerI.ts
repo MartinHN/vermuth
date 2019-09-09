@@ -1,5 +1,5 @@
 
-export default interface DMXControllerI {
+export interface DMXControllerI {
 
 
   selectedPortName: string;
@@ -13,6 +13,10 @@ export default interface DMXControllerI {
   connectToDevice(cb: (msg: string) => void, options: any): void;
   configureFromObj(o: any): void;
 
+}
+
+export function needSerialPort(n:string){
+  return (""+n).startsWith("enttec");
 }
 
 

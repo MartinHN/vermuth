@@ -103,14 +103,7 @@ const autosaverPlugin = (pStore: Store<RootVueState>) => {
         // debugger
         return;
       }
-      pStore.commit('SET_SAVE_STATUS', 'Saving...');
-      localFS.save(sessionState, sessionKey, () => {
-        if (!state.loadingState ) {
-         pStore.dispatch('SAVE_REMOTELY', sessionState);
-       }
-        pStore.commit('SET_SAVE_STATUS', 'Saved');
-
-     });
+      pStore.dispatch("SAVE_SESSION");
 
       return;
     }
@@ -187,52 +180,52 @@ const store: StoreOptions<RootVueState> = {
       if (newState) {
         context.commit('SET_LOADING_STATE', true);
         context.dispatch('rootStateModule/configureFromObj', newState);
-        // ['rootState', 'DMXConfig'].forEach((el) => {
-          //   if (newState[el]) {
-            //     context.dispatch('' + el + '/configureFromObj', newState[el]);
-            //   }
-            // });
+        
         context.commit('SET_LOADING_STATE', false);
-          }
-        },
-        UPDATE_SESSION_STATE(context, difObj) {
-          // if(difObj){
-            // context.commit('SET_LOADING_STATE',true);
-            // context.commit('universes/fromObj', difObj.universes);
-            // context.dispatch('states/fromObj', difObj.states);
-            // context.dispatch('DMXConfig/fromObj', difObj.states);
-            // context.dispatch('sequence/fromObj', difObj.sequence);
-            // context.commit('SET_LOADING_STATE',false);
-            // }
-          },
-          SET_CONFIG_STATE(context, newState) {
-            if (newState) {
-              context.commit('SET_LOADING_STATE', true);
-              context.dispatch('config/configureFromObj', newState);
-              context.commit('SET_LOADING_STATE', false);
-            }
-          },
-          SAVE_REMOTELY(context, pl: any) {
-            serverFS().save(pl, 'session');
-          },
-          SAVE_LOCALLY(context, pl: any) {
-            const newStateString = buildEscapedJSON(getSessionObject(), 2);
-            downloadObjectAsJSON(newStateString, 'state');
-          },
+      }
+    },
+    UPDATE_SESSION_STATE(context, difObj) {
+      
+    },
+    SET_CONFIG_STATE(context, newState) {
+      if (newState) {
+        context.commit('SET_LOADING_STATE', true);
+        context.dispatch('config/configureFromObj', newState);
+        context.commit('SET_LOADING_STATE', false);
+      }
+    },
+    SAVE_REMOTELY(context, pl: any) {
+      serverFS().save(pl, 'session');
+    },
+    SAVE_LOCALLY(context, pl: any) {
+      const newStateString = buildEscapedJSON(getSessionObject(), 2);
+      downloadObjectAsJSON(newStateString, 'state');
+    },
+    SAVE_SESSION(context){
+      const sessionState = getSessionObject();
+      context.commit('SET_SAVE_STATUS', 'Saving...');
+      localFS.save(sessionState, sessionKey, () => {
+        if (!context.state.loadingState ) {
+          context.dispatch('SAVE_REMOTELY', sessionState);
+        }
+        context.commit('SET_SAVE_STATUS', 'Saved');
+
+      });
+    },
 
 
-        },
-        getters: {
+  },
+  getters: {
 
-          isConnected(state, getters) {
-            return state.connectedState === 'connected';
-          },
-        },
+    isConnected(state, getters) {
+      return state.connectedState === 'connected';
+    },
+  },
 
-        strict: false,
-        plugins: [autosaverPlugin],
-        // plugins: debug ? [createLogger()] : []
-      };
+  strict: false,
+  plugins: [autosaverPlugin],
+  // plugins: debug ? [createLogger()] : []
+};
 
 
 export default new Vuex.Store<RootVueState>(store);

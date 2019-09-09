@@ -2,7 +2,7 @@
 import { Universe } from './Universe';
 import { Sequence, sequencePlayer } from './Sequence';
 import { StateList } from './State';
-import DMXControllerI from './DMXControllerI';
+import { DMXControllerI } from './DMXControllerI';
 import { bindClientSocket, RemoteFunction, SetAccessible, setChildAccessible, AccessibleClass, resolveAccessible, RemoteValue } from './ServerSync';
 import { buildEscapedJSON, buildEscapedObject } from './SerializeUtils';
 

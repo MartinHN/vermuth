@@ -13,7 +13,7 @@
           <Numbox class="testNum" name="testChannel" showName="1" @input="testDimmerNum($event.value)" />
         </v-flex>
       </v-layout>
-      <div  v-for="f in universe.sortedFixtureList" :key="f.name" >
+      <div  v-for="f in universe.sortedFixtureList" :key="f.name" style="background-color:#FFF5;margin:5px">
         <v-layout justify-space-between align-center row >
 
           <v-flex xs9 >
@@ -23,15 +23,16 @@
               <div style=""> base Channel </div>
               <Numbox class="baseCirc" :value="f.baseCirc" :min="0" :max="512" @input="setFixtureBaseCirc({fixture: f, circ: $event.value})"></Numbox></span>
           </v-flex>
-          <v-flex xs1 >
-            <Button class="button removeFixture " color='red' @click="removeFixture({fixture:f})" tabIndex="-1" text="x"/>
-          </v-flex>
+          
           <v-flex xs1 >
             <Button class="button addChannel" color='green' @click="addChannelToFixture({fixture:f})" text="+ Channel"/>
           </v-flex>
           <v-flex xs1 >
-          <Button class="button" @click="duplicateFixture({fixture:f})" text="duplicate Fixture"/>
+          <Button class="button" @click="duplicateFixture({fixture:f})" text="duplicate Fix."/>
         </v-flex>
+        <v-flex xs1 >
+            <Button class="button removeFixture " color='red' @click="removeFixture({fixture:f})" tabIndex="-1" text="remove Fix."/>
+          </v-flex>
 
         </v-layout>
 

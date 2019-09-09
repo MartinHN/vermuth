@@ -1,7 +1,7 @@
 'use-strict';
 // import {Store} from '../store'
 
-import DMXControllerI from '@API/DMXControllerI';
+import { DMXControllerI } from '@API/DMXControllerI';
 import {AccessibleClass, nonEnumerable, RemoteValue, RemoteFunction, fetchRemote} from '@API/ServerSync';
 import { getCircular} from '@API/SerializeUtils';
 import _ from 'lodash';
@@ -105,6 +105,7 @@ class DMXClient implements DMXControllerI {
       fetchRemote(this, 'driverNameList');
       fetchRemote(this, 'selectedDriverName');
       fetchRemote(this, 'selectedPortName');
+      fetchRemote(this, '__connected');
 
 
     };

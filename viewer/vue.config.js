@@ -8,7 +8,7 @@ module.exports = {
       .plugin("tsconfig-paths")
       .use(require("tsconfig-paths-webpack-plugin"))
   },
-  pwa: {
-    name: 'Conduktor'
-  }
+  // pwa: {
+  //   name: 'Conduktor'
+  // },
 };
