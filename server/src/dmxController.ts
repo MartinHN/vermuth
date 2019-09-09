@@ -5,6 +5,7 @@ const needCustomPiLibs = process.env.CUSTOM_PI_DRIVERS
 const GPIODriver = require('./dmxGPIODriver')
 const SolenoidDriver = require('./dmxSolenoidDriver')
 const LoggerDriver = require('./dmxLoggerDriver')
+import * as _ from 'lodash';
 
 var io = require('socket.io')
 import log from './remoteLogger'
@@ -154,7 +155,7 @@ class DMXController implements DMXControllerI{
     // msg.map(m=>{allC.map(cc=>{if(cc.circ === m.c){cc.setValue(m.v,false)}})})
     // this.dmx.updateAll(this.universeName,msg[0].v)
     if(!this.__connected){
-      console.error("dmx not connected")
+      _.debounce(()=>{console.error("dmx not connected")},500)
       // debugger
 
     }else{

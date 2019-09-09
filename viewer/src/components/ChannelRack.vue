@@ -25,7 +25,7 @@
       </div>
       <div style="width:100%">
         <div style="display:flex;width:100%">
-          <slider style="flex:1 0 75%" class="grandMaster" @input="setGrandMaster($event)" :value="grandMaster" name="grandMaster"  showName="1" showValue="1" ></slider>
+          <slider style="flex:1 0 75%" class="grandMaster" @input="setGrandMasterValue($event)" :value="grandMaster" name="grandMaster"  showName="1" showValue="1" ></slider>
           <input type="color" @input="setAllColorHex($event.target.value)"></input>
         </div>
         <fixture-widget v-if="needDisplay(f)" style="margin:10px 0 0 0;width:100%;background-color:#FFF5" class="channel" v-for="f in universe.sortedFixtureList" :key="f.id" :fixtureProp="f" :showName="showNames" :showValue="showValues" :miniMode="miniMode"></fixture-widget>
@@ -66,7 +66,7 @@ export default class ChannelRack extends Vue {
   @universesModule.State('universe') private universe!: UniversesMethods['universe'];
   @universesModule.Getter('grandMaster') private grandMaster!: UniversesMethods['grandMaster'];
 
-  @universesModule.Mutation('setGrandMaster') private setGrandMaster!: UniversesMethods['setGrandMaster'];
+  @universesModule.Mutation('setGrandMasterValue') private setGrandMasterValue!: UniversesMethods['setGrandMasterValue'];
   @universesModule.Mutation('setAllColor') private setAllColor!: UniversesMethods['setAllColor'];
 
   public setAllColorHex(h: string) {
