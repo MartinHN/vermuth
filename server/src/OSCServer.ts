@@ -73,7 +73,7 @@ class OSCServer {
     } else if (msg.address === '/allColors') {
       dmxController.setAllColor({r: msg.args[0], g: msg.args[1], b: msg.args[2]});
     } else {
-      callAnyAccessibleFromRemote(rootState, msg.address, msg.args, this.udpPort.host + ':' + this.udpPort.port);
+      callAnyAccessibleFromRemote(rootState, msg.address, msg.args, info.address + ':' + info.port);
     }
 
   }
