@@ -190,6 +190,10 @@ class DMXController implements DMXControllerI {
   }
 
   public connectToDevice(options?: any) {
+    if(!this.__driverNameList.find(e=> e===this.selectedDriverName)){
+      console.error("can't connect to unknown driver "+ this.selectedDriverName)
+      return
+    }
     options = options || {};
     options.universe = 1;
     let uni;

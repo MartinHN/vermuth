@@ -131,7 +131,7 @@ ioServer.on('connection', function(socket) {
     const log = require('@API/Logger').default;
     socket.use((packet, next) => {
       if (logClientMessages) {
-        log.log('client >> server ' + JSON.stringify(packet) + '\n');
+        log.log(socket.id+' >> server ' + JSON.stringify(packet) + '\n');
       }
       next();
     });
@@ -162,7 +162,7 @@ ioServer.on('connection', function(socket) {
 
   socket.on('GET_STATE', (key, cb) => {
     const msg = states[getSessionId(socket)];
-    cb(msg || {});
+    if(cb)cb(msg || {});
     // console.log('sending state: ' + JSON.stringify(msg.states));
 
   });

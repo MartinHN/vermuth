@@ -31,6 +31,7 @@ export default class DMXConfig extends VuexModule {
     return this.dmxClientC.selectedDriverName;
   }
   public set selectedDriverName(v: string) {
+    debugger
     this.dmxClientC.selectedDriverName = v;
   }
 

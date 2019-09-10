@@ -15,21 +15,39 @@ export function bindClientSocket(s: any) {
 
   if (s !== 'auto' && s) { // only on new socke
     const boundSocket = s;
-    if (!isClient && boundSocket) {
+    if (!isClient) {
       const emitF = boundSocket.emit;
       const log = require('./Logger').default;
       console.log('highjacking server socket');
       const nF = (e: string, a: any, l: any) => {
         if (logServerMessages) {
-          log.log('server >> client : ' + e + ' : ' + a + '\n');
+          log.log('server >> all clients : ' + e + ' : ' + a + '\n');
         }
         emitF.apply(boundSocket, [e, a, l]);
       };
 
       boundSocket.emit = nF;
     }
-  }
-  safeBindSocket(s);
+    else{
+      const onevent = boundSocket.onevent;
+      const rS = require('./RootState').default;
+      boundSocket.onevent =  function(packet:any) {
+        var args = packet.data || [];
+
+        const addr = args.shift()
+        if(addr && (addr[0]==="/")){
+          callAnyAccessibleFromRemote(rS,addr,args[0],boundSocket.id)
+        }
+        else{
+         onevent.call (this, packet);    // original call
+       }
+       // packet.data = ["*"].concat(args);
+       // onevent.call(this, packet);      // additional call to catch-all
+     };
+   }
+
+ }
+ safeBindSocket(s);
 
 
 }
@@ -94,7 +112,13 @@ export function callAnyAccessibleFromRemote(root: any, saddr: string, args: any[
 
       } else if ( (args !== undefined && args !== null)) { // set value
         if (parent && key) {
-          if (accessible !== args) {parent[key] = args; }
+          if (accessible !== args) {
+            AccessibleNotifierId = notifierId;
+            AccessibleSettedByServer = saddr;
+            parent[key] = args;
+            AccessibleNotifierId = null;
+            AccessibleSettedByServer = null;
+          }
         } else {
           console.error('malformed Accessible resolution');
         }
@@ -206,6 +230,15 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
             }
             // @ts-ignore
             if (this.__emitF && (AccessibleSettedByServer !== raddr ) ) {
+
+              let prunedArgs =args.map(e=>Object.assign({}, e));
+
+              for(let c of prunedArgs){
+                if(c.__ob__){
+                  debugger
+                  delete c.__ob__;
+                }
+              }
               // @ts-ignore
               res = this.__emitF(registeredAddr, args);
             }
@@ -237,13 +270,16 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
 
 
 function broadcastMessage(addr: string, args: any) {
-
+  let log = undefined
+  if (logServerMessages) {log=require('./Logger').default;}
   if (!isClient && clientSocket && clientSocket.sockets) {
     // broadcast to other clients if we are server
-    const curId = AccessibleNotifierId;
     for (const s of Object.values(clientSocket.sockets.sockets)) {
       const sock = s as Socket;
       if (sock.id !== AccessibleNotifierId) {
+        if (log) {
+          log.log('server >> '+sock.id+' : ' + addr + ' : ' + args + '\n');
+        }
         sock.emit(addr, args);
 
       }
@@ -319,7 +355,7 @@ export function nonEnumerable(opts?: {default?: any}) {
       writable: true,
     } );
    }
-    target.__nonEnumerables[key] = true;
+   target.__nonEnumerables[key] = true;
  };
 }
 
@@ -472,7 +508,7 @@ function initRemoteValue(parent: any, k: string) {
       clientSocket.emit(addr, args);
     } :
     _.debounce((addr: any, args: any) => {
-      clientSocket.emit(addr, args);
+      broadcastMessage(addr, args);
     }, 50,
     {trailing: true, maxWait: 100});
     const setter = (v: any) => {

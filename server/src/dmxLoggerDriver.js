@@ -17,7 +17,7 @@ function LoggerDriver(deviceId = "127.0.0.1", options = {}) {
 }
 
 LoggerDriver.prototype.log = function(c, v) {
-console.log("set channel", c, " to ", v);
+console.log("set dimmer (", c, ") to ", v);
 };
 
 LoggerDriver.prototype.sendUniverse = function() {
