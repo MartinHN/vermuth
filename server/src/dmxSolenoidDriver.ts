@@ -25,7 +25,7 @@ if (process.env.CUSTOM_PI_DRIVERS) {
 
       for (const i in onGpios) {
         if ((cD.getTime() - onGpios[i].getTime()) > maxOnTime) {
-          dmxController.setCircs([{c: parseInt(i,10), v: 0}], null);
+          dmxController.setCircs([{c: parseInt(i, 10), v: 0}], null);
         }
       }
     }, maxOnTime);

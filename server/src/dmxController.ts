@@ -33,7 +33,7 @@ class DMXController implements DMXControllerI {
   public selectedPortName = '';
 
   @RemoteValue()
-  public portNameList = new Array<string>();
+  public __portNameList = new Array<string>();
 
   @RemoteValue((self, n: string) => {
     if (n) {
@@ -43,8 +43,7 @@ class DMXController implements DMXControllerI {
   public selectedDriverName = isPi ? 'dmxGPIODriver' : 'enttec-usb-dmx-pro';
 
   @RemoteValue()
-  @nonEnumerable()
-  public driverList = new Array<string>();
+  public __driverNameList = new Array<string>();
 
   @RemoteValue()
   public __connected = false;
@@ -54,7 +53,7 @@ class DMXController implements DMXControllerI {
 
   private universeName = 'main';
   @nonEnumerable()
-  private availableDevices: any;
+  private __availableDevices: any;
   @nonEnumerable()
   private __sockets: any = {};
   @nonEnumerable()
@@ -79,7 +78,7 @@ class DMXController implements DMXControllerI {
     delete this.dmx.drivers.bbdmx;
     delete this.dmx.drivers.null;
     this.watchSerialPorts();
-    this.driverList = Object.keys(this.dmx.drivers);
+    this.__driverNameList = Object.keys(this.dmx.drivers);
     UniverseListener.on('channelChanged', (c, v) => {this.setCircs([{c, v}], null); });
 
   }
@@ -89,8 +88,8 @@ class DMXController implements DMXControllerI {
   public registerAvailableDevices() {
     return new Promise((resolve, reject) => {
       SerialPort.list().then((l) => {
-        this.availableDevices = l;
-        this.portNameList = l.map((c) => c.comName);
+        this.__availableDevices = l;
+        this.__portNameList = l.map((c) => c.comName);
 
         resolve(l);
         // console.log(this.portNameList);
@@ -107,7 +106,7 @@ class DMXController implements DMXControllerI {
   }
   public configureFromObj(o: any) {
     for (const k in this) {
-      if (o[k] && k !== 'driverList' && k !== 'portNameList' && Object.getOwnPropertyDescriptor(o, k).enumerable) {
+      if (o[k] && k !== '__driverNameList' && k !== '__portNameList' && Object.getOwnPropertyDescriptor(o, k).enumerable) {
         this[k] = o[k];
       }
     }
@@ -117,7 +116,7 @@ class DMXController implements DMXControllerI {
     if (!this.__portWatch) {
       const fn = () => {
         this.registerAvailableDevices().then(() => {
-          if (!this.__connected && this.selectedPortName in this.portNameList) {
+          if (!this.__connected && this.selectedPortName in this.__portNameList) {
             this.connectToDevice();
           }
 

@@ -27,9 +27,9 @@ export default class ServerState extends Vue {
   @State('connectedState') public connectedState!: string;
   // @State('connectedId') public connectedId!: number;
   @configModule.Getter('selectedPortName') public selectedPortName!: string;
-  @configModule.Getter('portList') public portList!: string[];
+  @configModule.Getter('__portNameList') public portList!: string[];
   @configModule.Getter('selectedDriverName') public selectedDriverName!: string;
-  @configModule.Getter('driverList') public driverList!: string[];
+  @configModule.Getter('__driverNameList') public driverList!: string[];
   @configModule.Getter('dmxIsConnected') public dmxIsConnected!: boolean;
   @State('savedStatus') public savedStatus!: string;
   @Action('SAVE_SESSION') public SAVE_SESSION!: () => void;

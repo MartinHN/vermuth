@@ -9,10 +9,10 @@ function OSCDriver(deviceId = "127.0.0.1", options = {}) {
     localAddress: "127.0.0.1",
     localPort: 9009,
     metadata: true,
-    
+
     remoteAddress: deviceId,
     remotePort: options.port || 7700,
-    
+
 });
   this.bufSize = 512;
   self.universe = Buffer.alloc(this.bufSize + 1);

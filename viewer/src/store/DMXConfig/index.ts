@@ -12,13 +12,13 @@ import { Settable } from '../util';
 export default class DMXConfig extends VuexModule {
   public dmxClientC = DMXClient;
   // @Settable()
-  public get portList() {
+  public get __portNameList() {
     // fetchRemote(this.dmxClientC,"portList");
-    return this.dmxClientC.portNameList;
+    return this.dmxClientC.__portNameList;
   }
   // @Settable()
-  public get driverList() {
-    return this.dmxClientC.driverList;
+  public get __driverNameList() {
+    return this.dmxClientC.__driverNameList;
   }
   // @Settable()
   public get selectedPortName() {
@@ -60,7 +60,7 @@ export default class DMXConfig extends VuexModule {
   public refreshPortList() {
     if (this.isConnected()) {
 
-        fetchRemote(this.dmxClientC, 'portNameList');
+        fetchRemote(this.dmxClientC, '__portNameList');
 
     } else {
       console.error('not connected');
@@ -71,7 +71,7 @@ export default class DMXConfig extends VuexModule {
   @Action
   public refreshDevicesList() {
     if (this.isConnected()) {
-      fetchRemote(this.dmxClientC, 'driverList');
+      fetchRemote(this.dmxClientC, '__driverNameList');
     } else {
       console.error('not connected');
     }

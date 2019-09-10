@@ -49,7 +49,7 @@ if (debug) {
 
 app.use(express.static(publicDir));
 
-let states:any = {};
+let states: any = {};
 
 // write empty if non existent
 fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8' }, function(err) {
@@ -98,14 +98,14 @@ function setStateFromObject(msg, socket: any) {
     rootState.configureFromObj(msg);
     states[sessionID] = rootState.toJSONObj(); // update persistent changes
     // dmxController.stateChanged(msg)
-    fs.writeFile(localStateFile, 
+    fs.writeFile(localStateFile,
       JSON.stringify(states, null, '  '),
-      'utf8', 
+      'utf8',
       (v) => {
         if (v) {
-          console.log('file write error : ', v); 
+          console.log('file write error : ', v);
         }
-      }
+      },
       );
 
   } else {

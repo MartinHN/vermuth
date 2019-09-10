@@ -177,7 +177,7 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
     target.__remoteFunctions[propertyKey] = method;
 
     // }
-    descriptor.value = function (...args: any[]){
+    descriptor.value = function(...args: any[]) {
       // target.notifyRemote()
       let res: any;
       if (lockCallbacks === 0) {
@@ -208,8 +208,8 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
             if (this.__emitF && (AccessibleSettedByServer !== raddr ) ) {
               // @ts-ignore
               res = this.__emitF(registeredAddr, args);
-            } 
-            broadcastMessage(registeredAddr,args);
+            }
+            broadcastMessage(registeredAddr, args);
           };
 
           regF(true);
@@ -236,13 +236,13 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
 }
 
 
-function broadcastMessage(addr:string,args:any){
+function broadcastMessage(addr: string, args: any) {
 
   if (!isClient && clientSocket && clientSocket.sockets) {
     // broadcast to other clients if we are server
     const curId = AccessibleNotifierId;
     for (const s of Object.values(clientSocket.sockets.sockets)) {
-      const sock = s as Socket
+      const sock = s as Socket;
       if (sock.id !== AccessibleNotifierId) {
         sock.emit(addr, args);
 
@@ -309,10 +309,38 @@ export function RemoteValue(cb?: (parent: any, value: any) => void) {
 }
 
 
+export function nonEnumerable(opts?: {default?: any}) {
+  return function(target: any, key: string | symbol)  {
+    if (!target.__nonEnumerables) {
+     Object.defineProperty(target, '__nonEnumerables', {
+      value: {},
+      enumerable: false,
+      configurable: false,
+      writable: true,
+    } );
+   }
+    target.__nonEnumerables[key] = true;
+ };
+}
+
 function initAccessibles(parent: any) {
   if (parent.__accessibleMembers) {
     for (const k of Object.keys(parent.__accessibleMembers)) {
       setChildAccessible(parent, k);
+    }
+  }
+}
+
+function initNonEnumerables(parent: any) {
+  if (parent.__nonEnumerables) {
+    for (const k of Object.keys(parent.__nonEnumerables)) {
+      const val = parent[k];
+      Object.defineProperty(parent, k, {
+        value: val,
+        enumerable: false,
+        configurable: false,
+        writable: true,
+      });
     }
   }
 }
@@ -404,7 +432,7 @@ function initRemoteValue(parent: any, k: string) {
       // addProp(parent,k,msg);
       parent[k] = msg;
       storedValue = msg;
-      broadcastMessage(registredAddr,msg)
+      broadcastMessage(registredAddr, msg);
 
 
 
@@ -525,7 +553,8 @@ export function AccessibleClass() {
       private __remoteValues: any;
       constructor(...args: any[]) {
 
-        super(...args); // not working properly in chrome...
+        super(...args);
+
         if (allAccessibles.has(this)) {
           debugger;
           console.error('recreating accessible');
@@ -535,6 +564,7 @@ export function AccessibleClass() {
         initAccessibles(this);
         initRemoteValues(this);
         initRemoteFunctions(this);
+        initNonEnumerables(this);
       }
 
       public __dispose() {
@@ -554,26 +584,6 @@ export function fetchRemote(o: any, k: string, cb?: (...args: any[]) => any) {
   }
 }
 
-export function nonEnumerable() {
-  return function(target: any, key: string | symbol)  {
-
-    Object.defineProperty(target, key, {
-      set: (value) => {
-        Object.defineProperty(target, key, {
-          value,
-          enumerable: false,
-          configurable: false,
-          writable: true,
-        } );
-      },
-      enumerable: false,
-      configurable: true,
-    });
-
-
-
-  };
-}
 
 export function resolveAccessible(parent: any , addr: string[]) {
   const oriAddr = addr.slice();

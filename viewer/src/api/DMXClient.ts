@@ -30,11 +30,11 @@ class DMXClient implements DMXControllerI {
   @RemoteValue()
   public selectedPortName = 'none';
   @RemoteValue()
-  public portNameList: string[] = [];
+  public __portNameList: string[] = [];
   @RemoteValue()
   public selectedDriverName: string = 'none';
   @RemoteValue()
-  public driverList: string[] = [];
+  public __driverNameList: string[] = [];
   @RemoteValue()
   public __connected: boolean = false;
 
@@ -101,8 +101,8 @@ class DMXClient implements DMXControllerI {
       //   ()=>{store.})
 
 
-      fetchRemote(this, 'portNameList');
-      fetchRemote(this, 'driverNameList');
+      fetchRemote(this, '__portNameList');
+      fetchRemote(this, '__driverNameList');
       fetchRemote(this, 'selectedDriverName');
       fetchRemote(this, 'selectedPortName');
       fetchRemote(this, '__connected');

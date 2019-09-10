@@ -3,9 +3,9 @@ export interface DMXControllerI {
 
 
   selectedPortName: string;
-  portNameList: string[];
+  __portNameList: string[];
   selectedDriverName: string;
-  driverList: string[];
+  __driverNameList: string[];
   __connected: boolean;
 
   setCircs(msg: Array<{c: number, v: number}>, fromSocket: any): void;
