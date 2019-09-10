@@ -29,7 +29,7 @@ export default class Universes extends VuexModule {
   }
 
   @Mutation
-  public setGrandMaster(v: number) {
+  public setGrandMasterValue(v: number) {
     this.universe.setGrandMaster(v);
   }
   @Mutation

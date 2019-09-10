@@ -15,8 +15,8 @@ export interface DMXControllerI {
 
 }
 
-export function needSerialPort(n:string){
-  return (""+n).startsWith("enttec");
+export function needSerialPort(n: string) {
+  return ('' + n).startsWith('enttec');
 }
 
 

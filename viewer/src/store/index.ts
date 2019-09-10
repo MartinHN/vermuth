@@ -103,7 +103,7 @@ const autosaverPlugin = (pStore: Store<RootVueState>) => {
         // debugger
         return;
       }
-      pStore.dispatch("SAVE_SESSION");
+      pStore.dispatch('SAVE_SESSION');
 
       return;
     }
@@ -180,12 +180,12 @@ const store: StoreOptions<RootVueState> = {
       if (newState) {
         context.commit('SET_LOADING_STATE', true);
         context.dispatch('rootStateModule/configureFromObj', newState);
-        
+
         context.commit('SET_LOADING_STATE', false);
       }
     },
     UPDATE_SESSION_STATE(context, difObj) {
-      
+
     },
     SET_CONFIG_STATE(context, newState) {
       if (newState) {
@@ -201,7 +201,7 @@ const store: StoreOptions<RootVueState> = {
       const newStateString = buildEscapedJSON(getSessionObject(), 2);
       downloadObjectAsJSON(newStateString, 'state');
     },
-    SAVE_SESSION(context){
+    SAVE_SESSION(context) {
       const sessionState = getSessionObject();
       context.commit('SET_SAVE_STATUS', 'Saving...');
       localFS.save(sessionState, sessionKey, () => {

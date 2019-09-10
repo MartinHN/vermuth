@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve --port 8081",
     "build": "vue-cli-service build",
-    "lint": "tslint --project ../API --fix && vue-cli-service lint",
+    "lintAll": "tslint --project ../API --fix && npm run lint",
+    "lint": "vue-cli-service lint",
     "debug": "vue-cli-service build --mode=debug --watch",
     "deploy": "npm run build && rsync -r -e ssh -avz --delete-after  ../server/public pi@lampignon1.local:vermuth/server/",
     "deploy2": "npm run build && rsync -r -e ssh -avz --delete-after  ../server/public pi@lampignon2.local:vermuth/server/",

@@ -1,23 +1,22 @@
-if(process.env.CUSTOM_PI_DRIVERS){
+if (process.env.CUSTOM_PI_DRIVERS) {
   const isPi = require('detect-rpi')();
 
-function createGpio(i){
-  if(isPi && (i >=2 || i<=27)){
+  function createGpio(i) {
+  if (isPi && (i >= 2 || i <= 27)) {
     const Gpio = require('pigpio').Gpio;
-    return new Gpio(i,{mode:Gpio.OUTPUT})
-  }
-  else{
-    class Gpio{
-      constructor(public gpionum: Number,d:any){};
+    return new Gpio(i, {mode: Gpio.OUTPUT});
+  } else {
+    class Gpio {
+      constructor(public gpionum: number, d: any) {}
 
-      pwmWrite(v){
-        console.log("fake gpio : ",this.gpionum," ->",v);
+      public pwmWrite(v) {
+        console.log('fake gpio : ', this.gpionum, ' ->', v);
       }
-      digitalWrite(v){
-        console.log("fake gpio d : ",this.gpionum," ->",v);
+      public digitalWrite(v) {
+        console.log('fake gpio d : ', this.gpionum, ' ->', v);
       }
     }
-    return new Gpio(i,"")
+    return new Gpio(i, '');
   }
 }
 
@@ -25,7 +24,7 @@ function createGpio(i){
 /*
 
 
-      GPIO    pin     pin GPIO  
+      GPIO    pin     pin GPIO
 3V3     -     1       2     -     5V
 SDA     2     3       4     -     5V
 SCL     3     5       6     -     Ground
@@ -33,15 +32,15 @@ SCL     3     5       6     -     Ground
 Ground  -     9       10    15    RXD
 ce1     17    11      12    18    ce0    (SOUND????)
         27    13      14    -     Ground
-        22    15      16    23  
-3V3     -     17      18    24  
+        22    15      16    23
+3V3     -     17      18    24
 MOSI    10    19      20    -   Ground
-MISO    9     21      22    25  
+MISO    9     21      22    25
 SCLK    11    23      24     8    CE0
 Ground  -     25      26     7    CE1
 ID_SD   0     27      28     1   ID_SC
         5     29      30    -    Ground
-        6     31      32    12  
+        6     31      32    12
         13    33      34     -    Ground
 miso    19    35      36    16    ce2
         26    37      38    20    mosi
@@ -49,66 +48,65 @@ Ground  -     39      40    21    sclk
 */
 
 
-function GPIODriver(deviceId = 'lampignon',options = {}) {
+  function GPIODriver(deviceId = 'lampignon', options = {}) {
 
-  this.gpioInstances = []
-  for (var i = 0 ; i <= 27 ; i++){
-    this.gpioInstances.push(createGpio(i))
+  this.gpioInstances = [];
+  for (let i = 0 ; i <= 27 ; i++) {
+    this.gpioInstances.push(createGpio(i));
  }
- this.bufSize = this.gpioInstances.length
- this.universe = Buffer.alloc(this.bufSize );
- this.universe.fill(0);
- this.sendUniverse();
- this.dev = null;
+  this.bufSize = this.gpioInstances.length;
+  this.universe = Buffer.alloc(this.bufSize );
+  this.universe.fill(0);
+  this.sendUniverse();
+  this.dev = null;
 
 }
 
 
-GPIODriver.prototype.syncGPIO = function(i){
-  this.gpioInstances[i].pwmWrite(this.universe[i])
-}
+  GPIODriver.prototype.syncGPIO = function(i) {
+  this.gpioInstances[i].pwmWrite(this.universe[i]);
+};
 
-GPIODriver.prototype.sendUniverse = function () {
-  for(const i in this.gpioInstances.length){
-    this.syncGPIO(i)
-    
+  GPIODriver.prototype.sendUniverse = function() {
+  for (const i of Object.keys(this.gpioInstances)) {
+    this.syncGPIO(i);
+
   }
 };
 
-GPIODriver.prototype.start = function () {
+  GPIODriver.prototype.start = function() {
   // this.timeout = setInterval(this.sendUniverse.bind(this), this.sleepTime);
 };
 
-GPIODriver.prototype.stop = function () {
+  GPIODriver.prototype.stop = function() {
   // clearInterval(this.timeout);
 };
 
-GPIODriver.prototype.close = function (cb) {
+  GPIODriver.prototype.close = function(cb) {
 
   this.stop();
   cb(null);
 };
 
-GPIODriver.prototype.update = function (u) {
-  for (const c in u) {
+  GPIODriver.prototype.update = function(u) {
+  for (const c of Object.keys(u)) {
     this.universe[c] = u[c];
     this.syncGPIO(c);
   }
 };
 
-GPIODriver.prototype.updateAll = function (v) {
+  GPIODriver.prototype.updateAll = function(v) {
   for (let i = 0; i < this.gpioInstances.length ; i++) {
     this.universe[i] = v;
     this.syncGPIO(i);
   }
 };
 
-GPIODriver.prototype.get = function (c) {
+  GPIODriver.prototype.get = function(c) {
   return this.universe[c];
 };
 
-module.exports = GPIODriver;
-}
-else{
+  module.exports = GPIODriver;
+} else {
   module.exports = {};
 }

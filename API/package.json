@@ -15,10 +15,11 @@
   "devDependencies": {
     "@types/lodash": "^4.14.136",
     "@types/node": "^12.6.8",
+    "@types/socket.io": "^2.1.2",
     "@types/socket.io-client": "^1.4.32",
     "tsconfig-paths-webpack-plugin": "^3.2.0",
-    "typescript": "^3.5.3",
-    "tslib": "^1.10.0"
+    "tslib": "^1.10.0",
+    "typescript": "^3.5.3"
   },
   "engines": {
     "node": ">=0.10.3 <0.12"

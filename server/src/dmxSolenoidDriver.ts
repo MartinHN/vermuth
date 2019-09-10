@@ -1,58 +1,55 @@
-import dmxController from './dmxController'
-if(process.env.CUSTOM_PI_DRIVERS){
-  const GPIODriverClass = require('./dmxGPIODriver')
+import dmxController from './dmxController';
+if (process.env.CUSTOM_PI_DRIVERS) {
+  const GPIODriverClass = require('./dmxGPIODriver');
 
 
-var SolenoidDriver = function() {};
+  const SolenoidDriver = function() {};
 
-const proto = new GPIODriverClass
+  const proto = new GPIODriverClass;
 
-const onGpios:{[id:number]:Date} = {}
-var maxOnTime = 30;
-var timer = null;
-function stopTimer(){
-  if(timer){
-    clearInterval(timer)
-    timer=null
+  const onGpios: {[id: number]: Date} = {};
+  const maxOnTime = 30;
+  let timer = null;
+  function stopTimer() {
+  if (timer) {
+    clearInterval(timer);
+    timer = null;
   }
 }
 
-function startTimerIfNotRunning(){
-  if(timer===null){
-    timer = setInterval(()=>{
+  function startTimerIfNotRunning() {
+  if (timer === null) {
+    timer = setInterval(() => {
 
-      const cD = new Date()
+      const cD = new Date();
 
-      for(var i in onGpios){
-        if((cD.getTime() - onGpios[i].getTime())>maxOnTime){
-          dmxController.setCircs([{c:parseInt(i),v:0}],null)
+      for (const i in onGpios) {
+        if ((cD.getTime() - onGpios[i].getTime()) > maxOnTime) {
+          dmxController.setCircs([{c: parseInt(i,10), v: 0}], null);
         }
       }
-    },maxOnTime)
+    }, maxOnTime);
   }
 }
 
 
-proto.syncGPIO = function(i){
-  const isOn = this.universe[i]>0;
+  proto.syncGPIO = function(i) {
+  const isOn = this.universe[i] > 0;
   // console.log("instance",this.gpioInstances)
   this.gpioInstances[i].pwmWrite(isOn);
-  if(isOn){onGpios[i]=new Date()}
-  else{delete onGpios[i]}
+  if (isOn) {onGpios[i] = new Date(); } else {delete onGpios[i]; }
   const numOn = Object.keys(onGpios).length;
-  if(numOn==0){
-    stopTimer()
-  }
-  else{
+  if (numOn === 0) {
+    stopTimer();
+  } else {
     startTimerIfNotRunning();
   }
-}
+};
 
-SolenoidDriver.prototype = proto
+  SolenoidDriver.prototype = proto;
 
 
-module.exports = SolenoidDriver;
-}
-else{
-  module.exports ={}
+  module.exports = SolenoidDriver;
+} else {
+  module.exports = {};
 }

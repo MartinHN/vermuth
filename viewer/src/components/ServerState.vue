@@ -15,13 +15,13 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 import DMXClient from '../api/DMXClient';
 // import GlobalMethods from '../store';
-import { needSerialPort } from '@API/DMXControllerI'
+import { needSerialPort } from '@API/DMXControllerI';
 import Button from './Button.vue';
 // var VueSlideBar :any = require( 'vue-slide-bar');
 const configModule = namespace('DMXConfig');
 
 @Component({
-  components:{ Button }
+  components: { Button },
 })
 export default class ServerState extends Vue {
   @State('connectedState') public connectedState!: string;
@@ -32,11 +32,11 @@ export default class ServerState extends Vue {
   @configModule.Getter('driverList') public driverList!: string[];
   @configModule.Getter('dmxIsConnected') public dmxIsConnected!: boolean;
   @State('savedStatus') public savedStatus!: string;
-  @Action('SAVE_SESSION') public SAVE_SESSION!: ()=>void;
+  @Action('SAVE_SESSION') public SAVE_SESSION!: () => void;
 
   // @State('connectedId') public connectedId!:number;
-  
-  
+
+
   get client() {
     return DMXClient;
   }
@@ -68,8 +68,8 @@ export default class ServerState extends Vue {
 
   }
 
-  get displaySerialPort(){
-    return needSerialPort(this.selectedDriverName)
+  get displaySerialPort() {
+    return needSerialPort(this.selectedDriverName);
   }
 
 
