@@ -68,8 +68,8 @@ export default class ChannelRack extends Vue {
   public miniMode = false;
   public showSelected = true;
   private pselectedFixtureNames: string[] = [];
-  private pselectedGroupNames: string[] = ["all"];
-  private pselectedChannelFilterNames : string[] = ["all"]
+  private pselectedGroupNames: string[] = ['all'];
+  private pselectedChannelFilterNames: string[] = ['all'];
   private extendedTypeFilter = false;
   @universesModule.State('universe') private universe!: UniversesMethods['universe'];
   @universesModule.Getter('grandMaster') private grandMaster!: UniversesMethods['grandMaster'];
@@ -84,20 +84,20 @@ export default class ChannelRack extends Vue {
     }
   }
 
-  set selectedFixtureNames(l:string[]){
-    this.pselectedFixtureNames = l
-    if(this.pselectedFixtureNames.length>0){
-      this.selectedGroupNames = []
+  set selectedFixtureNames(l: string[]) {
+    this.pselectedFixtureNames = l;
+    if (this.pselectedFixtureNames.length > 0) {
+      this.selectedGroupNames = [];
     }
   }
-  get selectedFixtureNames(){
-    return this.pselectedFixtureNames
+  get selectedFixtureNames() {
+    return this.pselectedFixtureNames;
   }
-  get selectableFixtureList(){
-    return this.universe.sortedFixtureList.map(e=>e.name)
+  get selectableFixtureList() {
+    return this.universe.sortedFixtureList.map((e) => e.name);
   }
-  get selectableGroupList(){
-    return ["all"].concat(this.universe.groupNames)
+  get selectableGroupList() {
+    return ['all'].concat(this.universe.groupNames);
   }
   public get selectedGroupNames() {
     return this.pselectedGroupNames;
@@ -107,46 +107,46 @@ export default class ChannelRack extends Vue {
     this.syncGroupSelection();
   }
 
-  set selectedChannelFilterNames(l:string[]){
+  set selectedChannelFilterNames(l: string[]) {
     this.pselectedChannelFilterNames = l;
-    this.syncFilterSelection()
+    this.syncFilterSelection();
   }
-  get selectedChannelFilterNames(){
-    return this.pselectedChannelFilterNames
+  get selectedChannelFilterNames() {
+    return this.pselectedChannelFilterNames;
   }
 
-  get selectableChannelFilterList(){
-    const res:string[] = ["all"]
+  get selectableChannelFilterList() {
+    const res: string[] = ['all'];
 
-    for( const fam of Object.keys(ChannelRoles)){
-      res.push(fam)
-      if(this.extendedTypeFilter){
-        for( const type of Object.keys(ChannelRoles[fam])){
-          res.push(fam+":"+type)
+    for ( const fam of Object.keys(ChannelRoles)) {
+      res.push(fam);
+      if (this.extendedTypeFilter) {
+        for ( const type of Object.keys(ChannelRoles[fam])) {
+          res.push(fam + ':' + type);
         }
       }
     }
-    return res
+    return res;
   }
-  
+
   public syncGroupSelection() {
-    if(this.selectedGroupNames.length===0){return}
-      if(this.selectedGroupNames.find(e=>e==="all")){
-        this.pselectedFixtureNames = this.selectableFixtureList
-        return
+    if (this.selectedGroupNames.length === 0) {return; }
+    if (this.selectedGroupNames.find((e) => e === 'all')) {
+        this.pselectedFixtureNames = this.selectableFixtureList;
+        return;
       }
-      const toSel: {[id: string]: boolean} = {};
-      const lastSel = this.selectedGroupNames;
-      for (const g of this.selectedGroupNames) {
+    const toSel: {[id: string]: boolean} = {};
+    const lastSel = this.selectedGroupNames;
+    for (const g of this.selectedGroupNames) {
         for (const f  of this.universe.groups[g]) {
           toSel[f] = true;
         }
       }
-      const toSelL = Object.keys(toSel);
-      this.pselectedFixtureNames = toSelL;
+    const toSelL = Object.keys(toSel);
+    this.pselectedFixtureNames = toSelL;
     }
 
-    public syncFilterSelection(){
+    public syncFilterSelection() {
 
     }
     public selectAll() {
@@ -177,7 +177,7 @@ export default class ChannelRack extends Vue {
     }
     public removeGroup() {
       const gname = prompt('remove group', this.firstGroupSelected);
-      if (gname && gname!=="all") {
+      if (gname && gname !== 'all') {
         this.universe.removeGroup(gname);
       }
     }

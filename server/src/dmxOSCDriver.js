@@ -4,8 +4,8 @@ const EventEmitter = require("events").EventEmitter;
 
 function OSCDriver(deviceId = "127.0.0.1", options = {}) {
   const self = this;
-  if((!deviceId) || deviceId==="none"){
-    deviceId = "127.0.0.1"
+  if ((!deviceId) || deviceId === "none") {
+    deviceId = "127.0.0.1";
   }
   this.dev = new osc.UDPPort({
     // This is the port we're listening on.

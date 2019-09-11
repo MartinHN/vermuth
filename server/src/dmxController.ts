@@ -190,9 +190,9 @@ class DMXController implements DMXControllerI {
   }
 
   public connectToDevice(options?: any) {
-    if(!this.__driverNameList.find(e=> e===this.selectedDriverName)){
-      console.error("can't connect to unknown driver "+ this.selectedDriverName)
-      return
+    if (!this.__driverNameList.find((e) => e === this.selectedDriverName)) {
+      console.error('can\'t connect to unknown driver ' + this.selectedDriverName);
+      return;
     }
     options = options || {};
     options.universe = 1;
@@ -208,24 +208,23 @@ class DMXController implements DMXControllerI {
       this.__connected = false;
     };
 
-    const errorCB = (e=undefined) => {
+    const errorCB = (e= undefined) => {
       this.watchSerialPorts();
       console.error('cant connect to ' + uri);
-      if(e)console.error(e);
+      if (e) {console.error(e); }
       this.__connected = false;
-      try{
+      try {
         const cuni = this.dmx.universes[this.universeName];
         if (cuni && cuni.dev && cuni.dev.removeAllListeners) {
-          cuni.dev.removeAllListeners('error');// avoid recursion
+          cuni.dev.removeAllListeners('error'); // avoid recursion
         }
         if ( this.dmx.universes[this.universeName]) {
           this.dmx.universes[this.universeName].stop();
           this.dmx.universes[this.universeName].close(closeCB);
         }
-      }
-      catch(ex){
-        console.error("can't close device",ex)
-        console.error(ex)
+      } catch (ex) {
+        console.error('can\'t close device', ex);
+        console.error(ex);
       }
     };
     if (this.__connected && this.dmx.universes[this.universeName]) {
@@ -238,17 +237,16 @@ class DMXController implements DMXControllerI {
       }
 
       this.dmx.universes[this.universeName].stop();
-      const reconnectCB = ()=>{
+      const reconnectCB = () => {
 
         this.__connected = false;
-        this.connectToDevice(options); 
-      }
-      try{
+        this.connectToDevice(options);
+      };
+      try {
         this.dmx.universes[this.universeName].close(reconnectCB);
-      }
-      catch(ex){
-        console.error("can't close device",ex)
-        reconnectCB()
+      } catch (ex) {
+        console.error('can\'t close device', ex);
+        reconnectCB();
 
       }
       return false;
@@ -283,7 +281,7 @@ class DMXController implements DMXControllerI {
         successCB();
       }
     } catch (ex) {
-      log.error("can't open device "+ex);
+      log.error('can\'t open device ' + ex);
       errorCB();
 
     }

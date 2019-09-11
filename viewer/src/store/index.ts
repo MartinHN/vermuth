@@ -203,7 +203,7 @@ const store: StoreOptions<RootVueState> = {
     },
     SAVE_SESSION(context) {
       const sessionState = getSessionObject();
-      context.commit('states/saveCurrentState',{name:"current"})
+      context.commit('states/saveCurrentState', {name: 'current'});
       context.commit('SET_SAVE_STATUS', 'Saving...');
       localFS.save(sessionState, sessionKey, () => {
         if (!context.state.loadingState ) {

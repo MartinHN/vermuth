@@ -3,31 +3,31 @@ import { FixtureBase } from './Fixture';
 import { RemoteFunction, RemoteValue, nonEnumerable, AccessibleClass } from './ServerSync';
 type ChannelValueType = number; // |number[];
 
-export const ChannelRoles:{[id:string]:{[id:string]:{names:(string|RegExp)[]}}} = {
-  color:{
-    r:{names:["red","r"]},
-    g:{names:["green","g"]},
-    b:{names:["blue","b"]},
+export const ChannelRoles: {[id: string]: {[id: string]: {names: Array<string|RegExp>}}} = {
+  color: {
+    r: {names: ['red', 'r']},
+    g: {names: ['green', 'g']},
+    b: {names: ['blue', 'b']},
   },
-  position:{
-    pan_coarse:{names:["pan","pan coarse"]},
-    pan_fine:{names:["pan fine"]},
-    tilt_coarse:{names:["tilt","tilt coarse"]},
-    tilt_fine:{names:["tilt fine"]},
-    
-  },
-  fog:{
-    vent:{names:["vent"]},
-    heat:{names:["heat"]},
-  },
-  dim:{
-    dimmer:{names:[/channel.*/,/dim.*/]}
-  },
-  other:{
-    other:{names:[]}
-  }
+  position: {
+    pan_coarse: {names: ['pan', 'pan coarse']},
+    pan_fine: {names: ['pan fine']},
+    tilt_coarse: {names: ['tilt', 'tilt coarse']},
+    tilt_fine: {names: ['tilt fine']},
 
-}
+  },
+  fog: {
+    vent: {names: ['vent']},
+    heat: {names: ['heat']},
+  },
+  dim: {
+    dimmer: {names: [/channel.*/, /dim.*/]},
+  },
+  other: {
+    other: {names: []},
+  },
+
+};
 
 export interface ChannelI {
   ctype: string;
@@ -72,15 +72,6 @@ export class ChannelBase implements ChannelI {
     return this._enabled;
   }
 
-  public matchFilter(n:string|RegExp){
-    return (n==="all") || (this.roleFam===n) || (this.roleFam+":"+this.roleType===n)
-  }
-  public matchFilterList(l:string[]){
-    if(!l){return true;}
-    return l.some(e=>this.matchFilter(e))
-    
-  }
-
 
   public static createFromObj(ob: any): ChannelBase|undefined {
     const cstr = channelTypes[ob.ctype];
@@ -99,8 +90,8 @@ export class ChannelBase implements ChannelI {
   public ctype = 'base';
   public hasDuplicatedCirc = false;
   public reactToMaster = true;
-  public roleType="";
-  public roleFam = "";
+  public roleType = '';
+  public roleFam = '';
 
   @nonEnumerable()
   private __parentFixture: any;
@@ -109,28 +100,37 @@ export class ChannelBase implements ChannelI {
 
   constructor(public name: string, __value: ChannelValueType  , public circ: number= 0, public _enabled: boolean= true) {
     if (!__value) {__value = 0; } // ensure numeric
-    this.updateRoleForName()
+    this.updateRoleForName();
     this.setValueChecking(__value);
   }
 
-  public updateRoleForName(){
-    let foundType = ""
-    let foundFam = ""
-    for(const fam of Object.keys(ChannelRoles)){
-      const cFam = ChannelRoles[fam]
-      if(fam==="other"){continue;}
-      for(const type of Object.keys(cFam)){
-        const names = cFam[type].names
-        if(names.find((e:string|RegExp)=>{return this.name.match(e)})){
+  public matchFilter(n: string|RegExp) {
+    return (n === 'all') || (this.roleFam === n) || (this.roleFam + ':' + this.roleType === n);
+  }
+  public matchFilterList(l: string[]) {
+    if (!l) {return true; }
+    return l.some((e) => this.matchFilter(e));
+
+  }
+
+  public updateRoleForName() {
+    let foundType = '';
+    let foundFam = '';
+    for (const fam of Object.keys(ChannelRoles)) {
+      const cFam = ChannelRoles[fam];
+      if (fam === 'other') {continue; }
+      for (const type of Object.keys(cFam)) {
+        const names = cFam[type].names;
+        if (names.find((e: string|RegExp) => this.name.match(e))) {
           foundType = type;
-          foundFam = fam
+          foundFam = fam;
           break;
         }
       }
-      if(foundFam!==""){break;}
+      if (foundFam !== '') {break; }
     }
-    this.roleType= foundType || "other"
-    this.roleFam= foundFam || "other"
+    this.roleType = foundType || 'other';
+    this.roleFam = foundFam || 'other';
   }
 
 
@@ -177,7 +177,7 @@ export class ChannelBase implements ChannelI {
   public setName( n: string ) {
     this.name = n;
     this.checkNameDuplicate();
-    this.updateRoleForName()
+    this.updateRoleForName();
   }
 
   public checkNameDuplicate() {
@@ -194,9 +194,9 @@ export class ChannelBase implements ChannelI {
        // debugger;
      }
    }
-   this.__parentFixture = f;
-   this.checkNameDuplicate();
-   if (this.__parentFixture && this.__parentFixture.universe) {this.__parentFixture.universe.checkDuplicatedCirc(); }
+    this.__parentFixture = f;
+    this.checkNameDuplicate();
+    if (this.__parentFixture && this.__parentFixture.universe) {this.__parentFixture.universe.checkDuplicatedCirc(); }
  }
  public getState() {
   return {trueCirc: this.trueCirc, value: this.floatValue, name: this.name};

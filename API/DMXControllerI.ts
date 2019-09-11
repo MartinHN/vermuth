@@ -20,7 +20,7 @@ export function needSerialPort(n: string) {
 }
 
 export function needUdpPort(n: string) {
-  n = ''+n
-  return ["QLC","artnet",/.*OSC*./].some(e=> n.match(e));
+  n = '' + n;
+  return ['QLC', 'artnet', /.*OSC*./].some((e) => n.match(e));
 }
 

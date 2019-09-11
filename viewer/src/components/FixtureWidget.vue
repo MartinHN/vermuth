@@ -43,21 +43,6 @@ const universesModule = namespace('universes');
 })
 export default class FixtureWidget extends Vue {
 
-  @universesModule.Mutation('addChannelToFixture') public addChannelToFixture!: UniversesMethods['addChannelToFixture'];
-  @universesModule.Mutation('setFixtureName') public setFixtureName!: UniversesMethods['setFixtureName'];
-
-  @universesModule.Mutation('setFixtureValue') public setFixtureValue!: UniversesMethods['setFixtureValue'];
-  @universesModule.Mutation('setFixtureColor') public setFixtureColor!: UniversesMethods['setFixtureColor'];
-
-  @universesModule.Mutation('setChannelValue') public setChannelValue!: UniversesMethods['setChannelValue'];
-
-
-  @Prop() public fixtureProp!: DirectFixture;
-  @Prop({default: false})    public showName?: boolean;
-  @Prop({default: false})    public showValue?: boolean;
-  @Prop ({default: false}) public miniMode?: boolean;
-  @Prop ({default: []}) public filterList?: string[];
-
   get colorChannels(): any {
     return this.fixtureProp.colorChannels;
   }
@@ -94,10 +79,20 @@ export default class FixtureWidget extends Vue {
     this.debouncedColorSetter(c);
   }
 
-  public hasFilterType(n:string){
-    if(!this.filterList){return true;}
-    return this.filterList.some(e=>e.startsWith(n))
-  }
+  @universesModule.Mutation('addChannelToFixture') public addChannelToFixture!: UniversesMethods['addChannelToFixture'];
+  @universesModule.Mutation('setFixtureName') public setFixtureName!: UniversesMethods['setFixtureName'];
+
+  @universesModule.Mutation('setFixtureValue') public setFixtureValue!: UniversesMethods['setFixtureValue'];
+  @universesModule.Mutation('setFixtureColor') public setFixtureColor!: UniversesMethods['setFixtureColor'];
+
+  @universesModule.Mutation('setChannelValue') public setChannelValue!: UniversesMethods['setChannelValue'];
+
+
+  @Prop() public fixtureProp!: DirectFixture;
+  @Prop({default: false})    public showName?: boolean;
+  @Prop({default: false})    public showValue?: boolean;
+  @Prop ({default: false}) public miniMode?: boolean;
+  @Prop ({default: []}) public filterList?: string[];
 
   private debouncedColorSetter = _.debounce((c: string) => {
     const color: any = hexToRgb(c, true);
@@ -106,6 +101,11 @@ export default class FixtureWidget extends Vue {
   },
   50,
   {maxWait: 50});
+
+  public hasFilterType(n: string) {
+    if (!this.filterList) {return true; }
+    return this.filterList.some((e) => e.startsWith(n));
+  }
 
 
 

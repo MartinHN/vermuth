@@ -27,18 +27,16 @@ export function bindClientSocket(s: any) {
       };
 
       boundSocket.emit = nF;
-    }
-    else{
+    } else {
       const onevent = boundSocket.onevent;
       const rS = require('./RootState').default;
-      boundSocket.onevent =  function(packet:any) {
-        var args = packet.data || [];
+      boundSocket.onevent =  function(packet: any) {
+        const args = packet.data || [];
 
-        const addr = args.shift()
-        if(addr && (addr[0]==="/")){
-          callAnyAccessibleFromRemote(rS,addr,args[0],boundSocket.id)
-        }
-        else{
+        const addr = args.shift();
+        if (addr && (addr[0] === '/')) {
+          callAnyAccessibleFromRemote(rS, addr, args[0], boundSocket.id);
+        } else {
          onevent.call (this, packet);    // original call
        }
        // packet.data = ["*"].concat(args);
@@ -47,7 +45,7 @@ export function bindClientSocket(s: any) {
    }
 
  }
- safeBindSocket(s);
+  safeBindSocket(s);
 
 
 }
@@ -231,11 +229,11 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
             // @ts-ignore
             if (this.__emitF && (AccessibleSettedByServer !== raddr ) ) {
 
-              let prunedArgs =args.map(e=>Object.assign({}, e));
+              const prunedArgs = args.map((e) => Object.assign({}, e));
 
-              for(let c of prunedArgs){
-                if(c.__ob__){
-                  debugger
+              for (const c of prunedArgs) {
+                if (c.__ob__) {
+                  debugger;
                   delete c.__ob__;
                 }
               }
@@ -270,15 +268,15 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
 
 
 function broadcastMessage(addr: string, args: any) {
-  let log = undefined
-  if (logServerMessages) {log=require('./Logger').default;}
+  let log;
+  if (logServerMessages) {log = require('./Logger').default; }
   if (!isClient && clientSocket && clientSocket.sockets) {
     // broadcast to other clients if we are server
     for (const s of Object.values(clientSocket.sockets.sockets)) {
       const sock = s as Socket;
       if (sock.id !== AccessibleNotifierId) {
         if (log) {
-          log.log('server >> '+sock.id+' : ' + addr + ' : ' + args + '\n');
+          log.log('server >> ' + sock.id + ' : ' + addr + ' : ' + args + '\n');
         }
         sock.emit(addr, args);
 
@@ -355,7 +353,7 @@ export function nonEnumerable(opts?: {default?: any}) {
       writable: true,
     } );
    }
-   target.__nonEnumerables[key] = true;
+    target.__nonEnumerables[key] = true;
  };
 }
 

@@ -95,63 +95,63 @@
   </template>
 
   <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 
-  import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
-  import Button from './Button.vue';
-  import Numbox from './Numbox.vue';
-  import Toggle from './Toggle.vue';
-  import { DirectFixture } from '@API/Fixture';
-  import UniversesMethods from '../store/universes';
+import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
+import Button from './Button.vue';
+import Numbox from './Numbox.vue';
+import Toggle from './Toggle.vue';
+import { DirectFixture } from '@API/Fixture';
+import UniversesMethods from '../store/universes';
 
 
-  const universesModule = namespace('universes');
+const universesModule = namespace('universes');
 
-  @Component({
-    components: {Button, Numbox, Toggle},
-  })
-  export default class ChannelPatch extends Vue {
-
-    open(){
-      // debugger
-    }
-    close(){
-      debugger
-    }
-    public get errors() {
-      const errs: {[id: number]: string} = {};
-      this.usedChannels.map( (c) => errs[c.circ] = c.hasDuplicatedCirc ? 'circuit is duplicated' : '');
-      return errs;
-    }
-
-    @universesModule.Mutation('addFixture') public addFixture!: UniversesMethods['addFixture'];
-    @universesModule.Mutation('duplicateFixture') public duplicateFixture!: UniversesMethods['duplicateFixture'];
-    @universesModule.Mutation('addChannelToFixture') public addChannelToFixture!: UniversesMethods['addChannelToFixture'];
-    @universesModule.Mutation('setFixtureBaseCirc') public setFixtureBaseCirc!: UniversesMethods['setFixtureBaseCirc'];
-
-
-
-
-    @universesModule.Mutation('linkChannelToCirc') public linkChannelToCirc!: UniversesMethods['linkChannelToCirc'];
-    @universesModule.Mutation('setChannelName') public setChannelName!: UniversesMethods['setChannelName'];
-    @universesModule.Mutation('removeChannel') public removeChannel!: UniversesMethods['removeChannel'];
-
-    @universesModule.Mutation('removeFixture') public removeFixture!: UniversesMethods['removeFixture'];
-    @universesModule.Mutation('setFixtureName') public setFixtureName!: UniversesMethods['setFixtureName'];
-    @universesModule.Mutation('setChannelReactToMaster') public setChannelReactToMaster!: UniversesMethods['setChannelReactToMaster'];
-    @universesModule.Mutation('testDimmerNum') public testDimmerNum!: UniversesMethods['testDimmerNum'];
-
-    @universesModule.State('universe') private universe!: UniversesMethods['universe'];
-
-
-
-
-    @universesModule.Getter('usedChannels') private usedChannels!: UniversesMethods['usedChannels'];
-
-
-
+@Component({
+  components: {Button, Numbox, Toggle},
+})
+export default class ChannelPatch extends Vue {
+  public get errors() {
+    const errs: {[id: number]: string} = {};
+    this.usedChannels.map( (c) => errs[c.circ] = c.hasDuplicatedCirc ? 'circuit is duplicated' : '');
+    return errs;
   }
+
+  @universesModule.Mutation('addFixture') public addFixture!: UniversesMethods['addFixture'];
+  @universesModule.Mutation('duplicateFixture') public duplicateFixture!: UniversesMethods['duplicateFixture'];
+  @universesModule.Mutation('addChannelToFixture') public addChannelToFixture!: UniversesMethods['addChannelToFixture'];
+  @universesModule.Mutation('setFixtureBaseCirc') public setFixtureBaseCirc!: UniversesMethods['setFixtureBaseCirc'];
+
+
+
+
+  @universesModule.Mutation('linkChannelToCirc') public linkChannelToCirc!: UniversesMethods['linkChannelToCirc'];
+  @universesModule.Mutation('setChannelName') public setChannelName!: UniversesMethods['setChannelName'];
+  @universesModule.Mutation('removeChannel') public removeChannel!: UniversesMethods['removeChannel'];
+
+  @universesModule.Mutation('removeFixture') public removeFixture!: UniversesMethods['removeFixture'];
+  @universesModule.Mutation('setFixtureName') public setFixtureName!: UniversesMethods['setFixtureName'];
+  @universesModule.Mutation('setChannelReactToMaster') public setChannelReactToMaster!: UniversesMethods['setChannelReactToMaster'];
+  @universesModule.Mutation('testDimmerNum') public testDimmerNum!: UniversesMethods['testDimmerNum'];
+
+  @universesModule.State('universe') private universe!: UniversesMethods['universe'];
+
+
+
+
+  @universesModule.Getter('usedChannels') private usedChannels!: UniversesMethods['usedChannels'];
+
+  public open() {
+    // debugger
+  }
+  public close() {
+    debugger;
+  }
+
+
+
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

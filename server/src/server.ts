@@ -1,6 +1,6 @@
 const debug =  process.env.NODE_ENV !== 'production';
 const logClientMessages = process.env.LOG_MSG;
-const clientLogger = logClientMessages?require('@API/Logger').default:undefined;
+const clientLogger = logClientMessages ? require('@API/Logger').default : undefined;
 const PORT = process.env.PORT || 3000;
 if (!debug) {require('module-alias/register'); } // form module resolution
 import * as express from 'express';
@@ -131,7 +131,7 @@ ioServer.on('connection', function(socket) {
   if (debug ) {
     socket.use((packet, next) => {
       if (clientLogger) {
-        clientLogger.log(socket.id+' >> server ' + JSON.stringify(packet) + '\n');
+        clientLogger.log(socket.id + ' >> server ' + JSON.stringify(packet) + '\n');
       }
       next();
     });
@@ -162,7 +162,7 @@ ioServer.on('connection', function(socket) {
 
   socket.on('GET_STATE', (key, cb) => {
     const msg = states[getSessionId(socket)];
-    if(cb)cb(msg || {});
+    if (cb) {cb(msg || {}); }
     // console.log('sending state: ' + JSON.stringify(msg.states));
 
   });
