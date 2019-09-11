@@ -84,18 +84,19 @@ const autosaverPlugin = (pStore: Store<RootVueState>) => {
   pStore.dispatch('LOAD_KEYED_STATE', sessionKey);
   pStore.dispatch('LOAD_KEYED_STATE', configKey);
 
-
+  let isAutoSaving = false;
 
   pStore.subscribe((mutation, state: any ) => {
     state = state as FullVueState;
     if (mutation.type.startsWith('config')) {
       localFS.save(state.config, configKey, () => {});
-    } else if (!state.loadingState && (state.savedStatus === 'Saved' || state.savedStatus === '' ) && state.config.autoSave && mutation.type.includes('/') ) {
+    } else if (!isAutoSaving && !state.loadingState && (state.savedStatus === 'Saved' || state.savedStatus === '' ) && state.config.autoSave && mutation.type.includes('/') ) {
       if ( mutation.type.endsWith('Value') ) {
         // console.log('ignoring value changes ' + mutation);
         return;
       }
 
+      isAutoSaving = true;
 
       const sessionState = getSessionObject();
       if (!sessionState.isConfigured) {
@@ -105,6 +106,7 @@ const autosaverPlugin = (pStore: Store<RootVueState>) => {
       }
       pStore.dispatch('SAVE_SESSION');
 
+      isAutoSaving = false;
       return;
     }
 
@@ -202,16 +204,18 @@ const store: StoreOptions<RootVueState> = {
       downloadObjectAsJSON(newStateString, 'state');
     },
     SAVE_SESSION(context) {
-      const sessionState = getSessionObject();
-      context.commit('states/saveCurrentState', {name: 'current'});
-      context.commit('SET_SAVE_STATUS', 'Saving...');
-      localFS.save(sessionState, sessionKey, () => {
-        if (!context.state.loadingState ) {
-          context.dispatch('SAVE_REMOTELY', sessionState);
-        }
-        context.commit('SET_SAVE_STATUS', 'Saved');
+      if (context.state.savedStatus !== 'Saving...') {
+        const sessionState = getSessionObject();
+        context.commit('states/saveCurrentState', {name: 'current'});
+        context.commit('SET_SAVE_STATUS', 'Saving...');
+        localFS.save(sessionState, sessionKey, () => {
+          if (!context.state.loadingState ) {
+            context.dispatch('SAVE_REMOTELY', sessionState);
+          }
+          context.commit('SET_SAVE_STATUS', 'Saved');
 
-      });
+        });
+      }
     },
 
 
