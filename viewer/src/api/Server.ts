@@ -4,6 +4,9 @@ import { bindClientSocket, nonEnumerable } from '@API/ServerSync';
 import rootState from '@API/RootState';
 import {getCircular} from '@API/SerializeUtils';
 
+let __serverListenerInited = false;
+let hasRemoteState = false;
+
 class Server {
   @nonEnumerable()
   private __store: any;
@@ -16,26 +19,22 @@ class Server {
   }
 
   public connect(store: any, serverIp: string) {
+    if (__serverListenerInited) {
+      console.error('double call to connect Sever on client');
+    }
     this.__store = store;
     const socket = io(`http://${serverIp}:3000`);
     this.__socket = socket;
     store.dispatch('SET_CONNECTED_STATE', 'connecting');
 
-    socket.on('connect', () => {
-      bindClientSocket(socket);
-      console.log('connected to server');
 
-      store.dispatch('SET_CONNECTED_STATE', 'connected');
-      let hasRemoteState = false;
-      socket.emit('GET_STATE', 'sessionKey', (state: any) => {
-      });
+    const initF = () => {
+      __serverListenerInited = true;
+      bindClientSocket(socket);
+
 
       socket.on('DBG', (msg: any) => {console.error(msg); });
-      // const unsubscribe = store.subscribe((mutation: any, state: any) => {
-      //   if (hasRemoteState && mutation.type === 'SET_SAVE_STATUS' && mutation.payload === 'Saved') {
-      //     socket.emit('SET_STATE', 'session',state);
-      //   }
-      // });
+
 
       socket.on('SET_ID', (msg: number) => {
         store.commit('SET_CONNECTED_ID', msg);
@@ -45,7 +44,7 @@ class Server {
       socket.on('SET_STATE', (msg: any) => {
         store.dispatch('SET_SESSION_STATE', msg).then(() => {
           hasRemoteState = true;
-      },
+        },
         );
       });
       socket.on('UPDATE_STATE', (msg: any) => {
@@ -60,7 +59,15 @@ class Server {
 
       dmxClient.subscribe(socket, store);
 
+    };
+
+    socket.on('connect', () => {
+      console.log('connected to server');
+      store.dispatch('SET_CONNECTED_STATE', 'connected');
+      socket.emit('GET_STATE', 'sessionKey', (state: any) => {});
+
     });
+    socket.once('connect', initF);
 
   }
   public getSocket() {

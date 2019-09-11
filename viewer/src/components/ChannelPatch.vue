@@ -61,7 +61,7 @@
                   <v-flex xs3 >
                     <div :style="{  display:'flex' ,padding:'10px'}">
                       <Numbox class="circNum" :value="c.circ" :min="0" :max="512" @input="linkChannelToCirc({channel: c, circ: $event.value})" :errMsg='c.hasDuplicatedCirc===true?"duplicated":""' ></Numbox>
-                      <Toggle @input=setChannelReactToMaster({channel:c,value:$event}) :value=c.reactToMaster > React to Master</Toggle>
+
                       <Toggle text="test" :value="universe.testedChannel.circ===c.trueCirc" @input=testDimmerNum({channel:$event?c.trueCirc:-1}) > T </Toggle>
 
                     </div>
@@ -129,7 +129,7 @@ export default class ChannelPatch extends Vue {
 
   @universesModule.Mutation('removeFixture') public removeFixture!: UniversesMethods['removeFixture'];
   @universesModule.Mutation('setFixtureName') public setFixtureName!: UniversesMethods['setFixtureName'];
-  @universesModule.Mutation('setChannelReactToMaster') public setChannelReactToMaster!: UniversesMethods['setChannelReactToMaster'];
+
   @universesModule.Mutation('testDimmerNum') public testDimmerNum!: UniversesMethods['testDimmerNum'];
 
   @universesModule.State('universe') private universe!: UniversesMethods['universe'];

@@ -87,7 +87,7 @@ function getSessionId(socket) {
 }
 
 function setStateFromObject(msg, socket: any) {
-  // console.log('setting state: ' + JSON.stringify(msg));
+  console.log('setting state from: ' + socket);
   const sessionID = getSessionId(socket);
   const dif = diff(states[sessionID], msg);
 
@@ -96,6 +96,12 @@ function setStateFromObject(msg, socket: any) {
     states = {};
     states[sessionID] = msg;
     states.lastSessionID = sessionID;
+
+    if (socket) {
+    console.log('broadcasting state: ' + JSON.stringify(msg.states));
+    socket.broadcast.emit('SET_STATE', msg);
+
+  }
     rootState.configureFromObj(msg);
     states[sessionID] = rootState.toJSONObj(); // update persistent changes
     // dmxController.stateChanged(msg)
@@ -113,11 +119,7 @@ function setStateFromObject(msg, socket: any) {
     console.log('no mod from state');
   }
   // debugger
-  if (socket) {
-    // console.log('broadcasting state: ' + JSON.stringify(msg.states));
-    socket.broadcast.emit('SET_STATE', msg);
 
-  }
 
 }
 
@@ -127,7 +129,21 @@ if (debug && process.env.LOG_SOCKET_FILE) {
 }
 ioServer.on('connection', function(socket) {
   console.log('a user connected', socket.id, debug);
+
   log.bindToSocket(socket);
+  const emitF = socket.emit;
+  socket.emit  = (event: string | symbol, ...args: any[]) => {
+
+    if (clientLogger) {
+      // @ts-ignore
+      const isBroadCasting = socket.flags.broadcast;
+      clientLogger.log('server >> ' + (isBroadCasting ? ' to any but ' : '') + socket.id + JSON.stringify(event) + JSON.stringify(args) + '\n');
+    }
+    return emitF.apply(socket, [event, ...args]);
+  };
+
+
+
   if (debug ) {
     socket.use((packet, next) => {
       if (clientLogger) {
@@ -162,7 +178,7 @@ ioServer.on('connection', function(socket) {
 
   socket.on('GET_STATE', (key, cb) => {
     const msg = states[getSessionId(socket)];
-    if (cb) {cb(msg || {}); }
+    if (cb) {cb(msg || {}); } else {socket.emit('SET_STATE', msg); }
     // console.log('sending state: ' + JSON.stringify(msg.states));
 
   });

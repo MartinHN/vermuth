@@ -93,7 +93,7 @@ export class ChannelBase implements ChannelI {
 
   public ctype = 'base';
   public hasDuplicatedCirc = false;
-  public reactToMaster = true;
+  public get reactToMaster() {return this.roleFam === 'dim'; }
   public roleType = '';
   public roleFam = '';
 
@@ -148,7 +148,6 @@ export class ChannelBase implements ChannelI {
     if (ob.name !== undefined) {this.name = ob.name; }
     if (ob.value !== undefined) {this.setValue( ob.value, false); }
     if (ob.circ !== undefined) {this.setCirc( ob.circ); }
-    if (ob.reactToMaster !== undefined) {this.reactToMaster = ob.reactToMaster; }
     this.updateRoleForName();
   }
 

@@ -68,10 +68,7 @@ export default class Universes extends VuexModule {
     this.universe.setAllColor(pl.color);
   }
 
-  @Mutation
-  public setChannelReactToMaster(pl: {channel: ChannelBase, value: boolean}) {
-    pl.channel.reactToMaster = pl.value ? true : false;
-  }
+
 
   @Mutation
   public setFixtureBaseCirc(pl: {fixture: FixtureBase, circ: number}) {

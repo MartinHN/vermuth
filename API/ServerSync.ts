@@ -29,19 +29,24 @@ export function bindClientSocket(s: any) {
       boundSocket.emit = nF;
     } else {
       const onevent = boundSocket.onevent;
-      const rS = require('./RootState').default;
-      boundSocket.onevent =  function(packet: any) {
-        const args = packet.data || [];
 
-        const addr = args.shift();
-        if (addr && (addr[0] === '/')) {
-          callAnyAccessibleFromRemote(rS, addr, args[0], boundSocket.id);
-        } else {
-         onevent.call (this, packet);    // original call
-       }
-       // packet.data = ["*"].concat(args);
-       // onevent.call(this, packet);      // additional call to catch-all
-     };
+      const rS = require('./RootState').default;
+      if (!boundSocket.__eventOverriden) {
+        boundSocket.__eventOverriden =  true;
+        boundSocket.onevent =  function(packet: any) {
+          const args = (packet.data || []).slice();
+
+          const addr = args.shift();
+          if (addr && (addr[0] === '/')) {
+            callAnyAccessibleFromRemote(rS, addr, args[0], boundSocket.id);
+          } else {
+
+           onevent.call (boundSocket, packet);    // original call
+         }
+         // packet.data = ["*"].concat(args);
+         // onevent.call(this, packet);      // additional call to catch-all
+       };
+     }
    }
 
  }
@@ -268,94 +273,96 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
 
 
 function broadcastMessage(addr: string, args: any) {
-  let log;
-  if (logServerMessages) {log = require('./Logger').default; }
+  // let log;
+  // if (logServerMessages) {log = require('./Logger').default; }
   if (!isClient && clientSocket && clientSocket.sockets) {
     // broadcast to other clients if we are server
     for (const s of Object.values(clientSocket.sockets.sockets)) {
       const sock = s as Socket;
       if (sock.id !== AccessibleNotifierId) {
-        if (log) {
-          log.log('server >> ' + sock.id + ' : ' + addr + ' : ' + args + '\n');
+        // if (log) {
+          //   log.log('server >> ' + sock.id + ' : ' + addr + ' : ' + args + '\n');
+          // }
+          sock.emit(addr, args);
+
         }
-        sock.emit(addr, args);
-
       }
-    }
 
-    // console.warn("avoid feedback");
+      // console.warn("avoid feedback");
+    }
   }
-}
+
+
 
 export function SetAccessible() {
 
-  return (target: any, key: string | symbol) => {
-    const val = target[key];
-    if (target.__accessibleMembers === undefined) {
-      Object.defineProperty(target, '__accessibleMembers', {
-        value: {},
-        enumerable: false,
-        configurable: false,
-        writable: true,
-      });
-    }
+    return (target: any, key: string | symbol) => {
+      const val = target[key];
+      if (target.__accessibleMembers === undefined) {
+        Object.defineProperty(target, '__accessibleMembers', {
+          value: {},
+          enumerable: false,
+          configurable: false,
+          writable: true,
+        });
+      }
 
-    target.__accessibleMembers[key] = val;
+      target.__accessibleMembers[key] = val;
 
 
-  };
-}
+    };
+  }
 
 
 
 export function RemoteValue(cb?: (parent: any, value: any) => void) {
 
-  return (target: any, key: string | symbol) => {
-    const val = target[key];
-    if (target.__remoteValues === undefined) {
-      Object.defineProperty(target, '__remoteValues', {
-        value: {},
-        enumerable: false,
-        configurable: false,
-        writable: true,
-      });
-      Object.defineProperty(target, '__remoteCBs', {
-        value: {},
-        enumerable: false,
-        configurable: false,
-        writable: true,
-      });
-      Object.defineProperty(target, '__fetch', {
-        get: () => target.__remoteValues,
-        enumerable: false,
-        configurable: false,
-      });
-    } else if (target.__remoteCBs === undefined) {
-      console.error('weird target __remoteValue already created but no __remoteCBs');
-      debugger;
-    }
-    target.__remoteCBs[key] = cb;
-    // debugger
-    target.__remoteValues[key] = val;
+    return (target: any, key: string | symbol) => {
+      const val = target[key];
+      if (target.__remoteValues === undefined) {
+        Object.defineProperty(target, '__remoteValues', {
+          value: {},
+          enumerable: false,
+          configurable: false,
+          writable: true,
+        });
+        Object.defineProperty(target, '__remoteCBs', {
+          value: {},
+          enumerable: false,
+          configurable: false,
+          writable: true,
+        });
+        Object.defineProperty(target, '__fetch', {
+          get: () => target.__remoteValues,
+          enumerable: false,
+          configurable: false,
+        });
+      } else if (target.__remoteCBs === undefined) {
+        console.error('weird target __remoteValue already created but no __remoteCBs');
+        debugger;
+      }
+      target.__remoteCBs[key] = cb;
+      // debugger
+      target.__remoteValues[key] = val;
 
 
-  };
-}
+    };
+  }
 
 
 export function nonEnumerable(opts?: {default?: any}) {
-  return function(target: any, key: string | symbol)  {
-    if (!target.__nonEnumerables) {
-     Object.defineProperty(target, '__nonEnumerables', {
-      value: {},
-      enumerable: false,
-      configurable: false,
-      writable: true,
-    } );
-   }
-    target.__nonEnumerables[key] = true;
- };
-}
+    return function(target: any, key: string | symbol)  {
+      if (!target.__nonEnumerables) {
+       Object.defineProperty(target, '__nonEnumerables', {
+        value: {},
+        enumerable: false,
+        configurable: false,
+        writable: true,
+      } );
+     }
+      target.__nonEnumerables[key] = true;
+   };
+ }
 
 function initAccessibles(parent: any) {
   if (parent.__accessibleMembers) {
