@@ -1,18 +1,33 @@
 <template>
   <div class="fixtureWidget" >
     <div style="display:flex;width:100%">
-
+        
       <ChannelWidget v-if='dimmerChannel && dimmerChannel.matchFilterList(filterList)' :channelProp=dimmerChannel :overrideName="fixtureProp.name" style="width:100%"></ChannelWidget>
 
-      <input type="color" v-if='fixtureProp.hasColorChannels && hasFilterType("color")' v-model=hexColorValue></input>
-
     </div>
-    <div style="display:flex;width:100%" v-if='(!miniMode && fixtureProp.hasColorChannels && hasFilterType("color"))' >
 
+    <div style="display:flex;width:100%" v-if='(fixtureProp.hasChannelsOfRole("color") && hasFilterType("color"))' >
+
+      <input type="color" style="flex:1 1 30%" v-if='fixtureProp.hasChannelsOfRole("color") && hasFilterType("color")' v-model=hexColorValue></input>
       <ChannelWidget v-for="c of colorChannels" :key='c.id' :channelProp="c" v-if='c.matchFilterList(filterList)' />
 
     </div>
-    <div v-if=!miniMode style="width:100%">
+
+    <div style="display:flex;width:100%" v-if='(fixtureProp.hasChannelsOfRole("position") && hasFilterType("position"))' >
+      <Button text="setPos" @click="showPosModal=true"/>
+      <modal v-if="showPosModal" @close="showPosModal = false">
+    <!--
+      you can use custom content here to overwrite
+      default content
+    -->
+        <h3 slot="header">fixtur pos</h3>
+        <Point2DEditor slot="body" :value="fixturePositionList" @input="setFixturePosition($event)"></Point2DEditor>
+      </modal>
+
+      <ChannelWidget v-for='c of fixtureProp.getChannelsOfRole("position")' :key='c.id' :channelProp="c" v-if='c.matchFilterList(filterList)' />
+
+    </div>
+    <div style="width:100%">
 
       <ChannelWidget style="width:100%" v-for="c of otherChannels" v-if='c.matchFilterList(filterList)' :key='c.id' :channelProp="c" />
 
@@ -29,6 +44,8 @@ import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 import Slider from './Slider.vue' ;
 import Button from './Button.vue' ;
 import Toggle from './Toggle.vue' ;
+import Modal from './Modal.vue' ;
+import Point2DEditor from './Point2DEditor.vue' ;
 import ChannelWidget from './ChannelWidget.vue';
 import { DirectFixture } from '@API/Fixture';
 import { ChannelBase } from '@API/Channel';
@@ -39,36 +56,22 @@ import _ from 'lodash';
 const universesModule = namespace('universes');
 
 @Component({
-  components: {Slider, Button, Toggle, ChannelWidget},
+  components: {Slider, Button, Toggle, ChannelWidget, Modal, Point2DEditor},
 })
 export default class FixtureWidget extends Vue {
-
   get colorChannels(): any {
     return this.fixtureProp.colorChannels;
   }
   get dimmerChannel(): any {
-    return this.fixtureProp.dimmerChannel;
+    return this.fixtureProp.dimmerChannels ? this.fixtureProp.dimmerChannels.dimmer : undefined;
   }
 
   get otherChannels() {
-    const nonOtherNames: string[] = [];
-    for (const c of ['r', 'g', 'b']) {
-      if (this.colorChannels[c]) {
-        nonOtherNames.push(this.colorChannels[c].name);
-      }
-    }
-    if (this.dimmerChannel) {nonOtherNames.push(this.dimmerChannel.name); }
-    const ot = [];
-    for ( const ch of this.fixtureProp.channels) {
-      if (! nonOtherNames.find((n) => n === ch.name)) {
-        ot.push(ch);
-      }
-    }
-    return ot;
+    return this.fixtureProp.getChannelsOfRole('other');
   }
+
   get hexColorValue(): string {
     const cch = this.colorChannels;
-
     return rgbToHex(cch.r ? cch.r.intValue : 0,
       cch.g ? cch.g.intValue : 0,
       cch.b ? cch.b.intValue : 0);
@@ -91,9 +94,9 @@ export default class FixtureWidget extends Vue {
   @Prop() public fixtureProp!: DirectFixture;
   @Prop({default: false})    public showName?: boolean;
   @Prop({default: false})    public showValue?: boolean;
-  @Prop ({default: false}) public miniMode?: boolean;
-  @Prop ({default: []}) public filterList?: string[];
 
+  @Prop ({default: []}) public filterList?: string[];
+  private showPosModal = false;
   private debouncedColorSetter = _.debounce((c: string) => {
     const color: any = hexToRgb(c, true);
     this.setFixtureColor({fixture: this.fixtureProp, color});
@@ -104,9 +107,16 @@ export default class FixtureWidget extends Vue {
 
   public hasFilterType(n: string) {
     if (!this.filterList) {return true; }
+    if (this.filterList.some((e) => e === 'all')) {return true; }
     return this.filterList.some((e) => e.startsWith(n));
   }
 
+  public setFixturePosition(p: Array<{x: number, y: number}>) {
+    this.fixtureProp.setPosition(p[0]);
+  }
+  get fixturePositionList() {
+    return [this.fixtureProp.getPosition()];
+  }
 
 
   // get disabledV(): boolean {return !this.fixtureProp.channel.enabled; }

@@ -6,19 +6,22 @@ type ChannelValueType = number; // |number[];
 export const ChannelRoles: {[id: string]: {[id: string]: {names: Array<string|RegExp>}}} = {
   color: {
     r: {names: ['red', 'r']},
+    r_fine: {names: [/red.*fine/, /r.*fine/]},
     g: {names: ['green', 'g']},
+    g_fine: {names: [/green.*fine/, /g.*fine/]},
     b: {names: ['blue', 'b']},
+    b_fine: {names: [/blue.*fine/, /b.*fine/]},
   },
   position: {
-    pan_coarse: {names: ['pan', 'pan coarse']},
-    pan_fine: {names: ['pan fine']},
-    tilt_coarse: {names: ['tilt', 'tilt coarse']},
-    tilt_fine: {names: ['tilt fine']},
+    pan: {names: ['pan', /pan.*coarse/]},
+    pan_fine: {names: [/pan.*fine/]},
+    tilt: {names: ['tilt', /tilt.*coarse/]},
+    tilt_fine: {names: [/tilt.*fine/]},
 
   },
   fog: {
-    vent: {names: ['vent']},
-    heat: {names: ['heat']},
+    vent: {names: [/vent.*/]},
+    heat: {names: [/heat.*/]},
   },
   dim: {
     dimmer: {names: [/channel.*/, /dim.*/]},
@@ -64,6 +67,7 @@ export class ChannelBase implements ChannelI {
   }
 
   get intValue() {return this.__value * 255; }
+
   get floatValue() {return this.__value; }
   public set enabled(v: boolean) {
     this._enabled = v;
@@ -121,7 +125,10 @@ export class ChannelBase implements ChannelI {
       if (fam === 'other') {continue; }
       for (const type of Object.keys(cFam)) {
         const names = cFam[type].names;
-        if (names.find((e: string|RegExp) => this.name.match(e))) {
+        if (names.find((e: string|RegExp) => {
+          if (typeof e === 'string') {return e === this.name; }
+          return this.name.match(e);
+        })) {
           foundType = type;
           foundFam = fam;
           break;
@@ -142,7 +149,7 @@ export class ChannelBase implements ChannelI {
     if (ob.value !== undefined) {this.setValue( ob.value, false); }
     if (ob.circ !== undefined) {this.setCirc( ob.circ); }
     if (ob.reactToMaster !== undefined) {this.reactToMaster = ob.reactToMaster; }
-
+    this.updateRoleForName();
   }
 
 

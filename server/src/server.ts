@@ -53,8 +53,8 @@ app.use(express.static(publicDir));
 let states: any = {};
 
 // write empty if non existent
-fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8' }, function(err) {
-  if (err) {
+fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8' }, function(ferr) {
+  if (ferr) {
     console.log('fileExists');
     fs.readFile(localStateFile, 'utf8', (err, data) => {
       if (err) {

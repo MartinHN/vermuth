@@ -50,6 +50,16 @@ export class FixtureBase implements FixtureBaseI {
   get channelsState() {
     return this.channels.map((c) => c.getState());
   }
+  public get colorChannels() {
+    return this.getChannelsOfRole('color');
+  }
+  public get positionChannels() {
+    return this.getChannelsOfRole('position');
+  }
+
+  public get dimmerChannels() {
+    return this.getChannelsOfRole('dim');
+  }
 
   public static createFromObj(ob: any): FixtureBase |undefined {
     if (ob.channels !== undefined) {
@@ -94,6 +104,7 @@ export class FixtureBase implements FixtureBaseI {
     }
 
   }
+
   public configureFromObj(ob: any) {
 
     if (ob._baseCirc !== undefined) {this.baseCirc = ob._baseCirc; }
@@ -125,23 +136,20 @@ export class FixtureBase implements FixtureBaseI {
     return '/mainUniverse/' + this.name;
   }
 
-  public get colorChannels() {
+  public  getChannelsOfRole(n: string) {
     const cch: any = {};
     for (const ch of this.channels ) {
-      if (ch.roleFam === 'color') {
+      if (ch.roleFam === n) {
         cch[ch.roleType] = ch;
       }
     }
-    return cch as {r?: ChannelBase, g?: ChannelBase, b?: ChannelBase} ;
+    return cch ;
   }
 
-  public get hasColorChannels() {
-    const ch = this.colorChannels;
-    return (ch.r) && (ch.g) && (ch.b);
-  }
+  public hasChannelsOfRole(n: string) {
+    const ch = this.getChannelsOfRole(n);
+    return ch &&  Object.keys(ch).length > 0 ;
 
-  public get dimmerChannel() {
-    return this.channels.find((e) => e.name === 'dim' || e.name === 'dimmer');
   }
 
   @RemoteFunction({sharedFunction: true})
@@ -153,12 +161,32 @@ export class FixtureBase implements FixtureBaseI {
 
   @RemoteFunction({sharedFunction: true})
   public setColor(c: {r: number, g: number, b: number}) {
-    if (this.colorChannels !== {}) {
-      if (this.colorChannels.r) {this.colorChannels.r.setValue(c.r, false); }
-      if (this.colorChannels.g) {this.colorChannels.g.setValue(c.g, false); }
-      if (this.colorChannels.b) {this.colorChannels.b.setValue(c.b, false); }
+    const cch = this.colorChannels;
+    if (cch !== {}) {
+      if (cch.r) {this.setCoarseAndFine(c.r, cch.r, cch.r_fine); }
+      if (cch.g) {this.setCoarseAndFine(c.g, cch.g, cch.g_fine); }
+      if (cch.b) {this.setCoarseAndFine(c.b, cch.b, cch.b_fine); }
     }
 
+  }
+  @RemoteFunction({sharedFunction: true})
+  public setPosition(c: {x: number, y: number}) {
+    const pch = this.positionChannels;
+    if (pch !== {}) {
+      if (pch.pan) {this.setCoarseAndFine(c.x, pch.pan, pch.pan_fine); }
+      if (pch.tilt) {this.setCoarseAndFine(c.y, pch.tilt, pch.tilt_fine); }
+
+    }
+
+  }
+  public getPosition() {
+    const res = {x: 0, y: 0};
+    const pch = this.positionChannels;
+    if (pch !== {}) {
+      if (pch.pan) {res.x = this.getCoarseAndFine( pch.pan, pch.pan_fine); }
+      if (pch.tilt) {res.y = this.getCoarseAndFine( pch.tilt, pch.tilt_fine); }
+    }
+    return res;
   }
 
 
@@ -196,6 +224,32 @@ export class FixtureBase implements FixtureBaseI {
     return this.channels.find((c) => c.name === n);
   }
 
+  private setCoarseAndFine(v: number, c: ChannelBase|undefined, cf: ChannelBase|undefined) {
+    if (!c) {return; }
+
+    if (cf !== undefined) {
+      const q = 255;
+      const qV = v * q;
+      const flooredV = Math.floor(qV);
+      c.setValue(flooredV / q, false);
+      const fine = (qV - flooredV) ;
+      cf.setValue(fine, false);
+    } else {
+      c.setValue(v, false);
+    }
+
+  }
+  private getCoarseAndFine(c: ChannelBase|undefined, cf: ChannelBase|undefined) {
+    if (!c) {return 0; }
+
+    if (cf !== undefined) {
+      const q = 255;
+      return  (c.intValue + cf.intValue / q) / q;
+    } else {
+      return c.floatValue;
+    }
+
+  }
 
 
 }

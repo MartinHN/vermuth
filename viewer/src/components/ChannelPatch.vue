@@ -48,7 +48,9 @@
                   </v-flex>
                   <v-flex xs11>
                     <input type="text" :style="{'background-color':'#0003',width:'100%'}" class="channelName " @change="setChannelName({channel:c,name:$event.target.value})" :value="c.name"  >
+
                   </v-flex>
+                  <div>({{c.roleFam}})</div>
 
                 </v-layout>
               </v-flex>

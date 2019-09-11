@@ -7,14 +7,16 @@
       <!-- <toggle name="showValues" v-model="showValues" ></toggle>  -->
       
     </div>
-    <toggle style="min-height:20px" text="miniMode" v-model="miniMode" ></toggle>
+    <div style="display:flex;width:100%;padding:5px">
+          <slider style="flex:1 0 75%" class="grandMaster" @input="setGrandMasterValue($event)" :value="grandMaster" name="grandMaster"  showName="1" showValue="1" ></slider>
+          <input type="color" @input="setAllColorHex($event.target.value)"></input>
+        </div>
     <div style="display:flex;flex-direction:row;width:100%">
       <div>
         <select class="selectclass" multiple  v-model="selectedFixtureNames" style="width:100%">
           <option v-for="n of selectableFixtureList" :key="n.id" :value="n">{{n}}</option>
         </select>
         
-        <toggle style="min-height:20px" text="show selected" v-model="showSelected" ></toggle>
         <Button text="addGroup" @click="addGroup()" color="green"></Button>
         <Button text="removeGroup" @click="removeGroup()" color="red"></Button>
         
@@ -28,11 +30,8 @@
         
       </div>
       <div style="width:100%">
-        <div style="display:flex;width:100%">
-          <slider style="flex:1 0 75%" class="grandMaster" @input="setGrandMasterValue($event)" :value="grandMaster" name="grandMaster"  showName="1" showValue="1" ></slider>
-          <input type="color" @input="setAllColorHex($event.target.value)"></input>
-        </div>
-        <fixture-widget v-if="needDisplay(f) && f.hasChannelMatchingFilters(selectedChannelFilterNames)" style="margin:10px 0 0 0;width:100%;background-color:#FFF5" class="channel" v-for="f in universe.sortedFixtureList" :key="f.id" :fixtureProp="f" :showName="showNames" :showValue="showValues" :miniMode="miniMode" :filterList="selectedChannelFilterNames"></fixture-widget>
+        
+        <fixture-widget  style="margin:10px 0 0 0;width:100%;background-color:#FFF5" class="channel" v-for="f in displayedFixtures" :key="f.id" :fixtureProp="f" :showName="showNames" :showValue="showValues" :filterList="selectedChannelFilterNames"></fixture-widget>
       </div>
     </div>
   </div>
@@ -65,8 +64,8 @@ export default class ChannelRack extends Vue {
 
   public showNames = false;
   public showValues = true;
-  public miniMode = false;
-  public showSelected = true;
+
+
   private pselectedFixtureNames: string[] = [];
   private pselectedGroupNames: string[] = ['all'];
   private pselectedChannelFilterNames: string[] = ['all'];
@@ -114,6 +113,9 @@ export default class ChannelRack extends Vue {
   get selectedChannelFilterNames() {
     return this.pselectedChannelFilterNames;
   }
+  get displayedFixtures() {
+    return this.universe.sortedFixtureList.filter((f) => this.needDisplay(f) && f.hasChannelMatchingFilters(this.selectedChannelFilterNames));
+  }
 
   get selectableChannelFilterList() {
     const res: string[] = ['all'];
@@ -153,7 +155,6 @@ export default class ChannelRack extends Vue {
       this.selectedFixtureNames = this.universe.fixtureList.map((e) => e.name);
     }
     public needDisplay(f: FixtureBase) {
-      if (!this.showSelected) {return true; }
       if (this.selectedFixtureNames && this.selectedFixtureNames.length === 0) {
         return true;
       } else {
