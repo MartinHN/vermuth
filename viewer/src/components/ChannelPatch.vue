@@ -78,21 +78,16 @@
         </div>
 
       </v-container>
-      <hsc-menu-style-white>
+      <!-- <hsc-menu-style-white>
         <hsc-menu-button-menu style="margin: 50px;" :fade="10" @open=open() @close=close() :sync="true">
           <div class="box" style="padding: 1em;">
             Secondary click here
           </div>
           <template slot="contextmenu" style="padding: -50px;">
             <hsc-menu-item label="MenuItem 1" />
-            <!-- <hsc-menu-item label="MenuItem 2" />
-            <hsc-menu-item label="MenuItem 2">
-              <hsc-menu-item label="MenuItem 4" />
-              <hsc-menu-item label="MenuItem 5" />
-            </hsc-menu-item> -->
           </template>
         </hsc-menu-button-menu>
-      </hsc-menu-style-white>
+      </hsc-menu-style-white> -->
     </div>
   </template>
 

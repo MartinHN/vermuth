@@ -1,6 +1,6 @@
 <template>
   <v-app id="app">
-
+  <div id="fixHead" >
     <div id="nav">
       
       <router-link to="/Sequencer">Sequencer</router-link>
@@ -8,9 +8,12 @@
       <router-link to="/Patch">Patch</router-link>
       <router-link to="/Config">Config</router-link>
     </div>
+  </div>
+  <div id="navContent">
     <ServerState id="serverState"/>
     
     <router-view/>
+  </div>
   </v-app>
 </template>
 <script lang="ts">
@@ -95,6 +98,19 @@ export default class App extends Vue {
   background-color: grey;
   min-height: 100%;
   min-width: 100%;
+}
+#fixHead{
+  z-index:1000;
+  background-color:white;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height:50px
+
+}
+#navContent{
+  padding:50px 0 0 0;
 }
 #nav {
   padding: 10px;
