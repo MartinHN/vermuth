@@ -208,13 +208,24 @@ class DMXController implements DMXControllerI {
       this.__connected = false;
     };
 
-    const errorCB = () => {
+    const errorCB = (e=undefined) => {
       this.watchSerialPorts();
-      console.log('cant connect to ' + uri);
+      console.error('cant connect to ' + uri);
+      if(e)console.error(e);
       this.__connected = false;
-      if ( this.dmx.universes[this.universeName]) {
-        this.dmx.universes[this.universeName].stop();
-        this.dmx.universes[this.universeName].close(closeCB);
+      try{
+        const cuni = this.dmx.universes[this.universeName];
+        if (cuni && cuni.dev && cuni.dev.removeAllListeners) {
+          cuni.dev.removeAllListeners('error');// avoid recursion
+        }
+        if ( this.dmx.universes[this.universeName]) {
+          this.dmx.universes[this.universeName].stop();
+          this.dmx.universes[this.universeName].close(closeCB);
+        }
+      }
+      catch(ex){
+        console.error("can't close device",ex)
+        console.error(ex)
       }
     };
     if (this.__connected && this.dmx.universes[this.universeName]) {
@@ -227,9 +238,19 @@ class DMXController implements DMXControllerI {
       }
 
       this.dmx.universes[this.universeName].stop();
-      this.dmx.universes[this.universeName].close(() => {
+      const reconnectCB = ()=>{
+
         this.__connected = false;
-        this.connectToDevice(options); });
+        this.connectToDevice(options); 
+      }
+      try{
+        this.dmx.universes[this.universeName].close(reconnectCB);
+      }
+      catch(ex){
+        console.error("can't close device",ex)
+        reconnectCB()
+
+      }
       return false;
     }
 
@@ -262,7 +283,7 @@ class DMXController implements DMXControllerI {
         successCB();
       }
     } catch (ex) {
-      log.error(ex);
+      log.error("can't open device "+ex);
       errorCB();
 
     }

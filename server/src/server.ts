@@ -1,5 +1,6 @@
 const debug =  process.env.NODE_ENV !== 'production';
 const logClientMessages = process.env.LOG_MSG;
+const clientLogger = logClientMessages?require('@API/Logger').default:undefined;
 const PORT = process.env.PORT || 3000;
 if (!debug) {require('module-alias/register'); } // form module resolution
 import * as express from 'express';
@@ -128,10 +129,9 @@ ioServer.on('connection', function(socket) {
   console.log('a user connected', socket.id, debug);
   log.bindToSocket(socket);
   if (debug ) {
-    const log = require('@API/Logger').default;
     socket.use((packet, next) => {
-      if (logClientMessages) {
-        log.log(socket.id+' >> server ' + JSON.stringify(packet) + '\n');
+      if (clientLogger) {
+        clientLogger.log(socket.id+' >> server ' + JSON.stringify(packet) + '\n');
       }
       next();
     });

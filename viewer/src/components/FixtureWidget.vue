@@ -1,16 +1,20 @@
 <template>
   <div class="fixtureWidget" >
     <div style="display:flex;width:100%">
-      <!-- <Slider style="flex:1 0 75%" class="fixtureValue" @input="setFixtureValue({fixture:fixtureProp,value:$event})" :value=fixtureProp.globalValue :enabled=fixtureProp.inSync :name=fixtureProp.name :showName="true" :showValue="true" ></Slider> -->
-      <ChannelWidget v-if=dimmerChannel :channelProp=dimmerChannel :overrideName="fixtureProp.name" style="width:100%"></ChannelWidget>
-      <input type="color" v-if=" fixtureProp.hasColorChannels" v-model=hexColorValue></input>
+
+      <ChannelWidget v-if='dimmerChannel && dimmerChannel.matchFilterList(filterList)' :channelProp=dimmerChannel :overrideName="fixtureProp.name" style="width:100%"></ChannelWidget>
+
+      <input type="color" v-if='fixtureProp.hasColorChannels && hasFilterType("color")' v-model=hexColorValue></input>
+
     </div>
-    <div style="display:flex;width:100%" v-if="(!miniMode && fixtureProp.hasColorChannels)" >
-      <ChannelWidget v-for="c of colorChannels" :key='c.id' :channelProp="c" />
+    <div style="display:flex;width:100%" v-if='(!miniMode && fixtureProp.hasColorChannels && hasFilterType("color"))' >
+
+      <ChannelWidget v-for="c of colorChannels" :key='c.id' :channelProp="c" v-if='c.matchFilterList(filterList)' />
+
     </div>
     <div v-if=!miniMode style="width:100%">
 
-      <ChannelWidget style="width:100%" v-for="c of otherChannels" :key='c.id' :channelProp="c" />
+      <ChannelWidget style="width:100%" v-for="c of otherChannels" v-if='c.matchFilterList(filterList)' :key='c.id' :channelProp="c" />
 
     </div>
 
@@ -52,6 +56,7 @@ export default class FixtureWidget extends Vue {
   @Prop({default: false})    public showName?: boolean;
   @Prop({default: false})    public showValue?: boolean;
   @Prop ({default: false}) public miniMode?: boolean;
+  @Prop ({default: []}) public filterList?: string[];
 
   get colorChannels(): any {
     return this.fixtureProp.colorChannels;
@@ -84,33 +89,33 @@ export default class FixtureWidget extends Vue {
       cch.b ? cch.b.intValue : 0);
 
   }
+
   set hexColorValue(c: string) {
     this.debouncedColorSetter(c);
-
-    // const rgb:any = hexToRgb(c);
-    // for( c of ['r','g','b']){
-      //   this.setChannelValue({channel:this.colorChannels[c],value:rgb[c]/255.0,dontNotify:false});
-      // }
-
-    }
-    private debouncedColorSetter = _.debounce((c: string) => {
-      const color: any = hexToRgb(c, true);
-      this.setFixtureColor({fixture: this.fixtureProp, color});
-
-
-    },
-    50,
-    {maxWait: 50});
-
-
-
-    // get disabledV(): boolean {return !this.fixtureProp.channel.enabled; }
-    // set disabledV(v: boolean) {this.setChannelEnabled({channel: this.fixtureProp.channel, value: !v}); }
-
-
-
-
   }
+
+  public hasFilterType(n:string){
+    if(!this.filterList){return true;}
+    return this.filterList.some(e=>e.startsWith(n))
+  }
+
+  private debouncedColorSetter = _.debounce((c: string) => {
+    const color: any = hexToRgb(c, true);
+    this.setFixtureColor({fixture: this.fixtureProp, color});
+
+  },
+  50,
+  {maxWait: 50});
+
+
+
+  // get disabledV(): boolean {return !this.fixtureProp.channel.enabled; }
+  // set disabledV(v: boolean) {this.setChannelEnabled({channel: this.fixtureProp.channel, value: !v}); }
+
+
+
+
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

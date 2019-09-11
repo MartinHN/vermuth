@@ -113,19 +113,27 @@ export class FixtureBase implements FixtureBaseI {
 
   }
 
+  public hasChannelMatchingFilters(fl:string[]){
+    if(fl.length===0){
+      return true
+    }
+    else if(fl.some(e=>"all"===e)){
+      return  true
+    }
+    return Object.values(this.channels).some(e=>fl.some(f=>e.matchFilter(f)))
+  }
   public buildAddress() {
     return '/mainUniverse/' + this.name;
   }
 
   public get colorChannels() {
-    const cch: {r?: ChannelBase, g?: ChannelBase, b?: ChannelBase} = {};
+    const cch:any= {};
     for (const ch of this.channels ) {
-      const code = ch.colorChannelCode;
-      if (code) {
-        cch[code] = ch;
+      if(ch.roleFam==="color"){
+        cch[ch.roleType] = ch;
       }
     }
-    return cch;
+    return cch as {r?: ChannelBase, g?: ChannelBase, b?: ChannelBase} ;
   }
 
   public get hasColorChannels() {

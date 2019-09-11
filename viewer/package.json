@@ -13,6 +13,7 @@
     "deploylogic": "npm run build && rsync -r -e ssh -avz --delete-after  ../server/public pi@radiologic.local:Documents/vermuth/server/dist/server/"
   },
   "dependencies": {
+    "@hscmap/vue-menu": "^2.10.0",
     "json-diff": "^0.5.4",
     "lodash": "^4.17.15",
     "register-service-worker": "^1.5.2",

@@ -258,7 +258,7 @@ export class StateList {
 
     }
   }
-
+  
   public setLoadedStateName(n: string) {
     this.loadedStateName = n;
   }

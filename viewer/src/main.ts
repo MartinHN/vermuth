@@ -5,6 +5,9 @@ import router from './router';
 import store from './store';
 // import './registerServiceWorker';
 
+import * as VueMenu from '@hscmap/vue-menu'
+Vue.use(VueMenu)
+
 Vue.config.productionTip = false;
 
 new Vue({

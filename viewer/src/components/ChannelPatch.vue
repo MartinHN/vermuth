@@ -6,6 +6,7 @@
       <v-layout justify-space-around align-center row >
         <v-flex xs9 >
           <Button class="button" @click="addFixture()" text="add Fixture"/>
+          
         </v-flex>
         
 
@@ -75,6 +76,21 @@
         </div>
 
       </v-container>
+      <hsc-menu-style-white>
+        <hsc-menu-button-menu style="margin: 50px;" :fade="10" @open=open() @close=close() :sync="true">
+          <div class="box" style="padding: 1em;">
+            Secondary click here
+          </div>
+          <template slot="contextmenu" style="padding: -50px;">
+            <hsc-menu-item label="MenuItem 1" />
+            <!-- <hsc-menu-item label="MenuItem 2" />
+            <hsc-menu-item label="MenuItem 2">
+              <hsc-menu-item label="MenuItem 4" />
+              <hsc-menu-item label="MenuItem 5" />
+            </hsc-menu-item> -->
+          </template>
+        </hsc-menu-button-menu>
+      </hsc-menu-style-white>
     </div>
   </template>
 
@@ -97,7 +113,12 @@
   })
   export default class ChannelPatch extends Vue {
 
-
+    open(){
+      // debugger
+    }
+    close(){
+      debugger
+    }
     public get errors() {
       const errs: {[id: number]: string} = {};
       this.usedChannels.map( (c) => errs[c.circ] = c.hasDuplicatedCirc ? 'circuit is duplicated' : '');
@@ -129,11 +150,18 @@
     @universesModule.Getter('usedChannels') private usedChannels!: UniversesMethods['usedChannels'];
 
 
+
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 
 <style scoped>
-
+.box {
+  box-shadow: 0 0 4pt rgba(0, 0, 0, 0.25);
+  border-radius: 20pt;
+  background-color: rgba(255, 255, 255, 0.25);
+  user-select: none;
+  cursor: context-menu;
+}
 </style>
