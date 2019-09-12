@@ -1,8 +1,10 @@
 const debug =  process.env.NODE_ENV !== 'production';
 const logClientMessages = process.env.LOG_MSG;
+if (!debug) {require('module-alias/register'); } // form module resolution
+
 const clientLogger = logClientMessages ? require('@API/Logger').default : undefined;
 const PORT = process.env.PORT || 3000;
-if (!debug) {require('module-alias/register'); } // form module resolution
+
 import * as express from 'express';
 import * as http from  'http';
 import * as io from 'socket.io';
@@ -24,7 +26,7 @@ const history = require('connect-history-api-fallback');
 const fs = require('fs');
 const path = require('path');
 
-const publicDir = path.resolve(__dirname, '..', 'public');
+const publicDir = debug ? path.resolve(__dirname, '..', 'dist', 'server', 'public') : path.resolve(__dirname, '..', 'public');
 console.log('served Folder  :' + publicDir, __dirname);
 
 const app = express();
@@ -133,21 +135,22 @@ ioServer.on('connection', function(socket) {
   log.bindToSocket(socket);
   const emitF = socket.emit;
   socket.emit  = (event: string | symbol, ...args: any[]) => {
-    if (debug ) {
-      if (clientLogger) {
-        // @ts-ignore
-        const isBroadCasting = socket.flags.broadcast;
-        clientLogger.log('server >> ' + (isBroadCasting ? ' to any but ' : '') + socket.id + JSON.stringify(event) + JSON.stringify(args) + '\n');
-      }
-      return emitF.apply(socket, [event, ...args]);
+
+    if (clientLogger) {
+      // @ts-ignore
+      const isBroadCasting = socket.flags.broadcast;
+      clientLogger.log('server >> ' + (isBroadCasting ? ' to any but ' : '') + socket.id + JSON.stringify(event) + JSON.stringify(args) + '\n');
     }
-    socket.use((packet, next) => {
-      if (clientLogger) {
-        clientLogger.log(socket.id + ' >> server ' + JSON.stringify(packet) + '\n');
-      }
-      next();
-    });
+
+    return emitF.apply(socket, [event, ...args]);
   };
+  socket.use((packet, next) => {
+    if (clientLogger) {
+      clientLogger.log(socket.id + ' >> server ' + JSON.stringify(packet) + '\n');
+    }
+    next();
+  });
+
   socket.use((packet, next) => {
     if (packet && packet[0] && packet[0][0] === '/') {
       const res = callAnyAccessibleFromRemote(rootState, packet[0], packet[1], socket.id);
