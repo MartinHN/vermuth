@@ -96,7 +96,7 @@ class DMXClient implements DMXControllerI {
 
     });
 
-    const init =  () => {
+    const fetchBase =  () => {
       // store.watch(
       //   ()=>{store.})
 
@@ -109,7 +109,7 @@ class DMXClient implements DMXControllerI {
 
 
     };
-    if (socket.connected) {init(); } else {socket.on('connect', init()); }
+    if (socket.connected) {fetchBase(); } else {socket.on('connect', fetchBase); }
 
   }
 

@@ -2,7 +2,8 @@ const osc = require('osc');
 
 import rootState from '@API/RootState';
 import { callAnyAccessibleFromRemote } from '@API/ServerSync';
-
+const logClientMessages = process.env.LOG_MSG;
+const clientLogger = logClientMessages ? require('@API/Logger').default : undefined;
 /****************
  * OSC Over UDP *
  ****************/
@@ -67,12 +68,18 @@ class OSCServer {
   }
 
   public processMsg(msg, time, info) {
+    if (msg.address !== '/ping') {
+      if (clientLogger) {
+        clientLogger.log('OSC >> server ' + JSON.stringify(msg));
+      }
+    }
     if (msg.address === '/ping') {
       this.udpPort.send({address: '/pong'});
       return;
     } else if (msg.address === '/allColors') {
       dmxController.setAllColor({r: msg.args[0], g: msg.args[1], b: msg.args[2]});
     } else {
+
       callAnyAccessibleFromRemote(rootState, msg.address, msg.args, info.address + ':' + info.port);
     }
 

@@ -98,10 +98,10 @@ function setStateFromObject(msg, socket: any) {
     states.lastSessionID = sessionID;
 
     if (socket) {
-    console.log('broadcasting state: ' + JSON.stringify(msg.states));
-    socket.broadcast.emit('SET_STATE', msg);
+      console.log('broadcasting state: ' + JSON.stringify(msg.states));
+      socket.broadcast.emit('SET_STATE', msg);
 
-  }
+    }
     rootState.configureFromObj(msg);
     states[sessionID] = rootState.toJSONObj(); // update persistent changes
     // dmxController.stateChanged(msg)
@@ -133,25 +133,21 @@ ioServer.on('connection', function(socket) {
   log.bindToSocket(socket);
   const emitF = socket.emit;
   socket.emit  = (event: string | symbol, ...args: any[]) => {
-
-    if (clientLogger) {
-      // @ts-ignore
-      const isBroadCasting = socket.flags.broadcast;
-      clientLogger.log('server >> ' + (isBroadCasting ? ' to any but ' : '') + socket.id + JSON.stringify(event) + JSON.stringify(args) + '\n');
+    if (debug ) {
+      if (clientLogger) {
+        // @ts-ignore
+        const isBroadCasting = socket.flags.broadcast;
+        clientLogger.log('server >> ' + (isBroadCasting ? ' to any but ' : '') + socket.id + JSON.stringify(event) + JSON.stringify(args) + '\n');
+      }
+      return emitF.apply(socket, [event, ...args]);
     }
-    return emitF.apply(socket, [event, ...args]);
-  };
-
-
-
-  if (debug ) {
     socket.use((packet, next) => {
       if (clientLogger) {
         clientLogger.log(socket.id + ' >> server ' + JSON.stringify(packet) + '\n');
       }
       next();
     });
-  }
+  };
   socket.use((packet, next) => {
     if (packet && packet[0] && packet[0][0] === '/') {
       const res = callAnyAccessibleFromRemote(rootState, packet[0], packet[1], socket.id);
@@ -178,7 +174,11 @@ ioServer.on('connection', function(socket) {
 
   socket.on('GET_STATE', (key, cb) => {
     const msg = states[getSessionId(socket)];
-    if (cb) {cb(msg || {}); } else {socket.emit('SET_STATE', msg); }
+    if (cb) {
+      cb(msg || {});
+    } else {
+      socket.emit('SET_STATE', msg);
+    }
     // console.log('sending state: ' + JSON.stringify(msg.states));
 
   });

@@ -2,7 +2,10 @@ import '@mdi/font/css/materialdesignicons.css'; // Ensure you are using css-load
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
 import Vue from 'vue';
 import Vuetify from 'vuetify/lib';
-import './vuetify.styl';
+// import './vuetify.styl';
+import 'vuetify/dist/vuetify.min.css';
+
+
 
 Vue.use(Vuetify, {
   iconfont: 'md',
