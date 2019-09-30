@@ -222,7 +222,12 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
             if (registeredAddr !== raddr) {
               Object.defineProperty(this, '__emitF', {
                 value: _.debounce((addr: string, targs: any) => {
-                  clientSocket.emit(addr, targs);
+                  // if(isClient){
+                    clientSocket.emit(addr, targs);
+                  // }
+                  // else{
+                    //broadcastMessage(addr, targs);
+                  // }
                 }, isClient ? 10 : 10 + Math.random() * 5,
                 {trailing: true, maxWait: isClient ? 30 : 30}),
                 enumerable: false,
@@ -232,7 +237,7 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
               registeredAddr = raddr;
             }
             // @ts-ignore
-            if (this.__emitF && (AccessibleSettedByServer !== raddr ) ) {
+            if (isClient && this.__emitF && (AccessibleSettedByServer !== raddr ) ) {
 
               const prunedArgs = args.map((e) => Object.assign({}, e));
 

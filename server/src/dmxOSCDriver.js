@@ -2,9 +2,15 @@ const osc = require("osc");
 const util  = require("util");
 const EventEmitter = require("events").EventEmitter;
 
+
+const CachedOSCMessages = {} ; 
+for (let i = 0 ; i < 512 ; i++){
+  CachedOSCMessages[i] = {address:`/${i}`, args:[{type: "f", value: 0 / 255.0}]};
+}
+    
 function OSCDriver(deviceId = "127.0.0.1", options = {}) {
   const self = this;
-  if ((!deviceId) || deviceId === "none") {
+  if ((!deviceId) || deviceId === "none" || deviceId.startsWith("/")) {
     deviceId = "127.0.0.1";
   }
   this.dev = new osc.UDPPort({
@@ -31,9 +37,8 @@ function OSCDriver(deviceId = "127.0.0.1", options = {}) {
 }
 
 OSCDriver.prototype.createMsg = function(c, v) {
-  const address = `/${c}`;
-  args = [{type: "f", value: v / 255.0}];
-  return {address, args};
+  CachedOSCMessages[c].args[0].value = v/255.0;
+  return CachedOSCMessages[c];
 };
 
 OSCDriver.prototype.sendUniverse = function() {

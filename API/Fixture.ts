@@ -224,18 +224,18 @@ export class FixtureBase implements FixtureBaseI {
     return this.channels.find((c) => c.name === n);
   }
 
-  private setCoarseAndFine(v: number, c: ChannelBase|undefined, cf: ChannelBase|undefined) {
+  private setCoarseAndFine(v: number, c: ChannelBase|undefined, cf: ChannelBase|undefined,doNotify:boolean = true) {
     if (!c) {return; }
 
     if (cf !== undefined) {
       const q = 255;
       const qV = v * q;
       const flooredV = Math.floor(qV);
-      c.setValue(flooredV / q, false);
+      c.setValue(flooredV / q, doNotify);
       const fine = (qV - flooredV) ;
-      cf.setValue(fine, false);
+      cf.setValue(fine, doNotify);
     } else {
-      c.setValue(v, false);
+      c.setValue(v, doNotify);
     }
 
   }
