@@ -79,7 +79,7 @@ export default class ChannelRack extends Vue {
   public setAllColorHex(h: string) {
     const color = hexToRgb(h, true);
     if (color) {
-      this.setAllColor({color});
+      this.setAllColor({color,setWhiteToZero:true});
     }
   }
 

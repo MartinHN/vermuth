@@ -147,9 +147,9 @@ class DMXController implements DMXControllerI {
     }.bind(this));
   }
 
-  public setAllColor(color: {r: number, g: number, b: number}) {
+  public setAllColor(color: {r: number, g: number, b: number},setWhiteToZero:boolean) {
     if (this.__universe) {
-      this.__universe.setAllColor(color);
+      this.__universe.setAllColor(color,setWhiteToZero);
     }
   }
   public setCircs(msg: Array<{c: number, v: number}>, fromSocket) {

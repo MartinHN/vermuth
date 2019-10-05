@@ -160,12 +160,13 @@ export class FixtureBase implements FixtureBaseI {
   }
 
   @RemoteFunction({sharedFunction: true})
-  public setColor(c: {r: number, g: number, b: number}) {
+  public setColor(c: {r: number, g: number, b: number},setWhiteToZero:boolean) {
     const cch = this.colorChannels;
     if (cch !== {}) {
       if (cch.r) {this.setCoarseAndFine(c.r, cch.r, cch.r_fine); }
       if (cch.g) {this.setCoarseAndFine(c.g, cch.g, cch.g_fine); }
       if (cch.b) {this.setCoarseAndFine(c.b, cch.b, cch.b_fine); }
+      if(setWhiteToZero && cch.w) {this.setCoarseAndFine(0, cch.w, cch.w_fine); }
     }
 
   }

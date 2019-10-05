@@ -99,7 +99,7 @@ export default class FixtureWidget extends Vue {
   private showPosModal = false;
   private debouncedColorSetter = _.debounce((c: string) => {
     const color: any = hexToRgb(c, true);
-    this.setFixtureColor({fixture: this.fixtureProp, color});
+    this.setFixtureColor({fixture: this.fixtureProp, color,setWhiteToZero:true});
 
   },
   50,

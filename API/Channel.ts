@@ -11,6 +11,8 @@ export const ChannelRoles: {[id: string]: {[id: string]: {names: Array<string|Re
     g_fine: {names: [/green.*fine/, /g.*fine/]},
     b: {names: ['blue', 'b']},
     b_fine: {names: [/blue.*fine/, /b.*fine/]},
+    w:{names: ['white', 'w']},
+    w_fine:{names: [/white.*fine/, /w.*fine/]},
   },
   position: {
     pan: {names: ['pan', /pan.*coarse/]},
