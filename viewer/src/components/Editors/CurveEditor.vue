@@ -6,7 +6,7 @@
     <Slider text="start" v-model=positionRange.start min=0 :max=curve.span-10></Slider>
     <Slider text="end" v-model=positionRange.end min=10 :max=curve.span+10></Slider>
 
-    <svg ref=my-svg width=100% height=100% @mousedown="mouseDown" @mouseup="mouseUp" @mousemove="mouseMove">
+    <svg ref=my-svg width=100% height=100% @mousedown="mouseDown" @mouseup="mouseUp" @mousemove="mouseMove" @mouseleave="mouseLeave" @mouseenter="mouseEnter">
 
       <circle  v-for="v in draggableKeyPoints" :key=v.id ref='framesCircles' :r="pRadius" :cx="v.location.x" :cy='v.location.y' :fill="v.hovered?'blue':v.selected?'red':'black'"></circle>
 
@@ -110,15 +110,12 @@ export default class CurveEditor extends Vue {
     const sel = this.selectedKeyFrame
     return sel?this.curve.getNextKeyFrame(sel):null
   }
-  private draggableKeyPoints = new Array<Draggable>() // need Watch to be deeply reactive
-  @Watch('displayedKeyFrames')
-  dCB(){
-    
-    this.draggableKeyPoints = this.displayedKeyFrames.map(
+
+  get draggableKeyPoints():Array<Draggable>{
+    return this.displayedKeyFrames.map(
       (k:KeyFrame<number>):Draggable=>{
         const d =  new Draggable(
           new KeyFrameStartPointJsType(k)
-          // ,(p:Point)=>{return this.posValToPix(k).distSq(p)<this.pRadius}
           );
         d.isOver=(p:Point)=>{return d.location.dist(p)<2*this.pRadius}
         Object.defineProperty(d,"location",{
@@ -132,9 +129,10 @@ export default class CurveEditor extends Vue {
       ) 
   }
   
-  private draggableHandles = new Array<Draggable>()
-  @Watch('dH.selectedDraggable',{deep:true})
-  cbDH(){
+  // private draggableHandles = new Array<Draggable>()
+  // @Watch('dH.selectedDraggable',{deep:true})
+  // cbDH(){
+    get draggableHandles(){
     const selectedKT = this.dH.getSelectedObjAs(KeyFrameStartPointJsType)
     if(!selectedKT){ return;}
 
@@ -194,8 +192,8 @@ export default class CurveEditor extends Vue {
       }
 
     }
-    this.draggableHandles = res;
-    // return res;
+    // this.draggableHandles = res;
+    return res;
   }
 
 
@@ -280,27 +278,30 @@ export default class CurveEditor extends Vue {
       const newPoint = this.pixToPosVal(this.newKeyFramePos);
       this.curve.add(new KeyFrame<number>(newPoint.x,newPoint.y))
 
+    }else if(e.buttons===1 && !this.dH.hovered){
+      this.curve.position = this.pixToPos(mousePix.x)
+
     }
 
 
     this.$nextTick(()=>this.dH.mouseDown(mousePix,e))
 
 
- 
 
 
 
 
 
-}
+
+  }
 
 
-public mouseUp(e: MouseEvent) {
-  const mousePix = getPointFromEvent(e);
-  const lastSelected = this.dH.getSelectedObjAs(KeyFrameStartPointJsType)
+  public mouseUp(e: MouseEvent) {
+    const mousePix = getPointFromEvent(e);
+    const lastSelected = this.dH.getSelectedObjAs(KeyFrameStartPointJsType)
 
-  this.dH.mouseUp(mousePix,e)
-  if (lastSelected && 
+    this.dH.mouseUp(mousePix,e)
+    if (lastSelected && 
       this.dH.hovered &&
       this.dH.hovered.jsObj === lastSelected &&
       !this.dH.hasDragged && 
@@ -312,6 +313,12 @@ public mouseUp(e: MouseEvent) {
 
 }
 
+public mouseLeave(e:MouseEvent){
+  this.dH.mouseLeave(e)
+}
+public mouseEnter(e:MouseEvent){
+  this.dH.mouseEnter(e)
+}
 public mouseMove(e: MouseEvent) {
   const mousePix = getPointFromEvent(e);
   this.dH.mouseMove(mousePix,e)

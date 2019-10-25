@@ -51,12 +51,24 @@ export class DraggableHandler{
         this.selectedDraggable = this.clickedDraggable
       if(this.selectedDraggable ){this.selectedDraggable.selected=true}
     }
-  if(this.clickedDraggable!==undefined){
+  if(this.clickedDraggable!==null){
     this.clickedDraggable = null;
   }
 
 }
-
+mouseLeave(e:MouseEvent){
+  if(e.buttons===1){
+  this.oldClickedDraggable = this.clickedDraggable
+  this.clickedDraggable=null
+}
+}
+mouseEnter(e:MouseEvent){
+  if(this.oldClickedDraggable && e.buttons===1){
+    this.clickedDraggable = this.oldClickedDraggable;
+    this.oldClickedDraggable=null;
+  }
+  
+}
 findDraggableForPoint(p:Point){
   let dr :Draggable | null = null
   const allDrag = this.getAllDraggables()
@@ -94,6 +106,7 @@ public getAllDraggables(){return new Array<Draggable>();}
 private hoveredDraggable :Draggable | null = null
 private selectedDraggable :Draggable | null = null
 private clickedDraggable :Draggable | null = null
+private oldClickedDraggable :Draggable | null = null
 get hasDragged(){return this._hasDragged;}
 private _hasDragged = false
 }
