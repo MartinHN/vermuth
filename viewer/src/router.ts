@@ -2,7 +2,6 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import DashBoard from './views/DashBoard.vue';
 import PatchView from './views/PatchView.vue';
-import StateView from './views/StateView.vue';
 import Config from './views/Config.vue';
 import SequencerView from './views/SequencerView.vue';
 
@@ -21,11 +20,6 @@ export default new Router({
     path: '/config',
     name: 'Config',
     component: Config,
-  },
-  {
-    path: '/state',
-    name: 'State',
-    component: StateView,
   },
   {
     path: '/Sequencer',

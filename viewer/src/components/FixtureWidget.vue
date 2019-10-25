@@ -41,11 +41,11 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapState, mapActions } from 'vuex';
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
-import Slider from './Slider.vue' ;
-import Button from './Button.vue' ;
-import Toggle from './Toggle.vue' ;
-import Modal from './Modal.vue' ;
-import Point2DEditor from './Point2DEditor.vue' ;
+import Slider from '@/components/Inputs/Slider.vue';
+import Button from '@/components/Inputs/Button.vue';
+import Toggle from '@/components/Inputs/Toggle.vue';
+import Modal from '@/components/Utils/Modal.vue' ;
+import Point2DEditor from '@/components/Editors/Point2DEditor.vue';
 import ChannelWidget from './ChannelWidget.vue';
 import { DirectFixture } from '@API/Fixture';
 import { ChannelBase } from '@API/Channel';
@@ -99,7 +99,7 @@ export default class FixtureWidget extends Vue {
   private showPosModal = false;
   private debouncedColorSetter = _.debounce((c: string) => {
     const color: any = hexToRgb(c, true);
-    this.setFixtureColor({fixture: this.fixtureProp, color,setWhiteToZero:true});
+    this.setFixtureColor({fixture: this.fixtureProp, color, setWhiteToZero: true});
 
   },
   50,

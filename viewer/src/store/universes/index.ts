@@ -60,12 +60,12 @@ export default class Universes extends VuexModule {
     pl.fixture.setMaster(pl.value);
   }
     @Mutation
-  public setFixtureColor(pl: {fixture: FixtureBase, color: {r: number, g: number, b: number},setWhiteToZero:boolean }) {
-    pl.fixture.setColor(pl.color,pl.setWhiteToZero);
+  public setFixtureColor(pl: {fixture: FixtureBase, color: {r: number, g: number, b: number}, setWhiteToZero: boolean }) {
+    pl.fixture.setColor(pl.color, pl.setWhiteToZero);
   }
   @Mutation
-  public setAllColor(pl: { color: {r: number, g: number, b: number},setWhiteToZero:boolean }) {
-    this.universe.setAllColor(pl.color,pl.setWhiteToZero);
+  public setAllColor(pl: { color: {r: number, g: number, b: number}, setWhiteToZero: boolean }) {
+    this.universe.setAllColor(pl.color, pl.setWhiteToZero);
   }
 
 

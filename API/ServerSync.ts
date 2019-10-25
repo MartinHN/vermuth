@@ -226,7 +226,7 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
                     clientSocket.emit(addr, targs);
                   // }
                   // else{
-                    //broadcastMessage(addr, targs);
+                    // broadcastMessage(addr, targs);
                   // }
                 }, isClient ? 10 : 10 + Math.random() * 5,
                 {trailing: true, maxWait: isClient ? 30 : 30}),

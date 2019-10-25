@@ -14,8 +14,8 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
-import Button from './Button.vue';
-import Numbox from './Numbox.vue';
+import Button from '@/components/Inputs/Button.vue';
+import Numbox from '@/components/Inputs/Numbox.vue';
 import SequenceComponent from './SequenceComponent.vue';
 import { Sequence } from '@API/Sequence';
 import SequenceMethods from '../store/sequence';

@@ -18,9 +18,9 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapState, mapActions } from 'vuex';
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
-import Slider from './Slider.vue' ;
-import Button from './Button.vue' ;
-import Toggle from './Toggle.vue' ;
+import Slider from '@/components/Inputs/Slider.vue';
+import Button from '@/components/Inputs/Button.vue';
+import Toggle from '@/components/Inputs/Toggle.vue';
 import { ChannelBase } from '@API/Channel';
 import UniversesMethods from '../store/universes';
 

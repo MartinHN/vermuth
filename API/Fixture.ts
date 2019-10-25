@@ -39,7 +39,7 @@ export class FixtureBase implements FixtureBaseI {
     return this.__universe;
   }
 
-  public set universe(uni: Universe | undefined) {
+  public set universe(uni: Universe | null) {
     this.__universe = uni;
     this.channels.map( (c) => c.setParentFixture(this));
   }
@@ -93,7 +93,7 @@ export class FixtureBase implements FixtureBaseI {
   private _baseCirc = 0;
 
   @nonEnumerable()
-  private __universe: Universe | undefined;
+  private __universe: Universe | null = null;
 
   constructor(public name: string, channels: ChannelBase[]) {
 
@@ -160,13 +160,13 @@ export class FixtureBase implements FixtureBaseI {
   }
 
   @RemoteFunction({sharedFunction: true})
-  public setColor(c: {r: number, g: number, b: number},setWhiteToZero:boolean) {
+  public setColor(c: {r: number, g: number, b: number}, setWhiteToZero: boolean) {
     const cch = this.colorChannels;
     if (cch !== {}) {
       if (cch.r) {this.setCoarseAndFine(c.r, cch.r, cch.r_fine); }
       if (cch.g) {this.setCoarseAndFine(c.g, cch.g, cch.g_fine); }
       if (cch.b) {this.setCoarseAndFine(c.b, cch.b, cch.b_fine); }
-      if(setWhiteToZero && cch.w) {this.setCoarseAndFine(0, cch.w, cch.w_fine); }
+      if (setWhiteToZero && cch.w) {this.setCoarseAndFine(0, cch.w, cch.w_fine); }
     }
 
   }
@@ -225,7 +225,7 @@ export class FixtureBase implements FixtureBaseI {
     return this.channels.find((c) => c.name === n);
   }
 
-  private setCoarseAndFine(v: number, c: ChannelBase|undefined, cf: ChannelBase|undefined,doNotify:boolean = true) {
+  private setCoarseAndFine(v: number, c: ChannelBase|undefined, cf: ChannelBase|undefined, doNotify: boolean = true) {
     if (!c) {return; }
 
     if (cf !== undefined) {

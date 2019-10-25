@@ -6,6 +6,7 @@
     @change="$emit('change',{value:$event})"
     background-color="rgba(255, 255, 255, 0.795)"
     :disabled="!editable"
+    dense
     >
     </v-text-field> 
     

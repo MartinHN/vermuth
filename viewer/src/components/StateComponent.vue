@@ -23,7 +23,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
-import Button from './Button.vue';
+import Button from '@/components/Inputs/Button.vue';
 
 import StateMethods from '../store/states';
 

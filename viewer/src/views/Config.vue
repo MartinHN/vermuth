@@ -15,9 +15,9 @@ import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 
 
 // import ConfigMethods from '../store/config';
-import Toggle from '../components/Toggle.vue';
-import Button from '../components/Button.vue';
-import Slider from '../components/Slider.vue';
+import Toggle from '@/components/Inputs/Toggle.vue';
+import Button from '@/components/Inputs/Button.vue';
+import Slider from '@/components/Inputs/Slider.vue';
 
 const configModule = namespace('config');
 import configFunctions from '../store/config';
@@ -48,11 +48,11 @@ export default class Config extends Vue {
 
   }
 
-  public clearSession(){
-    const res = confirm("are you sure to delete all your session")
-    if(res){
-      this.SET_SESSION_STATE({})
-      this.SAVE_REMOTELY({})
+  public clearSession() {
+    const res = confirm('are you sure to delete all your session');
+    if (res) {
+      this.SET_SESSION_STATE({});
+      this.SAVE_REMOTELY({});
     }
   }
   // @configModule.State('fixtures') private fixtures!: ConfigMethods['fixtures'];

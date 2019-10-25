@@ -16,7 +16,7 @@ import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 import DMXClient from '../api/DMXClient';
 // import GlobalMethods from '../store';
 import { needSerialPort } from '@API/DMXControllerI';
-import Button from './Button.vue';
+import Button from '@/components/Inputs/Button.vue';
 // var VueSlideBar :any = require( 'vue-slide-bar');
 const configModule = namespace('DMXConfig');
 

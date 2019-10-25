@@ -43,9 +43,9 @@ import {rgbToHex, hexToRgb} from '@API/ColorUtils';
 import FixtureWidget from './FixtureWidget.vue' ;
 import StateComponent from './StateComponent.vue';
 
-import Button from './Button.vue';
-import Toggle from './Toggle.vue';
-import Slider from './Slider.vue';
+import Button from '@/components/Inputs/Button.vue';
+import Toggle from '@/components/Inputs/Toggle.vue';
+import Slider from '@/components/Inputs/Slider.vue';
 
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 import { DirectFixture , FixtureBase} from '@API/Fixture';
@@ -79,7 +79,7 @@ export default class ChannelRack extends Vue {
   public setAllColorHex(h: string) {
     const color = hexToRgb(h, true);
     if (color) {
-      this.setAllColor({color,setWhiteToZero:true});
+      this.setAllColor({color, setWhiteToZero: true});
     }
   }
 

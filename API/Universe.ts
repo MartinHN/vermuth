@@ -146,8 +146,8 @@ export class Universe {
   }
 
   @RemoteFunction({sharedFunction: true})
-  public setAllColor(color: {r: number, g: number, b: number},setWhiteToZero:boolean) {
-    this.fixtureList.map((f) => f.setColor(color,setWhiteToZero));
+  public setAllColor(color: {r: number, g: number, b: number}, setWhiteToZero: boolean) {
+    this.fixtureList.map((f) => f.setColor(color, setWhiteToZero));
   }
 
   public testDimmerNum(d: number) {
