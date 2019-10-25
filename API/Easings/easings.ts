@@ -43,6 +43,7 @@ export class EasingFactory {
       return other()
     }
     else{
+      debugger
       console.error("no easing found")
       return new LinearEasing()
     }

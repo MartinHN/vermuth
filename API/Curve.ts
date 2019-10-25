@@ -52,7 +52,6 @@ export class KeyFrame<T extends NumOrVec > {
 
   get easing(){return this._easing;}
   set easing(e:Easing){
-    debugger
     this._easing=e;
     if (this.parentCurve) {this.parentCurve.childTvChanged(this); }
   }
@@ -154,6 +153,13 @@ export class Curve<T extends NumOrVec> implements CurveBase {
       return this._frames[i+1]
     }
   }
+
+  public getPrevKeyFrame(k:KeyFrame<T>):KeyFrame<T>|undefined{
+    const i = this._frames.indexOf(k)
+    if(i>0 && i <= this.frames.length-1){
+      return this._frames[i-1]
+    }
+  }
   public updateValue() {
     if (this._span > 0) {
       const v = this.getValueAt(this._position);
@@ -217,7 +223,7 @@ export class Curve<T extends NumOrVec> implements CurveBase {
     }
   }
 
-    public findClosestKeyForPositionValue(pv: Point, maxDelta: Point = new Point(-1,0)) {
+  public findClosestKeyForPositionValue(pv: Point, maxDelta: Point = new Point(-1,0)) {
 
     if (this.frames.length === 0) {return null; }
     let res = this.frames[0];
@@ -234,35 +240,35 @@ export class Curve<T extends NumOrVec> implements CurveBase {
       (Math.abs((res.value as number) - pv.y) <= maxDelta.y) 
       ){
       return res;
-    } else {
-      return null;
-    }
+  } else {
+    return null;
   }
-  get length() {return this.frames.length; }
-  public addTarget(t: KeyTarget) {
-    const i = this.targets.indexOf(t);
-    if (i >= 0) {this.targets.splice(i); }
-  }
+}
+get length() {return this.frames.length; }
+public addTarget(t: KeyTarget) {
+  const i = this.targets.indexOf(t);
+  if (i >= 0) {this.targets.splice(i); }
+}
 
-  public getKeyFramesForPosition(position: number): {start: KeyFrame<T>|undefined, end: KeyFrame<T>|undefined} {
-    for ( let i = 0; i <  this.frames.length - 1 ; i++) {
-      const start = this.frames[i];
-      const end = this.frames[i + 1];
-      if (position >= start.position &&  position < end.position) {
-        return {start, end};
-      }
+public getKeyFramesForPosition(position: number): {start: KeyFrame<T>|undefined, end: KeyFrame<T>|undefined} {
+  for ( let i = 0; i <  this.frames.length - 1 ; i++) {
+    const start = this.frames[i];
+    const end = this.frames[i + 1];
+    if (position >= start.position &&  position < end.position) {
+      return {start, end};
     }
-    if (this.frames.length > 0) {
-      const end = this.frames[this.frames.length - 1];
-      if (position >= end.position) {
-        return  {start: end, end: undefined};
-      } else {
-        return  {start: undefined, end: this.frames[0]};
-      }
-    }
-    console.error('empty keyframe list');
-    return {start: undefined, end: undefined};
   }
+  if (this.frames.length > 0) {
+    const end = this.frames[this.frames.length - 1];
+    if (position >= end.position) {
+      return  {start: end, end: undefined};
+    } else {
+      return  {start: undefined, end: this.frames[0]};
+    }
+  }
+  console.error('empty keyframe list');
+  return {start: undefined, end: undefined};
+}
 
 
 }

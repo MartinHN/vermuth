@@ -8,26 +8,29 @@
 
     <svg ref=my-svg width=100% height=100% @mousedown="mouseDown" @mouseup="mouseUp" @mousemove="mouseMove">
 
-      <circle  v-for="v in displayedKeyFrames" :key=v.id ref='framesCircles' :r="pRadius" :cx="posToPix(v.position)" :cy='valToPix(v.value)' :fill="v===hoveredKeyFrameCircle?'blue':v===selectedKeyFrame?'red':'black'"></circle>
+      <circle  v-for="v in draggableKeyPoints" :key=v.id ref='framesCircles' :r="pRadius" :cx="v.location.x" :cy='v.location.y' :fill="v.hovered?'blue':v.selected?'red':'black'"></circle>
 
       <!-- <path :d=drawnPath stroke=black fill=transparent stroke-width=3></path> -->
       <path v-for="v in displayedKeyFramePairs" :key=v.id :d=buildSegment(v) stroke=black fill=transparent stroke-width=3></path>
       
-      <circle v-if=hoveredKeyFrame :cx=hoveredPosValPix.x :cy=hoveredPosValPix.y fill=blue :r=pRadius></circle>
+      <circle :cx=newKeyFramePos.x :cy=newKeyFramePos.y fill=blue :r=pRadius></circle>
 
       <path :d=positionPath stroke=black fill=transparent stroke-width=1></path>
 
       <path :d=curValuePath stroke="black" stroke-dasharray="4,1" fill="transparent" stroke-width="1"></path>
 
-      <g v-if='selectedKeyFrame && selectedKeyFrame.easing.constructor.typeName=="bz"' fill=transparent stroke=blue>
-        <circle :cx=firstHandlePix.x :cy=firstHandlePix.y r=6  ></circle>
-        <circle :cx=secondHandlePix.x :cy=secondHandlePix.y r=6 ></circle>
-        <line :x1=posToPix(selectedKeyFrame.position) :y1=valToPix(selectedKeyFrame.value) :x2=firstHandlePix.x :y2=firstHandlePix.y></line>
-        <line :x1=posToPix(nextSelectedKeyFrame.position) :y1=valToPix(nextSelectedKeyFrame.value) :x2=secondHandlePix.x :y2=secondHandlePix.y></line>
-      </g>
-    </svg>
-    
-  </div>
+<!--       <g v-if='selectedKeyFrame && selectedKeyFrame.easing.constructor.typeName=="bz"' fill=transparent stroke=blue>
+-->
+<template v-for="d in draggableHandles">
+  <circle :cx=d.location.x :cy=d.location.y r=6 :fill="d.hovered?'blue':'transparent'"  stroke=blue></circle>
+
+  <line :x1=posToPix(d.jsObj.relatedKf.position) :y1=valToPix(d.jsObj.relatedKf.value) :x2=d.location.x :y2=d.location.y stroke=blue></line>
+
+</template>
+<!-- </g> -->
+</svg>
+
+</div>
 </template>
 
 <script lang="ts">
@@ -37,73 +40,24 @@ import { Curve, KeyFrame } from '@API/Curve';
 import { BezierEasing,EasingFactory } from '@API/Easings/easings';
 import Slider from '@/components/Inputs/Slider.vue';
 import * as CurveUtils from './CurveEditorUtils';
+import { Draggable,DraggableHandler } from '@/components/Utils/Draggable';
 
 function getPointFromEvent(e: MouseEvent): Point {return new Point( e.offsetX,  e.offsetY); }
 
 function secondaryEvent(e:MouseEvent){return e.metaKey}
 
-class Draggable{
-  constructor(public jsObj:any){}
-  public hovered=false;
-  public selected=false;
-  public location = new Point(0,0);
-  public order = 0;
-  public isOver(p:Point){return false}//to override
-  
-
+class HandleJsType{
+  constructor(public isB:boolean,public startKf:KeyFrame<number> ,public endKf:KeyFrame<number>){}
+  get relatedKf(){return this.isB?this.endKf:this.startKf;}
 }
 
-class DraggableHandler{
-  constructor(){}
-  mouseDown(p:Point){
-    const dr = this.findDraggableForPoint(p)
-    if(dr!=this.clickedDraggable){
-      if(this.clickedDraggable){this.clickedDraggable.selected=false;}
-      this.clickedDraggable = dr;
-      if(this.clickedDraggable){this.clickedDraggable.selected=true;}
-    }
-  }
-  mouseMove(p:Point){
-    if(this.clickedDraggable===undefined){
-      const dr = this.findDraggableForPoint(p);
-      if(dr!=this.hoveredDraggable){
-        if(this.hoveredDraggable){this.hoveredDraggable.hovered=false;}
-      this.hoveredDraggable = dr;
-      if(this.hoveredDraggable){this.hoveredDraggable.hovered=true;}
-      }
-    }
-    else{
-      this.clickedDraggable.location=p;
-    }
-  }
-  mouseUp(p:Point){
-    if(this.clickedDraggable!==undefined){
-      // this.clickedDraggable.selected = false
-      this.clickedDraggable = undefined;
-    }
-    
-  }
-
-  findDraggableForPoint(p:Point){
-    let dr :Draggable | undefined = undefined
-    for(const d of this.draggables){
-      if(d.isOver(p) && (!dr || d.order>=dr.order)){
-        dr = d;
-      }
-    }
-    return dr;
-  }
-
-  // add(d:Draggable){this.draggables.push(d);}
-  // remove(d:Draggable){const i = this.draggables.indexOf(d);if(i>=0){this.draggables.splice(i,1)};}
-
-  public draggables = new Array<Draggable>()
-  private hoveredDraggable :Draggable | undefined = undefined
-  private clickedDraggable :Draggable | undefined = undefined
-
+class KeyFrameStartPointJsType{
+  constructor(public kf:KeyFrame<number>){}
 }
-const dH = new DraggableHandler()
 
+class KeyFramePathJsType{
+  constructor(public kf:KeyFrame<number>){}
+}
 @Component({components: {Slider}})
 export default class CurveEditor extends Vue {
 
@@ -113,7 +67,7 @@ export default class CurveEditor extends Vue {
     return new Size(hasMountedDOM ? dom.clientWidth : 10 , hasMountedDOM ? dom.clientHeight : 10);
   }
 
-
+  public dH = new DraggableHandler()
   get displayedKeyFrames(): Array<KeyFrame<number>> {
     return this.curve.frames.filter((v) => this.positionRange.inRange(v.position));
   }
@@ -122,7 +76,9 @@ export default class CurveEditor extends Vue {
     return CurveUtils.getDisplayedKeyFramePairs(this.curve,this.positionRange);
   }
   
+  public newKeyFramePos:Point = new Point(-100,-100);
 
+  
   get positionPath() {
     return ['M', this.posToPix(this.curve.position), 0, 'V', this.domSize.h].join(' ');
   }
@@ -145,79 +101,131 @@ export default class CurveEditor extends Vue {
 
 
   private value = 0;
-  private mousePressedKeyFrame: KeyFrame<number>|null=null ;
-  private hoveredKeyFrame: KeyFrame<number>|null = null;
-  private hoveredKeyFrameCircle: KeyFrame<number>|null = null;
-  private selectedKeyFrame: KeyFrame<number>|null = null;
-  private hoveredPosValPix: Point = new Point(0,0);
   
-  get draggableKeyPoints():Array<Draggable>{
-    return this.displayedKeyFrames.map(
+  get selectedKeyFrame(){
+    const k = this.dH.getSelectedObjAs(KeyFrameStartPointJsType)
+    return k?k.kf:null
+  }
+  get nextSelectedKeyFrame(){
+    const sel = this.selectedKeyFrame
+    return sel?this.curve.getNextKeyFrame(sel):null
+  }
+  private draggableKeyPoints = new Array<Draggable>() // need Watch to be deeply reactive
+  @Watch('displayedKeyFrames')
+  dCB(){
+    
+    this.draggableKeyPoints = this.displayedKeyFrames.map(
       (k:KeyFrame<number>):Draggable=>{
         const d =  new Draggable(
-          k
+          new KeyFrameStartPointJsType(k)
           // ,(p:Point)=>{return this.posValToPix(k).distSq(p)<this.pRadius}
           );
-        d.isOver=(p:Point)=>{return d.location.distSq(p)<this.pRadius}
+        d.isOver=(p:Point)=>{return d.location.dist(p)<2*this.pRadius}
         Object.defineProperty(d,"location",{
           get:()=>this.posValToPix(k),
           set:(p:Point)=>{
             const pv = this.pixToPosVal(p);
             k.position=pv.x;k.value=pv.y;}
-        })
+          })
         return d;
       }
       ) 
   }
+  
+  private draggableHandles = new Array<Draggable>()
+  @Watch('dH.selectedDraggable',{deep:true})
+  cbDH(){
+    const selectedKT = this.dH.getSelectedObjAs(KeyFrameStartPointJsType)
+    if(!selectedKT){ return;}
 
+    const res = new Array<Draggable>()
+    const selectedK = selectedKT.kf
+    const nextK = this.curve.getNextKeyFrame(selectedK);
+    const prevK = this.curve.getPrevKeyFrame(selectedK);
+    const prevHasBezier = prevK && (prevK.easing instanceof BezierEasing)
+    const curHasBezier = selectedK.easing instanceof BezierEasing
+    if( curHasBezier ||prevHasBezier) {
+
+      const getHandlePixPosition = (type:HandleJsType)=>{
+        const curPix = this.posValToPix(type.startKf)
+        const nextPix = this.posValToPix(type.endKf)
+        const ease = (type.startKf).easing as BezierEasing;
+        if(!ease.getPB){
+          // debugger
+          return new Point (0,0)
+        }
+        const PF =(type.isB?ease.getPB:ease.getPA).bind(ease) 
+        const P = PF(curPix.x,curPix.y,nextPix.x,nextPix.y);
+        // if(!type.isB){console.log('get',P)}
+        return new Point(P[0],P[1])
+      }
+      const setHandlePosition=(p:Point,type:HandleJsType)=>{
+        const curPix = this.posValToPix(type.startKf)
+        const nextPix = this.posValToPix(type.endKf)
+        const da:Point = p.csub(curPix).div(nextPix.csub(curPix));
+        const ease = (type.startKf).easing as BezierEasing;
+        const fun = (type.isB?ease.setBHandle:ease.setAHandle).bind(ease);
+        // if(!type.isB){console.log('set',da)}
+        da.x = Math.max(0,Math.min(1,da.x))
+        da.y = Math.max(0,Math.min(1,da.y))
+        fun(da.x,da.y)
+      }
+      if(prevHasBezier && prevK){
+        const handleType = new HandleJsType(true,prevK,selectedK)
+        const ld = new Draggable(handleType)
+        ld.isSelectable = false
+        ld.isOver =(p:Point)=>{return p.dist(ld.location)<this.pRadius}
+        Object.defineProperty(ld,"location",{
+          get:()=>getHandlePixPosition(handleType),
+          set:(p:Point)=>{setHandlePosition(p,handleType)}
+        })
+        res.push(ld)
+      }
+      if(curHasBezier && nextK){
+        const handleType = new HandleJsType(false,selectedK,nextK);
+        const rd = new Draggable(handleType)
+        rd.isSelectable = false
+        rd.isOver =(p:Point)=>{return p.dist(rd.location)<this.pRadius}
+        Object.defineProperty(rd,"location",{
+          get:()=>getHandlePixPosition(handleType),
+          set:(p:Point)=>{setHandlePosition(p,handleType)}
+        })
+        res.push(rd)
+      }
+
+    }
+    this.draggableHandles = res;
+    // return res;
+  }
+
+
+
+  get hoverableKeyFramePath(){
+    return this.displayedKeyFramePairs.map((l:[KeyFrame<number>,KeyFrame<number>])=>{
+      const d = new Draggable(new KeyFramePathJsType(l[0]))
+      d.order = -1;
+      d.isOver = (p:Point)=>{
+        const v = this.curve.getValueAt(this.pixToPos(p.x)) as number
+        return Math.abs(p.y-this.valToPix(v))<6
+      }
+
+      return d;
+
+    })
+    // 
+
+  }
   get allDraggables(){
     let res  =new Array<Draggable>()
     res = res.concat(this.draggableKeyPoints)
-
-    return res;
-  }
-  
-  get nextSelectedKeyFrame(){
-    if(this.selectedKeyFrame){
-      return this.curve.getNextKeyFrame(this.selectedKeyFrame);
-    }
-  }
-  
-  private get firstHandlePix(){
-    if(!this.selectedKeyFrame){return new Point (-1,-1);}
-    const cur = this.selectedKeyFrame;
-    const next = this.nextSelectedKeyFrame
-    if(!next){return new Point (-1,-1);}
-    const curPix = this.posValToPix(cur)
-    const nextPix = this.posValToPix(next)
-    const PA = (this.selectedKeyFrame.easing as BezierEasing).getPA(curPix.x,curPix.y,nextPix.x,nextPix.y);
-    const res  =  new Point(PA[0],PA[1])
+    const dh= this.draggableHandles
+    if(dh){res = res.concat(dh)}
+      res = res.concat(this.hoverableKeyFramePath)
     return res;
   }
 
-  private get secondHandlePix(){
-    if(!this.selectedKeyFrame){return new Point (-1,-1);}
-    const cur = this.selectedKeyFrame;
-    const next = this.curve.getNextKeyFrame(this.selectedKeyFrame);
-    if(!next){return new Point (-1,-1);}
-    const curPix = this.posValToPix(cur)
-    const nextPix = this.posValToPix(next)
-    const P = (this.selectedKeyFrame.easing as BezierEasing).getPB(curPix.x,curPix.y,nextPix.x,nextPix.y);
-    const res  =  new Point(P[0],P[1])
-    return res;
-  }
-  private set firstHandlePix(p:Point){
-    if(!this.selectedKeyFrame){return ;}
-    const cur = this.selectedKeyFrame;
-    const next = this.curve.getNextKeyFrame(this.selectedKeyFrame);
-    if(!next){return;}
-    const curPix = this.posValToPix(cur)
-    const nextPix = this.posValToPix(next)
-    const da:Point = p.csub(curPix).div(nextPix.csub(curPix));
-    (this.selectedKeyFrame.easing as BezierEasing).setAHandle(da.x,da.y)
-  }
-  
-  private hasDragged = false
+
+
 
   public buildSegment(pair: [KeyFrame<number>, KeyFrame<number>]) {
     return CurveUtils.buildPathForFrames(pair[0], pair[1], this.positionRange, this.valueRange, this.domSize);
@@ -229,7 +237,7 @@ export default class CurveEditor extends Vue {
 
   public mounted() {
     this.svgDOM =  this.$refs['my-svg'] as SVGGraphicsElement;
-    dH.draggables = this.allDraggables
+    this.dH.getAllDraggables = ()=>{return this.allDraggables}
     this.curve.add(new KeyFrame<number>(0, 0, new BezierEasing()));
     this.curve.add(new KeyFrame<number>(100, 0.5));
     this.curve.add(new KeyFrame<number>(200, 1));
@@ -239,113 +247,91 @@ export default class CurveEditor extends Vue {
   public pixToPosVal(p: Point, absolutePoint= true) {
     return CurveUtils.pixToPosVal(p, this.domSize, this.positionRange, this.valueRange, absolutePoint);
   }
-  public posValToPix(pv:KeyFrame<number>) {
+  public posValToPix(pv:KeyFrame<number>, absolutePoint= true) {
     return CurveUtils.posValToPix(new Point(pv.position,pv.value), this.domSize, this.positionRange,this.valueRange);
   }
   public posToPix(p: number) {
     return CurveUtils.posToPix(p, this.domSize.w, this.positionRange);
   }
+  public pixToPos(p: number) {
+    return CurveUtils.pixToPos(p, this.domSize.w, this.positionRange);
+  }
+
   public valToPix(p: number) {
     return CurveUtils.valToPix(p, this.domSize.h, this.valueRange);
   }
-  public findKeyFrameUnderMouse(e:MouseEvent){
-    const positionValue = this.pixToPosVal(getPointFromEvent(e));
-    const delta = this.pixToPosVal(
-      new Point(this.pRadius, this.pRadius), false) ;
 
-    let foundKeyFrame = this.curve.findClosestKeyForPositionValue(positionValue, delta);
-
-    if (foundKeyFrame !== null && Math.abs(foundKeyFrame.value - positionValue.y) > delta.y * 2){
-      foundKeyFrame = null;
-    }
-    return foundKeyFrame
-  }
 
   public mouseDown(e: MouseEvent) {
     const mousePix = getPointFromEvent(e);
-    dH.mouseDown(mousePix)
-    this.hasDragged = false
-    const positionValue = this.pixToPosVal(mousePix);
-    let foundKeyFrame = this.findKeyFrameUnderMouse(e)
-    if(this.hoveredKeyFrame!=null){
-      this.curve.add(new KeyFrame<number>(positionValue.x,positionValue.y))
-      this.hoveredKeyFrame = null
-      foundKeyFrame = this.findKeyFrameUnderMouse(e)
-    }
-    else{
-      if(secondaryEvent(e) ){
-        if(foundKeyFrame===null){
-          this.curve.add(new KeyFrame(positionValue.x,positionValue.y))
-        }
-        else{
-          foundKeyFrame.easing = EasingFactory.createNextEasing(foundKeyFrame.easing)
-        }
+    if(secondaryEvent(e) ){
+
+      const hoveredKT = this.dH.getHoveredObjAs(KeyFrameStartPointJsType)
+      const hoveredK = hoveredKT?hoveredKT.kf:null 
+      if(this.dH.hovered===null){
+        const positionValue = this.pixToPosVal(mousePix)
+        this.curve.add(new KeyFrame(positionValue.x,positionValue.y))
+      }
+      else if (hoveredK) {
+        hoveredK.easing = EasingFactory.createNextEasing(hoveredK.easing)
       }
     }
+    else if(this.dH.getHoveredObjAs(KeyFramePathJsType)){
+      const newPoint = this.pixToPosVal(this.newKeyFramePos);
+      this.curve.add(new KeyFrame<number>(newPoint.x,newPoint.y))
+
+    }
 
 
-    this.mousePressedKeyFrame = foundKeyFrame;
+    this.$nextTick(()=>this.dH.mouseDown(mousePix,e))
 
 
+ 
+
+
+
+
+
+}
+
+
+public mouseUp(e: MouseEvent) {
+  const mousePix = getPointFromEvent(e);
+  const lastSelected = this.dH.getSelectedObjAs(KeyFrameStartPointJsType)
+
+  this.dH.mouseUp(mousePix,e)
+  if (lastSelected && 
+      this.dH.hovered &&
+      this.dH.hovered.jsObj === lastSelected &&
+      !this.dH.hasDragged && 
+      !secondaryEvent(e)
+      ){
+      this.curve.remove(lastSelected.kf);
 
   }
 
-
-  public mouseUp(e: MouseEvent) {
-    const mousePix = getPointFromEvent(e);
-    dH.mouseUp(mousePix)
-    const positionValue = this.pixToPosVal(mousePix);
-    const foundKeyFrame = this.findKeyFrameUnderMouse(e)
-    
-    if(!this.hasDragged &&
-      !secondaryEvent(e) &&
-      this.selectedKeyFrame!==null &&
-      foundKeyFrame===this.selectedKeyFrame &&
-      this.curve.frames.length>2){
-
-      this.curve.remove(this.selectedKeyFrame)
-  }
-  else{
-    this.selectedKeyFrame =this.mousePressedKeyFrame
-  }
-  if (this.mousePressedKeyFrame === null) {
-    this.curve.position = positionValue.x;
-  }
-
-  this.mousePressedKeyFrame = null;
 }
 
 public mouseMove(e: MouseEvent) {
   const mousePix = getPointFromEvent(e);
-  dH.mouseMove(mousePix)
-  this.hasDragged= this.hasDragged || (e.movementX!==0 || e.movementY!==0)
-  
-  const positionValue = this.pixToPosVal(mousePix);
-  this.hoveredKeyFrameCircle = this.findKeyFrameUnderMouse(e)
-  if (this.mousePressedKeyFrame !== null) {
-    this.mousePressedKeyFrame.position = positionValue.x;
-    this.mousePressedKeyFrame.value = positionValue.y;
-  } else if (e.buttons === 0) {
-    const vp = this.valToPix(this.curve.getValueAt(positionValue.x) as number);
-    let newHoveredKeyFrame = null;
-    const maxDist = 6
-    if (Math.abs(mousePix.y - vp) < maxDist ) {
-      const frames = this.curve.getKeyFramesForPosition(positionValue.x);
-      if((frames.start && Math.abs(this.posToPix(frames.start.position)-mousePix.x)<maxDist)||
-        (frames.end && Math.abs(this.posToPix(frames.end.position)-mousePix.x)<6)){
-        //ignore when close to control points
-    }
-    else{
-      this.hoveredPosValPix = new Point(mousePix.x,vp)
-      newHoveredKeyFrame = frames.start || null;}
-    }
-    this.hoveredKeyFrame = newHoveredKeyFrame;
-    // console.log(mousePix.x,positionValue.x,this.curve.getValueAt(positionValue.x))
-  } else if (e.buttons === 1) {
-    if (this.mousePressedKeyFrame === null) {
-      this.curve.position = positionValue.x;
-    }
+  this.dH.mouseMove(mousePix,e)
+
+
+  const kf = this.dH.getHoveredObjAs(KeyFramePathJsType)
+  if(kf){
+    const val = this.curve.getValueAt(this.pixToPos(mousePix.x)) as number
+    const nPos = new Point(mousePix.x,this.valToPix(val))
+    this.newKeyFramePos.x = nPos.x
+    this.newKeyFramePos.y = nPos.y
+  } 
+  else if (this.newKeyFramePos.x!=-100){
+    this.newKeyFramePos.x = -100
   }
+  else if(e.buttons===1 && !this.dH.clicked){
+    this.curve.position = this.pixToPos(mousePix.x)
+  }
+
+
 }
 
 
