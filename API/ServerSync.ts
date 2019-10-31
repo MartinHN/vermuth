@@ -50,10 +50,16 @@ export function bindClientSocket(s: any) {
    }
 
  }
-  safeBindSocket(s);
+ safeBindSocket(s);
 
 
 }
+
+const sendToSocketDebounced = _.debounce(
+  (addr: string, targs: any) => {clientSocket.emit(addr, targs);},
+  10 ,
+  {trailing: true, maxWait: 30})
+
 
 const rebuildAccessibles = () => {
 
@@ -70,9 +76,9 @@ const rebuildAccessibles = () => {
     }
     const remotesV = initRemoteValues(o);
     remotesV.map((ff) => ff());
-    const remotesF = initRemoteFunctions(o);
+    // const remotesF = initRemoteFunctions(o);
 
-    remotesF.map((ff) => ff());
+    // remotesF.map((ff) => ff());
 
     // initRemoteFunction(o)
   };
@@ -186,83 +192,225 @@ function buildAddressFromObj(o: any, errorIfEmpty = true) {
 
 
 
+const broadcastMessageFromServerDebounced = _.debounce((addr:string,args:any) => {broadcastMessageFromServer(addr, args);}
+  , 50, {trailing: true, maxWait: 100});
+function broadcastMessageFromServer(addr: string, args: any) {
+  // let log;
+  if(!addr){
+    debugger
+  }
+  else{
+    // if (logServerMessages) {log = require('./Logger').default; }
+    if (!isClient && clientSocket && clientSocket.sockets) {
+      // broadcast to other clients if we are server
+      for (const s of Object.values(clientSocket.sockets.sockets)) {
+        const sock = s as Socket;
+        if (sock.id !== AccessibleNotifierId) {
+          // if (log) { log.log('server >> ' + sock.id + ' : ' + addr + ' : ' + args + '\n');}
+          sock.emit(addr, args);
 
-export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunction?: boolean}) {
-  return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    const method = descriptor.value;
-    let registeredAddr: string = '';
-
-    if (target.__remoteFunctions === undefined) {
-      Object.defineProperty(target, '__remoteFunctions', {
-        value: {},
-        enumerable: false,
-        configurable: false,
-        writable: true,
-      });
-
+        }
+      }
     }
-    target.__remoteFunctions[propertyKey] = method;
 
-    // }
-    descriptor.value = function(...args: any[]) {
+    // console.warn("avoid feedback");
+  }
+}
+
+
+
+
+function defineObjTable(obj:any,tableName:string){
+  if (!obj[tableName]) {
+    Object.defineProperty(obj, tableName, {
+      value: {},
+      enumerable: false,
+      configurable: false,
+      writable: true,
+    } );
+  }
+
+  return obj[tableName]
+}
+
+function defineOnInstance(target:any,key:string | symbol,onInstance:(o:any,defaultV:any)=>any){
+  Object.defineProperty(target, key, {
+    get(){onInstance(this,null);return null},
+    set(nv){ onInstance(this,nv);},
+    enumerable: true,
+    configurable: true
+
+  } );
+
+}
+
+export function SetAccessible(opts?:{readonly?:boolean}){
+  const writable = !opts || !opts.readonly
+  return (target: any, key: string | symbol) => {
+    defineOnInstance(target,key,(parent:any,defaultValue:any)=>{
+      defineObjTable(parent,'__accessibleMembers')[key] = defaultValue
+      Object.defineProperty(parent, key, {
+        value:defaultValue,
+        enumerable: true,
+        configurable: true,
+        writable
+      } );
+      
+    }
+    )
+  }
+
+}
+
+
+export function RemoteValue(cb?: (parent: any, value: any) => void) {
+  return (target: any, k: string | symbol) => {
+    defineOnInstance(target,k,
+      (parent:any,defaultValue:any)=>{
+
+        let storedValue: any = defaultValue;
+        let registredAddr = '';
+        let registeredClientSocket = {};
+        const listenerFunction = (msg: any) => {
+          // parent[k] = msg;
+          // storedValue = msg;
+          // broadcastMessageFromServer(registredAddr, msg);
+        };
+
+        const registerListener = (deferIfUnattached = true) => {
+          // nextTick(() => {
+            const pAddr = buildAddressFromObj(parent);
+            const a =  pAddr + '/' + k.toString();
+            if (registredAddr !== a || clientSocket !== registeredClientSocket) {
+              if (clientSocket && isClient) {// only client need to specify (server use middleware)
+                // clientSocket.removeListener(registredAddr, listenerFunction);
+                // clientSocket.on(a, listenerFunction);
+                registeredClientSocket = clientSocket;
+              }
+              delete allListeners[registredAddr];
+              registredAddr = a;
+            }
+            allListeners[a] = listenerFunction;
+
+            // });
+          };
+
+
+
+          const fetchFunction = (passedCB: (...args: any[]) => any) => {
+            registerListener();
+            if (clientSocket ) {
+              clientSocket.emit(registredAddr, undefined, passedCB);
+            }
+          };
+
+          const oldProp = Object.getOwnPropertyDescriptor(parent, k);
+          if(oldProp){debugger;}
+          Object.defineProperty(parent, k, {
+            get: () => {return storedValue;},
+            set: (v: any) => {
+
+              registerListener();
+              const hasChanged = !_.isEqual(v, storedValue);
+              if (hasChanged) {// for array
+                storedValue = v;
+                const cb = parent.__remoteCBs[k];
+                // debugger
+                if (cb) {cb(parent, v); }
+              }
+
+              if (hasChanged && lockCallbacks === 0) {
+
+                if(isClient){
+                  if (clientSocket ) {
+                    clientSocket.emit(registredAddr, v);
+                  }
+                }
+                else{
+
+                  broadcastMessageFromServerDebounced(registredAddr,v);
+
+                }
+
+              }
+            },
+
+            enumerable: true,
+            configurable: true, // needs to be true to handle vue reactivity
+          });
+
+
+          defineObjTable(parent,'__fetch')[k] = fetchFunction;
+          defineObjTable(parent,'__remoteValues')[k]= fetchFunction;
+          defineObjTable(parent,'__registerListeners')[k] = registerListener
+          defineObjTable(parent,'__remoteCBs')[k] = cb;
+          return parent[k];
+        });
+
+  }
+}
+
+export function RemoteFunction (options?: {skipClientApply?: boolean, sharedFunction?: boolean}) {
+  return (target: any, key: string | symbol, descriptor: PropertyDescriptor) => {
+
+    const method = descriptor.value;
+    
+    let registeredAddr = '';
+    const fl = defineObjTable(target,'__registerFunctionListeners')[key] = true;//TODO
+    const rf = defineObjTable(target,'__remoteFunctions')[key] = method
+    descriptor.value = function(...args: any[]) { // need plain function for this
+
       // target.notifyRemote()
       let res: any;
       if (lockCallbacks === 0) {
+        // call on remote
         if (clientSocket ) {
 
-          const regF = (allowUnhooked: boolean) => {
+          const callF = (allowUnhooked: boolean) => {
             const pAddr =  buildAddressFromObj(this, !allowUnhooked);
             if (pAddr === null && allowUnhooked) {
-              nextTick(() => regF(false));
+              nextTick(() => callF(false));
               return;
             }
-            const raddr = pAddr + '/' + propertyKey;
+            const raddr = pAddr + '/' + key.toString();
 
-            // @ts-ignore
+            // @ts-igno
             if (registeredAddr !== raddr) {
-              Object.defineProperty(this, '__emitF', {
-                value: _.debounce((addr: string, targs: any) => {
-                  // if(isClient){
-                    clientSocket.emit(addr, targs);
-                  // }
-                  // else{
-                    // broadcastMessage(addr, targs);
-                  // }
-                }, isClient ? 10 : 10 + Math.random() * 5,
-                {trailing: true, maxWait: isClient ? 30 : 30}),
-                enumerable: false,
-                configurable: false,
-                writable: true,
-              });
               registeredAddr = raddr;
             }
-            // @ts-ignore
-            if (isClient && this.__emitF && (AccessibleSettedByServer !== raddr ) ) {
 
-              const prunedArgs = args.map((e) => Object.assign({}, e));
-
-              for (const c of prunedArgs) {
-                if (c.__ob__) {
-                  debugger;
-                  delete c.__ob__;
-                }
+            if(isClient){
+              if ( AccessibleSettedByServer !== raddr  ) {
+                // just check if we are not passing complex args as Vues
+                const prunedArgs = args.map((e) => {
+                  if(typeof(e)=='object'){
+                    const c= Object.assign({}, e);
+                    if(c.__ob__){
+                      debugger;
+                      delete c.__ob__;
+                    }
+                  }
+                  else{return e;}
+                });
+                
+                res = sendToSocketDebounced(registeredAddr, args);
               }
-              // @ts-ignore
-              res = this.__emitF(registeredAddr, args);
             }
-            broadcastMessage(registeredAddr, args);
+            else{
+              broadcastMessageFromServer(registeredAddr, args);
+            }
           };
 
-          regF(true);
-
+          callF(true);
+          
 
         } else  {
 
-          console.error('can\'t reach server on RemoteFunction : ', propertyKey);
+          console.error('can\'t reach server on RemoteFunction : ', key);
         }
       }
 
-
+      // call locally
       if (!options || !(isClient && options.skipClientApply) ) {
         // debugger
         if (options && options.sharedFunction) {lockCallbacks += 1; }
@@ -272,102 +420,30 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
 
 
       return res;
-    };
-  };
+    }
+    
+  }
 }
 
 
-function broadcastMessage(addr: string, args: any) {
-  // let log;
-  // if (logServerMessages) {log = require('./Logger').default; }
-  if (!isClient && clientSocket && clientSocket.sockets) {
-    // broadcast to other clients if we are server
-    for (const s of Object.values(clientSocket.sockets.sockets)) {
-      const sock = s as Socket;
-      if (sock.id !== AccessibleNotifierId) {
-        // if (log) {
-          //   log.log('server >> ' + sock.id + ' : ' + addr + ' : ' + args + '\n');
-          // }
-          sock.emit(addr, args);
-
-        }
-      }
-
-      // console.warn("avoid feedback");
-    }
-  }
-
-
-
-export function SetAccessible() {
-
-    return (target: any, key: string | symbol) => {
-      const val = target[key];
-      if (target.__accessibleMembers === undefined) {
-        Object.defineProperty(target, '__accessibleMembers', {
-          value: {},
-          enumerable: false,
-          configurable: false,
-          writable: true,
-        });
-      }
-
-      target.__accessibleMembers[key] = val;
-
-
-    };
-  }
-
-
-
-export function RemoteValue(cb?: (parent: any, value: any) => void) {
-
-    return (target: any, key: string | symbol) => {
-      const val = target[key];
-      if (target.__remoteValues === undefined) {
-        Object.defineProperty(target, '__remoteValues', {
-          value: {},
-          enumerable: false,
-          configurable: false,
-          writable: true,
-        });
-        Object.defineProperty(target, '__remoteCBs', {
-          value: {},
-          enumerable: false,
-          configurable: false,
-          writable: true,
-        });
-        Object.defineProperty(target, '__fetch', {
-          get: () => target.__remoteValues,
-          enumerable: false,
-          configurable: false,
-        });
-      } else if (target.__remoteCBs === undefined) {
-        console.error('weird target __remoteValue already created but no __remoteCBs');
-        debugger;
-      }
-      target.__remoteCBs[key] = cb;
-      // debugger
-      target.__remoteValues[key] = val;
-
-
-    };
-  }
-
 
 export function nonEnumerable(opts?: {default?: any}) {
-    return function(target: any, key: string | symbol)  {
-      if (!target.__nonEnumerables) {
-       Object.defineProperty(target, '__nonEnumerables', {
-        value: {},
+  return function(target: any, key: string | symbol)  {
+    defineOnInstance(target,key,(ob,defaultValue)=>{
+      const t = defineObjTable(ob,'__nonEnumerables')
+      t[key]= true;
+      let v = defaultValue;
+      Object.defineProperty(ob, key, {
+        get:()=>{return v },
+        set:(nv)=>{v = nv},
         enumerable: false,
-        configurable: false,
-        writable: true,
-      } );
-     }
-      target.__nonEnumerables[key] = true;
-   };
- }
+        configurable: false
+
+      })
+      return ob[key]
+    })
+  }
+}
 
 function initAccessibles(parent: any) {
   if (parent.__accessibleMembers) {
@@ -377,19 +453,7 @@ function initAccessibles(parent: any) {
   }
 }
 
-function initNonEnumerables(parent: any) {
-  if (parent.__nonEnumerables) {
-    for (const k of Object.keys(parent.__nonEnumerables)) {
-      const val = parent[k];
-      Object.defineProperty(parent, k, {
-        value: val,
-        enumerable: false,
-        configurable: false,
-        writable: true,
-      });
-    }
-  }
-}
+
 function initRemoteValues(parent: any) {
   const res = [];
   if (parent.__remoteValues) {
@@ -410,151 +474,21 @@ function initRemoteFunctions(parent: any) {
 }
 function initRemoteFunction(parent: any, k: string) {
 
-  if (parent.__initRemoteFunctionClosures === undefined) {
-    Object.defineProperty(parent, '__initRemoteFunctionClosures', {
-      value : {},
-      writable: true,
-      enumerable: false,
-      configurable: false,
-    });
-
+  let ob = parent.__registerFunctionListeners[k]
+  if(ob===undefined){
+    debugger
   }
-  if (parent.__initRemoteFunctionClosures[k] === undefined) {
-    let registredAddr = '';
-    let registeredClientSocket: any = null;
-    const method  = parent[k];
-    const listenerFunction = (args: any[]) => { // socket io send arg as array dont rest out
-      AccessibleNotifierId = registeredClientSocket ? registeredClientSocket.id : null;
-      AccessibleSettedByServer = registredAddr;
-      if (!Array.isArray(args)) {
-        method.call(parent, args);
-      } else {
-        method.call(parent, ...args);
-      }
+  return ob
 
-      AccessibleSettedByServer = null;
-      AccessibleNotifierId = null;
-    };
-    parent.__initRemoteFunctionClosures[k]  = () => {
-      nextTick(() => {
-        const a = buildAddressFromObj(parent) + '/' + k;
-        if (registredAddr !== a || clientSocket !== registeredClientSocket) {
-          if (clientSocket && isClient) {// only client need to specify (server use middleware)
-            clientSocket.removeListener(registredAddr, listenerFunction);
-            clientSocket.on(a, listenerFunction);
-            registeredClientSocket = clientSocket;
-          }
-          delete allListeners[registredAddr];
-          registredAddr = a;
-        }
-        allListeners[a] = listenerFunction;
-
-      });
-    };
-
-  }
-  return parent.__initRemoteFunctionClosures[k];
 
 }
 function initRemoteValue(parent: any, k: string) {
-
-  if (parent.initValueClosures === undefined) {
-    Object.defineProperty(parent, 'initValueClosures',
-      {value: {},
-      writable : true,
-      enumerable: false,
-      configurable: false});
+ 
+  let ob = parent.__registerListeners[k]
+  if(ob===undefined){
+    debugger
   }
-  if (parent.initValueClosures[k] === undefined) {
-    let storedValue: any = parent[k];
-
-
-    let registredAddr = '';
-    let registeredClientSocket = {};
-    const listenerFunction = (msg: any) => {
-
-
-
-      // addProp(parent,k,msg);
-      parent[k] = msg;
-      storedValue = msg;
-      broadcastMessage(registredAddr, msg);
-
-
-
-    };
-
-    const registerListener = (deferIfUnattached = true) => {
-      nextTick(() => {
-        const pAddr = buildAddressFromObj(parent);
-        const a =  pAddr + '/' + k;
-        if (registredAddr !== a || clientSocket !== registeredClientSocket) {
-          if (clientSocket && isClient) {// only client need to specify (server use middleware)
-            clientSocket.removeListener(registredAddr, listenerFunction);
-            clientSocket.on(a, listenerFunction);
-            registeredClientSocket = clientSocket;
-          }
-          delete allListeners[registredAddr];
-          registredAddr = a;
-
-
-        }
-        allListeners[a] = listenerFunction;
-
-      });
-    };
-
-    const getter = () => {
-      return storedValue;
-    };
-
-    const fetchFunction = (cb: (...args: any[]) => any) => {
-      registerListener();
-      if (clientSocket ) {
-        clientSocket.emit(registredAddr, undefined, cb);
-      }
-    };
-    const emitF = isClient ? (addr: any, args: any) => {
-      clientSocket.emit(addr, args);
-    } :
-    _.debounce((addr: any, args: any) => {
-      broadcastMessage(addr, args);
-    }, 50,
-    {trailing: true, maxWait: 100});
-    const setter = (v: any) => {
-
-
-      registerListener();
-      if (lockCallbacks === 0) {
-        if (clientSocket ) {
-          // listenedNodes[addr] = true
-          // debugger
-
-          if (!_.isEqual(v, storedValue)) {// for array
-            storedValue = v;
-            const cb = parent.__remoteCBs[k];
-            // debugger
-            if (cb) {cb(parent, v); }
-
-            emitF(registredAddr, v);
-
-          }
-        }
-      }
-    };
-    Object.defineProperty(parent, k, {
-      get: getter,
-      set: setter,
-      enumerable: true,
-      configurable: true,
-    });
-    parent.__remoteValues[k] = fetchFunction;
-    parent.initValueClosures[k] = registerListener;
-
-  }
-
-  return parent.initValueClosures[k];
-
+  return ob
 
 }
 
@@ -609,8 +543,8 @@ export function AccessibleClass() {
 
         initAccessibles(this);
         initRemoteValues(this);
-        initRemoteFunctions(this);
-        initNonEnumerables(this);
+        //initRemoteFunctions(this);
+
       }
 
       public __dispose() {
@@ -644,10 +578,18 @@ export function resolveAccessible(parent: any , addr: string[]) {
       if (inspA) {insp = insp[inspA]; } else {break; }
     }
     if (addr.length === 0) {
-      return {accessible: insp, parent: accessibleParent, key: inspA};
-    }
+      if(isClient){
+        if(!accessibleParent.__ob__){
+          debugger
+        }
+        if(!insp.__ob__){
+         // debugger
+       }
+     }
+     return {accessible: insp, parent: accessibleParent, key: inspA};
+   }
 
-  }
-  console.error('can\'t find accessible for ', oriAddr, 'stopped at ', addr);
-  return {accessible: undefined, parent: undefined};
+ }
+ console.error('can\'t find accessible for ', oriAddr, 'stopped at ', addr);
+ return {accessible: undefined, parent: undefined};
 }

@@ -6,6 +6,7 @@ export class Range {
   constructor(public start: number, public end: number) {}
   public inRange(n: number) {return n >= this.start && n <= this.end; }
   get span() {return this.end - this.start; }
+  clone(){return new Range(this.start,this.end)}
 }
 
 
@@ -87,7 +88,6 @@ export function buildCurvePath(curve: Curve<number>, positionRange: Range, value
       const lastPixVal = valToPix(lastFrame.value, domSize.h, valueRange);
       const p1 = lastFrame.easing.getPA(lastPixPos, lastPixVal, pixPos, pixVal).map((e) => '' + e);
       const p2 = lastFrame.easing.getPB(lastPixPos, lastPixVal, pixPos, pixVal).map((e) => '' + e);
-      debugger;
       r = r.concat(['C', p1[0], p1[1], p2[0], p2[1]]);
     } else {
      r = r.concat(['L']);
@@ -115,6 +115,11 @@ export function  getDisplayedKeyFramePairs(curve:Curve<number>,positionRange:Ran
       const second = curve.frames[i + 1];
       if (positionRange.inRange(second.position) || positionRange.inRange(first.position)) {
         res.push([first, second]);
+      }
+      else if(first.position<positionRange.start && second.position>positionRange.end){
+        if(res.length>0){console.error('weeeeiiird');}
+        res.push([first, second]); // zoom between breakpoints
+        break;
       }
     }
     return res;

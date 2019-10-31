@@ -23,7 +23,7 @@ export function deleteProp(o: any, p: string) {
 }
 
 
-export function addProp(o: any, p: string, v: any) {
+export function addProp(o: any, p: string|symbol, v: any) {
   const Vue = getVue();
   if (Vue) {
     Vue.set(o, p, v);

@@ -52,6 +52,9 @@ export class Size {
     if (invY) {norm.y = 1 - norm.y; }
     return norm;
   }
+
+  public withHeight(h:number){return new Size(this.w,h);}
+  public withWidth(w:number){return new Size(w,this.h);}
 }
 
 
@@ -66,6 +69,11 @@ export class Rect {
     return Rect.getRectForPoint(p, new Size(s, s));
   }
 
+  get left(){return this.x+this.w}
+  get bottom(){return this.y+this.h}
+  contains(p:Point){
+    return p.x>=this.x && p.y>=this.y && p.x<=this.left && p.y<=this.bottom
+  }
   constructor(public x: number= 0, public y: number= 0, public w: number= 0, public h: number= 0) {}
 }
 

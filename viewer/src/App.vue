@@ -98,6 +98,13 @@ export default class App extends Vue {
   background-color: grey;
   min-height: 100%;
   min-width: 100%;
+
+      -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 #fixHead{
   z-index:1000;

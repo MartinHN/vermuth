@@ -5,9 +5,9 @@ if (!debug) {require('module-alias/register'); } // form module resolution
 const clientLogger = logClientMessages ? require('@API/Logger').default : undefined;
 const PORT = process.env.PORT || 3000;
 
-import * as express from 'express';
-import * as http from  'http';
-import * as io from 'socket.io';
+import express from 'express';
+import http from  'http';
+import io from 'socket.io';
 import OSCServer from './OSCServer';
 OSCServer.connect(11000);
 // import {getter, setter} from './types'
@@ -42,8 +42,8 @@ const ioServer = io({
 import {bindClientSocket} from '@API/ServerSync';
 bindClientSocket(ioServer);
 ioServer.attach(httpServer, {
-  pingInterval: 10000,
-  pingTimeout: 5000,
+  pingInterval: debug?60000:10000,
+  pingTimeout: debug?30000:5000,
   cookie: false,
 });
 if (debug) {

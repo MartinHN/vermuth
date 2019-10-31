@@ -3,10 +3,15 @@
 
   <div class="main"  style="width:100%;height:100%">
 
-    <Slider text="start" v-model=positionRange.start min=0 :max=curve.span-10></Slider>
-    <Slider text="end" v-model=positionRange.end min=10 :max=curve.span+10></Slider>
+    <Slider text="start" :value=positionRange.start @input=setZoomPosRange($event,positionRange.end) min=0 :max=curve.span-10></Slider>
+    <Slider text="end" :value=positionRange.end @input=setZoomPosRange(positionRange.start,$event) min=10 :max=curve.span+10></Slider>
 
-    <svg ref=my-svg width=100% height=100% @mousedown="mouseDown" @mouseup="mouseUp" @mousemove="mouseMove" @mouseleave="mouseLeave" @mouseenter="mouseEnter">
+    <svg v-if=isZoomable width=100% height=20% :viewBox="[0,0,zoomBoxSize.w,zoomBoxSize.h]" @mousedown=startZoom preserveAspectRatio=none>
+      <path :d=zoomPath stroke=black  fill=transparent></path>
+      <rect :x=zoomBoxRect.x :y=zoomBoxRect.y :width=zoomBoxRect.w :height=zoomBoxRect.h stroke=black fill=transparent @mousewheel.prevent=wheel></rect>
+    </svg>
+
+    <svg ref=my-svg width=100% :height="isZoomable?'80%':'100%'" :viewBox="[0,0,domSize.w,domSize.h]" @mousedown="mouseDown" @mouseup="mouseUp" @mousemove="mouseMove" @mouseleave="mouseLeave" @mouseenter="mouseEnter">
 
       <circle  v-for="v in draggableKeyPoints" :key=v.id ref='framesCircles' :r="pRadius" :cx="v.location.x" :cy='v.location.y' :fill="v.hovered?'blue':v.selected?'red':'black'"></circle>
 
@@ -63,7 +68,7 @@ export default class CurveEditor extends Vue {
 
   get domSize(): Size {
     const dom = this.svgDOM;
-    const hasMountedDOM  = dom.clientWidth > 0;
+    const hasMountedDOM  = dom && dom.clientWidth > 0;
     return new Size(hasMountedDOM ? dom.clientWidth : 10 , hasMountedDOM ? dom.clientHeight : 10);
   }
 
@@ -77,8 +82,24 @@ export default class CurveEditor extends Vue {
   }
   
   public newKeyFramePos:Point = new Point(-100,-100);
+  get zoomBoxSize(){
+    return this.domSize.withHeight(this.domSize.h*0.2)
+  }
+  get zoomPath(){
+    const fullPosRange = new CurveUtils.Range(0,this.curve.span)
+    const fullValRange = new CurveUtils.Range(0,1)//TODO
+    const reducedDomSize = this.zoomBoxSize
+    return CurveUtils.buildCurvePath(this.curve,fullPosRange,fullValRange,reducedDomSize)
+  }
 
   
+  get zoomBoxRect(){
+    return new Rect(
+      this.positionRange.start*this.zoomBoxSize.w/(this.curve.span||1),
+      0,
+      this.zoomBoxSize.w*this.positionRange.span/(this.curve.span||1),
+      this.zoomBoxSize.h)
+  }
   get positionPath() {
     return ['M', this.posToPix(this.curve.position), 0, 'V', this.domSize.h].join(' ');
   }
@@ -95,11 +116,15 @@ export default class CurveEditor extends Vue {
 
   @Prop({default: 8})
   private pRadius !: number;
+  
+  @Prop({default: true})
+  private isZoomable !: boolean;
+  private isZooming = false;
 
   private svgDOM: SVGGraphicsElement = {clientWidth: 10, clientHeight: 10} as SVGGraphicsElement;
 
-
-
+  private zoomStartPoint = new Point(-1,-1)
+  private zoomStartPosRange = new CurveUtils.Range(-1,-1)
   private value = 0;
   
   get selectedKeyFrame(){
@@ -129,10 +154,8 @@ export default class CurveEditor extends Vue {
       ) 
   }
   
-  // private draggableHandles = new Array<Draggable>()
-  // @Watch('dH.selectedDraggable',{deep:true})
-  // cbDH(){
-    get draggableHandles(){
+  
+  get draggableHandles(){
     const selectedKT = this.dH.getSelectedObjAs(KeyFrameStartPointJsType)
     if(!selectedKT){ return;}
 
@@ -192,7 +215,7 @@ export default class CurveEditor extends Vue {
       }
 
     }
-    // this.draggableHandles = res;
+    
     return res;
   }
 
@@ -229,10 +252,6 @@ export default class CurveEditor extends Vue {
     return CurveUtils.buildPathForFrames(pair[0], pair[1], this.positionRange, this.valueRange, this.domSize);
   }
 
-
-
-
-
   public mounted() {
     this.svgDOM =  this.$refs['my-svg'] as SVGGraphicsElement;
     this.dH.getAllDraggables = ()=>{return this.allDraggables}
@@ -258,8 +277,48 @@ export default class CurveEditor extends Vue {
   public valToPix(p: number) {
     return CurveUtils.valToPix(p, this.domSize.h, this.valueRange);
   }
+  
+
+  public wheel(e:WheelEvent){
+    const incZoom = -e.deltaY*this.curve.span/1000;
+    this.setZoomPosRange(this.positionRange.start+incZoom/2,this.positionRange.end-incZoom/2)
+
+  }
+  public startZoom(e:MouseEvent){
+    let zoomStartPoint = new Point(e.screenX,e.screenY);
+    let zoomStartPosRange = this.positionRange.clone()
+    this.isZooming = true;
+    const root = window ;//this.$root.$el as HTMLElement
+    const endZoom=(e:MouseEvent)=>{
+      this.isZooming = false;
+      root.removeEventListener("mousemove",doZoomMouse)  
+      root.removeEventListener("mouseup",endZoom)
+      root.removeEventListener("mouseleave",endZoom)
+      // zoomStartPoint.x=-1;
+    }
+    const doZoomMouse = (e:MouseEvent)=>{
+      e.preventDefault()
+      const mousePix = new Point(e.screenX,e.screenY);
+      const dist = mousePix.csub(zoomStartPoint)
+      const inc = dist.y*this.curve.span/500
+      const dx = dist.x*this.curve.span/this.domSize.w
+      this.setZoomPosRange( zoomStartPosRange.start +inc/2 + dx,zoomStartPosRange.end -inc/2 + dx)
+
+    }
+    // @ts-ignore
+    root.addEventListener("mouseup",endZoom)
+    // @ts-ignore
+    root.addEventListener("mouseleave",endZoom)
+    // @ts-ignore
+    root.addEventListener("mousemove",doZoomMouse)
+
+  }
 
 
+  public setZoomPosRange(s:number,e:number){
+    this.positionRange.start=Math.max(0,Math.min(this.curve.span,s))
+    this.positionRange.end=Math.max(this.positionRange.start+1,Math.min(this.curve.span,e))
+  }
   public mouseDown(e: MouseEvent) {
     const mousePix = getPointFromEvent(e);
     if(secondaryEvent(e) ){
@@ -278,18 +337,14 @@ export default class CurveEditor extends Vue {
       const newPoint = this.pixToPosVal(this.newKeyFramePos);
       this.curve.add(new KeyFrame<number>(newPoint.x,newPoint.y))
 
-    }else if(e.buttons===1 && !this.dH.hovered){
-      this.curve.position = this.pixToPos(mousePix.x)
-
     }
+    else if(e.buttons===1 && !this.dH.hovered){
+      this.curve.position = this.pixToPos(mousePix.x)
+    }
+    
 
 
     this.$nextTick(()=>this.dH.mouseDown(mousePix,e))
-
-
-
-
-
 
 
 
@@ -311,6 +366,7 @@ export default class CurveEditor extends Vue {
 
   }
 
+
 }
 
 public mouseLeave(e:MouseEvent){
@@ -320,6 +376,7 @@ public mouseEnter(e:MouseEvent){
   this.dH.mouseEnter(e)
 }
 public mouseMove(e: MouseEvent) {
+  if(this.isZooming){return;}
   const mousePix = getPointFromEvent(e);
   this.dH.mouseMove(mousePix,e)
 

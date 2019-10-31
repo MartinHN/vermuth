@@ -1,5 +1,5 @@
 <template>
-  <label :style="{ 'background-color':color }"  :for="_uid" class="buttonPH" :tabindex="focusable?-1:''">
+  <label :style="{ 'background-color':color }"  :for="_uid" class="buttonPH unselectable" :tabindex="focusable?-1:''">
     <!-- <label :for="_uid"> -->
       {{text}}
       <!-- </label> -->
@@ -54,6 +54,15 @@ input {
   user-select: none;
   transition: background-color .2s, box-shadow .2s;
   }*/
+
+.unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
 
   label{
     display: flex;

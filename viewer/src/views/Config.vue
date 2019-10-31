@@ -6,6 +6,7 @@
   <label for="file">Load Locally</label>
   <input type="file" id="file" accept="application/json" text="load locally" @change="loadLocally($event.target.files)"/>
   <Button text="clear session" color="red"  @click="clearSession"/>
+  <Button text="panic (all to 0)" color="red"  @click="panic"/>
   </div>
 </template>
 
@@ -54,6 +55,10 @@ export default class Config extends Vue {
       this.SET_SESSION_STATE({});
       this.SAVE_REMOTELY({});
     }
+  }
+
+  public panic(){
+    
   }
   // @configModule.State('fixtures') private fixtures!: ConfigMethods['fixtures'];
 

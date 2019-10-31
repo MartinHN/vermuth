@@ -8,16 +8,19 @@ import { Settable } from '../util';
 
 
 
+
 @Module({namespaced: true})
 export default class DMXConfig extends VuexModule {
   public dmxClientC = DMXClient;
   // @Settable()
   public get __portNameList() {
     // fetchRemote(this.dmxClientC,"portList");
+    // debugger
     return this.dmxClientC.__portNameList;
   }
   // @Settable()
   public get __driverNameList() {
+    // debugger
     return this.dmxClientC.__driverNameList;
   }
   // @Settable()

@@ -79,7 +79,7 @@ class DMXController implements DMXControllerI {
     delete this.dmx.drivers.null;
     this.watchSerialPorts();
     this.__driverNameList = Object.keys(this.dmx.drivers);
-    // console.log(this.__driverNameList)
+    console.log('drivers : ',this.__driverNameList)
     UniverseListener.on('channelChanged', (c, v) => {this.setCircs([{c, v}], null); });
 
   }

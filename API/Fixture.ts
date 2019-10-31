@@ -15,12 +15,16 @@ const fixtureTypes: {[key: string]: FixtureConstructorI} = {};
 @AccessibleClass()
 export class FixtureBase implements FixtureBaseI {
 
-
+  
   public set baseCirc(n: number) {
-    const changed = n !== this._baseCirc;
+    this.__setBaseCirc(n)
+  }
+  @RemoteFunction({sharedFunction:true})
+  private __setBaseCirc(n:number){
+    const changedDiff = n - this._baseCirc;
     this._baseCirc = n;
 
-    if (this.universe && changed) {
+    if (this.universe && changedDiff!=0) {
       this.universe.checkDuplicatedCirc();
       this.universe.updateChannelsValues();
     }
@@ -57,8 +61,19 @@ export class FixtureBase implements FixtureBaseI {
     return this.getChannelsOfRole('position');
   }
 
-  public get dimmerChannels() {
-    return this.getChannelsOfRole('dim');
+  public get dimmerChannels() { // flatten if multiple dimmers
+    let dimOrDims = this.getChannelsOfRole('dim')
+    if(dimOrDims){
+      dimOrDims = dimOrDims.dimmer
+      if( (dimOrDims.length===undefined) ){
+      dimOrDims = [dimOrDims]
+    }
+
+    }
+    else{
+      dimOrDims = []
+    }
+    return dimOrDims;
   }
 
   public static createFromObj(ob: any): FixtureBase |undefined {
@@ -85,8 +100,9 @@ export class FixtureBase implements FixtureBaseI {
   @nonEnumerable()
   public __events = new EventEmitter();
 
-  @SetAccessible()
+  @SetAccessible({readonly:true})
   public readonly channels = new Array<ChannelBase>();
+
   protected ftype = 'base';
 
   @RemoteValue()
@@ -110,7 +126,7 @@ export class FixtureBase implements FixtureBaseI {
     if (ob._baseCirc !== undefined) {this.baseCirc = ob._baseCirc; }
     if (ob.channels !== undefined) {
       this.channels.map((c: ChannelBase) => this.removeChannel(c));
-      ob.channels.map((c: any) => this.addChannel(ChannelBase.createFromObj(c)));
+      ob.channels.map((c: any) => this.addChannel(ChannelBase.createFromObj(c,this)));
     }
     if (ob.name !== undefined) {this.setName(ob.name); }
   }
@@ -140,7 +156,16 @@ export class FixtureBase implements FixtureBaseI {
     const cch: any = {};
     for (const ch of this.channels ) {
       if (ch.roleFam === n) {
+        if(ch.roleType in cch){
+          if(!cch[ch.roleType].length){
+            cch[ch.roleType] = [cch[ch.roleType]]
+          }
+            cch[ch.roleType].push(ch);
+
+        }
+        else{
         cch[ch.roleType] = ch;
+        }
       }
     }
     return cch ;

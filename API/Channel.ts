@@ -65,8 +65,9 @@ export class ChannelBase implements ChannelI {
     } else {
       console.error(this.__parentFixture ? 'NaN parent baseCirc' : 'no parent');
     }
-    return baseCirc + this.circ;
+    return baseCirc + this._circ;
   }
+  get circ(){return this._circ}
 
   get intValue() {return this.__value * 255; }
 
@@ -78,11 +79,16 @@ export class ChannelBase implements ChannelI {
     return this._enabled;
   }
 
+  get trueValue(){
+    return this.__value
+  }
 
-  public static createFromObj(ob: any): ChannelBase|undefined {
+
+  public static createFromObj(ob: any,parent:FixtureBase): ChannelBase|undefined {
     const cstr = channelTypes[ob.ctype];
     if (cstr) {
       const c =  new cstr(ob.name, ob.value, ob.circ);
+      c.setParentFixture(parent)
       c.configureFromObj(ob);
       return c;
     } else {
@@ -104,7 +110,7 @@ export class ChannelBase implements ChannelI {
 
   private __value: ChannelValueType = 0;
 
-  constructor(public name: string, __value: ChannelValueType  , public circ: number= 0, public _enabled: boolean= true) {
+  constructor(public name: string, __value: ChannelValueType  , private _circ: number= 0, public _enabled: boolean= true) {
     if (!__value) {__value = 0; } // ensure numeric
     this.updateRoleForName();
     this.setValueChecking(__value);
@@ -149,7 +155,7 @@ export class ChannelBase implements ChannelI {
 
     if (ob.name !== undefined) {this.name = ob.name; }
     if (ob.value !== undefined) {this.setValue( ob.value, false); }
-    if (ob.circ !== undefined) {this.setCirc( ob.circ); }
+    if (ob._circ !== undefined) {this.setCirc( ob._circ); }
     this.updateRoleForName();
   }
 
@@ -177,7 +183,7 @@ export class ChannelBase implements ChannelI {
   @RemoteFunction()
   public setCirc(n: number) {
     UniverseListener.notify(this.trueCirc, 0);
-    this.circ = n;
+    this._circ = n;
     UniverseListener.notify(this.trueCirc, this.__value);
     if (this.__parentFixture && this.__parentFixture.universe ) {this.__parentFixture.universe.checkDuplicatedCirc(); }
   }

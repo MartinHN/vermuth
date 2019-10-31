@@ -8,17 +8,21 @@ import { SetAccessible, setChildAccessible, AccessibleClass , RemoteFunction} fr
 export class Universe {
 
   public readonly testedChannel = new ChannelBase('tested', 0, -1, false);
+  @SetAccessible({readonly:true})
+  public  testedFixture = new FixtureBase('testedFixture',[this.testedChannel])
   public driverName = 'none';
 
-  @SetAccessible()
-  public readonly fixtures: {[id: string]: FixtureBase} = {};
+  @SetAccessible({readonly:true})
+  public  fixtures: {[id: string]: FixtureBase} = {};
 
-  @SetAccessible()
-  public readonly groups: {[id: string]: string[]} = {};
+  @SetAccessible({readonly:true})
+  public  groups: {[id: string]: string[]} = {};
 
 
   private _master = 1.0;
   constructor() {
+       this.testedChannel.setValue( 1.0, true);
+    // this.testedChannel.setParentFixture({baseCirc:0})
   }
 
 
@@ -151,18 +155,26 @@ export class Universe {
   }
 
   public testDimmerNum(d: number) {
-    if (this.testedChannel.circ >= 0) {
-      this.testedChannel.setValue( 0.0, true);
-    }
+    debugger
+    // if (this.testedChannel.circ >= 0) {
+    //   this.testedChannel.setValue( 0.0, true);
+    // }
 
     this.setTestedChannelDimmer(d);
-    if (this.testedChannel.circ >= 0) {
-      this.testedChannel.setValue( 1.0, true);
-    }
+    // if (this.testedChannel.circ >= 0) {
+   
+    // }
+  }
+
+
+  @RemoteFunction({skipClientApply: true})
+  public panic(){
+    this.allChannels.map(c=>c.setValue(0.0,true));
+    this.updateChannelsValues();
   }
 
   public setTestedChannelDimmer(dimmerNum: number ) {
-    this.testedChannel.circ = dimmerNum;
+    this.testedChannel.setCirc( dimmerNum);
   }
 
 

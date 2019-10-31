@@ -11,7 +11,7 @@
         
 
         <v-flex xs2 >
-          <Numbox class="testNum" name="testChannel" showName="1" @input="testDimmerNum($event.value)" />
+          <Numbox class="testNum" name="testChannel" showName="1" @input="testDimmerNum($event.value)" :value="testDimmerNumVal" />
         </v-flex>
       </v-layout>
       <div  v-for="f in universe.sortedFixtureList" :key="f.name" style="background-color:#FFF5;margin:5px">
@@ -22,7 +22,7 @@
               <input :style="{'background-color':'#0003','flex': '1 1 50%'}" :value="f.name" @change="setFixtureName({fixture:f,value:$event.target.value})"/>
               
               <div style=""> base Channel </div>
-              <Numbox class="baseCirc" :value="f.baseCirc" :min="0" :max="512" @input="setFixtureBaseCirc({fixture: f, circ: $event.value})"></Numbox></span>
+              <Numbox class="baseCirc" :value="f.baseCirc" :min="0" :max="512" @input="setFixtureBaseCirc({fixture: f, circ: $event.value||0})"></Numbox></span>
             </v-flex>
             
             <v-flex xs1 >
@@ -62,7 +62,7 @@
                     <div :style="{  display:'flex' ,padding:'10px'}">
                       <Numbox class="circNum" :value="c.circ" :min="0" :max="512" @input="linkChannelToCirc({channel: c, circ: $event.value})" :errMsg='c.hasDuplicatedCirc===true?"duplicated":""' ></Numbox>
 
-                      <Toggle text="test" :value="universe.testedChannel.circ===c.trueCirc" @input=testDimmerNum({channel:$event?c.trueCirc:-1}) > T </Toggle>
+                      <Toggle text="test" :value="universe.testedChannel.circ===c.trueCirc" @input=testDimmerNum($event?c.trueCirc:-1) > T </Toggle>
 
                     </div>
                   </v-flex>
@@ -114,6 +114,7 @@ export default class ChannelPatch extends Vue {
     this.usedChannels.map( (c) => errs[c.circ] = c.hasDuplicatedCirc ? 'circuit is duplicated' : '');
     return errs;
   }
+  
 
   @universesModule.Mutation('addFixture') public addFixture!: UniversesMethods['addFixture'];
   @universesModule.Mutation('duplicateFixture') public duplicateFixture!: UniversesMethods['duplicateFixture'];
@@ -130,6 +131,7 @@ export default class ChannelPatch extends Vue {
   @universesModule.Mutation('removeFixture') public removeFixture!: UniversesMethods['removeFixture'];
   @universesModule.Mutation('setFixtureName') public setFixtureName!: UniversesMethods['setFixtureName'];
 
+  @universesModule.Getter('testDimmerNumVal') public testDimmerNumVal!: UniversesMethods['testDimmerNumVal'];
   @universesModule.Mutation('testDimmerNum') public testDimmerNum!: UniversesMethods['testDimmerNum'];
 
   @universesModule.State('universe') private universe!: UniversesMethods['universe'];

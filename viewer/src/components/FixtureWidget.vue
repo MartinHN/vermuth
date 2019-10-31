@@ -2,7 +2,7 @@
   <div class="fixtureWidget" >
     <div style="display:flex;width:100%">
         
-      <ChannelWidget v-if='dimmerChannel && dimmerChannel.matchFilterList(filterList)' :channelProp=dimmerChannel :overrideName="fixtureProp.name" style="width:100%"></ChannelWidget>
+      <ChannelWidget v-for='d in matchedDimmerChannels' :key='d.id' :channelProp=d :overrideName="matchedDimmerChannels.length==1?fixtureProp.name:d.name" style="width:100%"></ChannelWidget>
 
     </div>
 
@@ -62,8 +62,11 @@ export default class FixtureWidget extends Vue {
   get colorChannels(): any {
     return this.fixtureProp.colorChannels;
   }
-  get dimmerChannel(): any {
-    return this.fixtureProp.dimmerChannels ? this.fixtureProp.dimmerChannels.dimmer : undefined;
+  get matchedDimmerChannels(){
+    return Object.values(this.dimmerChannels).filter( (c)=> {return (c as ChannelBase).matchFilterList(this.filterList)})
+  }
+  get dimmerChannels(): any {
+    return this.fixtureProp.dimmerChannels;
   }
 
   get otherChannels() {
@@ -95,7 +98,7 @@ export default class FixtureWidget extends Vue {
   @Prop({default: false})    public showName?: boolean;
   @Prop({default: false})    public showValue?: boolean;
 
-  @Prop ({default: []}) public filterList?: string[];
+  @Prop ({default: []}) public filterList!: string[];
   private showPosModal = false;
   private debouncedColorSetter = _.debounce((c: string) => {
     const color: any = hexToRgb(c, true);

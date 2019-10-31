@@ -197,6 +197,7 @@ const store: StoreOptions<RootVueState> = {
       }
     },
     SAVE_REMOTELY(context, pl: any) {
+      debugger;
       serverFS().save(pl, 'session');
     },
     SAVE_LOCALLY(context, pl: any) {
