@@ -7,6 +7,7 @@
   <input type="file" id="file" accept="application/json" text="load locally" @change="loadLocally($event.target.files)"/>
   <Button text="clear session" color="red"  @click="clearSession"/>
   <Button text="panic (all to 0)" color="red"  @click="panic"/>
+  <Button text="try other ip than default" @click="alertTryIP"/>
   </div>
 </template>
 
@@ -22,6 +23,9 @@ import Slider from '@/components/Inputs/Slider.vue';
 
 const configModule = namespace('config');
 import configFunctions from '../store/config';
+
+const DMXConfigModule = namespace('DMXConfig');
+import DMXConfigMethods from '../store/DMXConfig';
 @Component({
   components: {Toggle, Button, Slider },
 })
@@ -58,8 +62,17 @@ export default class Config extends Vue {
   }
 
   public panic() {
-
   }
+
+  @DMXConfigModule.Mutation('tryIP') private tryIP!:DMXConfigMethods['tryIP']
+
+  public alertTryIP(){
+    const res = prompt("change Server IP");
+    if(res){
+      this.tryIP(res)
+    }
+  }
+  
   // @configModule.State('fixtures') private fixtures!: ConfigMethods['fixtures'];
 
 

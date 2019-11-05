@@ -6,7 +6,7 @@ import {getCircular} from '@API/SerializeUtils';
 
 
 let hasRemoteState = false;
-
+const IOPort=3000
 class Server {
   @nonEnumerable()
   private __store: any;
@@ -18,10 +18,14 @@ class Server {
 
   }
 
-  public connect(store: any, serverIp: string) {
+  public connect(store: any, serverIP: string) {
 
     this.__store = store;
-    const socket = io(`http://${serverIp}:3000`);
+    const socket = io(`http://${serverIP}:${IOPort}`);
+    if(this.__socket && (this.__socket===socket)){
+      console.error("reassigning to same socket");
+      return false
+    }
     this.__socket = socket;
     store.dispatch('SET_CONNECTED_STATE', 'connecting');
 
@@ -64,8 +68,21 @@ class Server {
     dmxClient.subscribe(socket, store);
 
     // };
+    return true;
 
 
+  }
+
+  public changeServerIP(serverIP:string){
+    if(!this.__store ){
+      console.error("store not registered");
+      return false
+    }
+    else{
+      console.log(`setting server ip to ${serverIP}`)
+      return this.connect(this.__store,serverIP)
+    }
+    
 
   }
   public getSocket() {

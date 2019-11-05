@@ -53,7 +53,7 @@ export class FixtureBase implements FixtureBaseI {
 
   public get dimmerChannels() { // flatten if multiple dimmers
     let dimOrDims = this.getChannelsOfRole('dim');
-    if (dimOrDims) {
+    if (dimOrDims && dimOrDims.dimmer) {
       dimOrDims = dimOrDims.dimmer;
       if ( (dimOrDims.length === undefined) ) {
       dimOrDims = [dimOrDims];

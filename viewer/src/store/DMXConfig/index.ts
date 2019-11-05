@@ -96,6 +96,14 @@ export default class DMXConfig extends VuexModule {
     // this.rootSocket.emit('DMX/SET_DRIVERNAME', pl);
   }
 
+  @Mutation
+  public tryIP(ip:string){
+    const oldIP = ip
+    if(!Server.changeServerIP(ip)){
+      Server.changeServerIP(oldIP)
+    }
+  }
+
   get rootSocket() {
     return Server.getSocket();
   }
