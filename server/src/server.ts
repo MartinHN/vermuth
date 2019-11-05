@@ -55,7 +55,7 @@ app.use(express.static(publicDir));
 let states: any = {};
 
 // write empty if non existent
-fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8' }, function(ferr) {
+fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8' }, (ferr)=> {
   if (ferr) {
     console.log('fileExists');
     fs.readFile(localStateFile, 'utf8', (err, data) => {
@@ -129,7 +129,7 @@ if (debug && process.env.LOG_SOCKET_FILE) {
   const logFile =  process.env.LOG_SOCKET_FILE;
   fs.unlinkSync(logFile);
 }
-ioServer.on('connection', function(socket) {
+ioServer.on('connection', (socket)=> {
   console.log('a user connected', socket.id, debug);
 
   log.bindToSocket(socket);

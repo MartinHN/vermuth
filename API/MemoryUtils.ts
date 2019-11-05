@@ -18,7 +18,7 @@ export function deleteProp(o: any, p: string|symbol) {
   if (Vue && !Array.isArray(o)) {
     Vue.delete(o, p);
   } else {
-    Reflect.deleteProperty(o,p);
+    Reflect.deleteProperty(o, p);
   }
 }
 
@@ -28,7 +28,7 @@ export function addProp(o: any, p: string|symbol, v: any) {
   if (Vue && !Array.isArray(o)) {
     Vue.set(o, p, v);
   } else {
-    Reflect.set(o,p,v);
+    Reflect.set(o, p, v);
   }
 }
 

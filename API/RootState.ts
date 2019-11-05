@@ -6,7 +6,7 @@ import { DMXControllerI } from './DMXControllerI';
 import { bindClientSocket, RemoteFunction, SetAccessible, setChildAccessible, AccessibleClass, resolveAccessible, RemoteValue } from './ServerSync';
 import { buildEscapedJSON, buildEscapedObject } from './SerializeUtils';
 
-import {addProp} from '@API/MemoryUtils';
+
 
 @AccessibleClass()
 export class RootStateType {
@@ -32,17 +32,17 @@ export class RootStateType {
   private __isRoot = true;
 
   constructor() {
-
+    sequencePlayer.linkToRoot(this);
   }
   public registerDMXController(d: DMXControllerI) {
     if (this.dmxController) {
       debugger;
       console.error('double registration of dmx controller');
     }
-    
+
     // debugger
 
-    setChildAccessible(this, 'dmxController',{defaultValue:d});
+    setChildAccessible(this, 'dmxController', {defaultValue: d});
     bindClientSocket('auto');
   }
   public configureFromObj(ob: any) {
@@ -99,11 +99,11 @@ export class RootStateType {
   }
 
   public toJSONString(indent?: number) {
-    debugger
+    debugger;
     return buildEscapedJSON(this, indent);
   }
   public toJSONObj() {
-    debugger
+    debugger;
     return buildEscapedObject(this);
   }
 

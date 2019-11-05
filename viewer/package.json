@@ -5,12 +5,12 @@
   "scripts": {
     "serve": "vue-cli-service serve --port 8081",
     "build": "vue-cli-service build",
-    "lintAll": "tslint --project ../API --fix && npm run lint",
     "lint": "vue-cli-service lint",
-    "debug": "vue-cli-service build --mode=debug --watch",
     "deploy": "npm run build && rsync -r -e ssh -avz --delete-after  ../server/public pi@lampignon1.local:vermuth/server/",
+    "debug": "vue-cli-service build --mode=debug --watch",
     "deploy2": "npm run build && rsync -r -e ssh -avz --delete-after  ../server/public pi@lampignon2.local:vermuth/server/",
-    "deploylogic": "npm run build && rsync -r -e ssh -avz --delete-after  ../server/public pi@radiologic.local:Documents/vermuth/server/dist/server/"
+    "deploylogic": "npm run build && rsync -r -e ssh -avz --delete-after  ../server/public pi@radiologic.local:Documents/vermuth/server/dist/server/",
+    "lintAll": "tslint --project ../API --fix && npm run lint"
   },
   "dependencies": {
     "@hscmap/vue-menu": "^2.10.0",
@@ -22,7 +22,7 @@
     "vue-class-component": "^7.1.0",
     "vue-property-decorator": "^8.3.0",
     "vue-router": "^3.1.3",
-    "vuetify": "^1.5.19",
+    "vuetify": "^2",
     "vuex": "^3.1.1",
     "vuex-class": "^0.3.2"
   },
@@ -30,21 +30,23 @@
     "@mdi/font": "^4.5.95",
     "@types/lodash": "^4.14.144",
     "@types/socket.io-client": "^1.4.32",
-    "@vue/cli-plugin-pwa": "^3.12.1",
-    "@vue/cli-plugin-typescript": "^3.12.1",
-    "@vue/cli-service": "^3.12.1",
+    "@vue/cli-plugin-pwa": "^4",
+    "@vue/cli-plugin-typescript": "^4",
+    "@vue/cli-service": "^4",
+    "fibers": "^4.0.2",
     "material-design-icons-iconfont": "^5.0.1",
-    "stylus": "^0.54.7",
-    "stylus-loader": "^3.0.2",
+    "node-sass": "^4.13.0",
+    "sass": "^1.23.3",
+    "sass-loader": "^8.0.0",
     "tsconfig-paths-webpack-plugin": "^3.2.0",
-    "typescript": "^3.6.4",
-    "vue-cli-plugin-vuetify": "^0.6.0",
+    "typescript": "^3",
+    "vue-cli-plugin-vuetify": "^2.0.2",
     "vue-hot-reload-api": "^2.3.4",
     "vue-template-compiler": "^2.6.10",
     "vuetify-loader": "^1.3.0",
-    "vuex-module-decorators": "^0.9.11"
+    "vuex-module-decorators": "^0.11.0"
   },
   "engines": {
-    "node": ">=0.10.3 <0.12"
+    "node": ">0.11 <=0.12"
   }
 }

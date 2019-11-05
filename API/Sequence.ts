@@ -1,9 +1,9 @@
-import { State, blackState, ResolvedFixtureState, MergedState } from './State';
+import { State, StateList, blackState, ResolvedFixtureState, MergedState } from './State';
 import { DirectFixture } from './Fixture';
 import { ChannelBase } from './Channel';
 import {  doTimer, stopTimer } from './Time';
 import { RemoteFunction, RemoteValue, nonEnumerable } from './ServerSync';
-import rootState from './RootState';
+
 
 
 export class Sequence {
@@ -68,12 +68,27 @@ export class Sequence {
 
 const blackSeq = new Sequence('black', blackState);
 
+interface RootProvider {
+  stateList: StateList;
+  sequenceList: Sequence[];
+}
+
 class SequencePlayer {
+
+  get stateList() {
+    if (this._rootProvider === undefined) {console.error('stateListNotInited'); debugger; }
+    return this._rootProvider ? this._rootProvider.stateList : {states: {} as {[key: string]: State}, getCurrentFixtureList: () => []};
+  }
+  get sequenceList() {
+    if (this._rootProvider === undefined) {console.error('stateListNotInited'); debugger; }
+    return this._rootProvider ? this._rootProvider.sequenceList : [];
+  }
   public curSeq: Sequence = blackSeq;
   public nextSeq: Sequence = blackSeq;
 
   @RemoteValue()
   public playState: string = 'stopped';
+  private _rootProvider?: RootProvider = undefined;
 
   @RemoteFunction({skipClientApply: true})
   public goToStateNamed(name: string, timeIn: number, cb?: () => void): void {
@@ -84,10 +99,11 @@ class SequencePlayer {
     seq.timeIn = timeIn;
     this.goToSequence(seq, cb);
   }
+
   @RemoteFunction({skipClientApply: true})
   public goToSequenceNamed(name: string, cb?: () => void): void {
     name = '' + name;
-    const tSeq = rootState.sequenceList.find((s) => s.name === name);
+    const tSeq = this.sequenceList.find((s) => s.name === name);
     if (!tSeq) {
       console.error('seq not found');
       return;
@@ -95,16 +111,29 @@ class SequencePlayer {
     this.goToSequence(tSeq, cb);
 
   }
+
   @RemoteFunction({skipClientApply: true})
   public stopIfPlaying() {
     stopTimer('seqTransition');
+  }
+
+  public linkToRoot(rootProvider: RootProvider) {
+    if (this._rootProvider !== undefined) {
+      console.error('double init of sequencePlayer');
+      debugger;
+    }
+    if (rootProvider === undefined ) {
+     console.error('setting empty root');
+     debugger;
+    }
+    this._rootProvider = rootProvider;
   }
 
 
   private goToSequence(seq: Sequence, cb?: any) {
     this.nextSeq = seq;
     const stateResolver = (n: string) => {
-      return rootState.stateList.states[n];
+      return this.stateList.states[n];
     };
 
     // const timeOut =  this.curSeq.timeOut*1000;
@@ -120,7 +149,7 @@ class SequencePlayer {
 
     if (nextState) {
       const transitionTime = Math.max((res + 1) / 1000 , Math.max(this.curSeq.timeOut, timeIn));
-      const nextStateResolved = nextState.resolveState(rootState.stateList.getCurrentFixtureList());
+      const nextStateResolved = nextState.resolveState(this.stateList.getCurrentFixtureList());
       const mergedState = new MergedState(nextStateResolved);
       mergedState.checkIntegrity();
       doTimer('seqTransition', transitionTime * 1000.0, res,

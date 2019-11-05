@@ -1,7 +1,6 @@
 import { FixtureBase } from './Fixture';
 import { ChannelBase, UniverseListener } from './Channel';
 import { getNextUniqueName , compareValues} from './Utils';
-import { addProp, deleteProp } from './MemoryUtils';
 import { SetAccessible, setChildAccessible, AccessibleClass , RemoteFunction} from './ServerSync';
 
 @AccessibleClass()
@@ -29,10 +28,11 @@ export class Universe {
   public get grandMaster() {return this._master; }
   public get groupNames() { return Object.keys(this.groups); }
   public addGroup(name: string, nl: string[]) {
-    addProp(this.groups, name, nl);
-    // setChildAccessible(this.groups, name);
+    this.groups[name] = nl;
   }
-  public removeGroup(name: string) {deleteProp(this.groups, name); }
+  public removeGroup(name: string) {
+    delete this.groups[name];
+  }
 
   public get fixtureList() {return Object.values(this.fixtures); }
   public get sortedFixtureList() {return this.fixtureList.slice().sort(compareValues('name', 'asc')); }
@@ -101,20 +101,17 @@ export class Universe {
   public addFixture(f: FixtureBase) {
 
     f.name = getNextUniqueName(this.fixtureList.map((ff) => ff.name), f.name);
-
-    addProp(this.fixtures, f.name, f);
-    // setChildAccessible(this.fixtures, f.name);
+    this.fixtures[f.name] = f;
     f.__events.on('nameChanged', (ff: FixtureBase, oldName: string) => {
       const newName = getNextUniqueName(this.fixtureList.filter((fff) => fff !== ff).map((fff) => fff.name), ff.name);
-      deleteProp(this.fixtures, oldName);
+      delete this.fixtures[oldName];
       ff.setName(newName);
-      addProp(this.fixtures, newName, ff);
-      setChildAccessible(this.fixtures, ff.name);
+      this.fixtures[newName] = ff;
     });
     f.universe = this;
   }
   public removeFixture(f: FixtureBase) {
-    deleteProp(this.fixtures, f.name);
+    delete this.fixtures[f.name];
   }
   public getNextCirc(d: number, forbidden?: number[]): number {
     const circsUsed = this.fixtureList.map((ff) => ff.channels).flat().map((ch) => ch.trueCirc).concat(forbidden || []);
@@ -135,7 +132,6 @@ export class Universe {
   }
 
   public get allChannels() {
-    // console.log('fliiiiist',this.fixtureList.map(f=>f.channels))
     return this.fixtureList.map((f) => f.channels).flat();
   }
   public updateChannelsValues() {

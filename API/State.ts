@@ -1,7 +1,6 @@
 import { ChannelBase } from './Channel';
 import { FixtureBase } from './Fixture';
 import { Universe } from './Universe';
-import {deleteProp, addProp} from './MemoryUtils';
 import { sequencePlayer } from './Sequence';
 import { nonEnumerable } from './ServerSync';
 
@@ -198,17 +197,13 @@ export class StateList {
   public removeStateNamed(name: string) {
     if (this.states[name]) {
       if (!(this.states[name] === blackState || this.states[name] === fullState)) {
-        deleteProp(this.states, name);
+        delete this.states[name];
       }
     }
   }
 
   public addState(s: State) {
-    if (s === blackState || s === fullState) {
-      addProp(this.states, s.name, s);
-    } else {
-    addProp(this.states, s.name, s);
-    }
+    this.states[s.name] = s;
   }
 
   public recallStateNamed(n: string) {
@@ -275,8 +270,8 @@ export class StateList {
     const s = this.states[oldName];
     if (s) {
       s.name = newName;
-      deleteProp(this.states, oldName);
-      addProp(this.states, newName, s);
+      delete this.states.oldName;
+      this.states[newName] = s;
       if (this.loadedStateName === oldName) {
         this.loadedStateName = newName;
       }
