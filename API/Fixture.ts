@@ -15,19 +15,9 @@ const fixtureTypes: {[key: string]: FixtureConstructorI} = {};
 @AccessibleClass()
 export class FixtureBase implements FixtureBaseI {
 
-  
-  public set baseCirc(n: number) {
-    this.__setBaseCirc(n)
-  }
-  @RemoteFunction({sharedFunction:true})
-  private __setBaseCirc(n:number){
-    const changedDiff = n - this._baseCirc;
-    this._baseCirc = n;
 
-    if (this.universe && changedDiff!=0) {
-      this.universe.checkDuplicatedCirc();
-      this.universe.updateChannelsValues();
-    }
+  public set baseCirc(n: number) {
+    this.__setBaseCirc(n);
   }
   public get baseCirc() {return this._baseCirc; }
 
@@ -62,16 +52,15 @@ export class FixtureBase implements FixtureBaseI {
   }
 
   public get dimmerChannels() { // flatten if multiple dimmers
-    let dimOrDims = this.getChannelsOfRole('dim')
-    if(dimOrDims){
-      dimOrDims = dimOrDims.dimmer
-      if( (dimOrDims.length===undefined) ){
-      dimOrDims = [dimOrDims]
+    let dimOrDims = this.getChannelsOfRole('dim');
+    if (dimOrDims) {
+      dimOrDims = dimOrDims.dimmer;
+      if ( (dimOrDims.length === undefined) ) {
+      dimOrDims = [dimOrDims];
     }
 
-    }
-    else{
-      dimOrDims = []
+    } else {
+      dimOrDims = [];
     }
     return dimOrDims;
   }
@@ -100,7 +89,7 @@ export class FixtureBase implements FixtureBaseI {
   @nonEnumerable()
   public __events = new EventEmitter();
 
-  @SetAccessible({readonly:true})
+  @SetAccessible({readonly: true})
   public readonly channels = new Array<ChannelBase>();
 
   protected ftype = 'base';
@@ -126,7 +115,7 @@ export class FixtureBase implements FixtureBaseI {
     if (ob._baseCirc !== undefined) {this.baseCirc = ob._baseCirc; }
     if (ob.channels !== undefined) {
       this.channels.map((c: ChannelBase) => this.removeChannel(c));
-      ob.channels.map((c: any) => this.addChannel(ChannelBase.createFromObj(c,this)));
+      ob.channels.map((c: any) => this.addChannel(ChannelBase.createFromObj(c, this)));
     }
     if (ob.name !== undefined) {this.setName(ob.name); }
   }
@@ -156,14 +145,13 @@ export class FixtureBase implements FixtureBaseI {
     const cch: any = {};
     for (const ch of this.channels ) {
       if (ch.roleFam === n) {
-        if(ch.roleType in cch){
-          if(!cch[ch.roleType].length){
-            cch[ch.roleType] = [cch[ch.roleType]]
+        if (ch.roleType in cch) {
+          if (!cch[ch.roleType].length) {
+            cch[ch.roleType] = [cch[ch.roleType]];
           }
-            cch[ch.roleType].push(ch);
+          cch[ch.roleType].push(ch);
 
-        }
-        else{
+        } else {
         cch[ch.roleType] = ch;
         }
       }
@@ -234,7 +222,7 @@ export class FixtureBase implements FixtureBaseI {
     }
     c.setParentFixture (this);
     this.channels.push(c);
-    setChildAccessible(this.channels, '' + (this.channels.length - 1));
+   // setChildAccessible(this.channels, '' + (this.channels.length - 1));
     return c;
   }
 
@@ -248,6 +236,16 @@ export class FixtureBase implements FixtureBaseI {
 
   public getChannelForName(n: string) {
     return this.channels.find((c) => c.name === n);
+  }
+  @RemoteFunction({sharedFunction: true})
+  private __setBaseCirc(n: number) {
+    const changedDiff = n - this._baseCirc;
+    this._baseCirc = n;
+
+    if (this.universe && changedDiff !== 0) {
+      this.universe.checkDuplicatedCirc();
+      this.universe.updateChannelsValues();
+    }
   }
 
   private setCoarseAndFine(v: number, c: ChannelBase|undefined, cf: ChannelBase|undefined, doNotify: boolean = true) {

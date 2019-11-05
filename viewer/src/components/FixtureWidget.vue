@@ -62,8 +62,8 @@ export default class FixtureWidget extends Vue {
   get colorChannels(): any {
     return this.fixtureProp.colorChannels;
   }
-  get matchedDimmerChannels(){
-    return Object.values(this.dimmerChannels).filter( (c)=> {return (c as ChannelBase).matchFilterList(this.filterList)})
+  get matchedDimmerChannels() {
+    return Object.values(this.dimmerChannels).filter( (c) => (c as ChannelBase).matchFilterList(this.filterList));
   }
   get dimmerChannels(): any {
     return this.fixtureProp.dimmerChannels;

@@ -67,7 +67,7 @@ export class ChannelBase implements ChannelI {
     }
     return baseCirc + this._circ;
   }
-  get circ(){return this._circ}
+  get circ() {return this._circ; }
 
   get intValue() {return this.__value * 255; }
 
@@ -79,16 +79,16 @@ export class ChannelBase implements ChannelI {
     return this._enabled;
   }
 
-  get trueValue(){
-    return this.__value
+  get trueValue() {
+    return this.__value;
   }
 
 
-  public static createFromObj(ob: any,parent:FixtureBase): ChannelBase|undefined {
+  public static createFromObj(ob: any, parent: FixtureBase): ChannelBase|undefined {
     const cstr = channelTypes[ob.ctype];
     if (cstr) {
       const c =  new cstr(ob.name, ob.value, ob.circ);
-      c.setParentFixture(parent)
+      c.setParentFixture(parent);
       c.configureFromObj(ob);
       return c;
     } else {

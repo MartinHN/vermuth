@@ -143,7 +143,7 @@ export default class Universes extends VuexModule {
     this.universe.testDimmerNum(dimmerNum);
   }
 
-  get testDimmerNumVal(){
+  get testDimmerNumVal() {
     return this.universe.testedChannel.circ;
   }
 

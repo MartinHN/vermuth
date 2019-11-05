@@ -10,6 +10,7 @@
     "inlineSourceMap": true,
     "moduleResolution": "node",
     "experimentalDecorators": true,
+    "emitDecoratorMetadata":true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "allowJs":false,

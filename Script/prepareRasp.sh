@@ -1,3 +1,5 @@
+#git clone https://github.com/MartinHN/vermuth.git
+
 apt update
 apt --yes --force-yes upgrade
 
@@ -28,7 +30,7 @@ sudo apt-get install pigpio
 #eval "$(ssh-agent -s)"
 #ssh-add -K ~/.ssh/id_rsa
 
-sudo -i -u pi git clone https://github.com/MartinHN/vermuth.git
+
 
 cd vermuth/server
 npm i

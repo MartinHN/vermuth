@@ -79,7 +79,7 @@ class DMXController implements DMXControllerI {
     delete this.dmx.drivers.null;
     this.watchSerialPorts();
     this.__driverNameList = Object.keys(this.dmx.drivers);
-    console.log('drivers : ',this.__driverNameList)
+    console.log('drivers : ', this.__driverNameList);
     UniverseListener.on('channelChanged', (c, v) => {this.setCircs([{c, v}], null); });
 
   }
@@ -147,15 +147,15 @@ class DMXController implements DMXControllerI {
     }.bind(this));
   }
 
-  public setAllColor(color: {r: number, g: number, b: number},setWhiteToZero:boolean) {
+  public setAllColor(color: {r: number, g: number, b: number}, setWhiteToZero: boolean) {
     if (this.__universe) {
-      this.__universe.setAllColor(color,setWhiteToZero);
+      this.__universe.setAllColor(color, setWhiteToZero);
     }
   }
   public setCircs(msg: Array<{c: number, v: number}>, fromSocket) {
     // console.log('set_circ',msg,this.__connected)
 
-    //const allC = this.__universe.allChannels;
+    // const allC = this.__universe.allChannels;
     // msg.map(m=>{allC.map(cc=>{if(cc.circ === m.c){cc.setValue(m.v,false)}})})
     // this.dmx.updateAll(this.universeName,msg[0].v)
     if (!this.__connected) {

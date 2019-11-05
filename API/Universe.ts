@@ -8,14 +8,14 @@ import { SetAccessible, setChildAccessible, AccessibleClass , RemoteFunction} fr
 export class Universe {
 
   public readonly testedChannel = new ChannelBase('tested', 0, -1, false);
-  @SetAccessible({readonly:true})
-  public  testedFixture = new FixtureBase('testedFixture',[this.testedChannel])
+  @SetAccessible({readonly: true})
+  public  testedFixture = new FixtureBase('testedFixture', [this.testedChannel]);
   public driverName = 'none';
 
-  @SetAccessible({readonly:true})
+  @SetAccessible({readonly: true})
   public  fixtures: {[id: string]: FixtureBase} = {};
 
-  @SetAccessible({readonly:true})
+  @SetAccessible({readonly: true})
   public  groups: {[id: string]: string[]} = {};
 
 
@@ -30,7 +30,7 @@ export class Universe {
   public get groupNames() { return Object.keys(this.groups); }
   public addGroup(name: string, nl: string[]) {
     addProp(this.groups, name, nl);
-    setChildAccessible(this.groups, name);
+    // setChildAccessible(this.groups, name);
   }
   public removeGroup(name: string) {deleteProp(this.groups, name); }
 
@@ -103,7 +103,7 @@ export class Universe {
     f.name = getNextUniqueName(this.fixtureList.map((ff) => ff.name), f.name);
 
     addProp(this.fixtures, f.name, f);
-    setChildAccessible(this.fixtures, f.name);
+    // setChildAccessible(this.fixtures, f.name);
     f.__events.on('nameChanged', (ff: FixtureBase, oldName: string) => {
       const newName = getNextUniqueName(this.fixtureList.filter((fff) => fff !== ff).map((fff) => fff.name), ff.name);
       deleteProp(this.fixtures, oldName);
@@ -155,21 +155,21 @@ export class Universe {
   }
 
   public testDimmerNum(d: number) {
-    debugger
+    debugger;
     // if (this.testedChannel.circ >= 0) {
     //   this.testedChannel.setValue( 0.0, true);
     // }
 
     this.setTestedChannelDimmer(d);
     // if (this.testedChannel.circ >= 0) {
-   
+
     // }
   }
 
 
   @RemoteFunction({skipClientApply: true})
-  public panic(){
-    this.allChannels.map(c=>c.setValue(0.0,true));
+  public panic() {
+    this.allChannels.map((c) => c.setValue(0.0, true));
     this.updateChannelsValues();
   }
 

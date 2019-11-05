@@ -9,28 +9,28 @@ export class Point {
     return Math.sqrt(this.distSq( b));
   }
 
-  public addS(a:number):Point{this.x+=a;this.y+=a;return this;}
-  public add(v:Point):Point{this.x+=v.x;this.y+=v.y;return this;}
-  public caddS(v:number):Point{const p = this.clone();return p.addS(v);}
-  public cadd(v:Point):Point{const p = this.clone();return p.add(v);}
+  public addS(a: number): Point {this.x += a; this.y += a; return this; }
+  public add(v: Point): Point {this.x += v.x; this.y += v.y; return this; }
+  public caddS(v: number): Point {const p = this.clone(); return p.addS(v); }
+  public cadd(v: Point): Point {const p = this.clone(); return p.add(v); }
 
-  public subS(a:number):Point{this.x-=a;this.y-=a;return this;}
-  public sub(v:Point):Point{this.x-=v.x;this.y-=v.y;return this;}
-  public csubS(v:number):Point{const p = this.clone();return p.subS(v);}
-  public csub(v:Point):Point{const p = this.clone();return p.sub(v);}
+  public subS(a: number): Point {this.x -= a; this.y -= a; return this; }
+  public sub(v: Point): Point {this.x -= v.x; this.y -= v.y; return this; }
+  public csubS(v: number): Point {const p = this.clone(); return p.subS(v); }
+  public csub(v: Point): Point {const p = this.clone(); return p.sub(v); }
 
-  public multS(a:number):Point{this.x*=a;this.y*=a;return this;}
-  public mult(v:Point):Point{this.x*=v.x;this.y*=v.y;return this;}
-  public cmultS(v:number):Point{const p = this.clone();return p.multS(v);}
-  public cmult(v:Point):Point{const p = this.clone();return p.mult(v);}
+  public multS(a: number): Point {this.x *= a; this.y *= a; return this; }
+  public mult(v: Point): Point {this.x *= v.x; this.y *= v.y; return this; }
+  public cmultS(v: number): Point {const p = this.clone(); return p.multS(v); }
+  public cmult(v: Point): Point {const p = this.clone(); return p.mult(v); }
 
 
-  public divS(a:number):Point{this.x/=a;this.y/=a;return this;}
-  public div(v:Point):Point{this.x/=v.x;this.y/=v.y;return this;}
-  public cdivS(v:number):Point{const p = this.clone();return p.divS(v);}
-  public cdiv(v:Point):Point{const p = this.clone();return p.div(v);}
+  public divS(a: number): Point {this.x /= a; this.y /= a; return this; }
+  public div(v: Point): Point {this.x /= v.x; this.y /= v.y; return this; }
+  public cdivS(v: number): Point {const p = this.clone(); return p.divS(v); }
+  public cdiv(v: Point): Point {const p = this.clone(); return p.div(v); }
 
-  public clone():Point{return new Point(this.x,this.y)}
+  public clone(): Point {return new Point(this.x, this.y); }
 
 }
 
@@ -53,8 +53,8 @@ export class Size {
     return norm;
   }
 
-  public withHeight(h:number){return new Size(this.w,h);}
-  public withWidth(w:number){return new Size(w,this.h);}
+  public withHeight(h: number) {return new Size(this.w, h); }
+  public withWidth(w: number) {return new Size(w, this.h); }
 }
 
 
@@ -62,19 +62,19 @@ export class Rect {
 
   get size() {return new Size(this.w, this.h); }
   set size(s: Size) {this.w = s.w; this.h = s.h; }
+
+  get left() {return this.x + this.w; }
+  get bottom() {return this.y + this.h; }
   public static getRectForPoint(p: Point, s: Size): Rect {
     return new Rect( p.x - s.w / 2,  p.y - s.h / 2,  s.w,  s.h);
   }
   public static getSquareForPoint(p: Point, s: number): Rect {
     return Rect.getRectForPoint(p, new Size(s, s));
   }
-
-  get left(){return this.x+this.w}
-  get bottom(){return this.y+this.h}
-  contains(p:Point){
-    return p.x>=this.x && p.y>=this.y && p.x<=this.left && p.y<=this.bottom
-  }
   constructor(public x: number= 0, public y: number= 0, public w: number= 0, public h: number= 0) {}
+  public contains(p: Point) {
+    return p.x >= this.x && p.y >= this.y && p.x <= this.left && p.y <= this.bottom;
+  }
 }
 
 

@@ -15,13 +15,13 @@ export class RootStateType {
   }
   // config: config;
   // DMXConfig: DMXConfig;
-  @SetAccessible()
+  @SetAccessible({readonly: true})
   public readonly universe = new Universe();
-  @SetAccessible()
+  @SetAccessible({readonly: true})
   public readonly sequenceList = new Array<Sequence>();
-  @SetAccessible()
+  @SetAccessible({readonly: true})
   public readonly sequencePlayer = sequencePlayer;
-  @SetAccessible()
+  @SetAccessible({readonly: true})
   public readonly stateList  = new StateList(this.universe);
 
   public  dmxController?: DMXControllerI;
@@ -39,10 +39,10 @@ export class RootStateType {
       debugger;
       console.error('double registration of dmx controller');
     }
-    addProp(this, 'dmxController' , d);
+    
     // debugger
 
-    setChildAccessible(this, 'dmxController');
+    setChildAccessible(this, 'dmxController',{defaultValue:d});
     bindClientSocket('auto');
   }
   public configureFromObj(ob: any) {
@@ -99,9 +99,11 @@ export class RootStateType {
   }
 
   public toJSONString(indent?: number) {
+    debugger
     return buildEscapedJSON(this, indent);
   }
   public toJSONObj() {
+    debugger
     return buildEscapedObject(this);
   }
 

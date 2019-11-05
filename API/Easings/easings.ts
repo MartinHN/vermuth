@@ -33,19 +33,18 @@ export class EasingFactory {
   public static registerClass<T extends TypedClass>(c: T) {
     EasingFactory.easingTypes[c.typeName] = (...args: any[]) => new c();
   }
-  public static createNextEasing(e:Easing){
-    const tn = (e.constructor as TypedClass).typeName
+  public static createNextEasing(e: Easing) {
+    const tn = (e.constructor as TypedClass).typeName;
     const easingNames = Object.keys(EasingFactory.easingTypes);
     let idx  = easingNames.indexOf(tn);
-    if(idx>=0){
-      idx = (idx+1)%(easingNames.length);
-      const other = EasingFactory.easingTypes[easingNames[idx]]
-      return other()
-    }
-    else{
-      debugger
-      console.error("no easing found")
-      return new LinearEasing()
+    if (idx >= 0) {
+      idx = (idx + 1) % (easingNames.length);
+      const other = EasingFactory.easingTypes[easingNames[idx]];
+      return other();
+    } else {
+      debugger;
+      console.error('no easing found');
+      return new LinearEasing();
     }
 
   }
@@ -91,11 +90,11 @@ export class BezierEasing implements Easing {
     return [ax + (bx - ax) * this.dxb, ay + (by - ay) * this.dyb];
   }
 
-  setAHandle(dxa:number,dya:number){
-    this.setNormHandles(dxa,dya,this.dxb,this.dyb)
+  public setAHandle(dxa: number, dya: number) {
+    this.setNormHandles(dxa, dya, this.dxb, this.dyb);
   }
-  setBHandle(dxb:number,dyb:number){
-    this.setNormHandles(this.dxa,this.dya,dxb,dyb)
+  public setBHandle(dxb: number, dyb: number) {
+    this.setNormHandles(this.dxa, this.dya, dxb, dyb);
   }
 
   public setNormHandles(dxa: number, dya: number, dxb: number, dyb: number) {

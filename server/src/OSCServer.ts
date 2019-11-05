@@ -77,7 +77,7 @@ class OSCServer {
       this.udpPort.send({address: '/pong'});
       return;
     } else if (msg.address === '/allColors') {
-      dmxController.setAllColor({r: msg.args[0], g: msg.args[1], b: msg.args[2]},true);
+      dmxController.setAllColor({r: msg.args[0], g: msg.args[1], b: msg.args[2]}, true);
     } else {
 
       callAnyAccessibleFromRemote(rootState, msg.address, msg.args, info.address + ':' + info.port);

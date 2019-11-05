@@ -1,5 +1,5 @@
 import {Easing, LinearEasing} from './Easings/easings';
-import {Point} from "./Utils2D"
+import {Point} from './Utils2D';
 
 export interface Vector {
   x: number;
@@ -50,9 +50,9 @@ export class KeyFrame<T extends NumOrVec > {
 
   }
 
-  get easing(){return this._easing;}
-  set easing(e:Easing){
-    this._easing=e;
+  get easing() {return this._easing; }
+  set easing(e: Easing) {
+    this._easing = e;
     if (this.parentCurve) {this.parentCurve.childTvChanged(this); }
   }
 
@@ -86,7 +86,7 @@ export class KeyFrame<T extends NumOrVec > {
     this._value = v;
     if (ch) {
       if (this.parentCurve) {
-        this.parentCurve.childTvChanged(this); 
+        this.parentCurve.childTvChanged(this);
       }
     }
   }
@@ -147,17 +147,17 @@ export class Curve<T extends NumOrVec> implements CurveBase {
       this.span = last.position;
     }
   }
-  public getNextKeyFrame(k:KeyFrame<T>):KeyFrame<T>|undefined{
-    const i = this._frames.indexOf(k)
-    if(i>=0 && i < this.frames.length-1){
-      return this._frames[i+1]
+  public getNextKeyFrame(k: KeyFrame<T>): KeyFrame<T>|undefined {
+    const i = this._frames.indexOf(k);
+    if (i >= 0 && i < this.frames.length - 1) {
+      return this._frames[i + 1];
     }
   }
 
-  public getPrevKeyFrame(k:KeyFrame<T>):KeyFrame<T>|undefined{
-    const i = this._frames.indexOf(k)
-    if(i>0 && i <= this.frames.length-1){
-      return this._frames[i-1]
+  public getPrevKeyFrame(k: KeyFrame<T>): KeyFrame<T>|undefined {
+    const i = this._frames.indexOf(k);
+    if (i > 0 && i <= this.frames.length - 1) {
+      return this._frames[i - 1];
     }
   }
   public updateValue() {
@@ -192,7 +192,7 @@ export class Curve<T extends NumOrVec> implements CurveBase {
   }
   public remove(c: KeyFrame<T>) {
     const i = this.frames.indexOf(c);
-    if (i >= 0) {this.frames.splice(i,1); }
+    if (i >= 0) {this.frames.splice(i, 1); }
     c.setParentCurve(undefined);
     return this;
   }
@@ -223,22 +223,22 @@ export class Curve<T extends NumOrVec> implements CurveBase {
     }
   }
 
-  public findClosestKeyForPositionValue(pv: Point, maxDelta: Point = new Point(-1,0)) {
+  public findClosestKeyForPositionValue(pv: Point, maxDelta: Point = new Point(-1, 0)) {
 
     if (this.frames.length === 0) {return null; }
     let res = this.frames[0];
-    let distSq = pv.distSq(new Point (res.position,(res.value as number)))
+    let distSq = pv.distSq(new Point (res.position, (res.value as number)));
     for (const v of this.frames) {
-      let curD = pv.distSq(new Point (v.position,(v.value as number)))
-      if (curD <distSq) {
-        distSq = curD
+      const curD = pv.distSq(new Point (v.position, (v.value as number)));
+      if (curD < distSq) {
+        distSq = curD;
         res = v;
       }
     }
-    if (maxDelta.x < 0 || 
+    if (maxDelta.x < 0 ||
       (Math.abs(res.position - pv.x) <= maxDelta.x) &&
-      (Math.abs((res.value as number) - pv.y) <= maxDelta.y) 
-      ){
+      (Math.abs((res.value as number) - pv.y) <= maxDelta.y)
+      ) {
       return res;
   } else {
     return null;

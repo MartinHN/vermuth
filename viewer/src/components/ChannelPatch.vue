@@ -114,7 +114,7 @@ export default class ChannelPatch extends Vue {
     this.usedChannels.map( (c) => errs[c.circ] = c.hasDuplicatedCirc ? 'circuit is duplicated' : '');
     return errs;
   }
-  
+
 
   @universesModule.Mutation('addFixture') public addFixture!: UniversesMethods['addFixture'];
   @universesModule.Mutation('duplicateFixture') public duplicateFixture!: UniversesMethods['duplicateFixture'];

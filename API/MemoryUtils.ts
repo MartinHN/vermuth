@@ -10,25 +10,25 @@ function getVue() {
 }
 
 
-export function deleteProp(o: any, p: string) {
+export function deleteProp(o: any, p: string|symbol) {
   if (o[p] && o[p].__dispose) {
     o[p].__dispose();
   }
   const Vue = getVue();
-  if (Vue) {
+  if (Vue && !Array.isArray(o)) {
     Vue.delete(o, p);
   } else {
-    delete o[p];
+    Reflect.deleteProperty(o,p);
   }
 }
 
 
 export function addProp(o: any, p: string|symbol, v: any) {
   const Vue = getVue();
-  if (Vue) {
+  if (Vue && !Array.isArray(o)) {
     Vue.set(o, p, v);
   } else {
-    o[p] = v;
+    Reflect.set(o,p,v);
   }
 }
 

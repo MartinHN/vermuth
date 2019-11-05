@@ -57,8 +57,8 @@ export default class Config extends Vue {
     }
   }
 
-  public panic(){
-    
+  public panic() {
+
   }
   // @configModule.State('fixtures') private fixtures!: ConfigMethods['fixtures'];
 

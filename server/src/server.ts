@@ -42,8 +42,8 @@ const ioServer = io({
 import {bindClientSocket} from '@API/ServerSync';
 bindClientSocket(ioServer);
 ioServer.attach(httpServer, {
-  pingInterval: debug?60000:10000,
-  pingTimeout: debug?30000:5000,
+  pingInterval: debug ? 60000 : 10000,
+  pingTimeout: debug ? 30000 : 5000,
   cookie: false,
 });
 if (debug) {
