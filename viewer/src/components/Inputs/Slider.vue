@@ -1,9 +1,10 @@
 <template>
-  <div class="SliderPH">
+  <div class="sliderPH">
     <input :class='["slider",{inactive:!enabled}]' type="range" :value="value" @input="$emit('input',$event.target.valueAsNumber)" :min=min :max=max :step="Math.pow(10,-precision)">
     
-    <div ref="Value" class="Value" v-if="showValue">{{valToString}}</div>
     <div ref="Name" class="Name" v-if="showName">{{name}}</div>
+    <div ref="Value" class="Value" v-if="showValue">{{valToString}}</div>
+    
   </div>
 </template>
 
@@ -50,12 +51,19 @@ export default class Slider extends Vue {
 <style scoped>
 .sliderPH{
   position:relative;
+  width:100%;
+  height:100%;
   display: inline-block;
 }
 .Value{
-  position: relative;
-  margin-top: -30px;
-  margin-right:-50%;
+  /*display :inline-block;*/
+  position: absolute;
+  height:100%;
+  top:3px;
+  right:3px;
+  
+  margin-left:5%;
+  /*width:50%;*/
   /*top:-40px;*/
   z-index: 2;
   user-select: none;
@@ -64,7 +72,10 @@ export default class Slider extends Vue {
 }
 .Name{
   position: absolute;
-  margin-top: -1.5rem;
+  height:100%;
+  top:3px;
+  
+  
   margin-left: 1rem;
   /*top:-40px;*/
   z-index: 2;
@@ -85,7 +96,7 @@ input[type="range"] {
   -webkit-appearance: none;
   position: relative;
   overflow: hidden;
-  height: 30px;
+  height: 100%;
   width: 100%;
   cursor: pointer;
   border-radius: 0; /* iOS */

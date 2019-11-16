@@ -1,23 +1,30 @@
 <template>
-  <v-container class="main" fluid pa-1>
-    <v-layout justify-space-between align-center row >
-      <v-flex xs8 >
-        <select size="3" v-model="stateName" >
-          <option v-for="n of stateNames" :key="n.id" :value="n">{{n}}</option>
-        </select>
-      </v-flex>
-      <v-flex xs4>
+  <!-- <v-container class="main" fluid pa-1> -->
+    <v-row no-gutters >
+      <v-col cols=7 >
+        <v-list dense class="overflow-y-auto" style=max-height:200px >
+          <!-- <v-subheader>Presets</v-subheader> -->
+          <v-list-item-group v-model="selectedPreset" > <!-- v-model="item" color="primary"> -->
+            <v-list-item v-for="(s,i) in stateNames" :key=s.id>
+              <v-list-item-content >
+                <v-list-item-title v-html="s" ></v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+      </v-col>
+      <v-col cols=2>
         <div id="stateActions">
           <Button class="add" @click="saveNewState" text="save"></Button>
           <Button class="rename" @click="renameStatePrompt" text="rename"></Button>
           <Button class="remove" @click="removeStatePrompt" text="-" color='red'></Button>
 
         </div>
-      </v-flex>
+      </v-col>
 
-    </v-layout>
-  </v-container>
-  
+    </v-row>
+  <!-- </v-container> -->
+
 </template>
 
 <script lang="ts">
@@ -51,10 +58,15 @@ export default class StateComponent extends Vue {
   }
   set stateName(v: string) {
     if (v) {
-    this.recallState({name: v});
+      this.recallState({name: v});
+    }
   }
+  set selectedPreset(i:number){
+    this.stateName = this.stateNames[i]
   }
-
+  get selectedPreset(){
+    return this.stateNames.indexOf(this.stateName)
+  }
 
   public saveNewState() {
     const name = prompt('save new state', this.stateName);

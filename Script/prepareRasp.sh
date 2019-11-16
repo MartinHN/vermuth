@@ -30,14 +30,14 @@ apt-get install -y nodejs
 
 
 
-
+pip install -r $DIR/requirements.txt
 
 ############
 ## Vermuth
 #########
 
 
-apt-get install pigpio
+apt-get install -y pigpio
 
 # sudo npm install -g typescript
 # if ssh

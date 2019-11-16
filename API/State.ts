@@ -3,7 +3,7 @@ import { FixtureBase } from './Fixture';
 import { Universe } from './Universe';
 import { sequencePlayer } from './Sequence';
 import { nonEnumerable } from './ServerSync';
-
+import {addProp,deleteProp} from './MemoryUtils'
 interface ChannelsValuesDicTypes {[id: string]: number; }
 
 export class FixtureState {
@@ -17,7 +17,7 @@ export class FixtureState {
     res.configureFromObj(o);
     return res;
   }
-  public name = '';
+  public name = 'no';
   private pChannelValues: ChannelsValuesDicTypes = {};
   constructor(fixture?: FixtureBase , options?: {overrideValue?: number, pickOnlyDimmable?: boolean, full?: boolean}) {
     if (fixture === undefined) {return; }
@@ -197,13 +197,13 @@ export class StateList {
   public removeStateNamed(name: string) {
     if (this.states[name]) {
       if (!(this.states[name] === blackState || this.states[name] === fullState)) {
-        delete this.states[name];
+        deleteProp(this.states,name);
       }
     }
   }
 
   public addState(s: State) {
-    this.states[s.name] = s;
+    addProp(this.states,s.name,  s);
   }
 
   public recallStateNamed(n: string) {
@@ -271,7 +271,7 @@ export class StateList {
     if (s) {
       s.name = newName;
       delete this.states.oldName;
-      this.states[newName] = s;
+      addProp(this.states,newName, s);
       if (this.loadedStateName === oldName) {
         this.loadedStateName = newName;
       }

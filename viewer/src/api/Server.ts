@@ -12,6 +12,8 @@ class Server {
   private __store: any;
   @nonEnumerable()
   private __socket: any;
+  @nonEnumerable()
+  public __serverIP:string=""
   constructor() {
     rootState.registerDMXController(dmxClient);
     // getCircular(dmxServer)
@@ -19,7 +21,7 @@ class Server {
   }
 
   public connect(store: any, serverIP: string) {
-
+    this.__serverIP = serverIP;
     this.__store = store;
     const socket = io(`http://${serverIP}:${IOPort}`);
     if(this.__socket && (this.__socket===socket)){

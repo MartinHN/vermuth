@@ -11,6 +11,8 @@ import { Settable } from '../util';
 
 @Module({namespaced: true})
 export default class DMXConfig extends VuexModule {
+
+  public serverIP = Server.__serverIP
   public dmxClientC = DMXClient;
   // @Settable()
   public get __portNameList() {
@@ -101,6 +103,9 @@ export default class DMXConfig extends VuexModule {
     const oldIP = ip
     if(!Server.changeServerIP(ip)){
       Server.changeServerIP(oldIP)
+    }
+    else{
+      this.serverIP=ip;
     }
   }
 

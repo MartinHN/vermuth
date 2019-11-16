@@ -2,7 +2,7 @@ import { FixtureBase } from './Fixture';
 import { ChannelBase, UniverseListener } from './Channel';
 import { getNextUniqueName , compareValues} from './Utils';
 import { SetAccessible, setChildAccessible, AccessibleClass , RemoteFunction} from './ServerSync';
-
+import {addProp,deleteProp} from './MemoryUtils'
 @AccessibleClass()
 export class Universe {
 
@@ -28,10 +28,10 @@ export class Universe {
   public get grandMaster() {return this._master; }
   public get groupNames() { return Object.keys(this.groups); }
   public addGroup(name: string, nl: string[]) {
-    this.groups[name] = nl;
+    addProp(this.groups,name,  nl);
   }
   public removeGroup(name: string) {
-    delete this.groups[name];
+    deleteProp(this.groups,name);
   }
 
   public get fixtureList() {return Object.values(this.fixtures); }
@@ -101,17 +101,17 @@ export class Universe {
   public addFixture(f: FixtureBase) {
 
     f.name = getNextUniqueName(this.fixtureList.map((ff) => ff.name), f.name);
-    this.fixtures[f.name] = f;
+    addProp(this.fixtures,f.name,  f);
     f.__events.on('nameChanged', (ff: FixtureBase, oldName: string) => {
       const newName = getNextUniqueName(this.fixtureList.filter((fff) => fff !== ff).map((fff) => fff.name), ff.name);
-      delete this.fixtures[oldName];
+      deleteProp(this.fixtures,oldName);
       ff.setName(newName);
-      this.fixtures[newName] = ff;
+      addProp(this.fixtures,newName,  ff);
     });
     f.universe = this;
   }
   public removeFixture(f: FixtureBase) {
-    delete this.fixtures[f.name];
+    deleteProp(this.fixtures,f.name);
   }
   public getNextCirc(d: number, forbidden?: number[]): number {
     const circsUsed = this.fixtureList.map((ff) => ff.channels).flat().map((ch) => ch.trueCirc).concat(forbidden || []);

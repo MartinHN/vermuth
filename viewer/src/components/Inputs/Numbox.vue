@@ -1,6 +1,6 @@
 <template>
-  <div class="NumboxPH">
-    <input :class='["Numbox",{error:hasError}]' type="number" :value="value" @input="$emit('input',{value:$event.target.valueAsNumber})" @change="$emit('change',{value:$event.target.valueAsNumber})" :min="min" :max="max" />
+  <div class="NumboxPH pa-0 ma-0">
+    <input :class='["Numbox",{error:hasError},"pa-0","ma-0"] ' type="number" :value="value" @input="$emit('input',{value:$event.target.valueAsNumber})" @change="$emit('change',{value:$event.target.valueAsNumber})" :min="min" :max="max" />
 
     <div ref="Name" v-if="showName">{{name}}</div>
   </div>
@@ -37,11 +37,13 @@ export default class Numbox extends Vue {
 <style scoped>
 .numboxPH{
   height:100%;
+  width:100%;
 }
 input{
   height:100%;
   background-color: #0003;
   padding-left: 5px;
+  width:100%;
   /*font-size:inherit;*/
 }
 .error{

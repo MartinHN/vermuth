@@ -214,7 +214,7 @@ function buildAddressFromObj(o: any, errorIfEmpty = true) {
       debugger;
       // throw new Error(
       console.error(
-        'can\'t find address on object' + o);
+        "can't find address on object" + JSON.stringify(o));
     }
     return null;
   }
@@ -456,7 +456,7 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
             return;
           }
           if (result === null) {
-            console.error('Remote function can\'t find address');
+            console.error("Remote function can't find address");
           }
 
 
@@ -581,7 +581,6 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
         if (prop === accessibleNameSymbol || Array.isArray(obj)) {
           // TODO notify nameChange
 
-
         }
 
 
@@ -610,7 +609,7 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
         return target[k];
       }
       , deleteProperty(target: any, k: symbol|string) {
-        if (k in target) { // TODO
+        if (k in target) { // TODO lockCallbacks? for deleted objects?
           deleteProp(target, k);
           delete target[k];
           console.log(`property removed: ${k.toString()}`);
@@ -718,6 +717,6 @@ export function resolveAccessible(parent: any , addr: string[]) {
    }
 
  }
-  console.error('can\'t find accessible for ', oriAddr, 'stopped at ', addr);
+  console.error("can't find accessible for ", oriAddr, 'stopped at ', addr);
   return {accessible: undefined, parent: undefined};
 }

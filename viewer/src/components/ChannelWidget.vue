@@ -1,14 +1,15 @@
 <template>
 
   <v-container class="channelWidget" fluid pa-1>
-    <v-layout justify-space-between align-center row >
-      <v-flex xs2 >
+    <v-row no-gutters>
+      <v-col cols=1 >
         <Toggle v-model="enabledV" text="enabled"/>
-      </v-flex>
-      <v-flex xs10 >
+      </v-col>
+      <v-col cols=11 >
         <slider class="slider" @input="setChannelValue({channel:channelProp,value:$event})" :value="channelProp.floatValue" :name="displayedName"  :showName="true" :showValue="true" :enabled="enabledV"></slider>
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
+    
   </v-container>
 
 
