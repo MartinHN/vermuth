@@ -1,7 +1,7 @@
 <template>
   <!-- <v-container class="main" fluid pa-1> -->
     <v-row no-gutters >
-      <v-col cols=7 >
+      <v-col cols=10 >
         <v-list dense class="overflow-y-auto" style=max-height:200px >
           <!-- <v-subheader>Presets</v-subheader> -->
           <v-list-item-group v-model="selectedPreset" > <!-- v-model="item" color="primary"> -->
@@ -19,6 +19,7 @@
           <Button class="rename" @click="renameStatePrompt" text="rename"></Button>
           <Button class="remove" @click="removeStatePrompt" text="-" color='red'></Button>
 
+
         </div>
       </v-col>
 
@@ -31,6 +32,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 import Button from '@/components/Inputs/Button.vue';
+import Toggle from '@/components/Inputs/Toggle.vue';
 
 import StateMethods from '../store/states';
 
@@ -39,7 +41,7 @@ const statesModule = namespace('states');
 type ValueOf<T> = T[keyof T];
 // type State = ValueOf<StateMethods['states']>;
 @Component({
-  components: {Button},
+  components: {Button, Toggle},
 })
 export default class StateComponent extends Vue {
 
@@ -53,19 +55,23 @@ export default class StateComponent extends Vue {
   @statesModule.Getter('stateNames') private stateNames!: StateMethods['stateNames'];
   @statesModule.Getter('loadedStateName') private pStateName!: StateMethods['loadedStateName'];
 
+
+
   get stateName(): string {
     return this.pStateName;
   }
   set stateName(v: string) {
-    if (v) {
+    if (v  ) {
       this.recallState({name: v});
     }
   }
-  set selectedPreset(i:number){
-    this.stateName = this.stateNames[i]
+
+
+  set selectedPreset(i: number) {
+    this.stateName = this.stateNames[i];
   }
-  get selectedPreset(){
-    return this.stateNames.indexOf(this.stateName)
+  get selectedPreset() {
+    return this.stateNames.indexOf(this.stateName);
   }
 
   public saveNewState() {

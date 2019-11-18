@@ -4,12 +4,21 @@ import { Universe } from './Universe';
 import { sequencePlayer } from './Sequence';
 import { nonEnumerable } from './ServerSync';
 import {addProp,deleteProp} from './MemoryUtils'
-interface ChannelsValuesDicTypes {[id: string]: number; }
+import {CurveBase,CurveStore} from './Curve'
+import {CurvePlayer} from './CurvePlayer'
 
+interface ChannelsValuesDicTypes {[id: string]: number; }
+interface ChannelsCurvesDicTypes {[id: string]: {name:string,offset:number}; }
+
+
+type SavedValueType = number|{curve:CurveBase,offset:number}
 export class FixtureState {
 
   get channelValues(): ChannelsValuesDicTypes {
     return Object.assign({}, this.pChannelValues) ;
+  }
+  get channelCurveLinks(): ChannelsCurvesDicTypes {
+    return Object.assign({}, this.pChannelCurveLinks) ;
   }
 
   public static createFromObj(o: any): FixtureState {
@@ -17,25 +26,37 @@ export class FixtureState {
     res.configureFromObj(o);
     return res;
   }
-  public name = 'no';
+  public name = '';
   private pChannelValues: ChannelsValuesDicTypes = {};
-  constructor(fixture?: FixtureBase , options?: {overrideValue?: number, pickOnlyDimmable?: boolean, full?: boolean}) {
+  private pChannelCurveLinks:ChannelsCurvesDicTypes={}
+  constructor(fixture?: FixtureBase , options?: {overrideValue?: number, channelFilter?: (c:ChannelBase)=>boolean, full?: boolean}) {
     if (fixture === undefined) {return; }
     this.name = fixture.name;
     let validFix ;
     if (options && options.full) {
       validFix = fixture.channels;
-    } else if (options && options.pickOnlyDimmable) {
-      validFix = fixture.channels.filter((c) => c.reactToMaster);
+    } else if (options && options.channelFilter) {
+      validFix = fixture.channels.filter(options.channelFilter);
     } else {
       validFix = fixture.channels.filter((c) => c.enabled);
     }
-    validFix.map((c) => {this.pChannelValues[c.name] =  (options && options.overrideValue !== undefined) ? options.overrideValue : c.floatValue; });
+    validFix.map((c) => {
+      const curveLink = CurvePlayer.getCurveLinkForChannel(c)
+
+      addProp(curveLink?this.pChannelCurveLinks:this.pChannelValues,
+        c.name,
+        (options && options.overrideValue !== undefined) ? 
+        options.overrideValue : 
+        (curveLink &&{name:curveLink.curve.name,offset:curveLink.offset})||
+        c.floatValue
+        )
+    });
   }
 
   public configureFromObj(o: any) {
     this.name = o.name;
     this.pChannelValues = o.pChannelValues ; // .map( (oo: any) => res.pChannelValues[oo.channelName]= oo.value)) );
+    this.pChannelCurveLinks = o.pChannelCurveLinks;
   }
 
 
@@ -45,19 +66,38 @@ export class FixtureState {
 }
 
 export class ResolvedFixtureState {
-  public channels: { [id: string]: {channel: ChannelBase, value: number }} = {};
+  public channels: { [id: string]: {channel: ChannelBase, value: SavedValueType}} = {};
 
   constructor(public state: FixtureState, public fixture: FixtureBase) {
     Object.entries(this.state.channelValues).forEach(([k, cv]) => {
       const c = this.fixture.getChannelForName(k);
       if (c) {this.channels[c.name] = {channel: c, value: cv}; }
     });
+    Object.entries(this.state.channelCurveLinks).forEach(([k, cv]) => {
+      const c = this.fixture.getChannelForName(k);
+      const curve = CurveStore.getCurveNamed(cv.name)
+      if (c && curve) {
+        this.channels[c.name] = {channel: c, value: {curve,offset:cv.offset}}; 
+      }
+    });
   }
 
   public applyState() {
-    Object.values(this.channels).map((cv) => {cv.channel.setValue(cv.value, true); });
+    Object.values(this.channels).map((cv) => {
+      if(CurvePlayer.getCurveForChannel(cv.channel)){
+          CurvePlayer.removeChannel(cv.channel)
+        }
+      if(typeof(cv.value)==="number"){
+        cv.channel.setValue(cv.value, true);
+      }
+      else{
+        const curve = cv.value.curve as CurveBase
+        CurvePlayer.addCurve(curve)
+        CurvePlayer.assignChannelToCurveNamed(curve.name,cv.channel,cv.value.offset)
+      }
+    });
   }
-  public applyFunction(cb: (channel: ChannelBase, value: number) => void) {
+  public applyFunction(cb: (channel: ChannelBase, value: SavedValueType) => void) {
     Object.values(this.channels).map((cv) => {cb(cv.channel, cv.value); });
   }
 }
@@ -76,7 +116,10 @@ export class MergedState {
           const channel = channelObj.channel;
           const sourcev = channel.floatValue;
           const targetv = channelObj.value;
-          this.channels.push({channel, sourcev, targetv});
+          if(typeof(targetv)==="number"){
+            this.channels.push({channel, sourcev, targetv});
+          }
+          
         }
       }
     }
@@ -150,7 +193,7 @@ export class State {
     }
     return res;
   }
-  public recall(context: FixtureBase[], cb: (channel: ChannelBase, value: number) => void | undefined) {
+  public recall(context: FixtureBase[], cb: (channel: ChannelBase, value: SavedValueType) => void | undefined) {
     sequencePlayer.stopIfPlaying();
     const rs = this.resolveState(context);
     if (cb) {
@@ -159,6 +202,8 @@ export class State {
       rs.map((s) => s.applyState());
     }
   }
+
+
 
 
 
@@ -216,7 +261,22 @@ export class StateList {
   public recallState(s: State) {
     sequencePlayer.stopIfPlaying();
     const rs = s.resolveState(this.getCurrentFixtureList());
-    rs.map((r) => r.applyFunction((channel, value) => channel.setValue( value, true)));
+    rs.map((r) => r.applyFunction(
+      (channel, value) => {
+        if(CurvePlayer.getCurveForChannel(channel)){
+          CurvePlayer.removeChannel(channel)
+        }
+        if(typeof(value)==="number"){
+          channel.setValue( value, true);
+        }
+        else{
+          if(!CurvePlayer.hasCurve(value.curve)){
+            CurvePlayer.addCurve(value.curve)
+          }
+          CurvePlayer.assignChannelToCurveNamed(value.curve.name,channel,value.offset)
+        }
+
+      }));
     for (const c of this.universe.allChannels) {
       const found = rs.find((r) =>
         Object.values(r.channels)
@@ -262,7 +322,9 @@ export class StateList {
     this.currentState.updateFromFixtures(fl);
   }
 
-
+  public getCurveForChannel(c:ChannelBase){
+    return CurvePlayer.getCurveForChannel(c)
+  }
 
 
 
@@ -270,7 +332,7 @@ export class StateList {
     const s = this.states[oldName];
     if (s) {
       s.name = newName;
-      delete this.states.oldName;
+      deleteProp(this.states,oldName);
       addProp(this.states,newName, s);
       if (this.loadedStateName === oldName) {
         this.loadedStateName = newName;
@@ -295,7 +357,7 @@ class WholeState extends State {
     const res: ResolvedFixtureState[] = [];
     const opt = {};
     for (const f of context) {
-      const fs = new FixtureState(f, {overrideValue: this.value, pickOnlyDimmable : true});
+      const fs = new FixtureState(f, {overrideValue: this.value, channelFilter:(c:ChannelBase)=>{return c.reactToMaster}});
       res.push(new ResolvedFixtureState(fs, f));
     }
     return res;

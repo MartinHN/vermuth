@@ -3,15 +3,15 @@
 
   <div class="main"  style="width:100%;height:100%">
 
-    <Slider text="start" :value=positionRange.start @input=setZoomPosRange($event,positionRange.end) min=0 :max=curve.span-10></Slider>
+<!--     <Slider text="start" :value=positionRange.start @input=setZoomPosRange($event,positionRange.end) min=0 :max=curve.span-10></Slider>
     <Slider text="end" :value=positionRange.end @input=setZoomPosRange(positionRange.start,$event) min=10 :max=curve.span+10></Slider>
-
-    <svg v-if=isZoomable width=100% height=20% :viewBox="[0,0,zoomBoxSize.w,zoomBoxSize.h]" @mousedown=startZoom preserveAspectRatio=none>
+ -->
+    <svg v-if=isZoomable width=100% height=10% :viewBox="[0,0,zoomBoxSize.w,zoomBoxSize.h]" @mousedown=startZoom preserveAspectRatio=none>
       <path :d=zoomPath stroke=black  fill=transparent></path>
       <rect :x=zoomBoxRect.x :y=zoomBoxRect.y :width=zoomBoxRect.w :height=zoomBoxRect.h stroke=black fill=transparent @mousewheel.prevent=wheel></rect>
     </svg>
 
-    <svg ref=my-svg width=100% :height="isZoomable?'80%':'100%'" :viewBox="[0,0,domSize.w,domSize.h]" @mousedown="mouseDown" @mouseup="mouseUp" @mousemove="mouseMove" @mouseleave="mouseLeave" @mouseenter="mouseEnter">
+    <svg ref=my-svg width=100% :height="isZoomable?'90%':'100%'" :viewBox="[0,0,domSize.w,domSize.h]" @mousedown="mouseDown" @mouseup="mouseUp" @mousemove="mouseMove" @mouseleave="mouseLeave" @mouseenter="mouseEnter" preserveAspectRatio=none>
 
       <circle  v-for="v in draggableKeyPoints" :key=v.id ref='framesCircles' :r="pRadius" :cx="v.location.x" :cy='v.location.y' :fill="v.hovered?'blue':v.selected?'red':'black'"></circle>
 
@@ -47,7 +47,8 @@ import Slider from '@/components/Inputs/Slider.vue';
 import * as CurveUtils from './CurveEditorUtils';
 import { Draggable, DraggableHandler } from '@/components/Utils/Draggable';
 
-function getPointFromEvent(e: MouseEvent): Point {return new Point( e.offsetX,  e.offsetY); }
+function getPointFromEvent(e: MouseEvent): Point {
+  return new Point( e.offsetX,  e.offsetY); }
 
 function secondaryEvent(e: MouseEvent) {return e.metaKey; }
 
@@ -111,7 +112,7 @@ export default class CurveEditor extends Vue {
   public valueRange = new CurveUtils.Range(0, 1);
 
 
-  @Prop({default: () => new Curve<number>()})
+  @Prop({default: () => new Curve<number>('edited')})
   private curve !: Curve<number> ;
 
   @Prop({default: 8})
@@ -255,10 +256,10 @@ export default class CurveEditor extends Vue {
   public mounted() {
     this.svgDOM =  this.$refs['my-svg'] as SVGGraphicsElement;
     this.dH.getAllDraggables = () => this.allDraggables;
-    this.curve.add(new KeyFrame<number>(0, 0, new BezierEasing()));
-    this.curve.add(new KeyFrame<number>(100, 0.5));
-    this.curve.add(new KeyFrame<number>(200, 1));
-    this.curve.autoDuration();
+
+    if (this.curve) {
+      this.positionRange.end = Math.min(this.curve.span, this.positionRange.end);
+    }
   }
 
   public pixToPosVal(p: Point, absolutePoint= true) {

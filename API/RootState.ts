@@ -5,8 +5,9 @@ import { StateList } from './State';
 import { DMXControllerI } from './DMXControllerI';
 import { bindClientSocket, RemoteFunction, SetAccessible, setChildAccessible, AccessibleClass, resolveAccessible, RemoteValue } from './ServerSync';
 import { buildEscapedJSON, buildEscapedObject } from './SerializeUtils';
-
-
+import {GlobalTransport} from './Time'
+import {CurvePlayer} from './CurvePlayer'
+import {CurveStore} from './Curve'
 
 @AccessibleClass()
 export class RootStateType {
@@ -21,6 +22,15 @@ export class RootStateType {
   public readonly sequenceList = new Array<Sequence>();
   @SetAccessible({readonly: true})
   public readonly sequencePlayer = sequencePlayer;
+  @SetAccessible({readonly:true})
+  public readonly globalTransport = GlobalTransport;
+  @SetAccessible({readonly:true})
+  public readonly curveStore = CurveStore;
+
+
+  @SetAccessible({readonly:true})
+  public readonly curvePlayer = CurvePlayer
+
   @SetAccessible({readonly: true})
   public readonly stateList  = new StateList(this.universe);
 
@@ -58,9 +68,14 @@ export class RootStateType {
     if (ob.stateList !== undefined) {
       this.stateList.configureFromObj(ob.stateList);
     }
+    if (ob.curveStore !== undefined) {
+      this.curveStore.configureFromObj(ob.curveStore);
+    }
+
     if (ob.dmxController !== undefined && this.dmxController) {
       this.dmxController.configureFromObj(ob.dmxController);
     }
+
     bindClientSocket('auto');
     this.__isConfigured = validObj;
   }

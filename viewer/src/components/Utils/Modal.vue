@@ -1,6 +1,6 @@
 <template>
  <transition name="modal">
-  <div class="modal-mask" @click="checkOuterClick($event)">
+  <div class="modal-mask" @mousedown="checkOuterClick($event)">
     <div class="modal-wrapper">
       <div class="modal-container">
 
@@ -37,7 +37,7 @@ import { Component, Prop, Vue , Watch} from 'vue-property-decorator';
 export default class Modal extends Vue {
 
   public checkOuterClick(e: MouseEvent) {
-    if (e) {
+    if (e ) {
       const clickedEl = e.target as HTMLElement;
       if ( ['modal-mask', 'modal-wrapper'].some((el) => clickedEl.classList.contains(el))) {
         this.$emit('close');
@@ -70,9 +70,10 @@ export default class Modal extends Vue {
 .modal-container {
   width: 80%;
   height: 80%;
+  overflow-y: scroll;
   margin: 0px auto;
   padding: 20px 30px;
-  background-color: #fff;
+  background-color: #ddd;
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
   transition: all .3s ease;

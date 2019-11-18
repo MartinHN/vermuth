@@ -3,6 +3,8 @@
     Sequencer
     <br/>
     <div class="Sequencer">
+      <div> {{globalTransport.beat}}</div>
+      <Toggle v-model=togglePlay style="height:40px" text=play> </Toggle>
       <Button class="button addSequence" @click="saveCurrentSequence()" text="add Sequence"/>
       <SequenceComponent v-for="s in sequences" :key='s.id' :sequence="s" />
 
@@ -15,21 +17,33 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 import Button from '@/components/Inputs/Button.vue';
+import Toggle from '@/components/Inputs/Toggle.vue';
 import Numbox from '@/components/Inputs/Numbox.vue';
 import SequenceComponent from './SequenceComponent.vue';
 import { Sequence } from '@API/Sequence';
 import SequenceMethods from '../store/sequence';
 const sequenceModule = namespace('sequence');
 
+
 @Component({
-  components: {Button, Numbox, SequenceComponent},
+  components: {Button, Numbox, SequenceComponent, Toggle},
 })
 export default class Sequencer extends Vue {
 
   @sequenceModule.Mutation('addSequence') public addSequence!: SequenceMethods['addSequence'];
   @sequenceModule.Action('saveCurrentSequence') public saveCurrentSequence!: SequenceMethods['saveCurrentSequence'];
   @sequenceModule.State('sequenceList') public sequences!: SequenceMethods['sequenceList'];
-
+  @sequenceModule.State('globalTransport') public globalTransport!: SequenceMethods['globalTransport'];
+  get togglePlay() {
+    return this.globalTransport.isPlaying;
+  }
+  set togglePlay(v: boolean) {
+    if (v) {
+      this.globalTransport.start();
+    } else {
+      this.globalTransport.stop();
+    }
+  }
 }
 </script> 
 

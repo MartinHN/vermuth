@@ -12,7 +12,7 @@ import { Settable } from '../util';
 @Module({namespaced: true})
 export default class DMXConfig extends VuexModule {
 
-  public serverIP = Server.__serverIP
+  public serverIP = Server.__serverIP;
   public dmxClientC = DMXClient;
   // @Settable()
   public get __portNameList() {
@@ -99,13 +99,12 @@ export default class DMXConfig extends VuexModule {
   }
 
   @Mutation
-  public tryIP(ip:string){
-    const oldIP = ip
-    if(!Server.changeServerIP(ip)){
-      Server.changeServerIP(oldIP)
-    }
-    else{
-      this.serverIP=ip;
+  public tryIP(ip: string) {
+    const oldIP = ip;
+    if (!Server.changeServerIP(ip)) {
+      Server.changeServerIP(oldIP);
+    } else {
+      this.serverIP = ip;
     }
   }
 

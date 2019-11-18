@@ -53,18 +53,15 @@ export default class Slider extends Vue {
   position:relative;
   width:100%;
   height:100%;
-  display: inline-block;
+  display: flex;
+  background: #ddd;
 }
 .Value{
-  /*display :inline-block;*/
   position: absolute;
   height:100%;
   top:3px;
   right:3px;
-  
   margin-left:5%;
-  /*width:50%;*/
-  /*top:-40px;*/
   z-index: 2;
   user-select: none;
   pointer-events: none;
@@ -74,8 +71,6 @@ export default class Slider extends Vue {
   position: absolute;
   height:100%;
   top:3px;
-  
-  
   margin-left: 1rem;
   /*top:-40px;*/
   z-index: 2;
@@ -86,9 +81,9 @@ export default class Slider extends Vue {
 .active{
   background: dodgerblue;
 }
-.inactive{
+/*inactive{
   background: #ddd;
-}
+}*/
 
 
 input[type="range"] { 
@@ -127,7 +122,7 @@ input[type="range"] {
 
 
 ::-moz-range-track {
-  height: 30px;
+  height: 100%;
   background: #ddd;
 }
 
@@ -142,7 +137,7 @@ input[type="range"] {
 ::-ms-track { 
   background: #ddd;
   color: transparent;
-  height: 30px;
+  height: 100px;
   border: none;
 }
 

@@ -13,7 +13,7 @@ export default class Sequences extends VuexModule {
 
   public sequenceList = RootState.sequenceList;
 
-
+  public globalTransport = RootState.globalTransport;
   @Settable()
   public __curSequence = '';
 

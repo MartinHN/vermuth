@@ -39,6 +39,8 @@ export default class Config extends Vue {
 
   @configModule.State('autoSave') private autoSave!: boolean;
 
+  @DMXConfigModule.Mutation('tryIP') private tryIP!: DMXConfigMethods['tryIP'];
+
   public loadLocally(files: FileList) {
     if (files && files.length === 1) {
       const file = files[0];
@@ -64,15 +66,13 @@ export default class Config extends Vue {
   public panic() {
   }
 
-  @DMXConfigModule.Mutation('tryIP') private tryIP!:DMXConfigMethods['tryIP']
-
-  public alertTryIP(){
-    const res = prompt("change Server IP");
-    if(res){
-      this.tryIP(res)
+  public alertTryIP() {
+    const res = prompt('change Server IP');
+    if (res) {
+      this.tryIP(res);
     }
   }
-  
+
   // @configModule.State('fixtures') private fixtures!: ConfigMethods['fixtures'];
 
 

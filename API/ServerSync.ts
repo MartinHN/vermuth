@@ -1,4 +1,4 @@
-const isClient = process.env.VUE_APP_ISCLIENT;
+export const isClient = process.env.VUE_APP_ISCLIENT;
 const logServerMessages = process.env.LOG_MSG;
 let clientSocket: any = null ;
 // let ioServer: any = null;
@@ -188,7 +188,14 @@ function buildAddressFromObj(o: any, errorIfEmpty = true) {
       addr.push(insp.__accessibleName);
       found = true;
     } else if (Array.isArray(insp.__accessibleParent)) {
-      addr.push('' + insp.__accessibleParent.indexOf(insp));
+      debugger
+      let idx='null'
+      for(const [k,v] of Object.entries(insp.__accessibleParent.__accessibleMembers)){
+        if(v===insp){
+          idx = k;
+        }
+      }
+      addr.push('' + idx);
       found = true;
     } else if (insp.__accessibleParent) {
       const pair = Object.entries(insp.__accessibleParent).find(([k, v]) => v === insp);
@@ -510,7 +517,11 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
 };
 }
 
-
+export function  callOnServerOnly(cb:()=>void){
+  if(!isClient){
+    cb();
+  }
+}
 
 export function nonEnumerable(opts?: {default?: any}) {
   return (target: any, key: string | symbol) => {
@@ -545,9 +556,13 @@ const accessibleAddressSymbol = Symbol('address');
 const isProxySymbol = Symbol('isProxy');
 
 export function setChildAccessible(parent: any, key: string|symbol, opts?: {immediate?: boolean, defaultValue?: any, readonly?: boolean, blockRecursion?: boolean}) {
+  if(key==="-1"){
+    debugger
+  }
   const {defaultValue, immediate, readonly, blockRecursion} = opts || {};
-  const childAcc = defaultValue !== undefined ? defaultValue : parent[key];
-
+  let childAcc = defaultValue !== undefined ? defaultValue : parent[key];
+  //debugger
+  //addProp(parent,key,childAcc)
   if (parent.__accessibleMembers && parent.__accessibleMembers[key] ) {
     console.error('re register accessible');
     return; // avoid reregistering
@@ -580,8 +595,9 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
       set(obj: any, prop: symbol|string, value: any) {
         if (prop === accessibleNameSymbol || Array.isArray(obj)) {
           // TODO notify nameChange
-
+          debugger
         }
+
 
 
         const res = true;
@@ -589,6 +605,7 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
         addProp(obj, prop, value);
 
         const newAcc = obj[prop];
+        debugger
         if (!blockRecursion && typeof(newAcc) === 'object' && prop.toString()[0] !== '_' ) {
           if (!(prop in Object.keys(obj.__accessibleMembers))) {
             console.log(`auto add child Accessible ${prop.toString()} on `, buildAddressFromObj(obj), newAcc);
@@ -598,15 +615,31 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
         }
 
         return res;
-      },
-      get: (target: any, k: symbol|string) => {
+      }
+      ,
+      get: (target: any, k: symbol|string,thisProxy:any) => {
         if (k === isProxySymbol) {
           return true;
         } else if (k === accessibleAddressSymbol) {
           return buildAddressFromObj(target);
         }
+        else if(typeof(target[k])==="function"){
+          if(k==="push"){
+            return (e)=>{
+              debugger
 
-        return target[k];
+              // addProp(target,target.length,e)
+              setChildAccessible(target, target.length, {defaultValue: e});
+              // target[k](e)
+            }
+          }
+          // if(target.isProxySymbol){
+          //   debugger
+          // }
+          return Reflect.get(target,k,thisProxy).bind(target)
+        }
+
+        return Reflect.get(target,k,thisProxy)
       }
       , deleteProperty(target: any, k: symbol|string) {
         if (k in target) { // TODO lockCallbacks? for deleted objects?
@@ -628,7 +661,12 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
     if (childAcc.__isProxy) {
       debugger;
     }
+    // if(Array.isArray(childAcc)){
+    //   childAcc = new Proxy(childAcc,handler)
+    // }
     const proxy = new Proxy(childAcc, handler);
+
+    // addProp(parent,key,proxy)
     Object.defineProperty(parent, key, {
       value: proxy,
       enumerable: true,
@@ -684,7 +722,11 @@ export function AccessibleClass() {
   };
 }
 
-
+export function doSharedFunction(cb:()=>void){
+  lockCallbacks+=1
+  cb()
+  lockCallbacks-=1;
+}
 export function fetchRemote(o: any, k: string, cb?: (...args: any[]) => any) {
   if (o.__remoteValues !== undefined && o.__remoteValues[k]) {
     o.__remoteValues[k](cb);
@@ -717,6 +759,7 @@ export function resolveAccessible(parent: any , addr: string[]) {
    }
 
  }
+ debugger
   console.error("can't find accessible for ", oriAddr, 'stopped at ', addr);
   return {accessible: undefined, parent: undefined};
 }

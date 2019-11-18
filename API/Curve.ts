@@ -1,5 +1,7 @@
-import {Easing, LinearEasing} from './Easings/easings';
+import {Easing,EasingFactory, LinearEasing} from './Easings/easings';
 import {Point} from './Utils2D';
+import {EventEmitter } from 'events'
+
 
 export interface Vector {
   x: number;
@@ -19,17 +21,6 @@ export function isNumber(v: NumOrVec): v is number {
 
 
 
-export class KeyTarget {
-  constructor(public target: NumOrVec) {
-  }
-  get value() {return this.target; }
-  // set value(v:T){ this.target = v}
-  public setFrom(v: NumOrVec) {
-    if (isVector(this.target) && isVector(v)) {this.target.x = v.x; this.target.y = v.y; } else if (isNumber(this.target) && isNumber(v)  ) {this.target = v; } else {console.error('trying to assign NumOrVec KeyFrame'); }
-
-  }
-
-}
 
 
 
@@ -48,6 +39,14 @@ export class KeyFrame<T extends NumOrVec > {
   private parentCurve: Curve<T> | undefined = undefined;
   constructor(private _position: number, private _value: T, public _easing: Easing = new LinearEasing()) {
 
+  }
+  configureFromObj(o:any){
+    this.position = o._position;
+    this.value = o._value;
+    this.easing = EasingFactory.createFromObj(o._easing) || new LinearEasing()
+  }
+  toObj(){
+    return {_position:this._position,_value:this._value,_easing:this._easing.toObj()}
   }
 
   get easing() {return this._easing; }
@@ -105,24 +104,53 @@ export class KeyFrame<T extends NumOrVec > {
 
 
 
-interface CurveBase {
+export interface CurveBase extends EventEmitter{
+  name:string;
   position: number;
   span: number;
+  getValue():any;
+  configureFromObj(o:any):void;
+  toObj():any;
+
   // goToPct(pct:number):void;
 }
 
-export class Curve<T extends NumOrVec> implements CurveBase {
+let curveNum = 0
+export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase {
   private _span: number = 0;
   private _position: number = 0;
   private _value: NumOrVec = 0;
+  public isLooping = true;
+  public uid = curveNum++
   constructor(
-    private _frames: Array<KeyFrame<T>> = new Array<KeyFrame<T>>(),
-    private _targets: KeyTarget[]= new Array<KeyTarget>()) {
+    public name:string,
+    private _frames: Array<KeyFrame<T>> = new Array<KeyFrame<T>>()) {
+    super()
+    if(_frames.length===0){
+    this.add(new KeyFrame<T>(0, 0 as T));
+    this.add(new KeyFrame<T>(1000, 1 as T));
+    }
+    this.autoDuration();
+    CurveStore.add(this)
+  }
+  configureFromObj(o:any){
+    this.name = o.name
+    this._frames = []
+    o._frames.map((f:any)=>{
+      const k = new KeyFrame<T>(0,0 as T)
+      k.configureFromObj(f)
+      this.add(k)
+    })
 
   }
-
+  toObj():any{
+    return {
+      name:this.name,
+      _frames:this._frames.map(f=>f.toObj())
+    }
+  }
   get frames() {return this._frames; }
-  get targets() {return this._targets; }
+  
   set span(n: number) {
     this._span = n;
     this.updateValue();
@@ -132,15 +160,16 @@ export class Curve<T extends NumOrVec> implements CurveBase {
 
 
   set position(p: number) {
-    if (this._position !== p) {
-      this._position = p;
+    const np = this.isLooping?p%this.span:p;
+    if (this._position !== np) {
+      this._position = np;
       this.updateValue();
     }
   }
   get position() {return this._position; }
 
   get value() {return this._value; }
-
+  getValue() {return this._value; }
   public autoDuration() {
     if (this.frames.length > 0) {
       const last = this.frames[this.frames.length - 1];
@@ -163,92 +192,89 @@ export class Curve<T extends NumOrVec> implements CurveBase {
   public updateValue() {
     if (this._span > 0) {
       const v = this.getValueAt(this._position);
+      const hasChange = this._value !==  v;
       this._value =  v;
-      for (const t of this.targets) {
-        t.setFrom(v);
-      }
+      if(hasChange){this.emit("value",v)}
+
     } else {console.error('no span'); }
-  }
+}
 
-  public getValueAt(position: number): NumOrVec {
-    const fr = this.getKeyFramesForPosition(position);
-    let v: NumOrVec|undefined = fr.start ? fr.start.value : fr.end ? fr.end.value : undefined;
-    if (v !== undefined  ) {
-      if (fr.start && fr.end) {
-        const pctDone = (position - fr.start.position) / (fr.end.position - fr.start.position);
-        v = fr.start.easeWith(fr.end.value, pctDone);
-      }
-    } else {
-      console.error('getValueAt error');
-      v = 0;
+public getValueAt(position: number): NumOrVec {
+  const fr = this.getKeyFramesForPosition(position);
+  let v: NumOrVec|undefined = fr.start ? fr.start.value : fr.end ? fr.end.value : undefined;
+  if (v !== undefined  ) {
+    if (fr.start && fr.end) {
+      const pctDone = (position - fr.start.position) / (fr.end.position - fr.start.position);
+      v = fr.start.easeWith(fr.end.value, pctDone);
     }
-    return v;
+  } else {
+    console.error('getValueAt error');
+    v = 0;
   }
-  public add(c: KeyFrame<T>) {
-    this.frames.push(c);
-    this.frames.sort((a, b) => a.position - b.position);
-    c.setParentCurve(this);
-    return this;
+  return v;
+}
+public add(c: KeyFrame<T>) {
+  this.frames.push(c);
+  this.frames.sort((a, b) => a.position - b.position);
+  c.setParentCurve(this);
+  return this;
+}
+public remove(c: KeyFrame<T>) {
+  const i = this.frames.indexOf(c);
+  if (i >= 0) {this.frames.splice(i, 1); }
+  c.setParentCurve(undefined);
+  return this;
+}
+public childTvChanged(child: KeyFrame<T>) {
+  if (child.position > this.span) {
+    this.span = child.position;
   }
-  public remove(c: KeyFrame<T>) {
-    const i = this.frames.indexOf(c);
-    if (i >= 0) {this.frames.splice(i, 1); }
-    c.setParentCurve(undefined);
-    return this;
-  }
-  public childTvChanged(child: KeyFrame<T>) {
-    if (child.position > this.span) {
-      this.span = child.position;
-    }
-    this.updateValue();
+  this.updateValue();
 
-  }
+}
 
-  public [Symbol.iterator]() { return this.frames.values(); }
+public [Symbol.iterator]() { return this.frames.values(); }
 
-  public findClosestKeyForPosition(position: number, maxDeltaPosition: number = -1) {
+public findClosestKeyForPosition(position: number, maxDeltaPosition: number = -1) {
 
-    if (this.frames.length === 0) {return null; }
-    let res = this.frames[0];
+  if (this.frames.length === 0) {return null; }
+  let res = this.frames[0];
 
-    for (const v of this.frames) {
-      if (Math.abs(v.position - position) < Math.abs(res.position - position)) {
-        res = v;
-      }
-    }
-    if (maxDeltaPosition < 0 || Math.abs(res.position - position) <= maxDeltaPosition) {
-      return res;
-    } else {
-      return null;
+  for (const v of this.frames) {
+    if (Math.abs(v.position - position) < Math.abs(res.position - position)) {
+      res = v;
     }
   }
-
-  public findClosestKeyForPositionValue(pv: Point, maxDelta: Point = new Point(-1, 0)) {
-
-    if (this.frames.length === 0) {return null; }
-    let res = this.frames[0];
-    let distSq = pv.distSq(new Point (res.position, (res.value as number)));
-    for (const v of this.frames) {
-      const curD = pv.distSq(new Point (v.position, (v.value as number)));
-      if (curD < distSq) {
-        distSq = curD;
-        res = v;
-      }
-    }
-    if (maxDelta.x < 0 ||
-      (Math.abs(res.position - pv.x) <= maxDelta.x) &&
-      (Math.abs((res.value as number) - pv.y) <= maxDelta.y)
-      ) {
-      return res;
+  if (maxDeltaPosition < 0 || Math.abs(res.position - position) <= maxDeltaPosition) {
+    return res;
   } else {
     return null;
   }
 }
-get length() {return this.frames.length; }
-public addTarget(t: KeyTarget) {
-  const i = this.targets.indexOf(t);
-  if (i >= 0) {this.targets.splice(i); }
+
+public findClosestKeyForPositionValue(pv: Point, maxDelta: Point = new Point(-1, 0)) {
+
+  if (this.frames.length === 0) {return null; }
+  let res = this.frames[0];
+  let distSq = pv.distSq(new Point (res.position, (res.value as number)));
+  for (const v of this.frames) {
+    const curD = pv.distSq(new Point (v.position, (v.value as number)));
+    if (curD < distSq) {
+      distSq = curD;
+      res = v;
+    }
+  }
+  if (maxDelta.x < 0 ||
+    (Math.abs(res.position - pv.x) <= maxDelta.x) &&
+    (Math.abs((res.value as number) - pv.y) <= maxDelta.y)
+    ) {
+    return res;
+} else {
+  return null;
 }
+}
+get length() {return this.frames.length; }
+
 
 public getKeyFramesForPosition(position: number): {start: KeyFrame<T>|undefined, end: KeyFrame<T>|undefined} {
   for ( let i = 0; i <  this.frames.length - 1 ; i++) {
@@ -273,13 +299,29 @@ public getKeyFramesForPosition(position: number): {start: KeyFrame<T>|undefined,
 
 }
 
+class _CurveStore extends Set<CurveBase>{
 
 
-export class CurvePlayer {
+  configureFromObj(o:any){
+    this.clear()
+    if(o && Array.isArray(o)){
+      for(const c of o){
+        const cu = new Curve<number>("new")
+        cu.configureFromObj(c)
+        this.add(cu)
+      }
+    }
+  }
+  toJSON(){
+    const res = []
+    for(const c of this.values()){res.push(c.toObj());}
+      return res;
+  }
 
-  constructor(
-    public curves: CurveBase[] = new Array<CurveBase> (),
-    private _span: number = 1) {}
-
+  getCurveNamed(name:string):CurveBase | undefined{
+    return Array.from(this.values()).find((e:CurveBase)=>e.name===name)
+  }
 }
+
+export const CurveStore = new _CurveStore()
 

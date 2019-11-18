@@ -7,7 +7,7 @@
     background-color="rgba(255, 255, 255, 0.795)"
     :disabled="!editable"
     dense
-    full-width=true
+    full-width
     >
     </v-text-field> 
     
