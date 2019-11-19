@@ -116,7 +116,7 @@ class SequencePlayer {
   }
 
   private goToState(nextState: State, timeIn: number, cb?: any) {
-    const res = 100; // ms between steps
+    const res = 100 ; // ms between steps
 
     if (nextState) {
       const transitionTime = Math.max((res + 1) / 1000 , Math.max(this.curSeq.timeOut, timeIn));
@@ -125,7 +125,7 @@ class SequencePlayer {
       mergedState.checkIntegrity();
       doTimer('seqTransition', transitionTime * 1000.0, res,
         (total: number, t: number) => {
-          const pct = t * 1.0 / total;
+          const pct = Math.max(0,Math.min(1,t * 1.0 / total));
           const time = t * res;
           // const pctIn = timeIn > 0 ? (1 - Math.max(0, (timeIn - time) / timeIn)) : 1;
           // const pctOut = timeOut>0?Math.max(0,(timeOut-time)/timeOut):0;
