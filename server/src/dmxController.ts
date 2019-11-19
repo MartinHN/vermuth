@@ -152,6 +152,15 @@ class DMXController implements DMXControllerI {
       this.__universe.setAllColor(color,setWhiteToZero);
     }
   }
+
+  private toSet:any = {}
+
+  private aggregatedSet(){
+    console.log(this.toSet)
+    this.dmx.update(this.universeName,this.toSet );
+    this.toSet={}
+  }
+  private debouncedSet = _.debounce(this.aggregatedSet.bind(this),28,{maxWait:30});
   public setCircs(msg: Array<{c: number, v: number}>, fromSocket) {
     // console.log('set_circ',msg,this.__connected)
 
@@ -163,8 +172,13 @@ class DMXController implements DMXControllerI {
       // debugger
 
     } else {
-
-      this.dmx.update(this.universeName, this.arrayToObj(msg, 255));
+      const ne = this.arrayToObj(msg, 255)
+      for(const k of Object.keys(ne)){
+        this.toSet[k]= ne[k]
+      }
+      
+      this.debouncedSet()
+      
     }
 
     if (fromSocket) {

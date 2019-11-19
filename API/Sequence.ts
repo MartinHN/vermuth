@@ -116,7 +116,7 @@ class SequencePlayer {
   }
 
   private goToState(nextState: State, timeIn: number, cb?: any) {
-    const res = 100 ; // ms between steps
+    const res = 30 ; // ms between steps
 
     if (nextState) {
       const transitionTime = Math.max((res + 1) / 1000 , Math.max(this.curSeq.timeOut, timeIn));
