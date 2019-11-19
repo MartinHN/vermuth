@@ -172,12 +172,13 @@ class DMXController implements DMXControllerI {
       // debugger
 
     } else {
-      const ne = this.arrayToObj(msg, 255)
-      for(const k of Object.keys(ne)){
-        this.toSet[k]= ne[k]
-      }
+      // const ne = this.arrayToObj(msg, 255)
+      // for(const k of Object.keys(ne)){
+      //   this.toSet[k]= ne[k]
+      // }
       
-      this.debouncedSet()
+      // this.debouncedSet()
+      this.dmx.update(this.universeName,this.arrayToObj(msg, 255) );
       
     }
 
