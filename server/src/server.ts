@@ -5,7 +5,7 @@ const args = require('minimist')(process.argv.slice(2));
 const clientLogger = logClientMessages ? require('@API/Logger').default : undefined;
 const PORT = process.env.PORT || 3000;
 
-import os from os
+import * as os from 'os'
 import * as express from 'express';
 import * as http from  'http';
 import * as io from 'socket.io';
