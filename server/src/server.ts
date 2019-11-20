@@ -92,19 +92,16 @@ fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8'
       if (data === '') {data = '{}'; }
       Object.assign(states ,  JSON.parse(data));
       let lastState = states
-      if (states && states.lastSessionID) {
-        lastState = states[states.lastSessionID];
-      }
       if (lastState) {
         setStateFromObject(lastState, null);
       }
       else{
-        console.error ('not found state from sessionID')
+        console.error ('not found state from file')
       }
-      
+
 
     });
-    
+
 
   } else {
     console.log('created file');
@@ -116,21 +113,15 @@ fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8'
 
 
 
-function getSessionId(socket) {
-  return 'default';
-  // return socket.id
-}
-
 function setStateFromObject(msg, socket: any) {
   console.log('setting state from: ' + socket);
-  const sessionID = getSessionId(socket);
-  const dif = diff(states[sessionID], msg);
+  
+  const dif = diff(states, msg);
 
   if (dif !== undefined || !rootState.isConfigured) {
     console.log('diff', dif);
-    states = {};
-    states[sessionID] = msg;
-    states.lastSessionID = sessionID;
+    states = msg;
+    
 
     if (socket) {
       console.log('broadcasting state: ' + JSON.stringify(msg.states));
@@ -138,7 +129,7 @@ function setStateFromObject(msg, socket: any) {
 
     }
     rootState.configureFromObj(msg);
-    states[sessionID] = rootState.toJSONObj(); // update persistent changes
+    states = rootState.toJSONObj(); // update persistent changes
     // dmxController.stateChanged(msg)
     fs.writeFile(localStateFile,
       JSON.stringify(states, null, '  '),
@@ -209,7 +200,7 @@ ioServer.on('connection', function(socket) {
  });
 
   socket.on('GET_STATE', (key, cb) => {
-    const msg = states[getSessionId(socket)];
+    const msg = states;
     if (cb) {
       cb(msg || {});
     } else {
@@ -221,7 +212,7 @@ ioServer.on('connection', function(socket) {
 
   socket.on('UPDATE_STATE', (key, msg) => {
     if (msg) {
-      Object.assign(states[getSessionId(socket)], msg);
+      Object.assign(states, msg);
     }
   });
 
