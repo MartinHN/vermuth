@@ -90,8 +90,9 @@ fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8'
         return console.log(err);
       }
       if (data === '') {data = '{}'; }
-      Object.assign(states ,  JSON.parse(data));
-      let lastState = states
+      let lastState = {}
+      Object.assign(lastState ,  JSON.parse(data));
+      
       if (lastState) {
         setStateFromObject(lastState, null);
       }
