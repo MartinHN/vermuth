@@ -25,6 +25,7 @@
     "express": "^4.17.1",
     "http-proxy": "^1.17.0",
     "json-diff": "^0.5.4",
+    "minimist": "^1.2.0",
     "module-alias": "^2.2.1",
     "osc": "^2.3.1",
     "pigpio": "^1.2.3",

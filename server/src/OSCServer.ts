@@ -68,6 +68,7 @@ class OSCServer {
   }
 
   public processMsg(msg, time, info) {
+
     if (msg.address !== '/ping') {
       if (clientLogger) {
         clientLogger.log('OSC >> server ' + JSON.stringify(msg));
@@ -79,7 +80,7 @@ class OSCServer {
     } else if (msg.address === '/allColors') {
       dmxController.setAllColor({r: msg.args[0], g: msg.args[1], b: msg.args[2]},true);
     } else {
-
+      debugger
       callAnyAccessibleFromRemote(rootState, msg.address, msg.args, info.address + ':' + info.port);
     }
 

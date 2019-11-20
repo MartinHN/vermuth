@@ -1,10 +1,11 @@
 const debug =  process.env.NODE_ENV !== 'production';
 const logClientMessages = process.env.LOG_MSG;
 if (!debug) {require('module-alias/register'); } // form module resolution
-
+const args = require('minimist')(process.argv.slice(2));
 const clientLogger = logClientMessages ? require('@API/Logger').default : undefined;
 const PORT = process.env.PORT || 3000;
 
+import os from os
 import * as express from 'express';
 import * as http from  'http';
 import * as io from 'socket.io';
@@ -34,11 +35,37 @@ app.use(history());
 const httpServer = new http.Server(app);
 
 
-const localStateFile = path.resolve(__dirname, '..', 'appSettings.json');
+let localStateFile = path.resolve(__dirname, '..', 'appSettings.json');
 
-const ioServer = io({
-  serveClient: false,
-});
+function pathExists(path){
+  try {if (fs.existsSync(path)) {return true;}} catch(err) {}
+  return false
+}
+///////
+// resolve session from args
+if(args.path){
+  const candidateFolder = path.resolve(args.path)
+  if(pathExists(candidateFolder)){
+    console.log("found external settings folder",candidateFolder)
+
+    let hn  = args.session || os.hostname()
+    hn = hn.toLowerCase()
+    if(hn.endsWith(".local")){hn=hn.split(".local")[0]}
+      const candidates = [path.resolve(candidateFolder,hn+'.json')]
+    let found = false
+    for(const c of candidates){
+      if(pathExists(c)){
+        localStateFile = c
+        found =  true
+      }
+    }
+    if(!found){console.error("not found settings in extrnal folder",candidates);}
+  }
+  else{console.error("not found external settings folder",candidateFolder);}
+}
+
+const ioServer = io({serveClient: false,});
+
 import {bindClientSocket} from '@API/ServerSync';
 bindClientSocket(ioServer);
 ioServer.attach(httpServer, {
