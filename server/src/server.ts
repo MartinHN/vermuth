@@ -27,7 +27,7 @@ const history = require('connect-history-api-fallback');
 const fs = require('fs');
 const path = require('path');
 
-const publicDir = debug ? path.resolve(__dirname, '..', 'dist', 'server', 'public') : path.resolve(__dirname, '..', 'public');
+const publicDir = args.public || path.resolve(__dirname, '..', 'dist', 'server', 'public') ;//: path.resolve(__dirname, '..', 'public');
 console.log('served Folder  :' + publicDir, __dirname);
 
 const app = express();
