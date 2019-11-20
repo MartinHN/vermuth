@@ -50,8 +50,8 @@ if(args.path){
 
     let hn  = args.session || os.hostname()
     hn = hn.toLowerCase()
-    if(hn.endsWith(".local")){hn=hn.split(".local")[0]}
-      const candidates = [path.resolve(candidateFolder,hn+'.json')]
+    if(hn.endsWith(".local")){hn=hn.split(".local")[0];}
+    const candidates = [path.resolve(candidateFolder,hn+'.json')]
     let found = false
     for(const c of candidates){
       if(pathExists(c)){
@@ -91,14 +91,20 @@ fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8'
       }
       if (data === '') {data = '{}'; }
       Object.assign(states ,  JSON.parse(data));
+      let lastState = states
       if (states && states.lastSessionID) {
-        const lastState = states[states.lastSessionID];
-        if (lastState) {
-          setStateFromObject(lastState, null);
-        }
+        lastState = states[states.lastSessionID];
       }
+      if (lastState) {
+        setStateFromObject(lastState, null);
+      }
+      else{
+        console.error ('not found state from sessionID')
+      }
+      
 
     });
+    
 
   } else {
     console.log('created file');
