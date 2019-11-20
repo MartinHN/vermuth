@@ -1,6 +1,8 @@
+require('module-alias/register');  // form module resolution
+
 const debug =  process.env.NODE_ENV !== 'production';
 const logClientMessages = process.env.LOG_MSG;
-if (!debug) {require('module-alias/register'); } // form module resolution
+
 const args = require('minimist')(process.argv.slice(2));
 const clientLogger = logClientMessages ? require('@API/Logger').default : undefined;
 const PORT = process.env.PORT || 3000;
