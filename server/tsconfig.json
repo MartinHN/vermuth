@@ -12,10 +12,10 @@
     "experimentalDecorators":true,
     "moduleResolution": "node",
     "allowJs":true,
-    "baseUrl":"./src",
+    "baseUrl":".",
     "paths": {
-      "@/*": ["./*"],
-      "@API/*": ["../../API/*"]
+      "@/*": ["./src/*"],
+      "@API/*": ["../API/*"]
     },
   },
   "include": [

@@ -4,9 +4,9 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 
-cd $DIR/server/src/
+cd $DIR/server/
 
 #npm run run
-NODE_ENV=production /usr/bin/node -r tsconfig-paths/register -r ts-node/register ./server.ts --public=$DIR/server/dist/server/public
-#NODE_ENV=production node dist/server/src/server.js 
+# NODE_ENV=production node -r tsconfig-paths/register -r ts-node/register ./server.ts --public=$DIR/server/dist/server/public
+NODE_ENV=production node dist/server/src/server.js 
 
