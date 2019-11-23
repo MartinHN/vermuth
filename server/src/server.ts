@@ -1,6 +1,6 @@
-require('module-alias/register');  // form module resolution
-
 const debug =  process.env.NODE_ENV !== 'production';
+const executingFromDist = __dirname.includes("/dist/")
+if(executingFromDist)require('module-alias/register');  // form module resolution
 const logClientMessages = process.env.LOG_MSG;
 
 const args = require('minimist')(process.argv.slice(2));
@@ -18,20 +18,26 @@ import dmxController from './dmxController';
 
 import rootState from '@API/RootState';
 import { callAnyAccessibleFromRemote } from '@API/ServerSync';
+import { buildEscapedObject } from '@API/SerializeUtils';
 rootState.registerDMXController(dmxController);
 
 
 import log from './remoteLogger';
 import { diff } from 'json-diff';
 
-const history = require('connect-history-api-fallback');
 
 const fs = require('fs');
 const path = require('path');
+function pathExists(path){
+  try {if (fs.existsSync(path)) {return true;}} catch(err) {}
+  return false
+}
+
 
 const publicDir = args.public || path.resolve(__dirname, '..', 'dist', 'server', 'public') ;//: path.resolve(__dirname, '..', 'public');
 console.log('served Folder  :' + publicDir, __dirname);
 
+const history = require('connect-history-api-fallback');
 const app = express();
 app.use(history());
 const httpServer = new http.Server(app);
@@ -39,10 +45,7 @@ const httpServer = new http.Server(app);
 
 let localStateFile = path.resolve(__dirname, '..', 'appSettings.json');
 
-function pathExists(path){
-  try {if (fs.existsSync(path)) {return true;}} catch(err) {}
-  return false
-}
+
 ///////
 // resolve session from args
 if(args.path){
@@ -203,7 +206,7 @@ ioServer.on('connection', function(socket) {
  });
 
   socket.on('GET_STATE', (key, cb) => {
-    const msg = states;
+    const msg = buildEscapedObject(rootState)
     if (cb) {
       cb(msg || {});
     } else {

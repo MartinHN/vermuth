@@ -1,4 +1,5 @@
 const isClient = process.env.VUE_APP_ISCLIENT;
+export function isServer(){return !isClient}
 const logServerMessages = process.env.LOG_MSG;
 let clientSocket: any = null ;
 // let ioServer: any = null;
@@ -319,6 +320,11 @@ export function SetAccessible() {
   }
 
 
+export function doLocked(cb:()=>void){
+  lockCallbacks+=1
+  cb()
+  lockCallbacks-=1
+}
 
 export function RemoteValue(cb?: (parent: any, value: any) => void) {
 

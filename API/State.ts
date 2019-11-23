@@ -3,7 +3,8 @@ import { FixtureBase } from './Fixture';
 import { Universe } from './Universe';
 import {deleteProp, addProp} from './MemoryUtils';
 import { sequencePlayer } from './Sequence';
-import { nonEnumerable } from './ServerSync';
+import { nonEnumerable,isServer } from './ServerSync';
+import {jsonPreHook} from './SerializeUtils'
 
 interface ChannelsValuesDicTypes {[id: string]: number; }
 
@@ -165,6 +166,14 @@ export class State {
 
 }
 
+let __firstBoot = true
+function isFirstBoot(){
+  const r = __firstBoot
+  __firstBoot=false
+  return r
+}
+
+
 export class StateList {
   public states: {[key: string]: State} = {};
   public currentState = new State('current', [], true);
@@ -175,6 +184,7 @@ export class StateList {
     this.__universe = uni;
     this.addState(blackState);
     this.addState(fullState);
+    jsonPreHook(this.currentState,()=>{this.updateCurrentState()})
   }
   get universe() {
     return this.__universe;
@@ -185,12 +195,18 @@ export class StateList {
       Object.keys(this.states).map((name) => this.removeStateNamed( name) );
       Object.keys(ob.states).map((name) => this.addState(State.createFromObj(ob.states[name])));
     }
+    if(isFirstBoot() && isServer()){
+      if(this.states["default"]){
+        this.recallStateNamed("default");
+      }
+    }
     if (ob.currentState) {
       ob.currentState.name = this.currentState.name;
       this.currentState.configureFromObj(ob.currentState);
       this.recallState(this.currentState);
     }
 
+    
 
   }
 
@@ -207,7 +223,7 @@ export class StateList {
     if (s === blackState || s === fullState) {
       addProp(this.states, s.name, s);
     } else {
-    addProp(this.states, s.name, s);
+      addProp(this.states, s.name, s);
     }
   }
 

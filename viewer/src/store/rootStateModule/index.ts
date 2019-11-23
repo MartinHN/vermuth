@@ -6,6 +6,7 @@ import rootState from '@API/RootState.ts';
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators';
 
 import {getCircular} from '@API/SerializeUtils';
+import {doLocked} from '@API/ServerSync'
 @Module({namespaced: true})
 export default class RootStateModule extends VuexModule {
 
@@ -18,7 +19,9 @@ export default class RootStateModule extends VuexModule {
   }
   @Mutation
   public configureFromObjMut(js: any) {
-    rootState.configureFromObj(js);
+    // doLocked(()=>{
+      rootState.configureFromObj(js)
+    // });
     // getCircular(this.root)
     this.hasBeenConfigured = true;
   }

@@ -33,10 +33,6 @@ export default class States extends VuexModule {
     this.stateList.addState(s);
     // Vue.set(this.states, s.name,  s);
   }
-  @Mutation
-  public updateCurrentState() {
-    this.stateList.updateCurrentState();
-  }
 
   @Mutation
   public removeState(pl: {name: string}) {

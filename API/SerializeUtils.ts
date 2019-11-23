@@ -13,7 +13,16 @@ export function buildEscapedObject(content: any, indent?: number) {
   return JSON.parse(buildEscapedJSON(content));
 }
 
-
+export const jsonPreHook=(o:any,pre:()=>void)=>{
+  let hasDonePreHook = false
+  const hook = ()=>{
+    debugger
+    pre()
+    //setTimeout(()=>o.toJSON=hook,0)
+    return o
+  }
+  o.toJSON = hook
+}
 
 export function getCircular(o: any) {
   const obCache: any[] = [];
@@ -36,20 +45,20 @@ export function getCircular(o: any) {
   };
   r(o);
   // JSON.stringify(o, (key, value) =>{
-  //   if (typeof value === 'object' && value !== null) {
-  //     if (obCache.indexOf(value) !== -1) {
-  //       // Duplicate reference found, discard key
-  //       debugger
-  //       return;
-  //     }
-  //     // Store value in our collection
-  //     obCache.push(value);
-  //   }
-  //   else{
-  //     leafCache.push(value)
-  //   }
-  //   return value;
-  // });
-  debugger;
-  return obCache.length + leafCache.length;
-}
+    //   if (typeof value === 'object' && value !== null) {
+      //     if (obCache.indexOf(value) !== -1) {
+        //       // Duplicate reference found, discard key
+        //       debugger
+        //       return;
+        //     }
+        //     // Store value in our collection
+        //     obCache.push(value);
+        //   }
+        //   else{
+          //     leafCache.push(value)
+          //   }
+          //   return value;
+          // });
+          debugger;
+          return obCache.length + leafCache.length;
+        }

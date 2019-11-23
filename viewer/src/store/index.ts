@@ -67,6 +67,7 @@ const serverFS = () => {
     },
     save: _.debounce((content, key: string, callback?: () => void ) => {
       if (socket) {
+        debugger
         socket.emit('SET_STATE', key, buildEscapedObject(content), () => {
           if (callback) {callback(); }
 
