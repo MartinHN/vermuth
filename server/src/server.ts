@@ -28,13 +28,23 @@ import { diff } from 'json-diff';
 
 const fs = require('fs');
 const path = require('path');
-function pathExists(path){
-  try {if (fs.existsSync(path)) {return true;}} catch(err) {}
+function pathExists(path){try {if (fs.existsSync(path)) {return true;}} catch(err) {}return false}
+
+function getFileAtPath(filePath){ //file name is insensitive
+  var dirname = path.dirname(filePath);
+  var lowerFileName = path.basename(filePath).toLowerCase();
+  try {
+    var fileNames = fs.readdirSync(dirname);
+    for (let i= 0; i < fileNames.length; i += 1) {
+      if (fileNames[i].toLowerCase() === lowerFileName) {
+        return path.join(dirname, fileNames[i]);
+      }
+    }
+  } catch(err) {}
   return false
 }
 
-
-const publicDir = args.public || path.resolve(__dirname, '..', 'dist', 'server', 'public') ;//: path.resolve(__dirname, '..', 'public');
+const publicDir = args.public || (executingFromDist?path.resolve(__dirname, '..', 'public'):path.resolve(__dirname, '..', 'dist', 'server', 'public') );//: ;
 console.log('served Folder  :' + publicDir, __dirname);
 
 const history = require('connect-history-api-fallback');
@@ -49,24 +59,30 @@ let localStateFile = path.resolve(__dirname, '..', 'appSettings.json');
 ///////
 // resolve session from args
 if(args.path){
-  const candidateFolder = path.resolve(args.path)
-  if(pathExists(candidateFolder)){
-    console.log("found external settings folder",candidateFolder)
-
-    let hn  = args.session || os.hostname()
-    hn = hn.toLowerCase()
-    if(hn.endsWith(".local")){hn=hn.split(".local")[0];}
-    const candidates = [path.resolve(candidateFolder,hn+'.json')]
-    let found = false
-    for(const c of candidates){
-      if(pathExists(c)){
-        localStateFile = c
+  if(! Array.isArray(args.path)){args.path = [args.path]}
+  let found = false
+  let sessionName  = args.session || os.hostname().split(".local")[0]
+  let candidateFolders = []
+  let candidateFileNames = [sessionName+'.json']
+  for(const folderPath of args.path){
+    const candidateFolder = path.resolve(folderPath)
+    if(pathExists(candidateFolder)){candidateFolders.push(folderPath)}
+    else {console.error("not found external settings folder",folderPath)}
+  }
+  for(const f of candidateFolders){
+    for(const c of candidateFileNames){
+      const testedPath = path.resolve(f,c)
+      const truePath = getFileAtPath(testedPath)
+      if(truePath){
+        localStateFile = truePath
         found =  true
+        break;
       }
     }
-    if(!found){console.error("not found settings in extrnal folder",candidates);}
+    if(found){break}
   }
-  else{console.error("not found external settings folder",candidateFolder);}
+
+  if(!found){console.error(`not found session , ${candidateFileNames} in ${candidateFolders}`);}
 }
 
 const ioServer = io({serveClient: false,});
@@ -78,9 +94,8 @@ ioServer.attach(httpServer, {
   pingTimeout: 5000,
   cookie: false,
 });
-if (debug) {
-  console.log(`run viewer on port ${PORT}`);
-}
+
+if (debug) {console.log(`run viewer on port ${PORT}`);}
 
 app.use(express.static(publicDir));
 
@@ -91,28 +106,16 @@ fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8'
   if (ferr) {
     console.log('fileExists');
     fs.readFile(localStateFile, 'utf8', (err, data) => {
-      if (err) {
-        return console.log(err);
-      }
+      if (err) {return console.log(err);}
       if (data === '') {data = '{}'; }
       let lastState = {}
       Object.assign(lastState ,  JSON.parse(data));
-      
-      if (lastState) {
-        setStateFromObject(lastState, null);
-      }
-      else{
-        console.error ('not found state from file')
-      }
-
-
+      if (lastState) {setStateFromObject(lastState, null);}
+      else{console.error ('not found state from file')}
     });
-
-
   } else {
     console.log('created file');
   }
-
 });
 
 

@@ -153,6 +153,7 @@ class DMXController implements DMXControllerI {
     }
   }
 
+  @nonEnumerable()
   private toSet:any = {}
 
   private aggregatedSet(){
