@@ -19,9 +19,9 @@ export default class RootStateModule extends VuexModule {
   }
   @Mutation
   public configureFromObjMut(js: any) {
-    // doLocked(()=>{
+    doLocked(()=>{
       rootState.configureFromObj(js)
-    // });
+    });
     // getCircular(this.root)
     this.hasBeenConfigured = true;
   }
