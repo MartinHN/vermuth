@@ -127,8 +127,8 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
     private _frames: Array<KeyFrame<T>> = new Array<KeyFrame<T>>()) {
     super()
     if(_frames.length===0){
-    this.add(new KeyFrame<T>(0, 0 as T));
-    this.add(new KeyFrame<T>(1000, 1 as T));
+      this.add(new KeyFrame<T>(0, 0 as T));
+      this.add(new KeyFrame<T>(1000, 1 as T));
     }
     this.autoDuration();
     CurveStore.add(this)
@@ -299,27 +299,35 @@ public getKeyFramesForPosition(position: number): {start: KeyFrame<T>|undefined,
 
 }
 
-class _CurveStore extends Set<CurveBase>{
+class _CurveStore  {
 
+  private curves = new Set<CurveBase>();
 
   configureFromObj(o:any){
-    this.clear()
+    this.curves.clear()
     if(o && Array.isArray(o)){
       for(const c of o){
         const cu = new Curve<number>("new")
         cu.configureFromObj(c)
-        this.add(cu)
+        this.curves.add(cu)
       }
     }
-  }
+   }
   toJSON(){
     const res = []
-    for(const c of this.values()){res.push(c.toObj());}
-      return res;
+    debugger
+    for(const c of this.curves.values()){
+      res.push(c.toObj());
+    }
+    return res;
   }
+  add(c:CurveBase){
+    return this.curves.add(c)
+  }
+  
 
   getCurveNamed(name:string):CurveBase | undefined{
-    return Array.from(this.values()).find((e:CurveBase)=>e.name===name)
+    return Array.from(this.curves.values()).find((e:CurveBase)=>e.name===name)
   }
 }
 

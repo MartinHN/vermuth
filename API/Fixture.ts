@@ -101,7 +101,7 @@ export class FixtureBase implements FixtureBaseI {
   private __universe: Universe | null = null;
 
   constructor(public name: string, channels: ChannelBase[]) {
-    debugger
+
     if (channels) {
       channels.map((c) => this.addChannel(c));
     } else {
@@ -221,7 +221,6 @@ export class FixtureBase implements FixtureBaseI {
       c = new ChannelBase('channel', 0, 0, true);
     }
     c.setParentFixture (this);
-    debugger
     this.channels.push(c);
    // setChildAccessible(this.channels, '' + (this.channels.length - 1));
     return c;
