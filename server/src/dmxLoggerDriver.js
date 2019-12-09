@@ -44,7 +44,7 @@ LoggerDriver.prototype.close = function(cb) {
 LoggerDriver.prototype.update = function(u) {
   for (const c in u) {
     if ( this.universe[c] !== u[c]) {
-      this.log(c, this.universe[c]);
+      this.log(c, u[c]);
     }
     this.universe[c] = u[c];
 
