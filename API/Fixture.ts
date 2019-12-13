@@ -168,7 +168,6 @@ export class FixtureBase implements FixtureBaseI {
   @RemoteFunction({sharedFunction: true})
   public setMaster(v: ChannelValueType) {
     this.globalValue = v;
-    // debugger
     this.syncToGlobalValue(v);
   }
 
@@ -235,7 +234,6 @@ export class FixtureBase implements FixtureBaseI {
 
 
   public getChannelForName(n: string) {
-    debugger
     return this.channels.find((c) => c.name === n);
   }
   @RemoteFunction({sharedFunction: true})

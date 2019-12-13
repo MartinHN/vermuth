@@ -49,7 +49,6 @@ export class Universe {
       for (const f of Object.values(ob.fixtures) ) {
         const df = FixtureBase.createFromObj(f);
         if (df) {
-          debugger
           this.addFixture(df);
         }
       }
@@ -102,14 +101,11 @@ export class Universe {
   public addFixture(f: FixtureBase) {
 
     f.name = getNextUniqueName(this.fixtureList.map((ff) => ff.name), f.name);
-    debugger
-    addProp(this.fixtures,f.name,  f);
     setChildAccessible(this.fixtures,f.name,  {defaultValue:f});
     f.__events.on('nameChanged', (ff: FixtureBase, oldName: string) => {
       const newName = getNextUniqueName(this.fixtureList.filter((fff) => fff !== ff).map((fff) => fff.name), ff.name);
       deleteProp(this.fixtures,oldName);
       ff.setName(newName);
-      addProp(this.fixtures,newName,  ff);
       setChildAccessible(this.fixtures,newName, {defaultValue: ff});
     });
     f.universe = this;

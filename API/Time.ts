@@ -78,9 +78,10 @@ class _GlobalTransport extends EventEmitter{
   @RemoteFunction({skipClientApply:true})
   stop(){
     if(this._interval){
-      this._time = 0
+      
       clearInterval(this._interval)
-      this._isPlaying = true
+      this._time = 0
+      this._isPlaying = false
     }
   }
 

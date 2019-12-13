@@ -67,7 +67,6 @@ export default class States extends VuexModule {
   }
 
   get stateNames() {
-    debugger;
     return Object.keys(this.stateList.states);
   }
   get loadedStateName() {

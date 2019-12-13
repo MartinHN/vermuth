@@ -747,7 +747,7 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
 
   export function resolveAccessible(parent: any , addr: string[]) {
     const oriAddr = addr.slice();
-    addr = addr.slice();
+    addr = addr.slice();// copy
     let inspA = addr.shift();
     if (inspA) {
 
