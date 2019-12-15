@@ -59,27 +59,34 @@ export class RootStateType {
     const validObj = ob !== undefined;
 
     if (ob.universe !== undefined ) {
-      this.universe.configureFromObj(ob.universe);
     }
+    this.universe.configureFromObj(ob.universe || {});
+    
     if (ob.sequenceList !== undefined) {
-      this.sequenceList.splice(0, this.sequenceList.length);
-      ob.sequenceList.map((e: any) => this.sequenceList.push(Sequence.createFromObj(e)));
     }
+    this.sequenceList.splice(0, this.sequenceList.length);
+    (ob.sequenceList || []).map((e: any) => this.sequenceList.push(Sequence.createFromObj(e)));
+    
     if (ob.stateList !== undefined) {
-      this.stateList.configureFromObj(ob.stateList);
     }
+    this.stateList.configureFromObj(ob.stateList || {});
+    
     if (ob.curveStore !== undefined) {
-      this.curveStore.configureFromObj(ob.curveStore);
     }
+    this.curveStore.configureFromObj(ob.curveStore || {});
+    
 
     if (ob.dmxController !== undefined && this.dmxController) {
-      this.dmxController.configureFromObj(ob.dmxController);
     }
+    this.dmxController.configureFromObj(ob.dmxController || {});
+    
 
     bindClientSocket('auto');
     this.__isConfigured = validObj;
   }
-
+  public clear(){
+    this.universe.configureFromObj({});
+  }
   public callMethod(saddr: string, args: any[]) {// args is passed as array
     if (saddr[0] === '/') {
       const addr = saddr.split('/');
@@ -93,38 +100,38 @@ export class RootStateType {
         if (typeof(accessible) === 'function') {
           // if(args && args.length){
             return accessible.call(parent, ...args);
-          // }
-          // else{
-          //   return accessible.apply(parent);
-          // }
-        } else if ( (args !== undefined && args !== null)) {
-          if (parent && key) {
-            if (accessible !== args) {parent[key] = args; }
+            // }
+            // else{
+              //   return accessible.apply(parent);
+              // }
+            } else if ( (args !== undefined && args !== null)) {
+              if (parent && key) {
+                if (accessible !== args) {parent[key] = args; }
+              } else {
+                console.error('malformed Accessible resolution');
+              }
+            } else {
+              return accessible;
+
+            }
           } else {
-            console.error('malformed Accessible resolution');
+            console.error('not found accessible for :', saddr);
           }
-        } else {
-          return accessible;
-
         }
-      } else {
-        console.error('not found accessible for :', saddr);
       }
+
+      public toJSONString(indent?: number) {
+        //debugger;
+        return buildEscapedJSON(this, indent);
+      }
+      public toJSONObj() {
+        //debugger;
+        return buildEscapedObject(this);
+      }
+
     }
-  }
-
-  public toJSONString(indent?: number) {
-    debugger;
-    return buildEscapedJSON(this, indent);
-  }
-  public toJSONObj() {
-    debugger;
-    return buildEscapedObject(this);
-  }
-
-}
 
 
 
-const rootState = new RootStateType();
-export default rootState;
+    const rootState = new RootStateType();
+    export default rootState;

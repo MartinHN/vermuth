@@ -134,6 +134,7 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
     CurveStore.add(this)
   }
   configureFromObj(o:any){
+    this.clear()
     this.name = o.name
     this._frames = []
     o._frames.map((f:any)=>{
@@ -225,6 +226,9 @@ public remove(c: KeyFrame<T>) {
   c.setParentCurve(undefined);
   return this;
 }
+public clear(){
+  this.frames.splice(0,this.frames.length)
+}
 public childTvChanged(child: KeyFrame<T>) {
   if (child.position > this.span) {
     this.span = child.position;
@@ -315,7 +319,6 @@ class _CurveStore  {
    }
   toJSON(){
     const res = []
-    debugger
     for(const c of this.curves.values()){
       res.push(c.toObj());
     }

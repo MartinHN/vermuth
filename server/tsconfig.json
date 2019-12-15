@@ -6,9 +6,9 @@
       "esnext"
     ],
     "outDir": "dist",
-    "sourceMap": false,
-    "inlineSources": true,
-    "inlineSourceMap": true,
+    "sourceMap": true,
+    "inlineSources": false,
+    "inlineSourceMap": false,
     "experimentalDecorators":true,
     "emitDecoratorMetadata":true,
     "moduleResolution": "node",

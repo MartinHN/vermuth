@@ -225,8 +225,8 @@ export class StateList {
   }
 
   public configureFromObj(ob: any) {
+    Object.keys(this.states).map((name) => this.removeStateNamed( name) );
     if (ob.states) {
-      Object.keys(this.states).map((name) => this.removeStateNamed( name) );
       Object.keys(ob.states).map((name) => this.addState(State.createFromObj(ob.states[name])));
     }
     if (ob.currentState) {

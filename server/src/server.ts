@@ -57,18 +57,14 @@ let states: any = {};
 // write empty if non existent
 fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8' }, (ferr)=> {
   if (ferr) {
-    console.log('fileExists');
+    console.log('fileExists',localStateFile);
     fs.readFile(localStateFile, 'utf8', (err, data) => {
       if (err) {
         return console.log(err);
       }
       if (data === '') {data = '{}'; }
-      Object.assign(states ,  JSON.parse(data));
-      if (states && states.lastSessionID) {
-        const lastState = states[states.lastSessionID];
-        if (lastState) {
-          setStateFromObject(lastState, null);
-        }
+      if (data ) {
+          setStateFromObject(JSON.parse(data), null);
       }
 
     });
@@ -83,29 +79,24 @@ fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8'
 
 
 
-function getSessionId(socket) {
-  return 'default';
-  // return socket.id
-}
-
 function setStateFromObject(msg, socket: any) {
   console.log('setting state from: ' + socket);
-  const sessionID = getSessionId(socket);
-  const dif = diff(states[sessionID], msg);
+  
+  const dif = diff(states, msg);
 
   if (dif !== undefined || !rootState.isConfigured) {
     console.log('diff', dif);
     states = {};
-    states[sessionID] = msg;
-    states.lastSessionID = sessionID;
+    states = msg;
+    
 
     if (socket) {
-      console.log('broadcasting state: ' + JSON.stringify(msg.states));
+      console.log('broadcasting state: ' + msg);
       socket.broadcast.emit('SET_STATE', msg);
 
     }
     rootState.configureFromObj(msg);
-    states[sessionID] = rootState.toJSONObj(); // update persistent changes
+    states = rootState.toJSONObj(); // update persistent changes
     // dmxController.stateChanged(msg)
     fs.writeFile(localStateFile,
       JSON.stringify(states, null, '  '),
@@ -130,7 +121,7 @@ if (debug && process.env.LOG_SOCKET_FILE) {
   fs.unlinkSync(logFile);
 }
 ioServer.on('connection', (socket)=> {
-  console.log('a user connected', socket.id, debug);
+  console.log('a user connected', socket.id, debug,Object.keys(ioServer.clients().connected));
 
   log.bindToSocket(socket);
   const emitF = socket.emit;
@@ -176,7 +167,7 @@ ioServer.on('connection', (socket)=> {
  });
 
   socket.on('GET_STATE', (key, cb) => {
-    const msg = states[getSessionId(socket)];
+    const msg = states;
     if (cb) {
       cb(msg || {});
     } else {
@@ -188,7 +179,7 @@ ioServer.on('connection', (socket)=> {
 
   socket.on('UPDATE_STATE', (key, msg) => {
     if (msg) {
-      Object.assign(states[getSessionId(socket)], msg);
+      Object.assign(states, msg);
     }
   });
 

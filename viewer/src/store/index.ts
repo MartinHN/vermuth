@@ -7,6 +7,7 @@ import states from './states';
 import sequence from './sequence';
 import rootStateModule from './rootStateModule';
 import DMXConfig from './DMXConfig';
+import { doSharedFunction } from '@API/ServerSync'
 import { buildEscapedJSON, buildEscapedObject } from '@API/SerializeUtils';
 import { downloadObjectAsJSON } from './util';
 import _ from 'lodash';
@@ -167,7 +168,9 @@ const store: StoreOptions<RootVueState> = {
         loadFS(key)
         .then((newState: any) => {
           if (key === sessionKey) {
-            context.dispatch('SET_SESSION_STATE', newState);
+            doSharedFunction(()=>
+            context.dispatch('SET_SESSION_STATE', newState)
+            )
           } else if (key === configKey) {
             context.dispatch('SET_CONFIG_STATE', newState);
           }
@@ -179,7 +182,7 @@ const store: StoreOptions<RootVueState> = {
       }
     },
     SET_SESSION_STATE(context, newState) {
-      if (newState) {
+      if (newState!==undefined) {
         context.commit('SET_LOADING_STATE', true);
         context.dispatch('rootStateModule/configureFromObj', newState);
 

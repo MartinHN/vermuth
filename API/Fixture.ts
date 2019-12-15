@@ -113,8 +113,8 @@ export class FixtureBase implements FixtureBaseI {
   public configureFromObj(ob: any) {
 
     if (ob._baseCirc !== undefined) {this.baseCirc = ob._baseCirc; }
+    this.channels.map((c: ChannelBase) => this.removeChannel(c));
     if (ob.channels !== undefined) {
-      this.channels.map((c: ChannelBase) => this.removeChannel(c));
       ob.channels.map((c: any) => this.addChannel(ChannelBase.createFromObj(c, this)));
     }
     if (ob.name !== undefined) {this.setName(ob.name); }
@@ -145,7 +145,7 @@ export class FixtureBase implements FixtureBaseI {
     const cch: any = {};
     for (const ch of this.channels ) {
       if (ch.roleFam === n) {
-        if (ch.roleType in cch) {
+        if (Object.keys(cch).includes(ch.roleType)) {
           if (!cch[ch.roleType].length) {
             cch[ch.roleType] = [cch[ch.roleType]];
           }

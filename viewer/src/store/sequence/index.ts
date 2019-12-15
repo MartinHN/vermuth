@@ -5,12 +5,12 @@ import { ChannelBase } from '@API/Channel';
 import { State } from '@API/State' ;
 import { Sequence } from '@API/Sequence';
 
-const player = RootState.sequencePlayer;
+
 
 @Module({namespaced: true})
 export default class Sequences extends VuexModule {
 
-
+  private player = RootState.sequencePlayer;
   public sequenceList = RootState.sequenceList;
 
   public globalTransport = RootState.globalTransport;
@@ -98,7 +98,7 @@ export default class Sequences extends VuexModule {
     }
     @Action
     public goToSequence(sq: Sequence) {
-      player.goToSequenceNamed(sq.name);
+      this.player.goToSequenceNamed(sq.name);
 
 
     }

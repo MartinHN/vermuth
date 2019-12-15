@@ -88,6 +88,7 @@ class SequencePlayer {
 
   @RemoteValue()
   public playState: string = 'stopped';
+  
   @nonEnumerable()
   private _rootProvider?: RootProvider = undefined;
 

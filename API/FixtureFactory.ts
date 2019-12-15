@@ -19,7 +19,7 @@ export class FixtureFactory  {
         const jd = JSON.parse(file);
         const ob = {filepath: file};
         for ( const a of ['name', 'categories', 'fixtureKey', 'modes']) {
-          if (a in jd) {ob[a] = jd[a]; }
+          if (Object.keys(jd).includes(a)) {ob[a] = jd[a]; }
         }
 
         this.AllFixtures[jd.fixtureKey] = ob;
@@ -28,7 +28,7 @@ export class FixtureFactory  {
     }
   }
   public generateForKey(fixtureKey: string, mode?: string) {
-    if ( fixtureKey in this.AllFixtures) {
+    if (Object.keys(this.AllFixtures).includes(fixtureKey)) {
       const fix = this.AllFixtures;
       if (!mode && ('modes' in fix)) {
         mode = Object.keys(fix.modes)[0];
