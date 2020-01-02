@@ -2,9 +2,12 @@
   "name": "conduktor-API",
   "version": "0.1.0",
   "private": true,
+  "main": "dist/main.js",
   "scripts": {
-    "build": "",
-    "lint": "tslint --project . --fix"
+    "build": "tsc --project .",
+    "start": "node -r tsconfig-paths/register -r ts-node/register ./main.ts",
+    "lint": "tslint --project . --fix",
+    "test": " && node "
   },
   "dependencies": {
     "adm-zip": "^0.4.13",
@@ -12,7 +15,10 @@
     "json-diff": "^0.5.4",
     "lodash": "^4.17.15",
     "register-service-worker": "^1.5.2",
-    "socket.io-client": "^2.3.0"
+    "socket.io-client": "^2.3.0",
+    "testing": "^2.0.1",
+    "ts-node": "^8.5.4",
+    "tsconfig-paths": "^3.9.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.144",

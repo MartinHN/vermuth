@@ -12,6 +12,7 @@ export default class RootStateModule extends VuexModule {
   // public root = rootState;
   public hasBeenConfigured = false;
 
+  public FixtureFactory = rootState.fixtureFactory
   @Action
   public configureFromObj(js: any) {
     this.context.commit('configureFromObjMut', js);

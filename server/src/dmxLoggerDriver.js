@@ -1,6 +1,7 @@
 const osc = require("osc");
 const util  = require("util");
 const EventEmitter = require("events").EventEmitter;
+const _ = require("lodash");
 
 function LoggerDriver(deviceId = "127.0.0.1", options = {}) {
 
@@ -16,8 +17,18 @@ function LoggerDriver(deviceId = "127.0.0.1", options = {}) {
   this.start();
 }
 
+let changeQ = {};
+const logDebounced =  _.debounce(() => {
+  for (const c in changeQ) {
+    const v = changeQ[c];
+    console.log("set dimmer (", c, ") to ", v);
+  }
+  changeQ = {};
+}, 50, {maxWait: 100});
 LoggerDriver.prototype.log = function(c, v) {
-console.log("set dimmer (", c, ") to ", v);
+  changeQ[c] = v;
+  logDebounced();
+
 };
 
 LoggerDriver.prototype.sendUniverse = function() {

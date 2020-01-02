@@ -1,6 +1,7 @@
-import {Easing,EasingFactory, LinearEasing} from './Easings/easings';
+import {Easing, EasingFactory, LinearEasing} from './Easings/easings';
 import {Point} from './Utils2D';
-import {EventEmitter } from 'events'
+import {EventEmitter } from 'events';
+import { RemoteValue , AccessibleClass, SetAccessible, RemoteFunction} from './ServerSync';
 
 
 export interface Vector {
@@ -40,13 +41,13 @@ export class KeyFrame<T extends NumOrVec > {
   constructor(private _position: number, private _value: T, public _easing: Easing = new LinearEasing()) {
 
   }
-  configureFromObj(o:any){
+  public configureFromObj(o: any) {
     this.position = o._position;
     this.value = o._value;
-    this.easing = EasingFactory.createFromObj(o._easing) || new LinearEasing()
+    this.easing = EasingFactory.createFromObj(o._easing) || new LinearEasing();
   }
-  toObj(){
-    return {_position:this._position,_value:this._value,_easing:this._easing.toObj()}
+  public toObj() {
+    return {_position: this._position, _value: this._value, _easing: this._easing.toObj()};
   }
 
   get easing() {return this._easing; }
@@ -104,54 +105,21 @@ export class KeyFrame<T extends NumOrVec > {
 
 
 
-export interface CurveBase extends EventEmitter{
-  name:string;
+export interface CurveBase extends EventEmitter {
+  name: string;
   position: number;
   span: number;
-  getValue():any;
-  configureFromObj(o:any):void;
-  toObj():any;
+  getValue(): any;
+  configureFromObj(o: any): void;
+  toObj(): any;
 
   // goToPct(pct:number):void;
 }
 
-let curveNum = 0
+let curveNum = 0;
 export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase {
-  private _span: number = 0;
-  private _position: number = 0;
-  private _value: NumOrVec = 0;
-  public isLooping = true;
-  public uid = curveNum++
-  constructor(
-    public name:string,
-    private _frames: Array<KeyFrame<T>> = new Array<KeyFrame<T>>()) {
-    super()
-    if(_frames.length===0){
-      this.add(new KeyFrame<T>(0, 0 as T));
-      this.add(new KeyFrame<T>(1000, 1 as T));
-    }
-    this.autoDuration();
-    CurveStore.add(this)
-  }
-  configureFromObj(o:any){
-    this.clear()
-    this.name = o.name
-    this._frames = []
-    o._frames.map((f:any)=>{
-      const k = new KeyFrame<T>(0,0 as T)
-      k.configureFromObj(f)
-      this.add(k)
-    })
-
-  }
-  toObj():any{
-    return {
-      name:this.name,
-      _frames:this._frames.map(f=>f.toObj())
-    }
-  }
   get frames() {return this._frames; }
-  
+
   set span(n: number) {
     this._span = n;
     this.updateValue();
@@ -161,7 +129,7 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
 
 
   set position(p: number) {
-    const np = this.isLooping?p%this.span:p;
+    const np = this.isLooping ? p % this.span : p;
     if (this._position !== np) {
       this._position = np;
       this.updateValue();
@@ -170,7 +138,41 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
   get position() {return this._position; }
 
   get value() {return this._value; }
-  getValue() {return this._value; }
+get length() {return this.frames.length; }
+  public isLooping = true;
+  public uid = curveNum++;
+  private _span: number = 0;
+  private _position: number = 0;
+  private _value: NumOrVec = 0;
+  constructor(
+    public name: string,
+    private _frames: Array<KeyFrame<T>> = new Array<KeyFrame<T>>()) {
+    super();
+    if (_frames.length === 0) {
+      this.add(new KeyFrame<T>(0, 0 as T));
+      this.add(new KeyFrame<T>(1000, 1 as T));
+    }
+    this.autoDuration();
+    CurveStore.add(this);
+  }
+  public configureFromObj(o: any) {
+    this.clear();
+    this.name = o.name;
+    this._frames = [];
+    o._frames.map((f: any) => {
+      const k = new KeyFrame<T>(0, 0 as T);
+      k.configureFromObj(f);
+      this.add(k);
+    });
+
+  }
+  public toObj(): any {
+    return {
+      name: this.name,
+      _frames: this._frames.map((f) => f.toObj()),
+    };
+  }
+  public getValue() {return this._value; }
   public autoDuration() {
     if (this.frames.length > 0) {
       const last = this.frames[this.frames.length - 1];
@@ -195,7 +197,7 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
       const v = this.getValueAt(this._position);
       const hasChange = this._value !==  v;
       this._value =  v;
-      if(hasChange){this.emit("value",v)}
+      if (hasChange) {this.emit('value', v); }
 
     } else {console.error('no span'); }
 }
@@ -226,8 +228,8 @@ public remove(c: KeyFrame<T>) {
   c.setParentCurve(undefined);
   return this;
 }
-public clear(){
-  this.frames.splice(0,this.frames.length)
+public clear() {
+  this.frames.splice(0, this.frames.length);
 }
 public childTvChanged(child: KeyFrame<T>) {
   if (child.position > this.span) {
@@ -277,7 +279,6 @@ public findClosestKeyForPositionValue(pv: Point, maxDelta: Point = new Point(-1,
   return null;
 }
 }
-get length() {return this.frames.length; }
 
 
 public getKeyFramesForPosition(position: number): {start: KeyFrame<T>|undefined, end: KeyFrame<T>|undefined} {
@@ -303,36 +304,39 @@ public getKeyFramesForPosition(position: number): {start: KeyFrame<T>|undefined,
 
 }
 
-class _CurveStore  {
+@AccessibleClass()
+class CurveStoreClass  {
 
+  @SetAccessible({readonly: true})
   private curves = new Set<CurveBase>();
 
-  configureFromObj(o:any){
-    this.curves.clear()
-    if(o && Array.isArray(o)){
-      for(const c of o){
-        const cu = new Curve<number>("new")
-        cu.configureFromObj(c)
-        this.curves.add(cu)
+  public configureFromObj(o: any) {
+    this.curves.clear();
+    if (o && Array.isArray(o)) {
+      for (const c of o) {
+        const cu = new Curve<number>('new');
+        cu.configureFromObj(c);
+        this.curves.add(cu);
       }
     }
    }
-  toJSON(){
-    const res = []
-    for(const c of this.curves.values()){
+  public toJSON() {
+    const res = [];
+    for (const c of this.curves.values()) {
       res.push(c.toObj());
     }
     return res;
   }
-  add(c:CurveBase){
-    return this.curves.add(c)
-  }
-  
 
-  getCurveNamed(name:string):CurveBase | undefined{
-    return Array.from(this.curves.values()).find((e:CurveBase)=>e.name===name)
+  public add(c: CurveBase) {
+    return this.curves.add(c);
+  }
+
+
+  public getCurveNamed(name: string): CurveBase | undefined {
+    return Array.from(this.curves.values()).find((e: CurveBase) => e.name === name);
   }
 }
 
-export const CurveStore = new _CurveStore()
+export const CurveStore = new CurveStoreClass();
 

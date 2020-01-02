@@ -1,9 +1,27 @@
 <template>
-  <div class="NumboxPH pa-0 ma-0">
-    <input :class='["Numbox",{error:hasError},"pa-0","ma-0"] ' type="number" :value="value" @input="$emit('input',{value:$event.target.valueAsNumber})" @change="$emit('change',{value:$event.target.valueAsNumber})" :min="min" :max="max" />
+  <div class="NumboxPH tooltip pa-0 ma-0">
+    <span class="tooltiptext">{{errMsg}}</span>
+    <v-text-field v-if=editable 
+    class="pa-0 ma-0"
+    type="number" :value="value" 
+    @input="$emit('input',{value:parseInt($event)})" @change="$emit('change',{value:parseInt($event)})" 
+    :min="min" :max="max" 
+    :error-messages=errMsg
+    :hide-details=!errMsg
+    dense
+    :label='showName?name:undefined'
+    
+    />
 
-    <div ref="Name" v-if="showName">{{name}}</div>
+    <div v-else>
+      {{value}}
+    </div>
+    
   </div>
+
+
+
+
 </template>
 
 <script lang="ts">
@@ -15,13 +33,14 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 })
 export default class Numbox extends Vue {
   @Prop()
- public  name?: string;
+  public  name?: string;
   @Prop({default : false})public  showName?: boolean ; // =false;
   @Prop({default : -Infinity})public  min?: number ;
   @Prop({default : +Infinity})public  max?: number ;
 
   @Prop({default: 0}) public value!: number ;
   @Prop({default : ''}) public errMsg?: string;
+  @Prop({default: true}) public editable!:boolean;
 
   public mounted() {
 
@@ -46,7 +65,33 @@ input{
   width:100%;
   /*font-size:inherit;*/
 }
-.error{
+/*.error{
   background-color: red;
 }
+*/
+ /* .tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+  }*/
+
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 105%;
+  }
+
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
 </style>

@@ -16,7 +16,7 @@ import dmxController from './dmxController';
 import rootState from '@API/RootState';
 import { callAnyAccessibleFromRemote } from '@API/ServerSync';
 rootState.registerDMXController(dmxController);
-
+rootState.init()
 
 import log from './remoteLogger';
 import { diff } from 'json-diff';
@@ -55,9 +55,9 @@ app.use(express.static(publicDir));
 let states: any = {};
 
 // write empty if non existent
-fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8' }, (ferr)=> {
+fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8' }, (ferr) => {
   if (ferr) {
-    console.log('fileExists',localStateFile);
+    console.log('fileExists', localStateFile);
     fs.readFile(localStateFile, 'utf8', (err, data) => {
       if (err) {
         return console.log(err);
@@ -81,14 +81,14 @@ fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8'
 
 function setStateFromObject(msg, socket: any) {
   console.log('setting state from: ' + socket);
-  
+
   const dif = diff(states, msg);
 
   if (dif !== undefined || !rootState.isConfigured) {
     console.log('diff', dif);
     states = {};
     states = msg;
-    
+
 
     if (socket) {
       console.log('broadcasting state: ' + msg);
@@ -120,8 +120,8 @@ if (debug && process.env.LOG_SOCKET_FILE) {
   const logFile =  process.env.LOG_SOCKET_FILE;
   fs.unlinkSync(logFile);
 }
-ioServer.on('connection', (socket)=> {
-  console.log('a user connected', socket.id, debug,Object.keys(ioServer.clients().connected));
+ioServer.on('connection', (socket) => {
+  console.log('a user connected', socket.id, debug, Object.keys(ioServer.clients().connected));
 
   log.bindToSocket(socket);
   const emitF = socket.emit;

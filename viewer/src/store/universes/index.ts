@@ -33,7 +33,11 @@ export default class Universes extends VuexModule {
     this.universe.setGrandMaster(v);
   }
   @Mutation
-  public addFixture(pl: {name: string, circs: number[]}) {
+  public addFixture(pl: {name: string, circs: number[] , channels?:ChannelBase[]}) {
+    if(pl instanceof FixtureBase){
+      this.universe.addFixture(pl)
+      return
+    }
     pl = pl || {name: 'fixture', circs: [1]};
     let {name, circs} = pl;
     if (!circs || !circs.length) {circs = [1]; }

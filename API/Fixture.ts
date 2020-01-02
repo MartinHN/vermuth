@@ -74,7 +74,9 @@ export class FixtureBase implements FixtureBaseI {
 
         return i;
       } else {
-        return undefined;
+        const res = new FixtureBase("temp",[]);
+        res.configureFromObj(ob);
+        return res
       }
     }
   }
@@ -92,7 +94,7 @@ export class FixtureBase implements FixtureBaseI {
   @SetAccessible({readonly: true})
   public readonly channels = new Array<ChannelBase>();
 
-  protected ftype = 'base';
+  // protected ftype = 'base';
 
   @RemoteValue()
   private _baseCirc = 0;
@@ -100,7 +102,7 @@ export class FixtureBase implements FixtureBaseI {
   @nonEnumerable()
   private __universe: Universe | null = null;
 
-  constructor(public name: string, channels: ChannelBase[]) {
+  constructor(public name: string, channels: ChannelBase[], protected ftype= 'base') {
 
     if (channels) {
       channels.map((c) => this.addChannel(c));
@@ -236,12 +238,28 @@ export class FixtureBase implements FixtureBaseI {
   public getChannelForName(n: string) {
     return this.channels.find((c) => c.name === n);
   }
+
+  get span(){
+    let span = 0;
+    for(const c of this.channels){
+      span = Math.max(c.circ+1,span)
+    }
+    return span
+  }
+  get fixtureType(){
+    return this.ftype
+  }
+  get endCirc(){
+    
+    return this.span+this._baseCirc
+  }
   @RemoteFunction({sharedFunction: true})
   private __setBaseCirc(n: number) {
     const changedDiff = n - this._baseCirc;
     this._baseCirc = n;
 
     if (this.universe && changedDiff !== 0) {
+      
       this.universe.checkDuplicatedCirc();
       this.universe.updateChannelsValues();
     }
@@ -274,6 +292,8 @@ export class FixtureBase implements FixtureBaseI {
 
   }
 
+  
+
 
 }
 
@@ -285,6 +305,7 @@ export class DirectFixture extends FixtureBase {
     this.ftype = 'direct';
 
   }
+
 
 }
 fixtureTypes.direct = (...args: any[]) => new DirectFixture(args[0], args[1]);

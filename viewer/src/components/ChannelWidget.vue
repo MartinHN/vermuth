@@ -48,7 +48,7 @@ import {CurvePlayer} from '@API/CurvePlayer';
 const universesModule = namespace('universes');
 
 @Component({
-  components: {Slider, Button,Numbox, Toggle, Modal, CurveEditor},
+  components: {Slider, Button, Numbox, Toggle, Modal, CurveEditor},
 })
 export default class ChannelWidget extends Vue {
 
@@ -78,29 +78,29 @@ export default class ChannelWidget extends Vue {
     if (!curve) {
       curve = new Curve<number>(this.channelProp.name);
       CurvePlayer.addCurve(curve);
-      CurvePlayer.assignChannelToCurveNamed(curve.name, this.channelProp,0);
+      CurvePlayer.assignChannelToCurveNamed(curve.name, this.channelProp, 0);
     }
     this.curve = curve;
     this.showCurveEditor = true;
   }
 
-  deleteCurve(){
+  public deleteCurve() {
     CurvePlayer.removeChannel(this.channelProp);
-    
+
   }
-  public get isControlledExternally(){
-    return this.curve!==undefined
+  public get isControlledExternally() {
+    return this.curve !== undefined;
   }
-  public set curveOffset(v:number){
-    let cl = CurvePlayer.getCurveLinkForChannel(this.channelProp);
-    if(cl){cl.offset=v}
+  public set curveOffset(v: number) {
+    const cl = CurvePlayer.getCurveLinkForChannel(this.channelProp);
+    if (cl) {cl.offset = v; }
   }
-  public get curveOffset(){
-    let cl = CurvePlayer.getCurveLinkForChannel(this.channelProp);
-    return cl?cl.offset:0
+  public get curveOffset() {
+    const cl = CurvePlayer.getCurveLinkForChannel(this.channelProp);
+    return cl ? cl.offset : 0;
   }
-  public mounted(){
-    this.curve=CurvePlayer.getCurveForChannel(this.channelProp);
+  public mounted() {
+    this.curve = CurvePlayer.getCurveForChannel(this.channelProp);
   }
 
 

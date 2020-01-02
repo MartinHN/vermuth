@@ -3,15 +3,15 @@ import { FixtureBase } from './Fixture';
 import { Universe } from './Universe';
 import { sequencePlayer } from './Sequence';
 import { nonEnumerable } from './ServerSync';
-import {addProp,deleteProp} from './MemoryUtils'
-import {CurveBase,CurveStore} from './Curve'
-import {CurvePlayer} from './CurvePlayer'
+import {addProp, deleteProp} from './MemoryUtils';
+import {CurveBase, CurveStore} from './Curve';
+import {CurvePlayer} from './CurvePlayer';
 
 interface ChannelsValuesDicTypes {[id: string]: number; }
-interface ChannelsCurvesDicTypes {[id: string]: {name:string,offset:number}; }
+interface ChannelsCurvesDicTypes {[id: string]: {name: string, offset: number}; }
 
 
-type SavedValueType = number|{curve:CurveBase,offset:number}
+type SavedValueType = number|{curve: CurveBase, offset: number};
 export class FixtureState {
 
   get channelValues(): ChannelsValuesDicTypes {
@@ -28,8 +28,8 @@ export class FixtureState {
   }
   public name = '';
   private pChannelValues: ChannelsValuesDicTypes = {};
-  private pChannelCurveLinks:ChannelsCurvesDicTypes={}
-  constructor(fixture?: FixtureBase , options?: {overrideValue?: number, channelFilter?: (c:ChannelBase)=>boolean, full?: boolean}) {
+  private pChannelCurveLinks: ChannelsCurvesDicTypes = {};
+  constructor(fixture?: FixtureBase , options?: {overrideValue?: number, channelFilter?: (c: ChannelBase) => boolean, full?: boolean}) {
     if (fixture === undefined) {return; }
     this.name = fixture.name;
     let validFix ;
@@ -41,15 +41,15 @@ export class FixtureState {
       validFix = fixture.channels.filter((c) => c.enabled);
     }
     validFix.map((c) => {
-      const curveLink = CurvePlayer.getCurveLinkForChannel(c)
+      const curveLink = CurvePlayer.getCurveLinkForChannel(c);
 
-      addProp(curveLink?this.pChannelCurveLinks:this.pChannelValues,
+      addProp(curveLink ? this.pChannelCurveLinks : this.pChannelValues,
         c.name,
-        (options && options.overrideValue !== undefined) ? 
-        options.overrideValue : 
-        (curveLink &&{name:curveLink.curve.name,offset:curveLink.offset})||
-        c.floatValue
-        )
+        (options && options.overrideValue !== undefined) ?
+        options.overrideValue :
+        (curveLink && {name: curveLink.curve.name, offset: curveLink.offset}) ||
+        c.floatValue,
+        );
     });
   }
 
@@ -75,25 +75,24 @@ export class ResolvedFixtureState {
     });
     Object.entries(this.state.channelCurveLinks).forEach(([k, cv]) => {
       const c = this.fixture.getChannelForName(k);
-      const curve = CurveStore.getCurveNamed(cv.name)
+      const curve = CurveStore.getCurveNamed(cv.name);
       if (c && curve) {
-        this.channels[c.name] = {channel: c, value: {curve,offset:cv.offset}}; 
+        this.channels[c.name] = {channel: c, value: {curve, offset: cv.offset}};
       }
     });
   }
 
   public applyState() {
     Object.values(this.channels).map((cv) => {
-      if(CurvePlayer.getCurveForChannel(cv.channel)){
-          CurvePlayer.removeChannel(cv.channel)
+      if (CurvePlayer.getCurveForChannel(cv.channel)) {
+          CurvePlayer.removeChannel(cv.channel);
         }
-      if(typeof(cv.value)==="number"){
+      if (typeof(cv.value) === 'number') {
         cv.channel.setValue(cv.value, true);
-      }
-      else{
-        const curve = cv.value.curve as CurveBase
-        CurvePlayer.addCurve(curve)
-        CurvePlayer.assignChannelToCurveNamed(curve.name,cv.channel,cv.value.offset)
+      } else {
+        const curve = cv.value.curve as CurveBase;
+        CurvePlayer.addCurve(curve);
+        CurvePlayer.assignChannelToCurveNamed(curve.name, cv.channel, cv.value.offset);
       }
     });
   }
@@ -116,10 +115,10 @@ export class MergedState {
           const channel = channelObj.channel;
           const sourcev = channel.floatValue;
           const targetv = channelObj.value;
-          if(typeof(targetv)==="number"){
+          if (typeof(targetv) === 'number') {
             this.channels.push({channel, sourcev, targetv});
           }
-          
+
         }
       }
     }
@@ -242,13 +241,13 @@ export class StateList {
   public removeStateNamed(name: string) {
     if (this.states[name]) {
       if (!(this.states[name] === blackState || this.states[name] === fullState)) {
-        deleteProp(this.states,name);
+        deleteProp(this.states, name);
       }
     }
   }
 
   public addState(s: State) {
-    addProp(this.states,s.name,  s);
+    addProp(this.states, s.name,  s);
   }
 
   public recallStateNamed(n: string) {
@@ -263,17 +262,16 @@ export class StateList {
     const rs = s.resolveState(this.getCurrentFixtureList());
     rs.map((r) => r.applyFunction(
       (channel, value) => {
-        if(CurvePlayer.getCurveForChannel(channel)){
-          CurvePlayer.removeChannel(channel)
+        if (CurvePlayer.getCurveForChannel(channel)) {
+          CurvePlayer.removeChannel(channel);
         }
-        if(typeof(value)==="number"){
+        if (typeof(value) === 'number') {
           channel.setValue( value, true);
-        }
-        else{
-          if(!CurvePlayer.hasCurve(value.curve)){
-            CurvePlayer.addCurve(value.curve)
+        } else {
+          if (!CurvePlayer.hasCurve(value.curve)) {
+            CurvePlayer.addCurve(value.curve);
           }
-          CurvePlayer.assignChannelToCurveNamed(value.curve.name,channel,value.offset)
+          CurvePlayer.assignChannelToCurveNamed(value.curve.name, channel, value.offset);
         }
 
       }));
@@ -322,8 +320,8 @@ export class StateList {
     this.currentState.updateFromFixtures(fl);
   }
 
-  public getCurveForChannel(c:ChannelBase){
-    return CurvePlayer.getCurveForChannel(c)
+  public getCurveForChannel(c: ChannelBase) {
+    return CurvePlayer.getCurveForChannel(c);
   }
 
 
@@ -332,8 +330,8 @@ export class StateList {
     const s = this.states[oldName];
     if (s) {
       s.name = newName;
-      deleteProp(this.states,oldName);
-      addProp(this.states,newName, s);
+      deleteProp(this.states, oldName);
+      addProp(this.states, newName, s);
       if (this.loadedStateName === oldName) {
         this.loadedStateName = newName;
       }
@@ -357,7 +355,7 @@ class WholeState extends State {
     const res: ResolvedFixtureState[] = [];
     const opt = {};
     for (const f of context) {
-      const fs = new FixtureState(f, {overrideValue: this.value, channelFilter:(c:ChannelBase)=>{return c.reactToMaster}});
+      const fs = new FixtureState(f, {overrideValue: this.value, channelFilter: (c: ChannelBase) => c.reactToMaster});
       res.push(new ResolvedFixtureState(fs, f));
     }
     return res;

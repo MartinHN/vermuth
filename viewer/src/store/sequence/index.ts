@@ -10,7 +10,7 @@ import { Sequence } from '@API/Sequence';
 @Module({namespaced: true})
 export default class Sequences extends VuexModule {
 
-  private player = RootState.sequencePlayer;
+
   public sequenceList = RootState.sequenceList;
 
   public globalTransport = RootState.globalTransport;
@@ -19,6 +19,7 @@ export default class Sequences extends VuexModule {
 
 
   public selectedState?: State;
+  private player = RootState.sequencePlayer;
 
   @Action
   public configureFromObj(ob: any) {

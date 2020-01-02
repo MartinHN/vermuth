@@ -9,7 +9,7 @@
         <Button style="width:100%" text="Save" @click="SAVE_SESSION()"></Button>
       </v-col>
       <v-col >
-        <v-select label=driver :items=driverList :value="selectedDriverName" :style='{"background-color":this.dmxConnectionColor}' @change="$store.dispatch('DMXConfig/tryConnectDriver',$event)">
+        <v-select label=driver :items=driverList :value="selectedDriverName" :style='{"background-color":this.dmxConnectionColor}' @change="$store.dispatch('DMXConfig/tryConnectDriver',$event)" hide-details>
         </v-select>
       </v-col>
       <v-col >

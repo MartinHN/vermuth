@@ -1,6 +1,7 @@
 <template>
-  <div class="SliderPH">
+    
     <v-text-field 
+    v-if=editable
     :value="value" 
     @input="$emit('input',$event)" 
     @change="$emit('change',{value:$event})"
@@ -10,9 +11,12 @@
     full-width
     >
     </v-text-field> 
+    <div v-else>
+      {{value}}
+    </div>
     
    
-  </div>
+  
 </template>
  
 <script lang="ts">

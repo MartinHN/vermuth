@@ -16,6 +16,7 @@ class Server {
   private __socket: any;
   constructor() {
     rootState.registerDMXController(dmxClient);
+
     // getCircular(dmxServer)
 
   }
@@ -36,6 +37,7 @@ class Server {
     socket.on('connect', () => {
       console.log('connected to server');
       store.dispatch('SET_CONNECTED_STATE', 'connected');
+      rootState.init()
 
 
     });

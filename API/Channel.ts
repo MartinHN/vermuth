@@ -5,14 +5,16 @@ type ChannelValueType = number; // |number[];
 
 export const ChannelRoles: {[id: string]: {[id: string]: {names: Array<string|RegExp>}}} = {
   color: {
-    r: {names: ['red', 'r']},
+    r: {names: ['red', 'r',/red.*master/]},
     r_fine: {names: [/red.*fine/, /r.*fine/]},
-    g: {names: ['green', 'g']},
+    g: {names: ['green', 'g',/green.*master/]},
     g_fine: {names: [/green.*fine/, /g.*fine/]},
-    b: {names: ['blue', 'b']},
+    b: {names: ['blue', 'b',/blue.*master/]},
     b_fine: {names: [/blue.*fine/, /b.*fine/]},
     w: {names: ['white', 'w']},
     w_fine: {names: [/white.*fine/, /w.*fine/]},
+    a: {names: ['amber', 'a']},
+    a_fine: {names: [/amber.*fine/, /amber.*fine/]},
   },
   position: {
     pan: {names: ['pan', /pan.*coarse/]},
@@ -26,7 +28,7 @@ export const ChannelRoles: {[id: string]: {[id: string]: {names: Array<string|Re
     heat: {names: [/heat.*/]},
   },
   dim: {
-    dimmer: {names: [/channel.*/, /dim.*/]},
+    dimmer: {names: [/channel.*/, /dim.*/,'master']},
   },
   other: {
     other: {names: []},
@@ -128,14 +130,15 @@ export class ChannelBase implements ChannelI {
   public updateRoleForName() {
     let foundType = '';
     let foundFam = '';
+    const minName = this.name.toLowerCase()
     for (const fam of Object.keys(ChannelRoles)) {
       const cFam = ChannelRoles[fam];
       if (fam === 'other') {continue; }
       for (const type of Object.keys(cFam)) {
         const names = cFam[type].names;
         if (names.find((e: string|RegExp) => {
-          if (typeof e === 'string') {return e === this.name; }
-          return this.name.match(e);
+          if (typeof e === 'string') {return e === minName; }
+          return minName.match(e);
         })) {
           foundType = type;
           foundFam = fam;

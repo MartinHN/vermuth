@@ -19,11 +19,15 @@
       "dom",
       "dom.iterable",
       "scripthost"
-    ]
+    ],
+    "baseUrl":".",
+    "paths": {
+      "@/*": ["./*"],
+      "@API/*": ["../API/*"]
+    },
   },
   "include": [
-    "*.ts",
-    "**/*.ts"
+    "*.ts"
   ],
   "exclude": [
     "dist/**"

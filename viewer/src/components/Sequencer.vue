@@ -4,7 +4,7 @@
     <br/>
     <div class="Sequencer">
       <div> {{globalTransport.beat}}</div>
-      <Toggle v-model=togglePlay style="height:40px" :text=playText> </Toggle>
+      <Toggle v-model=togglePlay style="height:40px" :text=globalTransport.isPlaying> </Toggle>
       <Button class="button addSequence" @click="saveCurrentSequence()" text="add Sequence"/>
       <SequenceComponent v-for="s in sequences" :key='s.id' :sequence="s" />
 
@@ -45,9 +45,9 @@ export default class Sequencer extends Vue {
       this.globalTransport.stop();
     }
   }
-  get playText(){
-    debugger
-    return this.togglePlay?"stop":"play"
+  get playText() {
+    debugger;
+    return this.togglePlay ? 'stop' : 'play';
   }
 }
 </script> 

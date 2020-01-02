@@ -1,18 +1,18 @@
 <template>
   <div class="about">
     <h1>PatchView</h1>
-    <channel-patch></channel-patch>
+    <FixturePatch></FixturePatch>
   </div>
 </template>
 
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import ChannelPatch from '@/components/ChannelPatch.vue'; // @ is an alias to /src
+import FixturePatch from '@/components/FixturePatch.vue'; // @ is an alias to /src
 
 @Component({
   components: {
-    ChannelPatch,
+    FixturePatch,
   },
 })
 export default class PatchView extends Vue {}

@@ -10,7 +10,7 @@
           </slot>
         </div>
 
-        <div class="modal-body" style="height:80%">
+        <div class="modal-body" style="height:90%">
           <slot name="body">
             <!-- default body -->
           </slot>
@@ -68,11 +68,11 @@ export default class Modal extends Vue {
 }
 
 .modal-container {
-  width: 80%;
-  height: 80%;
+  width: 90%;
+  height: 90%;
   overflow-y: scroll;
   margin: 0px auto;
-  padding: 20px 30px;
+  padding: 10px 10px;
   background-color: #ddd;
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, .33);

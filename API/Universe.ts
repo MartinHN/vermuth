@@ -2,7 +2,7 @@ import { FixtureBase } from './Fixture';
 import { ChannelBase, UniverseListener } from './Channel';
 import { getNextUniqueName , compareValues} from './Utils';
 import { SetAccessible, setChildAccessible, AccessibleClass , RemoteFunction} from './ServerSync';
-import {addProp,deleteProp} from './MemoryUtils'
+import {addProp, deleteProp} from './MemoryUtils';
 @AccessibleClass()
 export class Universe {
 
@@ -28,10 +28,10 @@ export class Universe {
  public get grandMaster() {return this._master; }
  public get groupNames() { return Object.keys(this.groups); }
  public addGroup(name: string, nl: string[]) {
-  addProp(this.groups,name,  nl);
+  addProp(this.groups, name,  nl);
 }
 public removeGroup(name: string) {
-  deleteProp(this.groups,name);
+  deleteProp(this.groups, name);
 }
 
 public get fixtureList() {return Object.values(this.fixtures); }
@@ -52,8 +52,8 @@ public configureFromObj(ob: any) {
         this.addFixture(df);
       }
     }
-    
-  } 
+
+  }
   Object.keys(this.groups).map((g) => this.removeGroup(g));
   if (ob.groups) {
     for ( const g of Object.keys(ob.groups)) {
@@ -101,17 +101,18 @@ public setGrandMaster(n: number) {
 public addFixture(f: FixtureBase) {
 
   f.name = getNextUniqueName(this.fixtureList.map((ff) => ff.name), f.name);
-  setChildAccessible(this.fixtures,f.name,  {defaultValue:f});
+  
+  setChildAccessible(this.fixtures, f.name,  {defaultValue: f});
   f.__events.on('nameChanged', (ff: FixtureBase, oldName: string) => {
     const newName = getNextUniqueName(this.fixtureList.filter((fff) => fff !== ff).map((fff) => fff.name), ff.name);
-    deleteProp(this.fixtures,oldName);
+    deleteProp(this.fixtures, oldName);
     ff.setName(newName);
-    setChildAccessible(this.fixtures,newName, {defaultValue: ff});
+    setChildAccessible(this.fixtures, newName, {defaultValue: ff});
   });
   f.universe = this;
 }
 public removeFixture(f: FixtureBase) {
-  deleteProp(this.fixtures,f.name);
+  deleteProp(this.fixtures, f.name);
 }
 public getNextCirc(d: number, forbidden?: number[]): number {
   const circsUsed = this.fixtureList.map((ff) => ff.channels).flat().map((ch) => ch.trueCirc).concat(forbidden || []);
@@ -156,7 +157,7 @@ public testDimmerNum(d: number) {
     //   this.testedChannel.setValue( 0.0, true);
     // }
 
-    this.setTestedChannelDimmer(d);
+  this.setTestedChannelDimmer(d);
     // if (this.testedChannel.circ >= 0) {
 
       // }
