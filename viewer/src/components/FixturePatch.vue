@@ -1,7 +1,7 @@
 <template>
   <div class="main">
-    FixturePatch
-    <br/>
+    
+    
     <v-container class="FixturePatch" fluid>
       <v-row>
         <v-col cols=8 >
@@ -15,7 +15,7 @@
         </v-col>
 
         <v-col cols=2 >
-          <Numbox style=width:30px class="testNum" name="testChannel" showName="1" @input="!!$event.value && testDimmerNum(parseInt($event.value))" :value="testDimmerNumVal" />
+          <Numbox  class="testNum" name="testChannel" showName="1" @input="!!$event.value && testDimmerNum(parseInt($event.value))" :value="testDimmerNumVal" />
         </v-col>
       </v-row>
       <!-- <v-row  v-for="f in universe.sortedFixtureList" :key="f.name" style="background-color:#FFF5;margin:5px" no-gutters>
@@ -29,7 +29,9 @@
       single-line
       hide-details
       ></v-text-field>
-      <v-data-table :items=universe.sortedFixtureList  
+
+      <v-data-table 
+      :items=universe.sortedFixtureList  
       :headers=fixtureHeaders  
       :search="searchFixtureText"
       hide-default-footer

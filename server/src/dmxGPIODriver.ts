@@ -2,23 +2,23 @@ if (process.env.CUSTOM_PI_DRIVERS) {
   const isPi = require('detect-rpi')();
 
   function createGpio(i) {
-  if (isPi && (i >= 2 || i <= 27)) {
-    const Gpio = require('pigpio').Gpio;
-    return new Gpio(i, {mode: Gpio.OUTPUT});
-  } else {
-    class Gpio {
-      constructor(public gpionum: number, d: any) {}
+    if (isPi && (i >= 2 || i <= 27)) {
+      const Gpio = require('pigpio').Gpio;
+      return new Gpio(i, {mode: Gpio.OUTPUT});
+    } else {
+      class Gpio {
+        constructor(public gpionum: number, d: any) {}
 
-      public pwmWrite(v) {
-        console.log('fake gpio : ', this.gpionum, ' ->', v);
+        public pwmWrite(v) {
+          console.log('fake gpio : ', this.gpionum, ' ->', v);
+        }
+        public digitalWrite(v) {
+          console.log('fake gpio d : ', this.gpionum, ' ->', v);
+        }
       }
-      public digitalWrite(v) {
-        console.log('fake gpio d : ', this.gpionum, ' ->', v);
-      }
+      return new Gpio(i, '');
     }
-    return new Gpio(i, '');
   }
-}
 
 
 /*
@@ -48,12 +48,12 @@ Ground  -     39      40    21    sclk
 */
 
 
-  function GPIODriver(deviceId = 'lampignon', options = {}) {
+function GPIODriver(this:any,deviceId = 'lampignon', options = {}) {
 
   this.gpioInstances = [];
   for (let i = 0 ; i <= 27 ; i++) {
     this.gpioInstances.push(createGpio(i));
- }
+  }
   this.bufSize = this.gpioInstances.length;
   this.universe = Buffer.alloc(this.bufSize );
   this.universe.fill(0);
@@ -63,50 +63,50 @@ Ground  -     39      40    21    sclk
 }
 
 
-  GPIODriver.prototype.syncGPIO = function(i) {
+GPIODriver.prototype.syncGPIO = function(i) {
   this.gpioInstances[i].pwmWrite(this.universe[i]);
 };
 
-  GPIODriver.prototype.sendUniverse = function() {
+GPIODriver.prototype.sendUniverse = function() {
   for (const i of Object.keys(this.gpioInstances)) {
     this.syncGPIO(i);
 
   }
 };
 
-  GPIODriver.prototype.start = function() {
+GPIODriver.prototype.start = function() {
   // this.timeout = setInterval(this.sendUniverse.bind(this), this.sleepTime);
 };
 
-  GPIODriver.prototype.stop = function() {
+GPIODriver.prototype.stop = function() {
   // clearInterval(this.timeout);
 };
 
-  GPIODriver.prototype.close = function(cb) {
+GPIODriver.prototype.close = function(cb) {
 
   this.stop();
   cb(null);
 };
 
-  GPIODriver.prototype.update = function(u) {
+GPIODriver.prototype.update = function(u) {
   for (const c of Object.keys(u)) {
     this.universe[c] = u[c];
     this.syncGPIO(c);
   }
 };
 
-  GPIODriver.prototype.updateAll = function(v) {
+GPIODriver.prototype.updateAll = function(v) {
   for (let i = 0; i < this.gpioInstances.length ; i++) {
     this.universe[i] = v;
     this.syncGPIO(i);
   }
 };
 
-  GPIODriver.prototype.get = function(c) {
+GPIODriver.prototype.get = function(c) {
   return this.universe[c];
 };
 
-  module.exports = GPIODriver;
+module.exports = GPIODriver;
 } else {
   module.exports = {};
 }

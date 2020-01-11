@@ -14,6 +14,10 @@ export default class Sequences extends VuexModule {
   public sequenceList = RootState.sequenceList;
 
   public globalTransport = RootState.globalTransport;
+
+  public curvePlayer = RootState.curvePlayer;
+  public curveStore = RootState.curveStore;
+
   @Settable()
   public __curSequence = '';
 

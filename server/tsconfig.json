@@ -13,6 +13,8 @@
     "emitDecoratorMetadata":true,
     "moduleResolution": "node",
     "esModuleInterop":true,
+    "strict":true,
+    "noImplicitAny":false,
     "allowJs":true,
     "baseUrl":"./src",
     "paths": {

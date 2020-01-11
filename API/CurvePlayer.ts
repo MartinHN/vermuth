@@ -1,7 +1,8 @@
-import {CurveBase} from './Curve';
+import {CurveBase,CurveStore} from './Curve';
 import {ChannelBase} from './Channel';
 import {GlobalTransport, TimeListener} from './Time';
 import { SetAccessible, RemoteValue , RemoteFunction, AccessibleClass} from './ServerSync';
+
 
 class CurveLink {
   private listened = new Map<string, any>();
@@ -10,6 +11,7 @@ class CurveLink {
     for (const [k, v] of this.listened.entries()) {
       curve.on(k, v);
     }
+    channel.externalController = this
   }
   public vChanged(v: number) {
     this.channel.setValue(v + this.offset, true);
@@ -17,20 +19,22 @@ class CurveLink {
   public dispose() {
     for (const [k, v] of this.listened.entries()) {
       this.curve.off(k, v);
+      this.channel.externalController = null
     }
   }
-
 }
+
 
 @AccessibleClass()
 class CurvePlayerClass extends TimeListener {
 
-  @SetAccessible({readonly: true})
-  public curves = new Map<CurveBase, Set<CurveLink>> ();
+  
+  private curves :{[id:string]: Set<CurveLink>}={};// not accessible
 
   private _span = 1;
+
   constructor(
-    _curves?: Map<CurveBase, Set<CurveLink>>,
+    _curves?: CurvePlayerClass["curves"],
     _span?: number) {
     super('CurvePlayer');
     if (_curves) {this.curves = _curves; }
@@ -39,38 +43,48 @@ class CurvePlayerClass extends TimeListener {
 
 
   public timeChanged(t: number) {
-    for (const [c, chs] of this.curves.entries()) {
+    for (const c of this.curveList) {
       c.position = t;
     }
   }
 
-
+  @RemoteFunction()
   public addCurve(c: CurveBase) {
     if (!this.getCurveForName(c.name)) {
-      this.curves.set(c, new Set<CurveLink>());
+      this.curves[c.name]= new Set<CurveLink>();
     } else {
       console.error('dupliucating curve');
     }
   }
-  public hasCurve(c: CurveBase) {
-    return Array.from(this.curves.keys()).indexOf(c) >= 0;
-  }
-  public getCurveForName(n: string) {
-    return Array.from(this.curves.keys()).find((c) => c.name === n);
+  get curveNames(){
+    return Array.from(Object.keys(this.curves))
   }
 
-  get curveNames() {
-    return Array.from(this.curves.keys()).map((e) => e.name);
+  get curveList(){
+    return this.curveNames.map(n=>CurveStore.getCurveNamed(n)).filter(e=>e!==undefined) as Array<CurveBase>
   }
+  get curveLinkList(){
+    let res = new Array<CurveLink>()
+     Object.values(this.curves).map(n=>res=  res.concat(Array.from(n)))
+     return res
+  }
+  public hasCurve(c: CurveBase) {
+    return this.curveList.indexOf(c) >= 0;
+  }
+  public getCurveForName(n: string) {
+    return this.curveList.find((c) => c.name === n);
+  }
+
+  
   public getAssignedChannels() {
     const res = new Set<ChannelBase>();
-    this.curves.forEach((v, k) => {Array.from(v.values()).map((e) => res.add(e.channel)); });
+    this.curveLinkList.map(e  => res.add(e.channel));
     return res;
   }
 
 
   public getCurveLinkForChannel(ch: ChannelBase) {
-    for (const [k, v] of this.curves.entries()) {
+    for (const v of Object.values(this.curves)) {
       const cl = Array.from(v.values()).find((e: any) => e.channel === ch);
       if (cl) {return cl; }
     }
@@ -83,7 +97,7 @@ class CurvePlayerClass extends TimeListener {
   public removeChannel(ch: ChannelBase) {
     const lastCurve = this.getCurveForChannel(ch);
     if (lastCurve) {
-      const ns = this.curves.get(lastCurve) || new Set<CurveLink>();
+      const ns = this.curves[lastCurve.name] || new Set<CurveLink>();
       const cl = Array.from(ns.values()).find((e) => e.channel === ch);
       if (cl) {
         cl.dispose();
@@ -95,14 +109,15 @@ class CurvePlayerClass extends TimeListener {
   }
   @RemoteFunction()
   public assignChannelToCurveNamed(n: string, ch: ChannelBase, offset: number) {
+    debugger
     const c = this.getCurveForName(n);
     if (c) {
       if (this.getCurveForChannel(ch)) {
         this.removeChannel(ch);
       }
-      const chs = this.curves.get(c) || new Set<CurveLink>();
+      const chs = this.curves[n] || new Set<CurveLink>();
 
-      this.curves.set(c, chs.add(new CurveLink(c, ch, offset)));
+      this.curves[n]= chs.add(new CurveLink(c, ch, offset));
     }
   }
 

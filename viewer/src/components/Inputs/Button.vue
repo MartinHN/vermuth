@@ -69,7 +69,7 @@ input {
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    padding: 5px 5px 5px 5px;
+    /*padding: 5px 5px 5px 5px;*/
     border: 2px solid #fff;
     border-radius: 10px;
     color: #fff;

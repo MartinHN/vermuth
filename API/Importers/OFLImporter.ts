@@ -7,7 +7,7 @@ import {FixtureDef} from '../FixtureFactory';
 
 function getValidChannels(o:any){
   const ac = o.availableChannels;
-  const res = []
+  const res = new Array<string>()
   if (ac ) {
     for (let k of Object.keys(ac)){
       res.push(k)
@@ -18,7 +18,7 @@ function getValidChannels(o:any){
 
 function getConfigurations(o:any){
   const res = {}
-  for( const m of Object.values(o.modes)){
+  for( const m of Object.values(o["modes"]) as any[]){
     const hasTemplate = m["channels"].some(e=>(e) && typeof(e)!=="string") 
     if(!hasTemplate  ){ // ignore template for now
       res[m["name"]] = m["channels"]

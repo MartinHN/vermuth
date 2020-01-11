@@ -2,14 +2,14 @@
   <div class="fixtureWidget" >
     <div style="display:flex;width:100%">
         
-      <ChannelWidget v-for='d in matchedDimmerChannels' :key='d.id' :channelProp=d :overrideName="matchedDimmerChannels.length==1?fixtureProp.name:d.name" style="width:100%"></ChannelWidget>
+      <ChannelWidget v-for='d in matchedDimmerChannels' :key='d.id' :channelProp=d :overrideName="matchedDimmerChannels.length==1?fixtureProp.name:d.name" style="width:100%" :showProps=showProps ></ChannelWidget>
 
     </div>
 
     <div style="display:flex;width:100%" v-if='(fixtureProp.hasChannelsOfRole("color") && hasFilterType("color"))' >
 
-      <input type="color" style="flex:1 1 30%" v-if='fixtureProp.hasChannelsOfRole("color") && hasFilterType("color")' v-model=hexColorValue></input>
-      <ChannelWidget v-for="c of colorChannels" :key='c.id' :channelProp="c" v-if='c.matchFilterList(filterList)' />
+      <input type="color" style="flex:1 1 30%" v-if='!showProps && fixtureProp.hasChannelsOfRole("color") && hasFilterType("color")' v-model=hexColorValue></input>
+      <ChannelWidget v-for="c of colorChannels" :key='c.id' :channelProp="c" v-if='c.matchFilterList(filterList)' :showProps=showProps />
 
     </div>
 
@@ -24,12 +24,12 @@
         <Point2DEditor slot="body" :value="fixturePositionList" @input="setFixturePosition($event)"></Point2DEditor>
       </modal>
 
-      <ChannelWidget v-for='c of fixtureProp.getChannelsOfRole("position")' :key='c.id' :channelProp="c" v-if='c.matchFilterList(filterList)' />
+      <ChannelWidget v-for='c of fixtureProp.getChannelsOfRole("position")' :key='c.id' :channelProp="c" v-if='c.matchFilterList(filterList)' :showProps=showProps />
 
     </div>
     <div style="width:100%">
 
-      <ChannelWidget style="width:100%" v-for="c of otherChannels" v-if='c.matchFilterList(filterList)' :key='c.id' :channelProp="c" />
+      <ChannelWidget style="width:100%" v-for="c of otherChannels" v-if='c.matchFilterList(filterList)' :key='c.id' :channelProp="c" :showProps=showProps />
 
     </div>
 
@@ -97,6 +97,7 @@ export default class FixtureWidget extends Vue {
   @Prop() public fixtureProp!: DirectFixture;
   @Prop({default: false})    public showName?: boolean;
   @Prop({default: false})    public showValue?: boolean;
+  @Prop({default: false})    public showProps?: boolean;
 
   @Prop ({default: []}) public filterList!: string[];
   private showPosModal = false;

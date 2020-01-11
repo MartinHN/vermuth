@@ -151,7 +151,7 @@ class SequencePlayer {
 
     if (nextState) {
       const transitionTime = Math.max((res + 1) / 1000 , Math.max(this.curSeq.timeOut, timeIn));
-      const nextStateResolved = nextState.resolveState(this.stateList.getCurrentFixtureList());
+      const nextStateResolved = nextState.resolveState(this.stateList.getCurrentFixtureList(),this.stateList.states,1);
       const mergedState = new MergedState(nextStateResolved);
       mergedState.checkIntegrity();
       doTimer('seqTransition', transitionTime * 1000.0, res,

@@ -96,9 +96,9 @@ export default class FixtureEditor extends Vue {
     return FixtureFactory.getAllFixtureDefsTypeNames()
   }
 
-  public setFixtureType(type){
-    console.log("setting fixture type",type)
-  }
+  // public setFixtureType(type){
+  //   console.log("setting fixture type",type)
+  // }
   get fixtureHeaders() {
     return [{text: 'Name', value: 'name'},
     {text: 'Role', value: 'role'},

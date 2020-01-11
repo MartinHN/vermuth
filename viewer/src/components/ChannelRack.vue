@@ -27,11 +27,19 @@
         
       </div>
       <div style="width:100%">
-
-        <fixture-widget  style="margin:10px 0 0 0;width:100%;background-color:#FFF5" class="channel" v-for="f in displayedFixtures" :key="f.id" :fixtureProp="f" :showName="showNames" :showValue="showValues" :filterList="selectedChannelFilterNames"></fixture-widget>
-      </div>
+        <v-row no-gutters>
+          <v-col cols=6>
+            <Toggle  v-model=showProps text="show props"></Toggle>
+          </v-col>
+          <v-col>
+            <Toggle  v-model=showEnabled text="show only enabled"></Toggle>
+          </v-col>
+        </v-row>
+      </v-row>
+      <fixture-widget  style="margin:10px 0 0 0;width:100%;background-color:#FFF5" class="channel" v-for="f in displayedFixtures" :key="f.id" :fixtureProp="f" :showName="showNames" :showValue="showValues" :filterList="selectedChannelFilterNames" :showProps="showProps"></fixture-widget>
     </div>
   </div>
+</div>
 </template>
 
 <script lang="ts">
@@ -61,6 +69,8 @@ export default class ChannelRack extends Vue {
 
   public showNames = false;
   public showValues = true;
+  public showProps= false;
+  public showEnabled = false;
 
 
   private pselectedFixtureNames: string[] = [];
@@ -70,7 +80,12 @@ export default class ChannelRack extends Vue {
   @universesModule.State('universe') private universe!: UniversesMethods['universe'];
   @universesModule.Getter('grandMaster') private grandMaster!: UniversesMethods['grandMaster'];
 
-  @universesModule.Mutation('setGrandMasterValue') private setGrandMasterValue!: UniversesMethods['setGrandMasterValue'];
+  public setGrandMasterValue(v:number){
+    debugger
+    for (const f of this.displayedFixtures){
+      if(f.enabled){f.setMaster(v);}
+    }
+  }
   @universesModule.Mutation('setAllColor') private setAllColor!: UniversesMethods['setAllColor'];
 
   public setAllColorHex(h: string) {
@@ -152,6 +167,10 @@ export default class ChannelRack extends Vue {
     this.selectedFixtureNames = this.universe.fixtureList.map((e) => e.name);
   }
   public needDisplay(f: FixtureBase) {
+    debugger
+    if(this.showEnabled){
+      return f.channels.some(c=>c.enabled);
+    }
     if (this.selectedFixtureNames && this.selectedFixtureNames.length === 0) {
       return true;
     } else {

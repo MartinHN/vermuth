@@ -146,10 +146,22 @@ export default class FixtureExplorer extends Vue {
     let fd  =this.filteredFixtureDefs[this.selectedFixtureDefIdx]
     return fd
   }
+
+  private _lastSelectedFixtureDef:any;
+  private _lastSelectedMode:any
+  private _lastGeneratedFixtureDef:any;
+
   get selectedFixtureInstance(){
     const fd = this.selectedFixtureDef
-    if(fd){
-      return fd.generateFixture("test",this.pselectedMode)
+    if(fd ){
+     if(fd!=this._lastSelectedFixtureDef ||
+      (this._lastSelectedMode !==this.pselectedMode)){
+      this._lastSelectedFixtureDef = fd 
+      this._lastSelectedMode =this.pselectedMode
+      this._lastGeneratedFixtureDef =  fd.generateFixture("test",this.pselectedMode)
+    }
+    return this._lastGeneratedFixtureDef
+
     }
     return null
   }

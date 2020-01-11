@@ -1,13 +1,15 @@
+const EventEmitter = require('events').EventEmitter;
 import { ChannelBase } from './Channel';
 import { Universe } from './Universe';
 import { getNextUniqueName } from './Utils';
-const EventEmitter = require('events').EventEmitter;
+
 import { RemoteFunction, RemoteValue, SetAccessible, AccessibleClass, setChildAccessible, nonEnumerable } from './ServerSync';
 
 type ChannelValueType = ChannelBase['__value'];
-interface FixtureBaseI {
+export interface FixtureBaseI {
   name: string;
-  enabled: boolean;
+  baseCirc:number;
+
 }
 type FixtureConstructorI  = (...args: any[]) => FixtureBase;
 const fixtureTypes: {[key: string]: FixtureConstructorI} = {};
@@ -83,8 +85,9 @@ export class FixtureBase implements FixtureBaseI {
 
 
 
-  @RemoteValue()
-  public enabled = true;
+  
+  public get enabled (){return this.channels.some(c=>c.enabled);};
+  
   @RemoteValue()
   public globalValue = 0;
 
@@ -249,10 +252,11 @@ export class FixtureBase implements FixtureBaseI {
   get fixtureType(){
     return this.ftype
   }
+
   get endCirc(){
-    
-    return this.span+this._baseCirc
+    return this.span+this._baseCirc - 1
   }
+
   @RemoteFunction({sharedFunction: true})
   private __setBaseCirc(n: number) {
     const changedDiff = n - this._baseCirc;

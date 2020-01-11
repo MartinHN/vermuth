@@ -46,7 +46,7 @@ export class FixtureDef{
     }
     
     const cmode = this.modes[mode]
-    const res = []
+    const res = new Array<{name:string,dim:number}>()
     for(let ic =0 ;ic<cmode.length ; ic++){
       const cn = cmode[ic]
       if(cn && cn!=null ){
@@ -149,7 +149,7 @@ class FixtureFactoryClass  {
     return res
   }
   public get allFixtureDefsFlatList() {
-    let res = []
+    let res = new Array<FixtureDef>();
     for(const cl of Object.values(this.__fixtureDefs)){
       for(const f of Object.values(cl)){
         res.push(f)
@@ -176,7 +176,7 @@ class FixtureFactoryClass  {
   }
   public getAllFixtureDefsTypeNames(){
 
-    let res = []
+    let res = new Array<string>()
     for(const [cl,f] of Object.entries(this.__fixtureDefs)){
       for(const fname of Object.keys(f)){
         res.push(cl+":"+fname)

@@ -1,6 +1,5 @@
 <template>
   <div class="about">
-    <h1>PatchView</h1>
     <FixturePatch></FixturePatch>
   </div>
 </template>

@@ -3,8 +3,11 @@ import { ChannelBase, UniverseListener } from './Channel';
 import { getNextUniqueName , compareValues} from './Utils';
 import { SetAccessible, setChildAccessible, AccessibleClass , RemoteFunction} from './ServerSync';
 import {addProp, deleteProp} from './MemoryUtils';
+export interface UniverseI{
+
+}
 @AccessibleClass()
-export class Universe {
+export class Universe implements UniverseI{
 
   public readonly testedChannel = new ChannelBase('tested', 0, -1, false);
   @SetAccessible({readonly: true})
@@ -101,7 +104,7 @@ public setGrandMaster(n: number) {
 public addFixture(f: FixtureBase) {
 
   f.name = getNextUniqueName(this.fixtureList.map((ff) => ff.name), f.name);
-  
+
   setChildAccessible(this.fixtures, f.name,  {defaultValue: f});
   f.__events.on('nameChanged', (ff: FixtureBase, oldName: string) => {
     const newName = getNextUniqueName(this.fixtureList.filter((fff) => fff !== ff).map((fff) => fff.name), ff.name);
@@ -121,7 +124,7 @@ public getNextCirc(d: number, forbidden?: number[]): number {
 }
 
 public checkCircsValidity() {
-  const usedChannels = [];
+  const usedChannels = new Array<number>();
   for ( const f of this.fixtureList) {
     for (const c of f.channels) {
       c.hasDuplicatedCirc = usedChannels.indexOf(c.trueCirc) !== -1;

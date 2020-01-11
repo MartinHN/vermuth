@@ -1,21 +1,30 @@
 <template>
 
   <v-container class="channelWidget" fluid pa-1>
-    <v-row no-gutters>
-      <v-col cols=1 >
-        <Toggle v-model="enabledV" text="enabled"/>
-      </v-col>
-      <v-col cols=8 >
-        <slider class="slider" @input="setChannelValue({channel:channelProp,value:$event})" :value="channelProp.floatValue" :name="displayedName"  :showName="true" :showValue="true" :enabled="enabledV"></slider>
 
-      </v-col>
-      <v-col cols=2>
-        <Button @click="setCurve()" text=setCurve></Button>
-      </v-col>
-      <v-col cols=1 >
-        <Button  @click="deleteCurve()" text=- color=red></Button>
-      </v-col>
-    </v-row>
+    <div v-if=showProps style="width:100%">
+      <v-row no-gutters>
+        
+        <v-col >
+          <Button @click="setCurve()" text=setCurve></Button>
+        </v-col>
+        <v-col v-if="curve" >
+          <Button  @click="deleteCurve()" text=- color=red></Button>
+        </v-col>
+      </v-row>
+    </div>
+    <div v-else style="width:100%">
+      <v-row no-gutters>
+      <v-col cols=2 >
+          <Toggle v-model="enabledV" text="enabled"/>
+        </v-col>
+        <v-col>
+      <slider class="slider" @input="setChannelValue({channel:channelProp,value:$event})" :value="channelProp.floatValue" :name="displayedName"  :showName="true" :showValue="true" :enabled="enabledV && !isControlledExternally"></slider>
+</v-col>
+</v-row>
+      
+    </div>
+    
     
     <modal v-if=showCurveEditor @close="showCurveEditor=0">
       <div style="position:relative;width:100%;height:100%" slot=body>
@@ -67,10 +76,11 @@ export default class ChannelWidget extends Vue {
   @universesModule.Mutation('setChannelEnabled') public setChannelEnabled!: UniversesMethods['setChannelEnabled'];
 
   @Prop() public channelProp!: ChannelBase;
-  @Prop({default: false})    public showName?: boolean;
-  @Prop({default: false})    public showValue?: boolean;
+  @Prop({default: false})    public showName!: boolean;
+  @Prop({default: false})    public showValue!: boolean;
+  @Prop({default:false}) public showProps!:boolean
   @Prop() public overrideName?: string;
-  public curve?: CurveBase;
+  public _curve: CurveBase|null = null;
   private showCurveEditor = false;
   public setCurve() {
     debugger;
@@ -80,7 +90,7 @@ export default class ChannelWidget extends Vue {
       CurvePlayer.addCurve(curve);
       CurvePlayer.assignChannelToCurveNamed(curve.name, this.channelProp, 0);
     }
-    this.curve = curve;
+    // this._curve = curve || null;
     this.showCurveEditor = true;
   }
 
@@ -89,7 +99,7 @@ export default class ChannelWidget extends Vue {
 
   }
   public get isControlledExternally() {
-    return this.curve !== undefined;
+    return  this.channelProp.externalController !== null;
   }
   public set curveOffset(v: number) {
     const cl = CurvePlayer.getCurveLinkForChannel(this.channelProp);
@@ -100,9 +110,14 @@ export default class ChannelWidget extends Vue {
     return cl ? cl.offset : 0;
   }
   public mounted() {
-    this.curve = CurvePlayer.getCurveForChannel(this.channelProp);
+    // debugger
+    // this._curve = CurvePlayer.getCurveForChannel(this.channelProp) || null;
   }
-
+  public get curve(){
+    return this.channelProp.externalController
+    // this._curve = CurvePlayer.getCurveForChannel(this.channelProp) || null
+    // return this._curve
+  }
 
 }
 </script>

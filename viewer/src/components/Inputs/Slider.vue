@@ -1,5 +1,5 @@
 <template>
-  <div class="sliderPH">
+  <div :class='["sliderPH",{inactive:!enabled}]'>
     <input :class='["slider",{inactive:!enabled}]' type="range" :value="value" @input="$emit('input',$event.target.valueAsNumber)" :min=min :max=max :step="Math.pow(10,-precision)">
     
     <div ref="Name" class="Name" v-if="showName">{{name}}</div>
@@ -49,6 +49,11 @@ export default class Slider extends Vue {
 
 
 <style scoped>
+
+.sliderPH.inactive{
+  background:"red";
+}
+
 .sliderPH{
   position:relative;
   width:100%;
@@ -56,6 +61,7 @@ export default class Slider extends Vue {
   display: flex;
   background: #ddd;
 }
+
 .Value{
   position: absolute;
   height:100%;
@@ -81,9 +87,6 @@ export default class Slider extends Vue {
 .active{
   background: dodgerblue;
 }
-/*inactive{
-  background: #ddd;
-}*/
 
 
 input[type="range"] { 
@@ -103,6 +106,9 @@ input[type="range"] {
 ::-webkit-slider-runnable-track {
   background: #ddd;
 }
+.inactive::-webkit-slider-runnable-track {
+  background: #aaa;
+}
 
 /*
  * 1. Set to 0 width and remove border for a slider without a thumb
@@ -117,8 +123,11 @@ input[type="range"] {
 }
 
 .inactive::-webkit-slider-thumb {
+
   box-shadow: -100vw 0 0 100vw gray;
 }
+
+
 
 
 ::-moz-range-track {

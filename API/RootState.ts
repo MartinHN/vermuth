@@ -4,7 +4,7 @@ import { FixtureFactory } from './FixtureFactory';
 import { Sequence, sequencePlayer } from './Sequence';
 import { StateList } from './State';
 import { DMXControllerI } from './DMXControllerI';
-import { bindClientSocket, RemoteFunction, SetAccessible, setChildAccessible, AccessibleClass, resolveAccessible, RemoteValue } from './ServerSync';
+import { bindClientSocket, RemoteFunction, SetAccessible, setChildAccessible, AccessibleClass, resolveAccessible, RemoteValue ,treeEvents} from './ServerSync';
 import { buildEscapedJSON, buildEscapedObject } from './SerializeUtils';
 import {GlobalTransport} from './Time';
 import {CurvePlayer} from './CurvePlayer';
@@ -63,6 +63,10 @@ export class RootStateType {
   public async init(){
     await this.fixtureFactory.init()
   }
+
+  get treeEvents(){
+    return treeEvents
+  }
   public configureFromObj(ob: any) {
     const validObj = ob !== undefined;
 
@@ -95,51 +99,21 @@ export class RootStateType {
   public clear() {
     this.universe.configureFromObj({});
   }
-  public callMethod(saddr: string, args: any[]) {// args is passed as array
-    if (saddr[0] === '/') {
-      const addr = saddr.split('/');
+  
 
-      if (addr.length && addr[0] === '') {addr.shift(); }
+  public toJSONString(indent?: number) {
+    // debugger;
+    return buildEscapedJSON(this, indent);
+  }
+  public toJSONObj() {
+    // debugger;
+    return buildEscapedObject(this);
+  }
 
-
-      const {accessible, parent, key}  = resolveAccessible(this, addr);
-
-      if (accessible !== undefined ) {
-        if (typeof(accessible) === 'function') {
-          // if(args && args.length){
-            return accessible.call(parent, ...args);
-            // }
-            // else{
-              //   return accessible.apply(parent);
-              // }
-            } else if ( (args !== undefined && args !== null)) {
-              if (parent && key) {
-                if (accessible !== args) {parent[key] = args; }
-              } else {
-                console.error('malformed Accessible resolution');
-              }
-            } else {
-              return accessible;
-
-            }
-          } else {
-            console.error('not found accessible for :', saddr);
-          }
-        }
-      }
-
-      public toJSONString(indent?: number) {
-        // debugger;
-        return buildEscapedJSON(this, indent);
-      }
-      public toJSONObj() {
-        // debugger;
-        return buildEscapedObject(this);
-      }
-
-    }
+}
 
 
 
 const rootState = new RootStateType();
+
 export default rootState;

@@ -9,7 +9,7 @@ if (process.env.CUSTOM_PI_DRIVERS) {
 
   const onGpios: {[id: number]: Date} = {};
   const maxOnTime = 30;
-  let timer = null;
+  let timer:any = null;
   function stopTimer() {
   if (timer) {
     clearInterval(timer);

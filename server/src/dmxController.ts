@@ -5,7 +5,7 @@ const needCustomPiLibs = process.env.CUSTOM_PI_DRIVERS;
 const GPIODriver = require('./dmxGPIODriver');
 const SolenoidDriver = require('./dmxSolenoidDriver');
 const LoggerDriver = require('./dmxLoggerDriver');
-import * as _ from 'lodash';
+const _ =require( 'lodash');
 
 const io = require('socket.io');
 import log from './remoteLogger';
@@ -49,7 +49,7 @@ class DMXController implements DMXControllerI {
   public __connected = false;
 
   @nonEnumerable()
-  private dmx;
+  private dmx:any;
 
   private universeName = 'main';
   @nonEnumerable()
@@ -59,7 +59,7 @@ class DMXController implements DMXControllerI {
   @nonEnumerable()
   private __ioServer: any;
   @nonEnumerable()
-  private __universe: Universe;
+  private __universe?: Universe;
 
   @nonEnumerable()
   private __portWatch: any;
@@ -80,7 +80,7 @@ class DMXController implements DMXControllerI {
     this.watchSerialPorts();
     this.__driverNameList = Object.keys(this.dmx.drivers);
     console.log('drivers : ', this.__driverNameList);
-    UniverseListener.on('channelChanged', (c, v) => {this.setCircs([{c, v}], null); });
+    UniverseListener.on('channelChanged', (c:any, v:any) => {this.setCircs([{c, v}], null); });
 
   }
   // @nonEnumerable()
@@ -88,14 +88,14 @@ class DMXController implements DMXControllerI {
 
   public registerAvailableDevices() {
     return new Promise((resolve, reject) => {
-      SerialPort.list().then((l) => {
+      SerialPort.list().then((l:any) => {
         this.__availableDevices = l;
-        this.__portNameList = l.map((c) => c.comName);
+        this.__portNameList = l.map((c:any) => c.comName);
 
         resolve(l);
         // console.log(this.__portNameList);
       }).
-      catch((e) => {
+      catch((e:any) => {
         console.error(e);
         reject(e);
       });
@@ -107,7 +107,7 @@ class DMXController implements DMXControllerI {
   }
   public configureFromObj(o: any) {
     for (const k in this) {
-      if (o[k] && k !== '__driverNameList' && k !== '__portNameList' && Object.getOwnPropertyDescriptor(o, k).enumerable) {
+      if (o[k] && k !== '__driverNameList' && k !== '__portNameList' && o.propertyIsEnumerable(k)) {
         this[k] = o[k];
       }
     }
@@ -138,13 +138,13 @@ class DMXController implements DMXControllerI {
     this.__universe = uni;
     this.__ioServer = ioServer;
 
-    ioServer.on('connection', function(socket) {
+    ioServer.on('connection', (socket)=> {
       this.__sockets[socket.id] = socket;
 
       socket.on('disconnect', () => {
         delete this.__sockets[socket.id];
       });
-    }.bind(this));
+    });
   }
 
   public setAllColor(color: {r: number, g: number, b: number}, setWhiteToZero: boolean) {

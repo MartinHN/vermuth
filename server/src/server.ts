@@ -14,12 +14,14 @@ OSCServer.connect(11000);
 import dmxController from './dmxController';
 
 import rootState from '@API/RootState';
-import { callAnyAccessibleFromRemote } from '@API/ServerSync';
+import { callAnyAccessibleFromRemote,doSharedFunction,blockSocket,unblockSocket } from '@API/ServerSync';
 rootState.registerDMXController(dmxController);
 rootState.init()
 
 import log from './remoteLogger';
-import { diff } from 'json-diff';
+
+const { diff } = require('json-diff');
+import { nextTick} from '@API/MemoryUtils';
 
 const history = require('connect-history-api-fallback');
 
@@ -55,10 +57,10 @@ app.use(express.static(publicDir));
 let states: any = {};
 
 // write empty if non existent
-fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8' }, (ferr) => {
+fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8' }, (ferr:any) => {
   if (ferr) {
     console.log('fileExists', localStateFile);
-    fs.readFile(localStateFile, 'utf8', (err, data) => {
+    fs.readFile(localStateFile, 'utf8', (err:any, data:any) => {
       if (err) {
         return console.log(err);
       }
@@ -79,7 +81,7 @@ fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8'
 
 
 
-function setStateFromObject(msg, socket: any) {
+function setStateFromObject(msg:any, socket: any) {
   console.log('setting state from: ' + socket);
 
   const dif = diff(states, msg);
@@ -93,15 +95,21 @@ function setStateFromObject(msg, socket: any) {
     if (socket) {
       console.log('broadcasting state: ' + msg);
       socket.broadcast.emit('SET_STATE', msg);
-
+    //  blockSocket(socket)
     }
-    rootState.configureFromObj(msg);
+    // no need to sync as we already brodcasted the state
+    doSharedFunction(()=>
+    rootState.configureFromObj(msg))
+
+    // if(socket){
+    //   nextTick(()=>unblockSocket(socket))
+    // }
     states = rootState.toJSONObj(); // update persistent changes
     // dmxController.stateChanged(msg)
     fs.writeFile(localStateFile,
       JSON.stringify(states, null, '  '),
       'utf8',
-      (v) => {
+      (v:any) => {
         if (v) {
           console.log('file write error : ', v);
         }
@@ -130,7 +138,12 @@ ioServer.on('connection', (socket) => {
     if (clientLogger) {
       // @ts-ignore
       const isBroadCasting = socket.flags.broadcast;
-      clientLogger.log('server >> ' + (isBroadCasting ? ' to any but ' : '') + socket.id + JSON.stringify(event) + JSON.stringify(args) + '\n');
+      const evt = JSON.stringify(event)
+      if(!evt || !evt.endsWith("/_time")){
+        let a = JSON.stringify(args)
+        if (evt==="SET_STATE"){a = ""}
+            clientLogger.log('server >> ' + (isBroadCasting ? ' to any but ' : '') + socket.id + evt + a + '\n');
+          }
     }
 
     return emitF.apply(socket, [event, ...args]);

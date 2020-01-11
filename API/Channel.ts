@@ -108,6 +108,9 @@ export class ChannelBase implements ChannelI {
   public roleFam = '';
 
   @nonEnumerable()
+  public externalController:any = null
+
+  @nonEnumerable()
   private __parentFixture: any;
 
   private __value: ChannelValueType = 0;
