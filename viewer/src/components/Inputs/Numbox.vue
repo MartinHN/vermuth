@@ -40,7 +40,7 @@ export default class Numbox extends Vue {
 
   @Prop({default: 0}) public value!: number ;
   @Prop({default : ''}) public errMsg?: string;
-  @Prop({default: true}) public editable!:boolean;
+  @Prop({default: true}) public editable!: boolean;
 
   public mounted() {
 
@@ -76,7 +76,7 @@ input{
   }*/
 
   .tooltip .tooltiptext {
-    visibility: hidden;
+    display: none;
     width: 120px;
     background-color: black;
     color: #fff;
@@ -92,6 +92,6 @@ input{
   }
 
   .tooltip:hover .tooltiptext {
-    visibility: visible;
+    display: inherit;
   }
 </style>

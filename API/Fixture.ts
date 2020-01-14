@@ -2,13 +2,14 @@ const EventEmitter = require('events').EventEmitter;
 import { ChannelBase } from './Channel';
 import { Universe } from './Universe';
 import { getNextUniqueName } from './Utils';
+import { buildEscapedObject } from './SerializeUtils';
 
 import { RemoteFunction, RemoteValue, SetAccessible, AccessibleClass, setChildAccessible, nonEnumerable } from './ServerSync';
 
 type ChannelValueType = ChannelBase['__value'];
 export interface FixtureBaseI {
   name: string;
-  baseCirc:number;
+  baseCirc: number;
 
 }
 type FixtureConstructorI  = (...args: any[]) => FixtureBase;
@@ -67,6 +68,23 @@ export class FixtureBase implements FixtureBaseI {
     return dimOrDims;
   }
 
+  public get enabled() {return this.channels.some((c) => c.enabled); }
+
+  get span() {
+    let span = 0;
+    for (const c of this.channels) {
+      span = Math.max(c.circ + 1, span);
+    }
+    return span;
+  }
+  get fixtureType() {
+    return this.ftype;
+  }
+
+  get endCirc() {
+    return this.span + this._baseCirc - 1;
+  }
+
   public static createFromObj(ob: any): FixtureBase |undefined {
     if (ob.channels !== undefined) {
       const cstr = fixtureTypes[ob.ftype];
@@ -76,18 +94,13 @@ export class FixtureBase implements FixtureBaseI {
 
         return i;
       } else {
-        const res = new FixtureBase("temp",[]);
+        const res = new FixtureBase('temp', []);
         res.configureFromObj(ob);
-        return res
+        return res;
       }
     }
   }
 
-
-
-  
-  public get enabled (){return this.channels.some(c=>c.enabled);};
-  
   @RemoteValue()
   public globalValue = 0;
 
@@ -113,6 +126,13 @@ export class FixtureBase implements FixtureBaseI {
       debugger;
     }
 
+  }
+
+
+  public clone() {
+    const res =  FixtureBase.createFromObj(buildEscapedObject(this)) as FixtureBase;
+    res.ftype = this.ftype;
+    return res;
   }
 
   public configureFromObj(ob: any) {
@@ -222,7 +242,8 @@ export class FixtureBase implements FixtureBaseI {
 
   public addChannel(c: ChannelBase|undefined) {
     if (c === undefined) {
-      c = new ChannelBase('channel', 0, 0, true);
+      debugger;
+      c = new ChannelBase('channel', 0, this.span, true);
     }
     c.setParentFixture (this);
     this.channels.push(c);
@@ -242,28 +263,13 @@ export class FixtureBase implements FixtureBaseI {
     return this.channels.find((c) => c.name === n);
   }
 
-  get span(){
-    let span = 0;
-    for(const c of this.channels){
-      span = Math.max(c.circ+1,span)
-    }
-    return span
-  }
-  get fixtureType(){
-    return this.ftype
-  }
-
-  get endCirc(){
-    return this.span+this._baseCirc - 1
-  }
-
   @RemoteFunction({sharedFunction: true})
   private __setBaseCirc(n: number) {
     const changedDiff = n - this._baseCirc;
     this._baseCirc = n;
 
     if (this.universe && changedDiff !== 0) {
-      
+
       this.universe.checkDuplicatedCirc();
       this.universe.updateChannelsValues();
     }
@@ -296,7 +302,7 @@ export class FixtureBase implements FixtureBaseI {
 
   }
 
-  
+
 
 
 }

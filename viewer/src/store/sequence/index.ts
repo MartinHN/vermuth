@@ -95,18 +95,18 @@ export default class Sequences extends VuexModule {
 
 
     @Action
-    public goToSequenceNamed(pl: {name: string}) {
+    public goToSequenceNamed(pl: {name: string, dimMaster?: number}) {
+      let dimMaster = 1;
+      if (pl.dimMaster !== undefined) {
+        dimMaster = pl.dimMaster;
+      }
       const s = this.sequenceList.find((f) => f.name === pl.name);
       if (s) {
-        this.context.dispatch('goToSequence', s);
+         this.player.goToSequenceNamed(pl.name, {dimMaster});
+
       }
     }
-    @Action
-    public goToSequence(sq: Sequence) {
-      this.player.goToSequenceNamed(sq.name);
 
-
-    }
 
     get fixtureList() {
       return this.context.rootState.universes.universe.fixtureList;

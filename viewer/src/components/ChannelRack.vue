@@ -1,10 +1,9 @@
 <template>
   <div class="ChannelRack">
     <div class="header">
-      <!-- <Button @click="addFixture()" text="addFixture"/> -->
+      
       <StateComponent class="StateComponent"></StateComponent>
-      <!-- <toggle :showName="true" v-model="showNames" text="showNames" ></toggle> --> 
-      <!-- <toggle name="showValues" v-model="showValues" ></toggle>  -->
+    
       
     </div>
     <div style="display:flex;width:100%;padding:5px">
@@ -65,36 +64,6 @@ const universesModule = namespace('universes');
 })
 export default class ChannelRack extends Vue {
 
-  @universesModule.Mutation('addFixture') public addFixture!: UniversesMethods['addFixture'];
-
-  public showNames = false;
-  public showValues = true;
-  public showProps= false;
-  public showEnabled = false;
-
-
-  private pselectedFixtureNames: string[] = [];
-  private pselectedGroupNames: string[] = ['all'];
-  private pselectedChannelFilterNames: string[] = ['all'];
-  private extendedTypeFilter = false;
-  @universesModule.State('universe') private universe!: UniversesMethods['universe'];
-  @universesModule.Getter('grandMaster') private grandMaster!: UniversesMethods['grandMaster'];
-
-  public setGrandMasterValue(v:number){
-    debugger
-    for (const f of this.displayedFixtures){
-      if(f.enabled){f.setMaster(v);}
-    }
-  }
-  @universesModule.Mutation('setAllColor') private setAllColor!: UniversesMethods['setAllColor'];
-
-  public setAllColorHex(h: string) {
-    const color = hexToRgb(h, true);
-    if (color) {
-      this.setAllColor({color, setWhiteToZero: true});
-    }
-  }
-
   set selectedFixtureNames(l: string[]) {
     this.pselectedFixtureNames = l;
     if (this.pselectedFixtureNames.length > 0) {
@@ -143,6 +112,40 @@ export default class ChannelRack extends Vue {
     return res;
   }
 
+  public get firstGroupSelected() {
+    return this.selectedGroupNames.length > 0 ? this.selectedGroupNames[0] : '';
+  }
+
+
+
+  public showNames = false;
+  public showValues = true;
+  public showProps = false;
+  public showEnabled = false;
+
+
+  private pselectedFixtureNames: string[] = [];
+  private pselectedGroupNames: string[] = ['all'];
+  private pselectedChannelFilterNames: string[] = ['all'];
+  private extendedTypeFilter = false;
+  @universesModule.State('universe') private universe!: UniversesMethods['universe'];
+  @universesModule.Getter('grandMaster') private grandMaster!: UniversesMethods['grandMaster'];
+  @universesModule.Mutation('setAllColor') private setAllColor!: UniversesMethods['setAllColor'];
+
+  public setGrandMasterValue(v: number) {
+    debugger;
+    for (const f of this.displayedFixtures) {
+      if (f.enabled) {f.setMaster(v); }
+    }
+  }
+
+  public setAllColorHex(h: string) {
+    const color = hexToRgb(h, true);
+    if (color) {
+      this.setAllColor({color, setWhiteToZero: true});
+    }
+  }
+
   public syncGroupSelection() {
     if (this.selectedGroupNames.length === 0) {return; }
     if (this.selectedGroupNames.find((e) => e === 'all')) {
@@ -163,22 +166,20 @@ export default class ChannelRack extends Vue {
   public syncFilterSelection() {
 
   }
+
   public selectAll() {
     this.selectedFixtureNames = this.universe.fixtureList.map((e) => e.name);
   }
+
   public needDisplay(f: FixtureBase) {
-    debugger
-    if(this.showEnabled){
-      return f.channels.some(c=>c.enabled);
+    if (this.showEnabled) {
+      return f.channels.some((c) => c.enabled);
     }
     if (this.selectedFixtureNames && this.selectedFixtureNames.length === 0) {
       return true;
     } else {
       return this.selectedFixtureNames.find((fn) => fn === f.name);
     }
-  }
-  public get firstGroupSelected() {
-    return this.selectedGroupNames.length > 0 ? this.selectedGroupNames[0] : '';
   }
 
 

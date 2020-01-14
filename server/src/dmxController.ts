@@ -5,7 +5,7 @@ const needCustomPiLibs = process.env.CUSTOM_PI_DRIVERS;
 const GPIODriver = require('./dmxGPIODriver');
 const SolenoidDriver = require('./dmxSolenoidDriver');
 const LoggerDriver = require('./dmxLoggerDriver');
-const _ =require( 'lodash');
+const _ = require( 'lodash');
 
 const io = require('socket.io');
 import log from './remoteLogger';
@@ -49,7 +49,7 @@ class DMXController implements DMXControllerI {
   public __connected = false;
 
   @nonEnumerable()
-  private dmx:any;
+  private dmx: any;
 
   private universeName = 'main';
   @nonEnumerable()
@@ -80,7 +80,7 @@ class DMXController implements DMXControllerI {
     this.watchSerialPorts();
     this.__driverNameList = Object.keys(this.dmx.drivers);
     console.log('drivers : ', this.__driverNameList);
-    UniverseListener.on('channelChanged', (c:any, v:any) => {this.setCircs([{c, v}], null); });
+    UniverseListener.on('channelChanged', (c: any, v: any) => {this.setCircs([{c, v}], null); });
 
   }
   // @nonEnumerable()
@@ -88,14 +88,18 @@ class DMXController implements DMXControllerI {
 
   public registerAvailableDevices() {
     return new Promise((resolve, reject) => {
-      SerialPort.list().then((l:any) => {
+      SerialPort.list().then((l: any) => {
         this.__availableDevices = l;
-        this.__portNameList = l.map((c:any) => c.comName);
+        if (l.length !== this.__portNameList.length) {
+          // broadcast(this.__portNameList)
+          // debugger
+        }
+        this.__portNameList = l.map((c: any) => c.comName);
 
         resolve(l);
         // console.log(this.__portNameList);
       }).
-      catch((e:any) => {
+      catch((e: any) => {
         console.error(e);
         reject(e);
       });
@@ -138,7 +142,7 @@ class DMXController implements DMXControllerI {
     this.__universe = uni;
     this.__ioServer = ioServer;
 
-    ioServer.on('connection', (socket)=> {
+    ioServer.on('connection', (socket) => {
       this.__sockets[socket.id] = socket;
 
       socket.on('disconnect', () => {

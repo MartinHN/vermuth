@@ -42,6 +42,7 @@
       <v-select :disabled="Object.keys(selectedFixtureDef.modes).length<=1" label="DMX mode" class="selectclass"  v-model="selectedMode" style="width:50%;display:inline-block" :items='Object.keys(selectedFixtureDef.modes)' dense filled>
       </v-select>
       <Button @click="$emit('change',selectedFixtureInstance)" text="add" color="green" style="width:50%;display:inline-block"></Button>
+      
       <FixtureEditor :readonly=true :fixture=selectedFixtureInstance></FixtureEditor>
     </v-col>
 
@@ -64,110 +65,110 @@ import Modal from '@/components/Utils/Modal.vue';
 import FixtureEditor from '@/components/Editors/FixtureEditor.vue';
 import UniversesMethods from '../../store/universes';
 import {FixtureBase} from '@API/Fixture';
-import { FixtureFactory,FixtureDef } from '@API/FixtureFactory';
+import { FixtureFactory, FixtureDef } from '@API/FixtureFactory';
 const universesModule = namespace('universes');
 
 
 
 @Component({
-  components: {Button, Numbox, Toggle,FixtureEditor},
+  components: {Button, Numbox, Toggle, FixtureEditor},
 })
 export default class FixtureExplorer extends Vue {
 
-
-  // categoryFilter = new Array<string>()
-  selectedFixtureDefIdx = 0
-
-  selectedFixtureCategory="All"
-  selectedFixtureManufacturer = "All"
-  pselectedMode = "default"
-
-  get selectedMode(){
-    const aM = Object.keys(this.selectedFixtureDef.modes)
-    if(aM.indexOf(this.pselectedMode)>=0){
-      return this.pselectedMode
+  get selectedMode() {
+    const aM = Object.keys(this.selectedFixtureDef.modes);
+    if (aM.indexOf(this.pselectedMode) >= 0) {
+      return this.pselectedMode;
     }
-    return aM[0]
+    return aM[0];
   }
-  set selectedMode(v:string){
-    this.pselectedMode=v
-  }
-
-  @Prop({default:null})
-  value :any
-
-  get fixtureManufacturers(){
-    return ["All"].concat(Object.keys(FixtureFactory.allFixturesByManufacturers))
+  set selectedMode(v: string) {
+    this.pselectedMode = v;
   }
 
-  get filteredByManufacturer(){
-    let filtered= FixtureFactory.allFixtureDefsFlatList
-    const manuFilter = this.selectedFixtureManufacturer
-    if(manuFilter!="All"){
-      filtered=filtered.filter(e=> e.manufacturer==manuFilter)
+  get fixtureManufacturers() {
+    return ['All'].concat(Object.keys(FixtureFactory.allFixturesByManufacturers));
+  }
+
+  get filteredByManufacturer() {
+    let filtered = FixtureFactory.allFixtureDefsFlatList;
+    const manuFilter = this.selectedFixtureManufacturer;
+    if (manuFilter !== 'All') {
+      filtered = filtered.filter((e) => e.manufacturer == manuFilter);
     }
-    return filtered
+    return filtered;
   }
 
-  get fixtureCategoriesByManufacture(){
-    let res = new Set<string>()
-    this.filteredByManufacturer.map(f=>{
-      f.categories.map(c=>res.add(c))
-    })
-    
-    return  ["All"].concat(Array.from(res))
+  get fixtureCategoriesByManufacture() {
+    const res = new Set<string>();
+    this.filteredByManufacturer.map((f) => {
+      f.categories.map((c) => res.add(c));
+    });
+
+    return  ['All'].concat(Array.from(res));
     // return FixtureFactory.getAllFixtureDefsCategories()
   }
 
-  get filteredFixtureDefs(){
+  get filteredFixtureDefs() {
 
-    let filtered = this.filteredByManufacturer
-    if(this.selectedFixtureCategory!="All"){
-      const cl =[this.selectedFixtureCategory]
-      filtered = filtered.filter(e=>cl.every(elem => e.categories.indexOf(elem) > -1))
+    let filtered = this.filteredByManufacturer;
+    if (this.selectedFixtureCategory !== 'All') {
+      const cl = [this.selectedFixtureCategory];
+      filtered = filtered.filter((e) => cl.every((elem) => e.categories.indexOf(elem) > -1));
     }
-    filtered.sort((a, b)=>{
+    filtered.sort((a, b) => {
       const keyA = a.name;
       const keyB = b.name;
       // Compare the 2 dates
-      if(keyA < keyB) return -1;
-      if(keyA > keyB) return 1;
-      return 0;})
-    return filtered
-  } 
-
-  get filteredFixtureNames(){
-    return this.filteredFixtureDefs.map(e=>e.name).sort()
+      if (keyA < keyB) { return -1; }
+      if (keyA > keyB) { return 1; }
+      return 0; });
+    return filtered;
   }
+
+  get filteredFixtureNames() {
+    return this.filteredFixtureDefs.map((e) => e.name).sort();
+  }
+  get selectedFixtureDef() {
+    const fd  = this.filteredFixtureDefs[this.selectedFixtureDefIdx];
+    return fd;
+  }
+
+  get selectedFixtureInstance() {
+    const fd = this.selectedFixtureDef;
+    if (fd ) {
+     if (fd !== this._lastSelectedFixtureDef ||
+      (this._lastSelectedMode !== this.pselectedMode)) {
+      this._lastSelectedFixtureDef = fd;
+      this._lastSelectedMode = this.pselectedMode;
+      this._lastGeneratedFixtureDef =  fd.generateFixture('test', this.pselectedMode);
+    }
+     return this._lastGeneratedFixtureDef;
+
+    }
+    return null;
+  }
+
+  get fixtureTypes() {
+    return FixtureFactory.getAllFixtureDefsTypeNames();
+  }
+
+
+  // categoryFilter = new Array<string>()
+  public selectedFixtureDefIdx = 0;
+
+  public selectedFixtureCategory = 'All';
+  public selectedFixtureManufacturer = 'All';
+  public pselectedMode = 'default';
+
+  @Prop({default: null})
+  public value: any;
+
+  private _lastSelectedFixtureDef: any;
+  private _lastSelectedMode: any;
+  private _lastGeneratedFixtureDef: any;
   public mounted() {
 
-  }
-  get selectedFixtureDef(){
-    let fd  =this.filteredFixtureDefs[this.selectedFixtureDefIdx]
-    return fd
-  }
-
-  private _lastSelectedFixtureDef:any;
-  private _lastSelectedMode:any
-  private _lastGeneratedFixtureDef:any;
-
-  get selectedFixtureInstance(){
-    const fd = this.selectedFixtureDef
-    if(fd ){
-     if(fd!=this._lastSelectedFixtureDef ||
-      (this._lastSelectedMode !==this.pselectedMode)){
-      this._lastSelectedFixtureDef = fd 
-      this._lastSelectedMode =this.pselectedMode
-      this._lastGeneratedFixtureDef =  fd.generateFixture("test",this.pselectedMode)
-    }
-    return this._lastGeneratedFixtureDef
-
-    }
-    return null
-  }
-  
-  get fixtureTypes() {
-    return FixtureFactory.getAllFixtureDefsTypeNames()
   }
 
 

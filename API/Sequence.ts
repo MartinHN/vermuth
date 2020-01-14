@@ -93,24 +93,24 @@ class SequencePlayer {
   private _rootProvider?: RootProvider = undefined;
 
   @RemoteFunction({skipClientApply: true})
-  public goToStateNamed(name: string, timeIn: number, cb?: () => void): void {
+  public goToStateNamed(name: string, timeIn: number, opts?: {dimMaster?: number}, cb?: () => void): void {
     const seq = new Sequence('tmp', '' + name);
     if (! timeIn) {
       timeIn = 0;
     }
     seq.timeIn = timeIn;
-    this.goToSequence(seq, cb);
+    this.goToSequence(seq, opts, cb);
   }
 
   @RemoteFunction({skipClientApply: true})
-  public goToSequenceNamed(name: string, cb?: () => void): void {
+  public goToSequenceNamed(name: string, opts?: {dimMaster?: number}, cb?: () => void): void {
     name = '' + name;
     const tSeq = this.sequenceList.find((s) => s.name === name);
     if (!tSeq) {
       console.error('seq not found');
       return;
     }
-    this.goToSequence(tSeq, cb);
+    this.goToSequence(tSeq, opts, cb);
 
   }
 
@@ -132,7 +132,7 @@ class SequencePlayer {
   }
 
 
-  private goToSequence(seq: Sequence, cb?: any) {
+  private goToSequence(seq: Sequence, opts?: {dimMaster?: number}, cb?: any) {
     this.nextSeq = seq;
     const stateResolver = (n: string) => {
       return this.stateList.states[n];
@@ -142,16 +142,16 @@ class SequencePlayer {
     const timeIn =  this.nextSeq.timeIn ;
     const nextState = this.nextSeq.resolveState(stateResolver);
     if (nextState) {
-      this.goToState(nextState, this.nextSeq.timeIn, cb);
+      this.goToState(nextState, this.nextSeq.timeIn, opts, cb);
     }
   }
 
-  private goToState(nextState: State, timeIn: number, cb?: any) {
+  private goToState(nextState: State, timeIn: number, opts?: {dimMaster?: number}, cb?: any) {
     const res = 100; // ms between steps
-
+    const dimMaster = opts ? opts.dimMaster !== undefined ? opts.dimMaster : 1 : 1;
     if (nextState) {
       const transitionTime = Math.max((res + 1) / 1000 , Math.max(this.curSeq.timeOut, timeIn));
-      const nextStateResolved = nextState.resolveState(this.stateList.getCurrentFixtureList(),this.stateList.states,1);
+      const nextStateResolved = nextState.resolveState(this.stateList.getCurrentFixtureList(), this.stateList.states, dimMaster);
       const mergedState = new MergedState(nextStateResolved);
       mergedState.checkIntegrity();
       doTimer('seqTransition', transitionTime * 1000.0, res,

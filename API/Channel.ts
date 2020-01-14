@@ -5,11 +5,11 @@ type ChannelValueType = number; // |number[];
 
 export const ChannelRoles: {[id: string]: {[id: string]: {names: Array<string|RegExp>}}} = {
   color: {
-    r: {names: ['red', 'r',/red.*master/]},
+    r: {names: ['red', 'r', /red.*master/]},
     r_fine: {names: [/red.*fine/, /r.*fine/]},
-    g: {names: ['green', 'g',/green.*master/]},
+    g: {names: ['green', 'g', /green.*master/]},
     g_fine: {names: [/green.*fine/, /g.*fine/]},
-    b: {names: ['blue', 'b',/blue.*master/]},
+    b: {names: ['blue', 'b', /blue.*master/]},
     b_fine: {names: [/blue.*fine/, /b.*fine/]},
     w: {names: ['white', 'w']},
     w_fine: {names: [/white.*fine/, /w.*fine/]},
@@ -28,7 +28,7 @@ export const ChannelRoles: {[id: string]: {[id: string]: {names: Array<string|Re
     heat: {names: [/heat.*/]},
   },
   dim: {
-    dimmer: {names: [/channel.*/, /dim.*/,'master']},
+    dimmer: {names: [/channel.*/, /dim.*/, 'master']},
   },
   other: {
     other: {names: []},
@@ -108,7 +108,7 @@ export class ChannelBase implements ChannelI {
   public roleFam = '';
 
   @nonEnumerable()
-  public externalController:any = null
+  public externalController: any = null;
 
   @nonEnumerable()
   private __parentFixture: any;
@@ -133,7 +133,7 @@ export class ChannelBase implements ChannelI {
   public updateRoleForName() {
     let foundType = '';
     let foundFam = '';
-    const minName = this.name.toLowerCase()
+    const minName = this.name.toLowerCase();
     for (const fam of Object.keys(ChannelRoles)) {
       const cFam = ChannelRoles[fam];
       if (fam === 'other') {continue; }

@@ -14,9 +14,9 @@ OSCServer.connect(11000);
 import dmxController from './dmxController';
 
 import rootState from '@API/RootState';
-import { callAnyAccessibleFromRemote,doSharedFunction,blockSocket,unblockSocket } from '@API/ServerSync';
+import { callAnyAccessibleFromRemote, doSharedFunction, blockSocket, unblockSocket } from '@API/ServerSync';
 rootState.registerDMXController(dmxController);
-rootState.init()
+rootState.init();
 
 import log from './remoteLogger';
 
@@ -57,10 +57,10 @@ app.use(express.static(publicDir));
 let states: any = {};
 
 // write empty if non existent
-fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8' }, (ferr:any) => {
+fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8' }, (ferr: any) => {
   if (ferr) {
     console.log('fileExists', localStateFile);
-    fs.readFile(localStateFile, 'utf8', (err:any, data:any) => {
+    fs.readFile(localStateFile, 'utf8', (err: any, data: any) => {
       if (err) {
         return console.log(err);
       }
@@ -81,7 +81,7 @@ fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8'
 
 
 
-function setStateFromObject(msg:any, socket: any) {
+function setStateFromObject(msg: any, socket: any) {
   console.log('setting state from: ' + socket);
 
   const dif = diff(states, msg);
@@ -98,8 +98,8 @@ function setStateFromObject(msg:any, socket: any) {
     //  blockSocket(socket)
     }
     // no need to sync as we already brodcasted the state
-    doSharedFunction(()=>
-    rootState.configureFromObj(msg))
+    doSharedFunction(() =>
+    rootState.configureFromObj(msg));
 
     // if(socket){
     //   nextTick(()=>unblockSocket(socket))
@@ -109,7 +109,7 @@ function setStateFromObject(msg:any, socket: any) {
     fs.writeFile(localStateFile,
       JSON.stringify(states, null, '  '),
       'utf8',
-      (v:any) => {
+      (v: any) => {
         if (v) {
           console.log('file write error : ', v);
         }
@@ -138,11 +138,11 @@ ioServer.on('connection', (socket) => {
     if (clientLogger) {
       // @ts-ignore
       const isBroadCasting = socket.flags.broadcast;
-      const evt = JSON.stringify(event)
-      if(!evt || !evt.endsWith("/_time")){
-        let a = JSON.stringify(args)
-        if (evt==="SET_STATE"){a = ""}
-            clientLogger.log('server >> ' + (isBroadCasting ? ' to any but ' : '') + socket.id + evt + a + '\n');
+      const evt = JSON.stringify(event);
+      if (!evt || !evt.endsWith('/_time')) {
+        let a = JSON.stringify(args);
+        if (evt === 'SET_STATE') {a = ''; }
+        clientLogger.log('server >> ' + (isBroadCasting ? ' to any but ' : '') + socket.id + evt + a + '\n');
           }
     }
 

@@ -3,7 +3,7 @@
     
     
     <v-container class="FixturePatch" fluid>
-      <v-row>
+      <v-row no-gutter>
         <v-col cols=8 >
           <Button class="button" @click="showFixtureExplorer=true" text="add Fixture"/>
           <Modal v-if="showFixtureExplorer" @close="showFixtureExplorer=false">
@@ -95,7 +95,7 @@ import Toggle from '@/components/Inputs/Toggle.vue';
 import Modal from '@/components/Utils/Modal.vue';
 import FixtureEditor from '@/components/Editors/FixtureEditor.vue';
 import FixtureExplorer  from '@/components/Editors/FixtureExplorer.vue';
-import { DirectFixture,FixtureBase } from '@API/Fixture';
+import { DirectFixture, FixtureBase } from '@API/Fixture';
 import { FixtureFactory } from '@API/FixtureFactory';
 import UniversesMethods from '../store/universes';
 
@@ -103,36 +103,36 @@ import UniversesMethods from '../store/universes';
 const universesModule = namespace('universes');
 
 @Component({
-  components: {Button, Numbox, Toggle, Modal, FixtureEditor,FixtureExplorer},
+  components: {Button, Numbox, Toggle, Modal, FixtureEditor, FixtureExplorer},
 })
 export default class FixturePatch extends Vue {
   public get fixtureErrorMsgs() {
     // const dum = this.usedChannels
     const errs: {[id: string]: string} = {};
-    for (const f of Object.values(this.universe.fixtures)){
-      const overlap  = []
-      for (const ff of Object.values(this.universe.fixtures)){
-        if(f!=ff){
-          const o= (f.baseCirc>=ff.baseCirc &&f.baseCirc<=ff.endCirc ) ||
-          (f.endCirc>=ff.baseCirc &&f.endCirc<=ff.endCirc )
-          if(o){
-            overlap.push(ff.name)
+    for (const f of Object.values(this.universe.fixtures)) {
+      const overlap  = [];
+      for (const ff of Object.values(this.universe.fixtures)) {
+        if (f !== ff) {
+          const o = (f.baseCirc >= ff.baseCirc && f.baseCirc <= ff.endCirc ) ||
+          (f.endCirc >= ff.baseCirc && f.endCirc <= ff.endCirc );
+          if (o) {
+            overlap.push(ff.name);
           }
         }
       }
-      if(overlap.length){
-        errs[f.name]="overlap with "+overlap.join(",")
+      if (overlap.length) {
+        errs[f.name] = 'overlap with ' + overlap.join(',');
       }
     }
     return errs;
   }
 
-  get fixtureColors(){
-    const cols:{[id:string]:string} ={}
-    for(const f of Object.values(this.universe.fixtures)){
-       cols[f.name] = this.fixtureErrorMsgs[f.name]?"red":"inherit"
+  get fixtureColors() {
+    const cols: {[id: string]: string} = {};
+    for (const f of Object.values(this.universe.fixtures)) {
+       cols[f.name] = this.fixtureErrorMsgs[f.name] ? 'red' : 'inherit';
     }
-    return cols
+    return cols;
   }
 
   get fixtureHeaders() {
@@ -146,13 +146,6 @@ export default class FixturePatch extends Vue {
 
 
   public editedFixture = null;
-  addAndQuitFExplorer(e:FixtureBase){
-   this.showFixtureExplorer=false
-   if(e){
-    e.name = e.fixtureType
-    this.universe.addFixture(e)
-  }
-}
 @universesModule.Mutation('addFixture') public addFixture!: UniversesMethods['addFixture'];
 @universesModule.Mutation('duplicateFixture') public duplicateFixture!: UniversesMethods['duplicateFixture'];
 
@@ -179,7 +172,21 @@ export default class FixturePatch extends Vue {
 @universesModule.Getter('usedChannels') private usedChannels!: UniversesMethods['usedChannels'];
 
 private searchFixtureText = '';
-private showFixtureExplorer = false
+private showFixtureExplorer = false;
+  public addAndQuitFExplorer(e: FixtureBase) {
+   this.showFixtureExplorer = false;
+   if (e) {
+    const numFixture = parseInt(prompt('how much do you want to add', '1') || '0');
+    const baseAddr  = parseInt(prompt('starting dimmer number', '1') || '1');
+    for (let i = 0 ; i < numFixture ; i++) {
+      e.name = e.fixtureType;
+      e.baseCirc = baseAddr + e.span * i;
+      this.universe.addFixture(e);
+      e = e.clone();
+    }
+
+  }
+}
 public open() {
   // debugger
 }

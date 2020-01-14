@@ -55,6 +55,7 @@ export default class Slider extends Vue {
 }
 
 .sliderPH{
+  font-size:small;
   position:relative;
   width:100%;
   height:100%;
@@ -75,9 +76,10 @@ export default class Slider extends Vue {
 }
 .Name{
   position: absolute;
-  height:100%;
-  top:3px;
-  margin-left: 1rem;
+  /*height:100%;*/
+  bottom:0px;
+  margin-left: 3px;
+
   /*top:-40px;*/
   z-index: 2;
   user-select: none;

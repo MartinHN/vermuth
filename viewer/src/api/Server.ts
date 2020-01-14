@@ -37,7 +37,7 @@ class Server {
     socket.on('connect', () => {
       console.log('connected to server');
       store.dispatch('SET_CONNECTED_STATE', 'connected');
-      rootState.init()
+      rootState.init();
 
 
     });

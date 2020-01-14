@@ -4,10 +4,11 @@
     <div class="modal-wrapper">
       <div class="modal-container">
 
-        <div class="modal-header">
-          <slot name="header">
+        <div class="modal-header" @click="$emit('close')">
+          <slot name="header" >
             <!-- default header -->
           </slot>
+          
         </div>
 
         <div class="modal-body" style="height:90%">
@@ -80,9 +81,18 @@ export default class Modal extends Vue {
   font-family: Helvetica, Arial, sans-serif;
 }
 
-.modal-header h3 {
+.modal-header {
   margin-top: 0;
   color: #42b983;
+  width:100%;
+}
+.modal-header .close {
+  display:inline-block;
+  background:red;
+  color:red;
+  width:10%;
+  height:10%;
+  min-height:20px;
 }
 
 .modal-body {

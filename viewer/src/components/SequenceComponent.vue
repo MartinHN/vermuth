@@ -1,6 +1,7 @@
 <template>
   <div class="main">
-    <Button text="Go" @click="goToSequence(sequence)" />
+    <Button text="Go" @click="goToSequenceNamed({name:sequence.name})"  style="width:20%"/>
+    <Button text="Black" @click="goToSequenceNamed({name:sequence.name,dimMaster:0})" style="width:20%" />
     <text-input :value="seqName" @change="setSequenceName({sequence:sequence,value:$event.value})"/>
     <Numbox :value="sequence.timeIn" @change="setSequenceTimeIn({sequence:sequence,value:$event.value})"/>
     <v-select :items=stateNames :value="seqStateName" @change="setSequenceStateName({sequence:sequence,value:$event})" >
@@ -27,7 +28,7 @@ export default class SequenceComponent extends Vue {
   @sequenceModule.Mutation('setSequenceStateName') public setSequenceStateName!: SequenceMethods['setSequenceStateName'];
 
   @sequenceModule.Mutation('setSequenceTimeIn') public setSequenceTimeIn!: SequenceMethods['setSequenceTimeIn'];
-  @sequenceModule.Action('goToSequence') public goToSequence!: SequenceMethods['goToSequence'];
+  @sequenceModule.Action('goToSequenceNamed') public goToSequenceNamed!: SequenceMethods['goToSequenceNamed'];
 
   @stateModule.Getter('stateNames') public stateNames!: string[];
   @Prop()
@@ -46,6 +47,12 @@ export default class SequenceComponent extends Vue {
     }
     return 'none';
   }
+  public blackSequence() {
+    if (this.sequence  ) {
+      return this.sequence.stateName;
+    }
+  }
+
 
 
 

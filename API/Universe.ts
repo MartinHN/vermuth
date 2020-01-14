@@ -3,11 +3,11 @@ import { ChannelBase, UniverseListener } from './Channel';
 import { getNextUniqueName , compareValues} from './Utils';
 import { SetAccessible, setChildAccessible, AccessibleClass , RemoteFunction} from './ServerSync';
 import {addProp, deleteProp} from './MemoryUtils';
-export interface UniverseI{
+export interface UniverseI {
 
 }
 @AccessibleClass()
-export class Universe implements UniverseI{
+export class Universe implements UniverseI {
 
   public readonly testedChannel = new ChannelBase('tested', 0, -1, false);
   @SetAccessible({readonly: true})
@@ -36,8 +36,11 @@ export class Universe implements UniverseI{
 public removeGroup(name: string) {
   deleteProp(this.groups, name);
 }
-
+public get groupList() {
+  return Object.values(this.groups);
+}
 public get fixtureList() {return Object.values(this.fixtures); }
+public getFixtureListFromNames(n: string[]) {return n.map((e) => this.fixtures[e]).filter((e) => e !== undefined); }
 public get sortedFixtureList() {return this.fixtureList.slice().sort(compareValues('name', 'asc')); }
 
 // singleton guard

@@ -34,7 +34,7 @@ import log from './remoteLogger';
 class OSCServer {
   public udpPort: any;
 
-  public connect(port:number, broadcast = false) {
+  public connect(port: number, broadcast = false) {
     let ip = '0.0.0.0';
     if (broadcast) {
       // ip = "239.0.0.56"
@@ -57,7 +57,7 @@ class OSCServer {
     udpPort.on('bundle', this.processBundle.bind(this));
     udpPort.on('message', this.processMsg.bind(this));
 
-    udpPort.on('error', (err:any) => {
+    udpPort.on('error', (err: any) => {
       console.error(err);
     });
     this.udpPort = udpPort;
@@ -67,7 +67,7 @@ class OSCServer {
 
   }
 
-  public processMsg(msg:any, time:any, info:any) {
+  public processMsg(msg: any, time: any, info: any) {
     if (msg.address !== '/ping') {
       if (clientLogger) {
         clientLogger.log('OSC >> server ' + JSON.stringify(msg));
@@ -85,7 +85,7 @@ class OSCServer {
 
   }
 
-  public processBundle(b:any, time:any, info:any) {
+  public processBundle(b: any, time: any, info: any) {
     for (const i of Object.keys(b.packets)) {
       const p = b.packets[i];
       if (p.packets) {this.processBundle(p, time, info); } else {this.processMsg(p, time, info); }

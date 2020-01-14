@@ -5,6 +5,7 @@
       
       <router-link to="/Sequencer">Sequencer</router-link>
       <router-link to="/">Dashboard</router-link>
+      
       <router-link to="/Patch">Patch</router-link>
       <router-link to="/Config">Config</router-link>
     </div>

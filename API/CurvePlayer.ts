@@ -1,4 +1,4 @@
-import {CurveBase,CurveStore} from './Curve';
+import {CurveBase, CurveStore} from './Curve';
 import {ChannelBase} from './Channel';
 import {GlobalTransport, TimeListener} from './Time';
 import { SetAccessible, RemoteValue , RemoteFunction, AccessibleClass} from './ServerSync';
@@ -11,7 +11,7 @@ class CurveLink {
     for (const [k, v] of this.listened.entries()) {
       curve.on(k, v);
     }
-    channel.externalController = this
+    channel.externalController = this;
   }
   public vChanged(v: number) {
     this.channel.setValue(v + this.offset, true);
@@ -19,7 +19,7 @@ class CurveLink {
   public dispose() {
     for (const [k, v] of this.listened.entries()) {
       this.curve.off(k, v);
-      this.channel.externalController = null
+      this.channel.externalController = null;
     }
   }
 }
@@ -28,13 +28,13 @@ class CurveLink {
 @AccessibleClass()
 class CurvePlayerClass extends TimeListener {
 
-  
-  private curves :{[id:string]: Set<CurveLink>}={};// not accessible
+
+  private curves: {[id: string]: Set<CurveLink>} = {}; // not accessible
 
   private _span = 1;
 
   constructor(
-    _curves?: CurvePlayerClass["curves"],
+    _curves?: CurvePlayerClass['curves'],
     _span?: number) {
     super('CurvePlayer');
     if (_curves) {this.curves = _curves; }
@@ -51,22 +51,22 @@ class CurvePlayerClass extends TimeListener {
   @RemoteFunction()
   public addCurve(c: CurveBase) {
     if (!this.getCurveForName(c.name)) {
-      this.curves[c.name]= new Set<CurveLink>();
+      this.curves[c.name] = new Set<CurveLink>();
     } else {
       console.error('dupliucating curve');
     }
   }
-  get curveNames(){
-    return Array.from(Object.keys(this.curves))
+  get curveNames() {
+    return Array.from(Object.keys(this.curves));
   }
 
-  get curveList(){
-    return this.curveNames.map(n=>CurveStore.getCurveNamed(n)).filter(e=>e!==undefined) as Array<CurveBase>
+  get curveList() {
+    return this.curveNames.map((n) => CurveStore.getCurveNamed(n)).filter((e) => e !== undefined) as CurveBase[];
   }
-  get curveLinkList(){
-    let res = new Array<CurveLink>()
-     Object.values(this.curves).map(n=>res=  res.concat(Array.from(n)))
-     return res
+  get curveLinkList() {
+    let res = new Array<CurveLink>();
+    Object.values(this.curves).map((n) => res =  res.concat(Array.from(n)));
+    return res;
   }
   public hasCurve(c: CurveBase) {
     return this.curveList.indexOf(c) >= 0;
@@ -75,10 +75,10 @@ class CurvePlayerClass extends TimeListener {
     return this.curveList.find((c) => c.name === n);
   }
 
-  
+
   public getAssignedChannels() {
     const res = new Set<ChannelBase>();
-    this.curveLinkList.map(e  => res.add(e.channel));
+    this.curveLinkList.map((e)  => res.add(e.channel));
     return res;
   }
 
@@ -109,7 +109,7 @@ class CurvePlayerClass extends TimeListener {
   }
   @RemoteFunction()
   public assignChannelToCurveNamed(n: string, ch: ChannelBase, offset: number) {
-    debugger
+    debugger;
     const c = this.getCurveForName(n);
     if (c) {
       if (this.getCurveForChannel(ch)) {
@@ -117,7 +117,7 @@ class CurvePlayerClass extends TimeListener {
       }
       const chs = this.curves[n] || new Set<CurveLink>();
 
-      this.curves[n]= chs.add(new CurveLink(c, ch, offset));
+      this.curves[n] = chs.add(new CurveLink(c, ch, offset));
     }
   }
 

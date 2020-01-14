@@ -11,7 +11,7 @@ import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators';
 
 @Module({namespaced: true})
 export default class States extends VuexModule {
-  
+
   public stateList = RootState.stateList;
 
   @Action

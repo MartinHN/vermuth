@@ -1,10 +1,11 @@
 <template>
   <!-- <v-container class="main" fluid pa-1> -->
+    <div>
     <v-row no-gutters >
       <v-col cols=10 >
         <v-list dense class="overflow-y-auto" style=max-height:200px >
           <!-- <v-subheader>Presets</v-subheader> -->
-          <v-list-item-group v-model="selectedPreset" > <!-- v-model="item" color="primary"> -->
+          <v-list-item-group v-model="selectedStateIdx" > <!-- v-model="item" color="primary"> -->
             <v-list-item v-for="(s,i) in stateNames" :key=s.id>
               <v-list-item-content >
                 <v-list-item-title v-html="s" ></v-list-item-title>
@@ -16,6 +17,7 @@
       <v-col cols=2>
         <div id="stateActions">
           <Button class="add" @click="saveNewState" text="save"></Button>
+          <Button class="edit" @click="editState" text="edit"></Button>
           <Button class="rename" @click="renameStatePrompt" text="rename"></Button>
           <Button class="remove" @click="removeStatePrompt" text="-" color='red'></Button>
 
@@ -24,8 +26,13 @@
       </v-col>
 
     </v-row>
-  <!-- </v-container> -->
 
+    <Modal v-if=showStateEditor @close="showStateEditor=false">
+      <h3  slot="header" >StateEditor</h3>
+     <StateEditor  slot="body" state=selectedState></StateEditor>
+    </Modal>
+  <!-- </v-container> -->
+</div>
 </template>
 
 <script lang="ts">
@@ -33,6 +40,10 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 import Button from '@/components/Inputs/Button.vue';
 import Toggle from '@/components/Inputs/Toggle.vue';
+import Modal from '@/components/Utils/Modal.vue';
+import StateEditor from '@/components/Editors/StateEditor.vue';
+
+import rootState from '@API/RootState';
 
 import StateMethods from '../store/states';
 
@@ -41,21 +52,9 @@ const statesModule = namespace('states');
 type ValueOf<T> = T[keyof T];
 // type State = ValueOf<StateMethods['states']>;
 @Component({
-  components: {Button, Toggle},
+  components: {Button, Toggle, Modal, StateEditor},
 })
 export default class StateComponent extends Vue {
-
-  @statesModule.Mutation('saveCurrentState') public saveCurrentState!: StateMethods['saveCurrentState'];
-  @statesModule.Mutation('removeState') public removeState!: StateMethods['removeState'];
-  @statesModule.Mutation('renameState') public renameState!: StateMethods['renameState'];
-
-  @statesModule.Mutation('recallState') public recallState!: StateMethods['recallState'];
-
-  @statesModule.Getter('channels') private channels!: StateMethods['channels'];
-  @statesModule.Getter('stateNames') private stateNames!: StateMethods['stateNames'];
-  @statesModule.Getter('loadedStateName') private pStateName!: StateMethods['loadedStateName'];
-
-
 
   get stateName(): string {
     return this.pStateName;
@@ -66,12 +65,42 @@ export default class StateComponent extends Vue {
     }
   }
 
-
-  set selectedPreset(i: number) {
-    this.stateName = this.stateNames[i];
+  get selectedState() {
+    return this.stateList.getStateNamed(this.stateName);
   }
-  get selectedPreset() {
+  set selectedStateIdx(i: number) {
+    if (this.stateNames) {
+    this.stateName = this.stateNames[i];
+    }
+  }
+  get selectedStateIdx() {
     return this.stateNames.indexOf(this.stateName);
+  }
+
+  @statesModule.Mutation('saveCurrentState') public saveCurrentState!: StateMethods['saveCurrentState'];
+  @statesModule.Mutation('removeState') public removeState!: StateMethods['removeState'];
+  @statesModule.Mutation('renameState') public renameState!: StateMethods['renameState'];
+
+  @statesModule.Mutation('recallState') public recallState!: StateMethods['recallState'];
+
+  // @Prop({default:false})
+  public showStateEditor = false; // !:boolean
+
+  @statesModule.Getter('channels') private channels!: StateMethods['channels'];
+  @statesModule.Getter('stateNames') private stateNames!: StateMethods['stateNames'];
+  @statesModule.Getter('loadedStateName') private pStateName!: StateMethods['loadedStateName'];
+
+
+  private stateList = rootState.stateList;
+
+
+
+  public editState() {
+    if (this.selectedState == null) {
+
+    } else {
+      this.showStateEditor = true;
+    }
   }
 
   public saveNewState() {

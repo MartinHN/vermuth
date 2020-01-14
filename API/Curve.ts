@@ -39,9 +39,9 @@ export function EasingWraper(a: NumOrVec, b: NumOrVec, pct: number, ease: Easing
 
 export class KeyFrame<T extends NumOrVec > {
   @nonEnumerable()
-  private _parentCurve: any;//Curve<T> | undefined = undefined;
-  get parentCurve(){
-    return this._parentCurve as Curve<T>
+  private _parentCurve: any; // Curve<T> | undefined = undefined;
+  get parentCurve() {
+    return this._parentCurve as Curve<T>;
   }
   constructor(private _position: number, private _value: T, public _easing: Easing = new LinearEasing()) {
 
@@ -121,19 +121,19 @@ interface CurveBaseI extends EventEmitter {
   // goToPct(pct:number):void;
 }
 
-function notImplemented(){
-  debugger
-  console.error('calling base curve')
-  
+function notImplemented() {
+  debugger;
+  console.error('calling base curve');
+
 }
-export class CurveBase extends EventEmitter implements CurveBaseI{
-  name="not impl";
-  position=-1;
-  span = -1;
-  constructor(){super();notImplemented();}
-  getValue(){notImplemented();};
-  configureFromObj(o: any){notImplemented();}
-  toObj(){notImplemented();}
+export class CurveBase extends EventEmitter implements CurveBaseI {
+  public name = 'not impl';
+  public position = -1;
+  public span = -1;
+  constructor() {super(); notImplemented(); }
+  public getValue() {notImplemented(); }
+  public configureFromObj(o: any) {notImplemented(); }
+  public toObj() {notImplemented(); }
 }
 
 let curveNum = 0;
@@ -331,13 +331,12 @@ class CurveStoreClass  {
   private curves = new Array<CurveBaseI>();
 
   public configureFromObj(o: any) {
-    while(this.curves.length){this.curves.pop()};
+    while (this.curves.length) {this.curves.pop(); }
     if (o && Array.isArray(o)) {
       for (const c of o) {
         const cu = new Curve<number>('new');
         cu.configureFromObj(c);
-        if(!this.curves.some(c=>cu.name===c.name))
-          {this.curves.push(cu);}
+        if (!this.curves.some((ccu) => cu.name === ccu.name)) {this.curves.push(cu); }
       }
     }
    }

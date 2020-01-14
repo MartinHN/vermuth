@@ -4,7 +4,7 @@ import { FixtureFactory } from './FixtureFactory';
 import { Sequence, sequencePlayer } from './Sequence';
 import { StateList } from './State';
 import { DMXControllerI } from './DMXControllerI';
-import { bindClientSocket, RemoteFunction, SetAccessible, setChildAccessible, AccessibleClass, resolveAccessible, RemoteValue ,treeEvents} from './ServerSync';
+import { bindClientSocket, RemoteFunction, SetAccessible, setChildAccessible, AccessibleClass, resolveAccessible, RemoteValue , treeEvents} from './ServerSync';
 import { buildEscapedJSON, buildEscapedObject } from './SerializeUtils';
 import {GlobalTransport} from './Time';
 import {CurvePlayer} from './CurvePlayer';
@@ -60,12 +60,12 @@ export class RootStateType {
     bindClientSocket('auto');
   }
 
-  public async init(){
-    await this.fixtureFactory.init()
+  public async init() {
+    await this.fixtureFactory.init();
   }
 
-  get treeEvents(){
-    return treeEvents
+  get treeEvents() {
+    return treeEvents;
   }
   public configureFromObj(ob: any) {
     const validObj = ob !== undefined;
@@ -99,7 +99,7 @@ export class RootStateType {
   public clear() {
     this.universe.configureFromObj({});
   }
-  
+
 
   public toJSONString(indent?: number) {
     // debugger;

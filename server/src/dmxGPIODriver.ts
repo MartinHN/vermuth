@@ -48,7 +48,7 @@ Ground  -     39      40    21    sclk
 */
 
 
-function GPIODriver(this:any,deviceId = 'lampignon', options = {}) {
+  function GPIODriver(this: any, deviceId = 'lampignon', options = {}) {
 
   this.gpioInstances = [];
   for (let i = 0 ; i <= 27 ; i++) {
@@ -63,50 +63,50 @@ function GPIODriver(this:any,deviceId = 'lampignon', options = {}) {
 }
 
 
-GPIODriver.prototype.syncGPIO = function(i) {
+  GPIODriver.prototype.syncGPIO = function(i) {
   this.gpioInstances[i].pwmWrite(this.universe[i]);
 };
 
-GPIODriver.prototype.sendUniverse = function() {
+  GPIODriver.prototype.sendUniverse = function() {
   for (const i of Object.keys(this.gpioInstances)) {
     this.syncGPIO(i);
 
   }
 };
 
-GPIODriver.prototype.start = function() {
+  GPIODriver.prototype.start = function() {
   // this.timeout = setInterval(this.sendUniverse.bind(this), this.sleepTime);
 };
 
-GPIODriver.prototype.stop = function() {
+  GPIODriver.prototype.stop = function() {
   // clearInterval(this.timeout);
 };
 
-GPIODriver.prototype.close = function(cb) {
+  GPIODriver.prototype.close = function(cb) {
 
   this.stop();
   cb(null);
 };
 
-GPIODriver.prototype.update = function(u) {
+  GPIODriver.prototype.update = function(u) {
   for (const c of Object.keys(u)) {
     this.universe[c] = u[c];
     this.syncGPIO(c);
   }
 };
 
-GPIODriver.prototype.updateAll = function(v) {
+  GPIODriver.prototype.updateAll = function(v) {
   for (let i = 0; i < this.gpioInstances.length ; i++) {
     this.universe[i] = v;
     this.syncGPIO(i);
   }
 };
 
-GPIODriver.prototype.get = function(c) {
+  GPIODriver.prototype.get = function(c) {
   return this.universe[c];
 };
 
-module.exports = GPIODriver;
+  module.exports = GPIODriver;
 } else {
   module.exports = {};
 }

@@ -81,11 +81,11 @@ const serverFS = () => {
 
 
 let isAutoSaving = false;
-function autoSaveAllowed  (state:any){
-  return !isAutoSaving && !state.loadingState && (state.savedStatus === 'Saved' || state.savedStatus === '' ) && state.config.autoSave 
+function autoSaveAllowed (state: any) {
+  return !isAutoSaving && !state.loadingState && (state.savedStatus === 'Saved' || state.savedStatus === '' ) && state.config.autoSave;
 }
 
-function dispatchSave(store:any){
+function dispatchSave(store: any) {
   isAutoSaving = true;
 
   const sessionState = getSessionObject();
@@ -103,14 +103,13 @@ const autosaverPlugin = (pStore: Store<RootVueState>) => {
   pStore.dispatch('LOAD_KEYED_STATE', sessionKey);
   pStore.dispatch('LOAD_KEYED_STATE', configKey);
 
-  
+
 
   pStore.subscribe((mutation, state: any ) => {
     state = state as FullVueState;
     if (mutation.type.startsWith('config')) {
       localFS.save(state.config, configKey, () => {});
-    } 
-    else if(autoSaveAllowed(state) &&  mutation.type.includes('/') ) {
+    } else if (autoSaveAllowed(state) &&  mutation.type.includes('/') ) {
       if ( mutation.type.endsWith('Value') ) {
         // console.log('ignoring value changes ' + mutation);
         return;
@@ -223,11 +222,11 @@ const store: StoreOptions<RootVueState> = {
         const sessionState = getSessionObject();
         context.commit('states/saveCurrentState', {name: 'current'});
         context.commit('SET_SAVE_STATUS', 'Saving...');
-        setTimeout((e)=>{
-          if(context.state.savedStatus==="Saving..."){
+        setTimeout((e) => {
+          if (context.state.savedStatus === 'Saving...') {
             context.commit('SET_SAVE_STATUS', 'SaveTimeout');
           }
-        },3000)
+        }, 3000);
         localFS.save(sessionState, sessionKey, () => {
           if (!context.state.loadingState ) {
             context.dispatch('SAVE_REMOTELY', sessionState);
@@ -252,39 +251,39 @@ const store: StoreOptions<RootVueState> = {
   // plugins: debug ? [createLogger()] : []
 };
 
-const myVueStore = new Vuex.Store<RootVueState>(store)
+const myVueStore = new Vuex.Store<RootVueState>(store);
 
-const autoSaveDebounced = _.debounce(()=>{
-  console.log("autosaving from tree")
-  dispatchSave(myVueStore)
-  
-},300)
+const autoSaveDebounced = _.debounce(() => {
+  console.log('autosaving from tree');
+  dispatchSave(myVueStore);
+
+}, 300);
 
 
-rootState.treeEvents.on('v',(parent:any,key:string)=>{
-  if(autoSaveAllowed(myVueStore.state)){
-    autoSaveDebounced()
+rootState.treeEvents.on('v', (parent: any, key: string) => {
+  if (autoSaveAllowed(myVueStore.state)) {
+    autoSaveDebounced();
   }
 
-})
-rootState.treeEvents.on('add',(parent:any,key:string)=>{
-  if(autoSaveAllowed(myVueStore.state)){
-    autoSaveDebounced()
+});
+rootState.treeEvents.on('add', (parent: any, key: string) => {
+  if (autoSaveAllowed(myVueStore.state)) {
+    autoSaveDebounced();
   }
-})
-rootState.treeEvents.on('rm',(parent:any,key:string)=>{
-  if(autoSaveAllowed(myVueStore.state)){
-    autoSaveDebounced()
+});
+rootState.treeEvents.on('rm', (parent: any, key: string) => {
+  if (autoSaveAllowed(myVueStore.state)) {
+    autoSaveDebounced();
   }
-})
+});
 
-rootState.treeEvents.on('call',(parent:any,options:any,ctx:any)=>{
-  if( autoSaveAllowed(myVueStore.state)){
-    if(!ctx.isFromShared ){
-      autoSaveDebounced()
+rootState.treeEvents.on('call', (parent: any, options: any, ctx: any) => {
+  if ( autoSaveAllowed(myVueStore.state)) {
+    if (!ctx.isFromShared ) {
+      autoSaveDebounced();
     }
   }
-})
+});
 
 export default myVueStore;
 

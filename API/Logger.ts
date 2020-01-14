@@ -14,7 +14,7 @@ class MyLogger {
   }
 
 
-  public log(txt:any) {
+  public log(txt: any) {
     console.log( txt);
     if (this.dbgStream) {
 

@@ -73,7 +73,7 @@ const universesModule = namespace('universes');
 
 
 @Component({
-  components: {Button, Numbox, Toggle,TextInput},
+  components: {Button, Numbox, Toggle, TextInput},
 })
 export default class FixtureEditor extends Vue {
   @Prop({default: null, required: true})
@@ -93,7 +93,7 @@ export default class FixtureEditor extends Vue {
   }
 
   get fixtureTypes() {
-    return FixtureFactory.getAllFixtureDefsTypeNames()
+    return FixtureFactory.getAllFixtureDefsTypeNames();
   }
 
   // public setFixtureType(type){

@@ -78,7 +78,7 @@ export default class ChannelWidget extends Vue {
   @Prop() public channelProp!: ChannelBase;
   @Prop({default: false})    public showName!: boolean;
   @Prop({default: false})    public showValue!: boolean;
-  @Prop({default:false}) public showProps!:boolean
+  @Prop({default: false}) public showProps!: boolean;
   @Prop() public overrideName?: string;
   public _curve: CurveBase|null = null;
   private showCurveEditor = false;
@@ -113,8 +113,8 @@ export default class ChannelWidget extends Vue {
     // debugger
     // this._curve = CurvePlayer.getCurveForChannel(this.channelProp) || null;
   }
-  public get curve(){
-    return this.channelProp.externalController
+  public get curve() {
+    return this.channelProp.externalController;
     // this._curve = CurvePlayer.getCurveForChannel(this.channelProp) || null
     // return this._curve
   }
