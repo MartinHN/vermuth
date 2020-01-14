@@ -127,55 +127,63 @@ class SequencePlayer {
     if (rootProvider === undefined ) {
      console.error('setting empty root');
      debugger;
-    }
-    this._rootProvider = rootProvider;
+   }
+   this._rootProvider = rootProvider;
+ }
+
+
+ private goToSequence(seq: Sequence, opts?: {dimMaster?: number}, cb?: any) {
+  this.nextSeq = seq;
+  const stateResolver = (n: string) => {
+    return this.stateList.states[n];
+  };
+
+  // const timeOut =  this.curSeq.timeOut*1000;
+  const timeIn =  this.nextSeq.timeIn ;
+  const nextState = this.nextSeq.resolveState(stateResolver);
+  if (nextState) {
+   const dimMaster = opts?opts.dimMaster!==undefined?opts.dimMaster:1:1
+    this.goToStates([nextState], this.nextSeq.timeIn, {dimMasters:[dimMaster]}, cb);
   }
+}
 
 
-  private goToSequence(seq: Sequence, opts?: {dimMaster?: number}, cb?: any) {
-    this.nextSeq = seq;
-    const stateResolver = (n: string) => {
-      return this.stateList.states[n];
-    };
+private goToStates(nextStates: State[], timeIn: number, opts?: {dimMasters?: number[]}, cb?: any) {
+  const res = 100; // ms between steps
+  
 
-    // const timeOut =  this.curSeq.timeOut*1000;
-    const timeIn =  this.nextSeq.timeIn ;
-    const nextState = this.nextSeq.resolveState(stateResolver);
-    if (nextState) {
-      this.goToState(nextState, this.nextSeq.timeIn, opts, cb);
+  if (nextStates && nextStates.length) {
+    const dimMasters = opts ? opts.dimMasters !== undefined ? opts.dimMasters : [] : [];
+    for(let i = dimMasters.length ; i<nextStates.length ; i++){
+      dimMasters.push(1)
     }
-  }
+    const transitionTime = Math.max((res + 1) / 1000 , Math.max(this.curSeq.timeOut, timeIn));
+    
+    const rsl = StateList.mergeStateList(nextStates,this.stateList.getCurrentFixtureList(),this.stateList.states,dimMasters)
+    const mergedState = new MergedState(rsl);
+    mergedState.checkIntegrity();
+    doTimer('seqTransition', transitionTime * 1000.0, res,
+      (total: number, t: number) => {
+        const pct = t * 1.0 / total;
+        const time = t * res;
+        // const pctIn = timeIn > 0 ? (1 - Math.max(0, (timeIn - time) / timeIn)) : 1;
+        // const pctOut = timeOut>0?Math.max(0,(timeOut-time)/timeOut):0;
 
-  private goToState(nextState: State, timeIn: number, opts?: {dimMaster?: number}, cb?: any) {
-    const res = 100; // ms between steps
-    const dimMaster = opts ? opts.dimMaster !== undefined ? opts.dimMaster : 1 : 1;
-    if (nextState) {
-      const transitionTime = Math.max((res + 1) / 1000 , Math.max(this.curSeq.timeOut, timeIn));
-      const nextStateResolved = nextState.resolveState(this.stateList.getCurrentFixtureList(), this.stateList.states, dimMaster);
-      const mergedState = new MergedState(nextStateResolved);
-      mergedState.checkIntegrity();
-      doTimer('seqTransition', transitionTime * 1000.0, res,
-        (total: number, t: number) => {
-          const pct = t * 1.0 / total;
-          const time = t * res;
-          // const pctIn = timeIn > 0 ? (1 - Math.max(0, (timeIn - time) / timeIn)) : 1;
-          // const pctOut = timeOut>0?Math.max(0,(timeOut-time)/timeOut):0;
+        for (const ts of mergedState.channels) {
+          if ( ts.sourcev !== ts.targetv) {
+            const diff = ts.targetv - ts.sourcev;
+            const v = ts.sourcev + pct * diff;
+            ts.channel.setValue(v, true);
 
-          for (const ts of mergedState.channels) {
-            if ( ts.sourcev !== ts.targetv) {
-              const diff = ts.targetv - ts.sourcev;
-              const v = ts.sourcev + pct * diff;
-              ts.channel.setValue(v, true);
-
-              // channelDic[k].sendValue(v)
-            }
-
+            // channelDic[k].sendValue(v)
           }
-        },
-        cb,
-        );
-    }
+
+        }
+      },
+      cb,
+      );
   }
+}
 
 
 }

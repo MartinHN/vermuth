@@ -3,9 +3,11 @@ import { ChannelBase, UniverseListener } from './Channel';
 import { getNextUniqueName , compareValues} from './Utils';
 import { SetAccessible, setChildAccessible, AccessibleClass , RemoteFunction} from './ServerSync';
 import {addProp, deleteProp} from './MemoryUtils';
+
 export interface UniverseI {
 
 }
+
 @AccessibleClass()
 export class Universe implements UniverseI {
 

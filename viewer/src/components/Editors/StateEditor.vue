@@ -5,18 +5,18 @@
     <div style="display:flex;flex-direction:row;width:100%">
 
       <v-row style="width:100%">
-  <v-col cols=12>
-        <v-list dense class="overflow-y-auto" style=max-height:200px >
+        <v-col cols=12>
+          <v-list dense class="overflow-y-auto" style=max-height:200px >
 
-          <v-list-item-group v-model="selectedFixtureNums" multiple> <!-- v-model="item" color="primary"> -->
-            <v-list-item v-for="(s,i) in selectableFixtureListNames" :key=s.id>
-              <v-list-item-content >
-                <v-list-item-title v-html="s" ></v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list-item-group>
-        </v-list>
-      </v-col>
+            <v-list-item-group v-model="selectedFixtureIdxs" multiple> <!-- v-model="item" color="primary"> -->
+              <v-list-item v-for="(s,i) in selectableFixtureListNames" :key=s.id>
+                <v-list-item-content >
+                  <v-list-item-title v-html="s" ></v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+        </v-col>
       </v-row>
       <br/>
       <v-select label=groups multiple class="selectclass"  v-model="selectedGroupNames" style="width:100%" :items=selectableGroupList>
@@ -72,7 +72,7 @@ export default class StateEditor extends Vue {
   @Prop({default: false})
   public readonly ?: boolean;
 
-  public selectedFixtureNums = new Array<number>();
+  public selectedFixtureIdxs = new Array<number>();
 
   public showProps = false;
   public showValues = false;
@@ -90,17 +90,17 @@ export default class StateEditor extends Vue {
     return this.universe.getFixtureListFromNames(this.selectedFixtureNames);
   }
 
-  set selectedFixtureNames(l: string[]) {
-    this.pselectedFixtureNames = l;
-    if (this.pselectedFixtureNames.length > 0) {
-      this.selectedGroupNames = [];
-    }
-  }
+  
   get selectedFixtureNames() {
-    return this.pselectedFixtureNames;
+    return this.selectedFixtureIdxs.map(i=>this.selectableFixtureListNames[i])
+    // return this.selectedFixtures.map(e=>e.name);
   }
   get selectableFixtureListNames() {
-    return this.universe.sortedFixtureList.map((e) => e.name);
+    return this.selectableFixtures.map((e) => e.name);
+  }
+
+  get selectableFixtures(){
+    return this.universe.sortedFixtureList
   }
   get selectableGroupList() {
     return ['all'].concat(this.universe.groupNames);
@@ -160,7 +160,9 @@ export default class StateEditor extends Vue {
   }
 
   public selectAll() {
-    this.selectedFixtureNames = this.universe.fixtureList.map((e) => e.name);
+    let i = -1;
+    this.selectedFixtureIdxs = this.selectableFixtures.map(e=>{i++;return i})
+    
   }
 
   public needDisplay(f: FixtureBase) {
@@ -196,8 +198,19 @@ export default class StateEditor extends Vue {
 
 
   public mounted() {
+    debugger
+    if(this.state){
+     const resolvedFixtures =  this.state.resolveState(this.universe.fixtureList,rootState.stateList.states,1)
+     for(const rf of Object.values(resolvedFixtures)){
 
+      const i = this.selectableFixtures.indexOf(rf.fixture)
+      if(i>=0 && this.selectedFixtureIdxs.indexOf(i)<0){
+        this.selectedFixtureIdxs.push(i)
+      }
+    }
   }
+
+}
 
 
 

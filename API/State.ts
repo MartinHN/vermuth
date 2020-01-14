@@ -82,11 +82,30 @@ export class ResolvedFixtureState {
     });
   }
 
+  getStateForChannel(c:ChannelBase){
+    for(const o of Object.values(this.channels)){
+      if(o.channel===c){
+        return o
+      }
+    }
+  }
+  get channelList(){
+    return Object.values(this.channels).map(e=>e.channel);
+  }
+
+  mergeWith(r:ResolvedFixtureState){
+    for(const ob of Object.values(r.channels)){
+      const thisO = this.getStateForChannel(ob.channel)
+      if(thisO){
+        thisO.value = ob.value
+      }
+    }
+  }
   public applyState() {
     Object.values(this.channels).map((cv) => {
       if (CurvePlayer.getCurveForChannel(cv.channel)) {
-          CurvePlayer.removeChannel(cv.channel);
-        }
+        CurvePlayer.removeChannel(cv.channel);
+      }
       if (typeof(cv.value) === 'number') {
         cv.channel.setValue(cv.value, true);
       } else {
@@ -108,19 +127,19 @@ export class MergedState {
     // const targetNames = Object.keys(target.channels)
     // const allNames = new Set(targetNames)
     for (const rfs of target) {
-      const sourceFixture = rfs.fixture;
-      if (sourceFixture) {
-        for (const i of Object.keys(rfs.channels)) {
-          const channelObj = rfs.channels[i];
-          const channel = channelObj.channel;
-          const sourcev = channel.floatValue;
-          const targetv = channelObj.value;
-          if (typeof(targetv) === 'number') {
-            this.channels.push({channel, sourcev, targetv});
-          }
-
+      // const sourceFixture = rfs.fixture;
+      
+      for (const i of Object.keys(rfs.channels)) {
+        const channelObj = rfs.channels[i];
+        const channel = channelObj.channel;
+        const sourcev = channel.floatValue;
+        const targetv = channelObj.value;
+        if (typeof(targetv) === 'number') {
+          this.channels.push({channel, sourcev, targetv});
         }
+
       }
+
     }
   }
 
@@ -188,6 +207,7 @@ export class State {
 
 
 
+
   public setAllValues(v: number) {
     for (const f of this.fixtureStates) {
       f.setAllValues(v);
@@ -196,29 +216,30 @@ export class State {
   }
 
   public resolveState(context: FixtureBase[], sl: {[id: string]: State}, dimMaster: number): ResolvedFixtureState[] {
+
     const res: ResolvedFixtureState[] = [];
+
     for (const f of this.fixtureStates) {
       const fix = context.find((ff) => ff.name === f.name);
       if (fix) {
         res.push(new ResolvedFixtureState(f, fix, dimMaster));
       }
     }
-    for (const ls of this.linkedStates) {
-      const s = sl[ls.name];
-      res.concat(s.resolveState(context, sl, ls.dimMaster));
-    }
+    let otherRs : ResolvedFixtureState[] = [];
+    this.linkedStates.map(s=>{
+      const os = sl[s.name]
+      if(os){ otherRs=otherRs.concat(os.resolveState(context,sl,s.dimMaster))}
+        else{console.error("fuck states");}})
+    
+    StateList.mergeResolvedFixtureList(res,otherRs)
+
+
 
     return res;
   }
-  // public recall(context: FixtureBase[],sl:{[id:string]:State}, cb: (channel: ChannelBase, value: SavedValueType) => void | undefined) {
-  //   sequencePlayer.stopIfPlaying();
-  //   const rs = this.resolveState(context,sl);
-  //   if (cb) {
-  //     rs.map((s) => s.applyFunction(cb));
-  //   } else {
-  //     rs.map((s) => s.applyState());
-  //   }
-  // }
+
+
+
 
 
 
@@ -243,6 +264,42 @@ export class StateList {
     return this.__universe;
   }
 
+  public static  mergeStateList(sl:State[],context:FixtureBase[],otherStates: {[id: string]: State},dimMasters?:number[]){
+    const rsl = new Array<ResolvedFixtureState>()
+    if(!dimMasters){
+      dimMasters=[]
+    }
+    for(let i = 0 ; i < sl.length ; i++){
+      dimMasters.push(1)
+    }
+    let resolved = new Array<ResolvedFixtureState>()
+    for(let i = 0 ; i < sl.length ; i++){
+      const st = sl[i]
+      const dimMaster= dimMasters[i]
+      resolved = resolved.concat(st.resolveState(context, otherStates, dimMaster))
+    }
+    StateList.mergeResolvedFixtureList(rsl,resolved)
+
+    return rsl;
+  }
+
+  public static mergeResolvedFixtureList(rsl:ResolvedFixtureState[],newRsl:ResolvedFixtureState[]){
+
+    for(let i = 0 ; i < newRsl.length ; i++){
+      const rs= newRsl[i]
+      const stateForFix = rsl.find(e=>{return e.fixture === rs.fixture})
+      if(stateForFix){
+        stateForFix.mergeWith(rs)
+      }
+      else{
+        rsl.push(rs)
+      }
+
+
+    }
+    return rsl;
+  }
+
   public configureFromObj(ob: any) {
     Object.keys(this.states).map((name) => this.removeStateNamed( name) );
     if (ob.states) {
@@ -251,7 +308,7 @@ export class StateList {
     if (ob.currentState) {
       ob.currentState.name = this.currentState.name;
       this.currentState.configureFromObj(ob.currentState);
-      this.recallState(this.currentState);
+      this.recallState(this.currentState,1);
     }
 
 
@@ -272,22 +329,52 @@ export class StateList {
   }
 
   @RemoteFunction({sharedFunction: true})
-  public recallStateNamed(n: string) {
+  public recallStateNamed(n: string,dimMaster=1) {
     if (n === this.currentState.name) {
-      this.recallState(this.currentState);
+      this.recallState(this.currentState,dimMaster);
     } else {
-      this.recallState(this.states[n]);
+      this.recallStates([this.states[n]],[dimMaster]);
     }
   }
 
   @RemoteFunction({sharedFunction: true})
-  public recallState(s: State, dimMaster= 1) {
+  public recallStatesNamed(n: string[],dimMasters?:number[]) {
+    if(dimMasters===undefined){
+      dimMasters = []
+    }
+    for( let i =dimMasters.length ; i < n.length ; i++ ){
+      dimMasters.push(1)
+    }
+
+
+    this.recallStates(n.map(e=>this.states[e]),dimMasters);
+
+  }
+
+  @RemoteFunction({sharedFunction: true})
+  public recallStates(sl: State[], dimMaster?:number[]) {
+    if (!sl || sl.length===0) {
+      console.error('calling null state');
+      return;
+    }
+    sequencePlayer.stopIfPlaying();
+    const rs = StateList.mergeStateList(sl,this.getCurrentFixtureList(), this.states, dimMaster);
+    this.applyResolvedState(rs);
+    // this.setLoadedStateName(s.name);
+  }
+  @RemoteFunction({sharedFunction: true})
+  public recallState(s: State, dimMaster:number) {
     if (!s) {
       console.error('calling null state');
       return;
     }
     sequencePlayer.stopIfPlaying();
     const rs = s.resolveState(this.getCurrentFixtureList(), this.states, dimMaster);
+    this.applyResolvedState(rs);
+    this.setLoadedStateName(s.name);
+  }
+
+  private applyResolvedState(rs:ResolvedFixtureState[]){
     rs.map((r) => r.applyFunction(
       (channel, value) => {
         if (CurvePlayer.getCurveForChannel(channel)) {
@@ -310,8 +397,6 @@ export class StateList {
         );
       c.enabled =  found !== undefined;
     }
-    this.setLoadedStateName(s.name);
-
   }
 
   public getResolvedStateNamed(n: string, dimMaster= 1) {

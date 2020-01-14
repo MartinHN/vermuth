@@ -537,10 +537,8 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
             if (typeof(e) === 'object' && e !== null) {
               const addr = buildAddressFromObj(e, false);
               if (addr) {console.log('setting addr as arg'); return '/?' + addr; }
-
-              debugger;
               if (e.__ob__) {
-                debugger;
+                
                 const c = Object.assign({}, e);
                 delete c.__ob__;
                 return c;

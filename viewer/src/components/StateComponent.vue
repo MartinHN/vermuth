@@ -29,7 +29,7 @@
 
     <Modal v-if=showStateEditor @close="showStateEditor=false">
       <h3  slot="header" >StateEditor</h3>
-     <StateEditor  slot="body" state=selectedState></StateEditor>
+     <StateEditor  slot="body" :state=selectedState></StateEditor>
     </Modal>
   <!-- </v-container> -->
 </div>
@@ -56,27 +56,42 @@ type ValueOf<T> = T[keyof T];
 })
 export default class StateComponent extends Vue {
 
-  get stateName(): string {
-    return this.pStateName;
+  get calledStateNames(): string[] {
+    return [this.ploadedStateName];
   }
-  set stateName(v: string) {
+  set calledStateNames(v: string[]) {
     if (v  ) {
-      this.recallState({name: v});
+      rootState.stateList.recallStatesNamed(v)
+      // this.recallState({name: v});
     }
   }
 
-  get selectedState() {
-    return this.stateList.getStateNamed(this.stateName);
-  }
-  set selectedStateIdx(i: number) {
-    if (this.stateNames) {
-    this.stateName = this.stateNames[i];
-    }
-  }
-  get selectedStateIdx() {
-    return this.stateNames.indexOf(this.stateName);
+  get firstSelectedState(){
+    if(this.selectedStates.length>0)
+    {return this.selectedStates[0]}
+
   }
 
+  get selectedStates() {
+    return this.calledStateNames.map(s=>this.stateList.getStateNamed(s));
+  }
+  set selectedStateIdxs(is: number[]) {
+    
+    if (this.calledStateNames && is) {
+    this.calledStateNames = is.map(i=>this.stateNames[i]);
+    }
+  }
+  get selectedStateIdxs() {
+    return this.stateNames.map(s=>this.stateNames.indexOf(s));
+  }
+
+  set selectedStateIdx(i:number){
+    this.selectedStateIdxs = [i]
+  }
+  get selectedStateIdx(){
+    return this.selectedStateIdxs?this.selectedStateIdxs[0]:-1
+    
+  }
   @statesModule.Mutation('saveCurrentState') public saveCurrentState!: StateMethods['saveCurrentState'];
   @statesModule.Mutation('removeState') public removeState!: StateMethods['removeState'];
   @statesModule.Mutation('renameState') public renameState!: StateMethods['renameState'];
@@ -88,7 +103,7 @@ export default class StateComponent extends Vue {
 
   @statesModule.Getter('channels') private channels!: StateMethods['channels'];
   @statesModule.Getter('stateNames') private stateNames!: StateMethods['stateNames'];
-  @statesModule.Getter('loadedStateName') private pStateName!: StateMethods['loadedStateName'];
+  @statesModule.Getter('loadedStateName') private ploadedStateName!: StateMethods['loadedStateName'];
 
 
   private stateList = rootState.stateList;
@@ -96,7 +111,7 @@ export default class StateComponent extends Vue {
 
 
   public editState() {
-    if (this.selectedState == null) {
+    if (this.selectedStates == null || this.selectedStates.length==0) {
 
     } else {
       this.showStateEditor = true;
@@ -104,23 +119,26 @@ export default class StateComponent extends Vue {
   }
 
   public saveNewState() {
-    const name = prompt('save new state', this.stateName);
+    const name = prompt('save new state', this.firstSelectedState?this.firstSelectedState.name:"");
     if (name === null || name === '') {} else {
       this.saveCurrentState({name});
     }
   }
   public removeStatePrompt() {
-    const name = prompt('remove state', this.stateName);
+    const name = prompt('remove state', this.firstSelectedState?this.firstSelectedState.name:"");
     if (name === null || name === '') {} else {
       this.removeState({name});
     }
   }
 
   public renameStatePrompt() {
-    const name = prompt('rename state', this.stateName);
+    const oldName = this.firstSelectedState?this.firstSelectedState.name:""
+    if(oldName){
+    const name = prompt('rename state '+oldName,oldName );
     if (name === null || name === '') {} else {
-      this.renameState({oldName: this.stateName, newName: name});
+      this.renameState({oldName, newName: name});
     }
+  }
   }
 
 

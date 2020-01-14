@@ -1,9 +1,9 @@
 <template>
   <div class="ChannelRack">
     <div class="header">
-      
+
       <StateComponent class="StateComponent"></StateComponent>
-    
+
       
     </div>
     <div style="display:flex;width:100%;padding:5px">
@@ -12,7 +12,7 @@
     </div>
     <div style="display:flex;flex-direction:row;width:100%">
       <div>
-        <v-select label=fixtures class="selectclass" multiple  v-model="selectedFixtureNames" style="width:100%" :items=selectableFixtureList>
+        <v-select label=fixtures class="selectclass" multiple  v-model="selectedFixtureNames" style="width:100%" :items=displayableFixtureNames>
         </v-select>
         
         <Button text="addGroup" @click="addGroup()" color="green"></Button>
@@ -29,10 +29,13 @@
         <v-row no-gutters>
           <v-col cols=6>
             <Toggle  v-model=showProps text="show props"></Toggle>
-          </v-col>
-          <v-col>
             <Toggle  v-model=showEnabled text="show only enabled"></Toggle>
           </v-col>
+          <v-col cols>
+            <Button  @click="disableOrEnableAll(false)" text="disable All"></Button>
+            <Button  @click="disableOrEnableAll(true)" text="enable All"></Button>
+          </v-col>
+          
         </v-row>
       </v-row>
       <fixture-widget  style="margin:10px 0 0 0;width:100%;background-color:#FFF5" class="channel" v-for="f in displayedFixtures" :key="f.id" :fixtureProp="f" :showName="showNames" :showValue="showValues" :filterList="selectedChannelFilterNames" :showProps="showProps"></fixture-widget>
@@ -73,8 +76,8 @@ export default class ChannelRack extends Vue {
   get selectedFixtureNames() {
     return this.pselectedFixtureNames;
   }
-  get selectableFixtureList() {
-    return this.universe.sortedFixtureList.map((e) => e.name);
+  get displayableFixtureNames() {
+    return this.displayableFixtureList.map((e) => e.name);
   }
   get selectableGroupList() {
     return ['all'].concat(this.universe.groupNames);
@@ -94,8 +97,12 @@ export default class ChannelRack extends Vue {
   get selectedChannelFilterNames() {
     return this.pselectedChannelFilterNames;
   }
+
+  get displayableFixtureList(){
+    return this.universe.sortedFixtureList
+  }
   get displayedFixtures() {
-    return this.universe.sortedFixtureList.filter((f) => this.needDisplay(f) && f.hasChannelMatchingFilters(this.selectedChannelFilterNames));
+    return this.displayableFixtureList.filter((f) => this.needDisplay(f) && f.hasChannelMatchingFilters(this.selectedChannelFilterNames));
   }
 
   get selectableChannelFilterList() {
@@ -139,6 +146,14 @@ export default class ChannelRack extends Vue {
     }
   }
 
+  public disableOrEnableAll(en:boolean){
+    for(const f of this.displayableFixtureList){
+      for(const c of f.channels){
+        c.enabled = en
+      }
+    }
+  }
+
   public setAllColorHex(h: string) {
     const color = hexToRgb(h, true);
     if (color) {
@@ -149,7 +164,7 @@ export default class ChannelRack extends Vue {
   public syncGroupSelection() {
     if (this.selectedGroupNames.length === 0) {return; }
     if (this.selectedGroupNames.find((e) => e === 'all')) {
-      this.pselectedFixtureNames = this.selectableFixtureList;
+      this.pselectedFixtureNames = this.displayableFixtureNames;
       return;
     }
     const toSel: {[id: string]: boolean} = {};

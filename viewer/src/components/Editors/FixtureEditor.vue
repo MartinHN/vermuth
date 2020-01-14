@@ -32,7 +32,7 @@
               </td>
               <td >
 
-                <TextInput :editable="!readonly" type="text" :style="{width:'100%'}" class="channelName " @change="setChannelName({channel:c,name:$event.target.value})" :value="c.name"  ></TextInput>
+                <TextInput :editable="!readonly" type="text" :style="{width:'100%'}" class="channelName " @change="setChannelName({channel:c,name:$event.value})" :value="c.name"  ></TextInput>
 
 
               </td>
