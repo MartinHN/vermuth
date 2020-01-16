@@ -1,11 +1,8 @@
 <template>
   <div class="ChannelRack">
-    <div class="header">
-
+    <!-- <div class="header">
       <StateComponent class="StateComponent"></StateComponent>
-
-      
-    </div>
+    </div> -->
     <div style="display:flex;width:100%;padding:5px">
       <slider style="flex:1 0 75%" class="grandMaster" @input="setGrandMasterValue($event)" :value="grandMaster" name="grandMaster"  showName="1" showValue="1" ></slider>
       <input type="color" @input="setAllColorHex($event.target.value)"></input>
@@ -67,6 +64,10 @@ const universesModule = namespace('universes');
 })
 export default class ChannelRack extends Vue {
 
+
+  @Prop({required:true})
+  public displayableFixtureList!: FixtureBase[];
+  
   set selectedFixtureNames(l: string[]) {
     this.pselectedFixtureNames = l;
     if (this.pselectedFixtureNames.length > 0) {
@@ -98,9 +99,7 @@ export default class ChannelRack extends Vue {
     return this.pselectedChannelFilterNames;
   }
 
-  get displayableFixtureList(){
-    return this.universe.sortedFixtureList
-  }
+    
   get displayedFixtures() {
     return this.displayableFixtureList.filter((f) => this.needDisplay(f) && f.hasChannelMatchingFilters(this.selectedChannelFilterNames));
   }
@@ -183,7 +182,7 @@ export default class ChannelRack extends Vue {
   }
 
   public selectAll() {
-    this.selectedFixtureNames = this.universe.fixtureList.map((e) => e.name);
+    this.selectedFixtureNames = this.displayableFixtureList.map((e) => e.name);
   }
 
   public needDisplay(f: FixtureBase) {

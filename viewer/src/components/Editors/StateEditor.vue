@@ -2,8 +2,9 @@
 <template>
 
   <div class="main"  style="width:100%;height:100%">
-    <div style="display:flex;flex-direction:row;width:100%">
 
+    <div style="display:flex;flex-direction:row;width:100%">
+  
       <v-row style="width:100%">
         <v-col cols=12>
           <v-list dense class="overflow-y-auto" style=max-height:200px >
@@ -26,15 +27,7 @@
 
 
     </div>
-    <div style="width:100%">
-      <v-row no-gutters>
-        <v-col cols=6>
-          <Toggle  v-model=showProps text="show props"></Toggle>
-        </v-col>
-        
-      </v-row>
-    </v-row>
-    <fixture-widget  style="margin:10px 0 0 0;width:100%;background-color:#FFF5" class="channel" v-for="f in selectedFixtures" :key="f.id" :fixtureProp="f" :showName="showNames" :showValue="showValues" :filterList="selectedChannelFilterNames" :showProps="showProps"></fixture-widget>
+    <ChannelRack :displayableFixtureList=state.getFixtureList() />
   </div>
 
 </div>
@@ -198,7 +191,7 @@ export default class StateEditor extends Vue {
 
 
   public mounted() {
-    debugger
+    
     if(this.state){
      const resolvedFixtures =  this.state.resolveState(this.universe.fixtureList,rootState.stateList.states,1)
      for(const rf of Object.values(resolvedFixtures)){

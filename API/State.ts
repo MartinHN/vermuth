@@ -2,7 +2,7 @@ import { ChannelBase } from './Channel';
 import { FixtureBase } from './Fixture';
 import { Universe } from './Universe';
 import { sequencePlayer } from './Sequence';
-import { nonEnumerable, RemoteFunction, AccessibleClass } from './ServerSync';
+import { nonEnumerable, RemoteFunction, AccessibleClass,setChildAccessible } from './ServerSync';
 import {addProp, deleteProp} from './MemoryUtils';
 import {CurveBase, CurveStore} from './Curve';
 import {CurvePlayer} from './CurvePlayer';
@@ -155,7 +155,7 @@ export class MergedState {
 
 }
 
-class LinkedState {
+export class LinkedState {
   constructor(public name: string, public dimMaster: number) {}
 }
 
@@ -231,14 +231,31 @@ export class State {
       if(os){ otherRs=otherRs.concat(os.resolveState(context,sl,s.dimMaster))}
         else{console.error("fuck states");}})
     
-    StateList.mergeResolvedFixtureList(res,otherRs)
+    StateList.mergeResolvedFixtureList(otherRs,res) // this state should override linked
 
 
 
-    return res;
+    return otherRs;
   }
 
-
+  public getSavedFixtureList(context: FixtureBase[]){
+    const res = this.fixtureStates.map(fs=>context.find(e=>{e.name===fs.name}))
+    return res;
+  }
+  public getSavedChannels(context: FixtureBase[], recurse=false){
+    const res = new Array<ChannelBase>()
+    for( const fs of this.fixtureStates){
+      const f= context.find(e=>{return e.name===fs.name;});
+      if(f){
+        for(const  [name,v] of Object.entries(fs.channelValues)){
+          const c =  f.getChannelForName(name);
+          if(c){res.push(c);}
+        }
+      }
+      
+    }
+    return res
+  }
 
 
 
@@ -258,7 +275,9 @@ export class StateList {
   constructor(uni: Universe) {
     this.__universe = uni;
     this.addState(blackState);
+    // setChildAccessible(this.states,blackState.name) // needed to ensure name is not private (__black)
     this.addState(fullState);
+    // setChildAccessible(this.states,fullState.name)
   }
   get universe() {
     return this.__universe;
@@ -333,35 +352,11 @@ export class StateList {
     if (n === this.currentState.name) {
       this.recallState(this.currentState,dimMaster);
     } else {
-      this.recallStates([this.states[n]],[dimMaster]);
+      this.recallState(this.states[n],dimMaster);
     }
   }
 
-  @RemoteFunction({sharedFunction: true})
-  public recallStatesNamed(n: string[],dimMasters?:number[]) {
-    if(dimMasters===undefined){
-      dimMasters = []
-    }
-    for( let i =dimMasters.length ; i < n.length ; i++ ){
-      dimMasters.push(1)
-    }
-
-
-    this.recallStates(n.map(e=>this.states[e]),dimMasters);
-
-  }
-
-  @RemoteFunction({sharedFunction: true})
-  public recallStates(sl: State[], dimMaster?:number[]) {
-    if (!sl || sl.length===0) {
-      console.error('calling null state');
-      return;
-    }
-    sequencePlayer.stopIfPlaying();
-    const rs = StateList.mergeStateList(sl,this.getCurrentFixtureList(), this.states, dimMaster);
-    this.applyResolvedState(rs);
-    // this.setLoadedStateName(s.name);
-  }
+ 
   @RemoteFunction({sharedFunction: true})
   public recallState(s: State, dimMaster:number) {
     if (!s) {
@@ -369,8 +364,18 @@ export class StateList {
       return;
     }
     sequencePlayer.stopIfPlaying();
-    const rs = s.resolveState(this.getCurrentFixtureList(), this.states, dimMaster);
+    const fl = this.getCurrentFullFixtureList()
+    if(!s.resolveState){
+      s = this.getStateNamed(s.name)
+        if(!s)debugger
+    }
+    const rs = s.resolveState(fl, this.states, dimMaster);
     this.applyResolvedState(rs);
+    const channelList = s.getSavedChannels(fl,false)
+    for (const c of this.universe.allChannels) {
+      const found = channelList.find((cc) =>cc === c)
+      c.enabled =  found !== undefined;
+    }
     this.setLoadedStateName(s.name);
   }
 
@@ -390,32 +395,28 @@ export class StateList {
         }
 
       }));
-    for (const c of this.universe.allChannels) {
-      const found = rs.find((r) =>
-        Object.values(r.channels)
-        .find((v) => v.channel === c) !== undefined,
-        );
-      c.enabled =  found !== undefined;
-    }
+
   }
 
   public getResolvedStateNamed(n: string, dimMaster= 1) {
     const s = this.states[n];
-    return  s.resolveState(this.getCurrentFixtureList(), this.states, dimMaster);
+    return  s.resolveState(this.getCurrentFullFixtureList(), this.states, dimMaster);
 
   }
 
-  public getCurrentFixtureList() {
+
+  public getCurrentFullFixtureList() {
     return this.universe.fixtureList;
   }
 
-  public saveCurrentState(name: string) {
+  public saveCurrentState(name: string,linkedStates?:LinkedState[]) {
 
 
 
     if (name !== this.currentState.name) {
-      const fl = this.getCurrentFixtureList();
+      const fl = this.getCurrentFullFixtureList();
       const st = new State(name, fl);
+      if(linkedStates){st.linkedStates = linkedStates}
       this.addState(st);
       this.setLoadedStateName(st.name);
 
@@ -429,7 +430,7 @@ export class StateList {
     this.loadedStateName = n;
   }
   public updateCurrentState() {
-    const fl = this.getCurrentFixtureList();
+    const fl = this.getCurrentFullFixtureList();
     this.currentState.updateFromFixtures(fl);
   }
 

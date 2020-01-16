@@ -77,7 +77,7 @@ class SequencePlayer {
 
   get stateList() {
     if (this._rootProvider === undefined) {console.error('stateListNotInited'); debugger; }
-    return this._rootProvider ? this._rootProvider.stateList : {states: {} as {[key: string]: State}, getCurrentFixtureList: () => []};
+    return this._rootProvider ? this._rootProvider.stateList : {states: {} as {[key: string]: State}, getCurrentFullFixtureList: () => []};
   }
   get sequenceList() {
     if (this._rootProvider === undefined) {console.error('stateListNotInited'); debugger; }
@@ -159,7 +159,7 @@ private goToStates(nextStates: State[], timeIn: number, opts?: {dimMasters?: num
     }
     const transitionTime = Math.max((res + 1) / 1000 , Math.max(this.curSeq.timeOut, timeIn));
     
-    const rsl = StateList.mergeStateList(nextStates,this.stateList.getCurrentFixtureList(),this.stateList.states,dimMasters)
+    const rsl = StateList.mergeStateList(nextStates,this.stateList.getCurrentFullFixtureList(),this.stateList.states,dimMasters)
     const mergedState = new MergedState(rsl);
     mergedState.checkIntegrity();
     doTimer('seqTransition', transitionTime * 1000.0, res,
