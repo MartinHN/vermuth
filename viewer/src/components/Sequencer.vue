@@ -1,11 +1,16 @@
 <template>
   <div class="main">
-    Sequencer
-    <br/>
     <div class="Sequencer">
-      <!-- <div> {{globalTransport.beat}}</div>
-        <Toggle v-model=togglePlay style="height:40px" :text=globalTransport.isPlaying> </Toggle> -->
-        <v-container fluid>
+      <v-container fluid>
+        <v-row no-gutters >
+          <v-col cols=3>
+      <div> {{globalTransport.beat}}</div>
+    </v-col>
+    <v-col cols=3>
+        <Toggle v-model=togglePlay style="height:40px" :text=playState> </Toggle>
+
+      </v-col>
+        </v-row>
         <v-row no-gutters >
           <v-col cols=6>
             <Toggle v-model=editOrder text="Edit"/>
@@ -51,6 +56,9 @@
     editOrder = false
     get isPlayingSeq(){
       return this.seqPlayer.isPlaying
+    }
+    get playState(){
+      return this.globalTransport.isPlaying?'stop':'play'
     }
     get playedIdx(){
       return this.seqPlayer.curPlayedIdx

@@ -263,7 +263,8 @@ class SequencePlayer {
    this.goToStates([nextState], this.nextSeq.timeIn, {dimMasters:[dimMaster]}, 
     (...args:any[])=>{
       this.pisPlaying=false;
-      if(cb){cb(...args);}});
+      if(cb){cb(...args);}
+    });
  }
 }
 

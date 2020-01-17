@@ -27,6 +27,7 @@
           <v-col cols=6>
             <Toggle  v-model=showProps text="show props"></Toggle>
             <Toggle  v-model=showEnabled text="show only enabled"></Toggle>
+            <Toggle  v-model=showActive text="show only active"></Toggle>
           </v-col>
           <v-col cols>
             <Button  @click="disableOrEnableAll(false)" text="disable All"></Button>
@@ -128,6 +129,7 @@ export default class ChannelRack extends Vue {
   public showValues = true;
   public showProps = false;
   public showEnabled = false;
+  public showActive = false;
 
 
   private pselectedFixtureNames: string[] = [];
@@ -186,14 +188,17 @@ export default class ChannelRack extends Vue {
   }
 
   public needDisplay(f: FixtureBase) {
+    let needDisplay = true
     if (this.showEnabled) {
-      return f.channels.some((c) => c.enabled);
+      needDisplay= needDisplay && f.channels.some((c) => c.enabled);
     }
-    if (this.selectedFixtureNames && this.selectedFixtureNames.length === 0) {
-      return true;
-    } else {
-      return this.selectedFixtureNames.find((fn) => fn === f.name);
+    if (this.showActive) {
+      needDisplay= needDisplay && f.channels.some((c) => c.floatValue>0);
     }
+    if (!(this.selectedFixtureNames && this.selectedFixtureNames.length === 0) ){
+      needDisplay= needDisplay && (this.selectedFixtureNames.find((fn) => fn === f.name)!==undefined);
+    }
+    return needDisplay
   }
 
 

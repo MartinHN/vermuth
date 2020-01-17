@@ -13,7 +13,7 @@
         </v-select>
       </v-col>
       <v-col >
-        <v-select label=serialport v-if="displaySerialPort" :items=portListAndNone :style='{"background-color":this.dmxConnectionColor}' :value='displayedPort' @change="$store.dispatch('DMXConfig/tryConnectPort',$event)">
+        <v-select label=serialport v-if="displaySerialPort" :items=portListAndNone :style='{"background-color":this.dmxConnectionColor}' :value='displayedPort' @change="$store.dispatch('DMXConfig/tryConnectPort',$event)" hide-details>
         </v-select>
       </v-col>
     </v-row>

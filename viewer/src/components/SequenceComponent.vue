@@ -1,15 +1,33 @@
 <template>
   <div class="main">
-    <Numbox :editable=editMode :value="seqNumber" @change="seqList.setSeqIdx(sequence,$event.value)"/>
-    <Button v-if=editMode text="-" color="red" @click="seqList.remove(sequence)"  style="width:20%"/>
-    <Button v-if=editMode text="up"  @click="seqList.up(sequence)"  style="width:20%"/>
-    <Button v-if=editMode text="down"  @click="seqList.down(sequence)"  style="width:20%"/>
-    <Button v-if=!editMode text="Go" @click="goToSequenceNamed({name:sequence.name})"  style="width:20%"/>
-    <!-- <Button text="Black" @click="goToSequenceNamed({name:sequence.name,dimMaster:0})" style="width:20%" /> -->
-    <text-input :editable=editMode :value="seqName" @change="setSequenceName({sequence:sequence,value:$event.value})"/>
-    <Numbox :value="sequence.timeIn" @change="setSequenceTimeIn({sequence:sequence,value:$event.value})"/>
-    <v-select :active=editMode :items=stateNames :value="seqStateName" @change="setSequenceStateName({sequence:sequence,value:$event})" >
-    </v-select>
+    <v-container fluid class="pa-0 ma-0">
+      <v-row dense>
+        <v-col cols=1>
+          <Numbox :editable=editMode :value="seqNumber" @change="seqList.setSeqIdx(sequence,$event.value)"/>
+        </v-col>
+        <v-col cols=3>
+          <text-input :editable=editMode :value="seqName" @change="setSequenceName({sequence:sequence,value:$event.value})"/>
+        </v-col>
+        <v-col v-if=editMode cols=1>
+          <Button  text="-" color="red" @click="seqList.remove(sequence)"  />
+        </v-col>
+        <v-col v-if=editMode cols=2>
+          <Button  text="up"  @click="seqList.up(sequence)"  />
+          <Button  text="down"  @click="seqList.down(sequence)" />
+        </v-col>
+          <v-col cols=2 v-if=!editMode>
+          <Button  text="Go" @click="goToSequenceNamed({name:sequence.name})"/>
+        </v-col>
+        <!-- <Button text="Black" @click="goToSequenceNamed({name:sequence.name,dimMaster:0})" style="width:20%" /> -->
+        <v-col cols=2>
+          <Numbox :value="sequence.timeIn" @change="setSequenceTimeIn({sequence:sequence,value:$event.value})" hide-details/>
+        </v-col>
+        <v-col >
+          <v-select :active=editMode :items=stateNames :value="seqStateName" @change="setSequenceStateName({sequence:sequence,value:$event})" hide-details>
+          </v-select>
+        </v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
@@ -89,7 +107,7 @@ export default class SequenceComponent extends Vue {
   
 }
 * input {
-      min-width: 10px;
+  min-width: 10px;
 }
 
 select{

@@ -5,13 +5,13 @@
     :value="value" 
     @input="$emit('input',$event)" 
     @change="$emit('change',{value:$event})"
-    background-color="rgba(255, 255, 255, 0.795)"
+
     :disabled="!editable"
     dense
     full-width
     >
     </v-text-field> 
-    <div v-else>
+    <div class="nonEditableText" v-else>
       {{value}}
     </div>
     
@@ -42,5 +42,10 @@ export default class TextInput extends Vue {
 
 
 <style scoped>
-
+.nonEditableText{
+text-align: left;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
 </style>
