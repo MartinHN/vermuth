@@ -55,11 +55,7 @@ export default class Sequences extends VuexModule {
     @Mutation
     public addSequence(s: Sequence) {
       if (s) {
-        const i = this.sequenceList.findIndex((ss) => ss.name === s.name);
-        if (i !== -1) {
-          s.name = s.name + '.';
-        }
-        this.sequenceList.push( s);
+        this.sequenceList.appendSequence(s)
       }
     }
     @Mutation
@@ -69,7 +65,7 @@ export default class Sequences extends VuexModule {
 
     @Mutation
     public clearSequences( ) {
-      this.sequenceList = new  Array<Sequence>();
+      this.sequenceList.clearSequences()
     }
 
     @Mutation

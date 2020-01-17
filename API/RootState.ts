@@ -1,7 +1,7 @@
 
 import { Universe } from './Universe';
 import { FixtureFactory } from './FixtureFactory';
-import { Sequence, sequencePlayer } from './Sequence';
+import { Sequence, sequencePlayer, SequenceList } from './Sequence';
 import { StateList } from './State';
 import { DMXControllerI } from './DMXControllerI';
 import { bindClientSocket, RemoteFunction, SetAccessible, setChildAccessible, AccessibleClass, resolveAccessible, RemoteValue , treeEvents} from './ServerSync';
@@ -20,7 +20,7 @@ export class RootStateType {
   @SetAccessible({readonly: true})
   public readonly universe = new Universe();
   @SetAccessible({readonly: true})
-  public readonly sequenceList = new Array<Sequence>();
+  public readonly sequenceList = new SequenceList();
   @SetAccessible({readonly: true})
   public readonly sequencePlayer = sequencePlayer;
   @SetAccessible({readonly: true})
@@ -76,8 +76,8 @@ export class RootStateType {
 
     if (ob.sequenceList !== undefined) {
     }
-    this.sequenceList.splice(0, this.sequenceList.length);
-    (ob.sequenceList || []).map((e: any) => this.sequenceList.push(Sequence.createFromObj(e)));
+    this.sequenceList.configureFromObj(ob.sequenceList || {})
+    
 
     if (ob.stateList !== undefined) {
     }

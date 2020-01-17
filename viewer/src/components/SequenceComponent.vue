@@ -1,10 +1,14 @@
 <template>
   <div class="main">
-    <Button text="Go" @click="goToSequenceNamed({name:sequence.name})"  style="width:20%"/>
-    <Button text="Black" @click="goToSequenceNamed({name:sequence.name,dimMaster:0})" style="width:20%" />
-    <text-input :value="seqName" @change="setSequenceName({sequence:sequence,value:$event.value})"/>
+    <Numbox :editable=editMode :value="seqNumber" @change="seqList.setSeqIdx(sequence,$event.value)"/>
+    <Button v-if=editMode text="-" color="red" @click="seqList.remove(sequence)"  style="width:20%"/>
+    <Button v-if=editMode text="up"  @click="seqList.up(sequence)"  style="width:20%"/>
+    <Button v-if=editMode text="down"  @click="seqList.down(sequence)"  style="width:20%"/>
+    <Button v-if=!editMode text="Go" @click="goToSequenceNamed({name:sequence.name})"  style="width:20%"/>
+    <!-- <Button text="Black" @click="goToSequenceNamed({name:sequence.name,dimMaster:0})" style="width:20%" /> -->
+    <text-input :editable=editMode :value="seqName" @change="setSequenceName({sequence:sequence,value:$event.value})"/>
     <Numbox :value="sequence.timeIn" @change="setSequenceTimeIn({sequence:sequence,value:$event.value})"/>
-    <v-select :items=stateNames :value="seqStateName" @change="setSequenceStateName({sequence:sequence,value:$event})" >
+    <v-select :active=editMode :items=stateNames :value="seqStateName" @change="setSequenceStateName({sequence:sequence,value:$event})" >
     </v-select>
   </div>
 </template>
@@ -16,6 +20,7 @@ import Button from '@/components/Inputs/Button.vue';
 import Numbox from '@/components/Inputs/Numbox.vue';
 import TextInput from '@/components/Inputs/TextInput.vue';
 import { Sequence } from '@API/Sequence';
+import  rootState from '@API/RootState';
 import SequenceMethods from '../store/sequence';
 const sequenceModule = namespace('sequence');
 const stateModule = namespace('states');
@@ -33,6 +38,15 @@ export default class SequenceComponent extends Vue {
   @stateModule.Getter('stateNames') public stateNames!: string[];
   @Prop()
   public  sequence?: Sequence;
+
+  @Prop({default:false})
+  public editMode!:boolean
+
+  @Prop({required:true})
+  seqNumber!:number
+  get seqList(){
+    return rootState.sequenceList
+  }
 
 
   get seqName() {

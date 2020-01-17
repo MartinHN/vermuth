@@ -2,7 +2,7 @@ import { State, StateList, blackState, ResolvedFixtureState, MergedState } from 
 import { DirectFixture } from './Fixture';
 import { ChannelBase } from './Channel';
 import {  doTimer, stopTimer } from './Time';
-import { RemoteFunction, RemoteValue, nonEnumerable } from './ServerSync';
+import { RemoteFunction, RemoteValue, nonEnumerable, AccessibleClass, SetAccessible } from './ServerSync';
 
 
 
@@ -22,7 +22,7 @@ export class Sequence {
   public hold: number = 0;
   public timeOut: number = 0;
   public stateName: string = 'none';
-
+  
 
   @nonEnumerable()
   public __state?: State;
@@ -68,11 +68,98 @@ export class Sequence {
 
 const blackSeq = new Sequence('black', blackState);
 
-interface RootProvider {
-  stateList: StateList;
-  sequenceList: Sequence[];
+@AccessibleClass()
+export class SequenceList {
+
+  @SetAccessible({readonly: true})
+  private list = new Array<Sequence>()
+  
+  constructor(){
+  }
+  configureFromObj(ob:any){
+    this.clearSequences();
+    (ob.list || []).map((e: any) => this.list.push(Sequence.createFromObj(e)));
+  }
+
+  public get listGetter(){
+    return this.list
+  }
+
+  insertAt(s:Sequence,i:number){
+    if(i>=0 || i <= this.list.length){
+      const ii = this.list.findIndex((ss) => ss.name === s.name);
+      if (ii !== -1) {
+        s.name = s.name + '.';
+      }
+      if(i===this.list.length){
+        this.list.push(s)
+      }
+      else{
+        this.list.splice (i,0,s)
+      }
+    }
+    else{
+      console.error('invalid index',i)
+    }
+  }
+  getAtIdx(i:number){
+    return this.list[i]
+  }
+  indexOf(s:Sequence){
+    return this.list.indexOf(s)
+  }
+  appendSequence(s:Sequence){
+    this.insertAt(s,this.list.length)
+  }
+  remove(s:Sequence){
+    const i = this.list.indexOf(s)
+    if(i>=0){
+      this.list.splice (i,1)
+    }
+  }
+
+  setSeqIdx(s:Sequence,i:number){
+    const ii = this.list.indexOf(s)
+    if(ii>=0){
+      this.remove(s)
+      i = Math.min(this.list.length-1,Math.max(0,i))
+      this.insertAt(s,i)
+    }
+  }
+
+  swap(a:Sequence,b:Sequence){
+    const ia = this.list.indexOf(a)
+    const ib = this.list.indexOf(b)
+    this.list[ia] = this.list.splice(ib, 1, this.list[ia])[0];
+  }
+
+  up(s:Sequence){
+    const prev = this.list.indexOf(s)-1
+    if(prev>=0){this.swap(s,this.list[prev]);}
+  }
+  down(s:Sequence){
+    const next = this.list.indexOf(s)+1
+    if(next<this.list.length){this.swap(s,this.list[next]);}
+  }
+  find(f:(s:Sequence)=>boolean){
+    return this.list.find(f)
+  }
+
+  clearSequences(){
+    this.list.splice(0,this.list.length)
+  }
+  get length(){
+    return this.list.length
+  }
+
 }
 
+interface RootProvider {
+  stateList: StateList;
+  sequenceList: SequenceList;
+}
+
+@AccessibleClass()
 class SequencePlayer {
 
   get stateList() {
@@ -81,10 +168,34 @@ class SequencePlayer {
   }
   get sequenceList() {
     if (this._rootProvider === undefined) {console.error('stateListNotInited'); debugger; }
-    return this._rootProvider ? this._rootProvider.sequenceList : [];
+    return this._rootProvider ? this._rootProvider.sequenceList : new SequenceList();
   }
+
+
+
   public curSeq: Sequence = blackSeq;
   public nextSeq: Sequence = blackSeq;
+  @RemoteValue()
+  private pcurPlayedIdx = -1
+
+  @RemoteValue()
+  private pisPlaying = false
+
+  public get isPlaying(){
+    return this.pisPlaying
+  }
+
+  
+  public get curPlayedIdx(){
+    return this.pcurPlayedIdx
+  }
+  public set curPlayedIdx(v:number){
+    if(v>0 && v < this.sequenceList.length){
+      this.goToSequence(this.sequenceList.getAtIdx(v))
+    }
+  }
+
+  
 
   @RemoteValue()
   public playState: string = 'stopped';
@@ -138,13 +249,22 @@ class SequencePlayer {
     return this.stateList.states[n];
   };
 
+  const nIdx = this.sequenceList.indexOf(seq)
+  if(nIdx>=0){
+    this.pcurPlayedIdx=nIdx;
+    this.pisPlaying=true;
+  }
+
   // const timeOut =  this.curSeq.timeOut*1000;
   const timeIn =  this.nextSeq.timeIn ;
   const nextState = this.nextSeq.resolveState(stateResolver);
   if (nextState) {
    const dimMaster = opts?opts.dimMaster!==undefined?opts.dimMaster:1:1
-    this.goToStates([nextState], this.nextSeq.timeIn, {dimMasters:[dimMaster]}, cb);
-  }
+   this.goToStates([nextState], this.nextSeq.timeIn, {dimMasters:[dimMaster]}, 
+    (...args:any[])=>{
+      this.pisPlaying=false;
+      if(cb){cb(...args);}});
+ }
 }
 
 
