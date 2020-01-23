@@ -71,14 +71,14 @@ export default class FixtureWidget extends Vue {
 
   get otherChannels() {
     const res =  this.fixtureProp.getChannelsOfRole('other');
-    if(Object.keys(res).length>1){
-      debugger
+    if (Object.keys(res).length > 1) {
+      debugger;
     }
-    if(res && res['other']){
-      return res["other"]
+    if (res && res.other) {
+      return res.other;
     }
 
-    return []
+    return [];
   }
 
   get hexColorValue(): string {

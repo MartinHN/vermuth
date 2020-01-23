@@ -54,18 +54,24 @@ class GlobalTransportClass extends EventEmitter {
     doSharedFunction(
       () => {
        parent.emit('time', t);
-      },
-      );
+     },
+     );
   })
   private _time = 0;
 
+
+  constructor(){
+    super()
+    this.start()
+  }
 
   @RemoteValue((parent: any, v: any) => {
     doSharedFunction(() => parent.emit('isPlaying', v));
   })
   private _isPlaying = false;
-  get isPlaying() {return this._isPlaying; }
 
+  get isPlaying() {return this._isPlaying; }
+  get time(){return this._time}
 
   @RemoteFunction({skipClientApply: true})
   public start() {
@@ -99,7 +105,7 @@ class GlobalTransportClass extends EventEmitter {
     functions.set('isPlaying', l.playStateChanged.bind(l));
 
     for ( const [k, v] of functions.entries()) {this.on(k, v); }
-    this._timeListeners.set(l, functions);
+      this._timeListeners.set(l, functions);
   }
   public removeTimeListener(l: TimeListener) {
     const functions = this._timeListeners.get(l);

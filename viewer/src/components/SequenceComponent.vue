@@ -3,10 +3,10 @@
     <v-container fluid class="pa-0 ma-0">
       <v-row dense>
         <v-col cols=1>
-          <Numbox :editable=editMode :value="seqNumber" @change="seqList.setSeqIdx(sequence,$event.value)"/>
+          <Numbox :editable=editMode :value="seqNumber" @change="seqList.setSeqIdx(sequence,$event)"/>
         </v-col>
         <v-col cols=3>
-          <text-input :editable=editMode :value="seqName" @change="setSequenceName({sequence:sequence,value:$event.value})"/>
+          <text-input :editable=editMode :value="seqName" @change="setSequenceName({sequence:sequence,value:$event})"/>
         </v-col>
         <v-col v-if=editMode cols=1>
           <Button  text="-" color="red" @click="seqList.remove(sequence)"  />
@@ -20,7 +20,7 @@
         </v-col>
         <!-- <Button text="Black" @click="goToSequenceNamed({name:sequence.name,dimMaster:0})" style="width:20%" /> -->
         <v-col cols=2>
-          <Numbox :value="sequence.timeIn" @change="setSequenceTimeIn({sequence:sequence,value:$event.value})" hide-details/>
+          <Numbox :value="sequence.timeIn" @change="setSequenceTimeIn({sequence:sequence,value:$event})" hide-details/>
         </v-col>
         <v-col >
           <v-select :active=editMode :items=stateNames :value="seqStateName" @change="setSequenceStateName({sequence:sequence,value:$event})" hide-details>
@@ -57,13 +57,13 @@ export default class SequenceComponent extends Vue {
   @Prop()
   public  sequence?: Sequence;
 
-  @Prop({default:false})
-  public editMode!:boolean
+  @Prop({default: false})
+  public editMode!: boolean;
 
-  @Prop({required:true})
-  seqNumber!:number
-  get seqList(){
-    return rootState.sequenceList
+  @Prop({required: true})
+  public seqNumber!: number;
+  get seqList() {
+    return rootState.sequenceList;
   }
 
 

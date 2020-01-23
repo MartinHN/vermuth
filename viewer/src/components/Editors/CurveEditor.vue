@@ -11,7 +11,7 @@
       <rect :x=zoomBoxRect.x :y=zoomBoxRect.y :width=zoomBoxRect.w :height=zoomBoxRect.h stroke=black fill=transparent @mousewheel.prevent=wheel></rect>
     </svg>
 
-    <svg ref=my-svg width=100% :height="isZoomable?'90%':'100%'" :viewBox="[0,0,domSize.w,domSize.h]" @mousedown="mouseDown" @mouseup="mouseUp" @mousemove="mouseMove" @mouseleave="mouseLeave" @mouseenter="mouseEnter" preserveAspectRatio=none>
+    <svg ref=my-svg width=100% :height="isZoomable?'85%':'100%'" :viewBox="[0,0,domSize.w,domSize.h]" @mousedown="mouseDown" @mouseup="mouseUp" @mousemove="mouseMove" @mouseleave="mouseLeave" @mouseenter="mouseEnter" preserveAspectRatio=none>
 
       <circle  v-for="v in draggableKeyPoints" :key=v.id ref='framesCircles' :r="pRadius" :cx="v.location.x" :cy='v.location.y' :fill="v.hovered?'blue':v.selected?'red':'black'"></circle>
 
@@ -35,6 +35,8 @@
 <!-- </g> -->
 </svg>
 
+
+
 </div>
 </template>
 
@@ -44,11 +46,14 @@ import { Point, Rect, Size } from '@API/Utils2D';
 import { Curve, KeyFrame } from '@API/Curve';
 import { BezierEasing, EasingFactory } from '@API/Easings/easings';
 import Slider from '@/components/Inputs/Slider.vue';
+
+
 import * as CurveUtils from './CurveEditorUtils';
 import { Draggable, DraggableHandler } from '@/components/Utils/Draggable';
 
 function getPointFromEvent(e: MouseEvent): Point {
-  return new Point( e.offsetX,  e.offsetY); }
+  return new Point( e.offsetX,  e.offsetY); 
+}
 
 function secondaryEvent(e: MouseEvent) {return e.metaKey; }
 
@@ -102,10 +107,10 @@ export default class CurveEditor extends Vue {
       this.zoomBoxSize.h);
   }
   get positionPath() {
-    return ['M', this.posToPix(this.curve.position), 0, 'V', this.domSize.h].join(' ');
+    return ['M', this.posToPix(this.position), 0, 'V', this.domSize.h].join(' ');
   }
   get curValuePath() {
-    return ['M', 0, this.valToPix(this.curve.value as number), 'H', this.domSize.w].join(' ');
+    return ['M', 0, this.valToPix(this.curve.getValueAt(this.position) as number), 'H', this.domSize.w].join(' ');
   }
   public positionRange = new CurveUtils.Range(0, 1000);
 
@@ -121,6 +126,9 @@ export default class CurveEditor extends Vue {
   @Prop({default: true})
   private isZoomable !: boolean;
   private isZooming = false;
+
+  @Prop({default: 0})
+  private position !: number;
 
   private svgDOM: SVGGraphicsElement = {clientWidth: 10, clientHeight: 10} as SVGGraphicsElement;
 
@@ -337,7 +345,7 @@ export default class CurveEditor extends Vue {
       this.curve.add(new KeyFrame<number>(newPoint.x, newPoint.y));
 
     } else if (e.buttons === 1 && !this.dH.hovered) {
-      this.curve.position = this.pixToPos(mousePix.x);
+      // this.curve.position = this.pixToPos(mousePix.x);
     }
 
 
@@ -388,7 +396,7 @@ public mouseMove(e: MouseEvent) {
   } else if (this.newKeyFramePos.x !== -100) {
     this.newKeyFramePos.x = -100;
   } else if (e.buttons === 1 && !this.dH.clicked) {
-    this.curve.position = this.pixToPos(mousePix.x);
+    // this.curve.position = this.pixToPos(mousePix.x);
   }
 
 

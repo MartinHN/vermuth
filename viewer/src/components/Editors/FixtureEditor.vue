@@ -32,7 +32,7 @@
               </td>
               <td >
 
-                <TextInput :editable="!readonly" type="text" :style="{width:'100%'}" class="channelName " @change="setChannelName({channel:c,name:$event.value})" :value="c.name"  ></TextInput>
+                <TextInput :editable="!readonly" type="text" :style="{width:'100%'}" class="channelName " @change="setChannelName({channel:c,name:$event})" :value="c.name"  ></TextInput>
 
 
               </td>
@@ -41,7 +41,7 @@
 
 
               <td>
-                <Numbox class="circNum" :value="c.circ" :min="0" :max="512" @input="linkChannelToCirc({channel: c, circ: $event.value})" :errMsg='c.hasDuplicatedCirc===true?"duplicated":""' :editable='!readonly'></Numbox>
+                <Numbox class="circNum" :value="c.circ" :min="0" :max="512" @input="linkChannelToCirc({channel: c, circ: $event})" :errMsg='c.hasDuplicatedCirc===true?"duplicated":""' :editable='!readonly'></Numbox>
               </td>
 
             </tr>

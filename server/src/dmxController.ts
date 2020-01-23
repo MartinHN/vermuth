@@ -209,6 +209,7 @@ class DMXController implements DMXControllerI {
       this.dmx.update(this.universeName, this.activeChannels.map((c) => [c.trueCirc, c.intValue]));
     };
     const closeCB = () => {
+      this.watchSerialPorts();
       console.log('connection closed ' + uri);
       this.__connected = false;
     };

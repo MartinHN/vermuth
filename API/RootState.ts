@@ -87,11 +87,14 @@ export class RootStateType {
     }
     this.curveStore.configureFromObj(ob.curveStore || {});
 
+if (ob.curvePlayer !== undefined) {
+    }
+    this.curvePlayer.configureFromObj(ob.curvePlayer || {});
 
     if (ob.dmxController !== undefined && this.dmxController) {
     }
     if (this.dmxController) {this.dmxController.configureFromObj(ob.dmxController || {}); } else {console.error('dmxController not instanciated'); }
-
+    
 
     bindClientSocket('auto');
     this.__isConfigured = validObj;

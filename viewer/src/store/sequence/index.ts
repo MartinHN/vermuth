@@ -55,7 +55,7 @@ export default class Sequences extends VuexModule {
     @Mutation
     public addSequence(s: Sequence) {
       if (s) {
-        this.sequenceList.appendSequence(s)
+        this.sequenceList.appendSequence(s);
       }
     }
     @Mutation
@@ -65,7 +65,7 @@ export default class Sequences extends VuexModule {
 
     @Mutation
     public clearSequences( ) {
-      this.sequenceList.clearSequences()
+      this.sequenceList.clearSequences();
     }
 
     @Mutation

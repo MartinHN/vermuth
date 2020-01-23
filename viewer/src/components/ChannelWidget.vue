@@ -6,9 +6,9 @@
       <v-row no-gutters>
         
         <v-col >
-          <Button @click="setCurve()" text=setCurve></Button>
+          <Button @click="editCurve()" text=editCurve></Button>
         </v-col>
-        <v-col v-if="curve" >
+        <v-col v-if="curveLink" >
           <Button  @click="deleteCurve()" text=- color=red></Button>
         </v-col>
       </v-row>
@@ -28,8 +28,8 @@
     
     <modal v-if=showCurveEditor @close="showCurveEditor=0">
       <div style="position:relative;width:100%;height:100%" slot=body>
-        <CurveEditor :curve="curve" isZoomable=1 />
-        <Numbox text="offset" v-model=curveOffset></Numbox>
+        <FullCurveEditor :curveLink="getCurveLink()" :channel=channelProp />
+        
       </div>
     </modal>
   </v-container>
@@ -46,18 +46,18 @@ import Button from '@/components/Inputs/Button.vue';
 import Numbox from '@/components/Inputs/Numbox.vue';
 import Toggle from '@/components/Inputs/Toggle.vue';
 import Modal from '@/components/Utils/Modal.vue';
-import CurveEditor from '@/components/Editors/CurveEditor.vue';
+import FullCurveEditor from '@/components/Editors/FullCurveEditor.vue';
 import { ChannelBase } from '@API/Channel';
 import UniversesMethods from '../store/universes';
-import {Curve, CurveBase} from '@API/Curve';
-import {CurvePlayer} from '@API/CurvePlayer';
+import {Curve,CurveStore, CurveBase} from '@API/Curve';
+import {CurvePlayer,CurveLink} from '@API/CurvePlayer';
 
-
+import {nextTick} from '@API/MemoryUtils'
 
 const universesModule = namespace('universes');
 
 @Component({
-  components: {Slider, Button, Numbox, Toggle, Modal, CurveEditor},
+  components: {Slider, Button, Numbox, Toggle, Modal, FullCurveEditor},
 })
 export default class ChannelWidget extends Vue {
 
@@ -80,45 +80,45 @@ export default class ChannelWidget extends Vue {
   @Prop({default: false})    public showValue!: boolean;
   @Prop({default: false}) public showProps!: boolean;
   @Prop() public overrideName?: string;
-  public _curve: CurveBase|null = null;
+  public pcurveLink: CurveLink|null = null;
   private showCurveEditor = false;
-  public setCurve() {
-    debugger;
-    let curve = CurvePlayer.getCurveForChannel(this.channelProp);
-    if (!curve) {
-      curve = new Curve<number>(this.channelProp.name);
-      CurvePlayer.addCurve(curve);
-      CurvePlayer.assignChannelToCurveNamed(curve.name, this.channelProp, 0);
+  public editCurve() {
+    let curveLink = CurvePlayer.getCurveLinkForChannel(this.channelProp);
+    if (!curveLink) {
+      const curve = CurveStore.addNewCurve(this.channelProp.name);
+      curveLink=CurvePlayer.createCurveLink(curve, this.channelProp);
     }
-    // this._curve = curve || null;
+    this.pcurveLink = curveLink || null;
+    nextTick(()=>{
     this.showCurveEditor = true;
+  })
   }
 
   public deleteCurve() {
     CurvePlayer.removeChannel(this.channelProp);
+    this.pcurveLink = null
 
   }
   public get isControlledExternally() {
-    return  this.channelProp.externalController !== null;
+    return  !!this.channelProp.externalController;
   }
-  public set curveOffset(v: number) {
-    const cl = CurvePlayer.getCurveLinkForChannel(this.channelProp);
-    if (cl) {cl.offset = v; }
-  }
-  public get curveOffset() {
-    const cl = CurvePlayer.getCurveLinkForChannel(this.channelProp);
-    return cl ? cl.offset : 0;
-  }
+
   public mounted() {
     // debugger
     // this._curve = CurvePlayer.getCurveForChannel(this.channelProp) || null;
   }
-  public get curve() {
-    return this.channelProp.externalController;
+
+
+  public getCurveLink() {
+    return CurvePlayer.getCurveLinkForChannel(this.channelProp)
+    // return this.pcurveLink;
+    // return this.channelProp.externalController;
     // this._curve = CurvePlayer.getCurveForChannel(this.channelProp) || null
     // return this._curve
   }
-
+  public get curveLink(){
+    return this.pcurveLink || this.getCurveLink()
+  }
 }
 </script>
 

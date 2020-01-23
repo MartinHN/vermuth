@@ -4,12 +4,12 @@
     <v-text-field v-if=editable 
     class="pa-0 ma-0"
     type="number" :value="value" 
-    @input="$emit('input',{value:parseInt($event)})" @change="$emit('change',{value:parseInt($event)})" 
+    @input="emitEv('input',$event)" @change="emitEv('change',$event)" 
     :min="min" :max="max" 
     :error-messages=errMsg
-    :hide-details=!errMsg
+    hide-details
     dense
-    :label='showName?name:undefined'
+    :label='text||undefined'
     
     />
 
@@ -33,8 +33,8 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 })
 export default class Numbox extends Vue {
   @Prop()
-  public  name?: string;
-  @Prop({default : false})public  showName?: boolean ; // =false;
+  public  text?: string;
+
   @Prop({default : -Infinity})public  min?: number ;
   @Prop({default : +Infinity})public  max?: number ;
 
@@ -47,6 +47,10 @@ export default class Numbox extends Vue {
   }
   public get hasError() {
     return this.errMsg !== '';
+  }
+
+  private emitEv(type:string,e:string){
+    this.$emit(type,parseInt(e))
   }
 
 }

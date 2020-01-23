@@ -85,6 +85,9 @@ export class ChannelBase implements ChannelI {
     return this.__value;
   }
 
+  getUID(){
+    return (this.__parentFixture?this.__parentFixture.name:'noparent')+'/'+this.name
+  }
 
   public static createFromObj(ob: any, parent: FixtureBase): ChannelBase|undefined {
     const cstr = channelTypes[ob.ctype];
@@ -169,7 +172,7 @@ export class ChannelBase implements ChannelI {
 
   @RemoteFunction()
   public setValue(v: number, doNotify: boolean) {
-    if (Number.isNaN(v)) {
+    if (Number.isNaN(v)) { 
       console.error('Nan error');
       return false;
     }
@@ -217,6 +220,9 @@ export class ChannelBase implements ChannelI {
     this.__parentFixture = f;
     this.checkNameDuplicate();
     if (this.__parentFixture && this.__parentFixture.universe) {this.__parentFixture.universe.checkDuplicatedCirc(); }
+ }
+ public get parentFixture(){
+  return this.__parentFixture;
  }
  public getState() {
   return {trueCirc: this.trueCirc, value: this.floatValue, name: this.name};

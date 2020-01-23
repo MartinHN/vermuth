@@ -81,7 +81,7 @@ const serverFS = () => {
 
 
 let isAutoSaving = false;
-function autoSaveAllowed (state: any) {
+function autoSaveAllowed(state: any) {
   return !isAutoSaving && !state.loadingState && (state.savedStatus === 'Saved' || state.savedStatus === '' ) && state.config.autoSave;
 }
 

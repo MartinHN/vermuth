@@ -66,9 +66,9 @@ const universesModule = namespace('universes');
 export default class ChannelRack extends Vue {
 
 
-  @Prop({required:true})
+  @Prop({required: true})
   public displayableFixtureList!: FixtureBase[];
-  
+
   set selectedFixtureNames(l: string[]) {
     this.pselectedFixtureNames = l;
     if (this.pselectedFixtureNames.length > 0) {
@@ -100,7 +100,7 @@ export default class ChannelRack extends Vue {
     return this.pselectedChannelFilterNames;
   }
 
-    
+
   get displayedFixtures() {
     return this.displayableFixtureList.filter((f) => this.needDisplay(f) && f.hasChannelMatchingFilters(this.selectedChannelFilterNames));
   }
@@ -147,10 +147,10 @@ export default class ChannelRack extends Vue {
     }
   }
 
-  public disableOrEnableAll(en:boolean){
-    for(const f of this.displayableFixtureList){
-      for(const c of f.channels){
-        c.enabled = en
+  public disableOrEnableAll(en: boolean) {
+    for (const f of this.displayableFixtureList) {
+      for (const c of f.channels) {
+        c.enabled = en;
       }
     }
   }
@@ -188,17 +188,17 @@ export default class ChannelRack extends Vue {
   }
 
   public needDisplay(f: FixtureBase) {
-    let needDisplay = true
+    let needDisplay = true;
     if (this.showEnabled) {
-      needDisplay= needDisplay && f.channels.some((c) => c.enabled);
+      needDisplay = needDisplay && f.channels.some((c) => c.enabled);
     }
     if (this.showActive) {
-      needDisplay= needDisplay && f.channels.some((c) => c.floatValue>0);
+      needDisplay = needDisplay && f.channels.some((c) => c.floatValue > 0);
     }
-    if (!(this.selectedFixtureNames && this.selectedFixtureNames.length === 0) ){
-      needDisplay= needDisplay && (this.selectedFixtureNames.find((fn) => fn === f.name)!==undefined);
+    if (!(this.selectedFixtureNames && this.selectedFixtureNames.length === 0) ) {
+      needDisplay = needDisplay && (this.selectedFixtureNames.find((fn) => fn === f.name) !== undefined);
     }
-    return needDisplay
+    return needDisplay;
   }
 
 

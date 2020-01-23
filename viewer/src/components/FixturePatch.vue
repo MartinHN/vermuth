@@ -15,7 +15,7 @@
         </v-col>
 
         <v-col cols=2 >
-          <Numbox  class="testNum" name="testChannel" showName="1" @input="!!$event.value && testDimmerNum(parseInt($event.value))" :value="testDimmerNumVal" />
+          <Numbox  class="testNum" text="testChannel" showName="1" @input="!!$event && testDimmerNum($event)" :value="testDimmerNumVal" />
         </v-col>
       </v-row>
       <!-- <v-row  v-for="f in universe.sortedFixtureList" :key="f.name" style="background-color:#FFF5;margin:5px" no-gutters>
@@ -53,7 +53,7 @@
           <input :style="{'background-color':'#0003','width':'100%'}" :value="f.name" @change="setFixtureName({fixture:f,value:$event.target.value})"/>
         </td>
         <td>
-          <Numbox :errMsg="fixtureErrorMsgs[f.name]" class="baseCirc pa-0 ma-0" :value="f.baseCirc" :min="0" :max="512" @input="$event.value && setFixtureBaseCirc({fixture: f, circ:$event.value})"></Numbox>
+          <Numbox :errMsg="fixtureErrorMsgs[f.name]" class="baseCirc pa-0 ma-0" :value="f.baseCirc" :min="0" :max="512" @input="$event && setFixtureBaseCirc({fixture: f, circ:$event})"></Numbox>
         </td>
         <td>
          {{f.ftype}} ({{f.span}} ch)

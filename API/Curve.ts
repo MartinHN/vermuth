@@ -1,7 +1,7 @@
 import {Easing, EasingFactory, LinearEasing} from './Easings/easings';
 import {Point} from './Utils2D';
 import {EventEmitter } from 'events';
-
+import {uuidv4} from "@API/Utils";
 import {nonEnumerable, RemoteValue , AccessibleClass, SetAccessible, RemoteFunction} from './ServerSync';
 
 
@@ -112,12 +112,16 @@ export class KeyFrame<T extends NumOrVec > {
 
 interface CurveBaseI extends EventEmitter {
   name: string;
-  position: number;
+  uid:string;
   span: number;
-  getValue(): any;
+  
+  getValueAt(t:number): any;
+  getValue():any;
   configureFromObj(o: any): void;
   toObj(): any;
-
+  addConsumer(c:any):void;
+  removeConsumer(c:any):void;
+  hasConsumers():boolean;
   // goToPct(pct:number):void;
 }
 
@@ -128,42 +132,81 @@ function notImplemented() {
 }
 export class CurveBase extends EventEmitter implements CurveBaseI {
   public name = 'not impl';
-  public position = -1;
-  public span = -1;
+  public uid="notImpl";
+  public span = 1;
+  
   constructor() {super(); notImplemented(); }
-  public getValue() {notImplemented(); }
+  public getValue():any {notImplemented();return 0 }
+  public getValueAt(t:number): any {notImplemented();return 0 }
   public configureFromObj(o: any) {notImplemented(); }
   public toObj() {notImplemented(); }
+  public addConsumer(c:any){notImplemented(); }
+  public removeConsumer(c:any){notImplemented(); }
+  public hasConsumers(){notImplemented(); return false;}
 }
 
 let curveNum = 0;
 export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBaseI {
   get frames() {return this._frames; }
 
-  set span(n: number) {
-    this._span = n;
-    this.updateValue();
-  }
-  get span() {return this._span; }
-
-
-
-  set position(p: number) {
-    const np = this.isLooping ? p % this.span : p;
-    if (this._position !== np) {
-      this._position = np;
-      this.updateValue();
-    }
-  }
-  get position() {return this._position; }
-
-  get value() {return this._value; }
+  
   get length() {return this.frames.length; }
-  public isLooping = true;
-  public uid = curveNum++;
-  private _span: number = 0;
-  private _position: number = 0;
+  
+  public uid:string;
+  public pspan: number = 1;
+
+  scaleToSpan(v:number){
+    if(v<=0){
+      debugger
+      console.error("can't set null span")
+      v= 1
+    }
+    const ratio = v/this.pspan
+    this._frames.map(f=>f.position=f.position*ratio)
+    debugger
+    this.span = v
+  }
+
+
+  public set span(v:number){
+    if(v<=0){
+      debugger
+      console.error("can't set null span")
+      v = 1
+    }
+    
+    this.pspan  = v
+    
+  }
+  public get span(){
+    return this.pspan
+  }
+  // private _position: number = 0;
   private _value: NumOrVec = 0;
+  @nonEnumerable()
+  public consumers = new Array<any>();
+  
+  addConsumer(c:any){
+    
+    if(this.consumers.indexOf(c)>=0){
+      debugger
+      console.error('consumer already registered')
+      return
+    }
+    this.consumers.push(c)
+  }
+  removeConsumer(c:any){
+    const i = this.consumers.indexOf(c)
+    if(i<0){
+      debugger
+      console.error('consumer not registered')
+      return
+    }
+    this.consumers.splice(i,1)
+  }
+  hasConsumers(){
+    return this.consumers.length>0
+  }
   constructor(
     public name: string,
     private _frames: Array<KeyFrame<T>> = new Array<KeyFrame<T>>()) {
@@ -173,6 +216,7 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
       this.add(new KeyFrame<T>(1000, 1 as T));
     }
     this.autoDuration();
+    this.uid=uuidv4()
     CurveStore.add(this);
   }
   public configureFromObj(o: any) {
@@ -184,17 +228,24 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
       k.configureFromObj(f);
       this.add(k);
     });
+    this.span = o.span
+    CurveStore.remove(this)
+    this.uid = o.uid
+    CurveStore.add(this);
 
   }
   public toObj(): any {
+
     return {
       name: this.name,
+      uid:this.uid,
+      span:this.span,
       _frames: this._frames.map((f) => f.toObj()),
     };
   }
   public getValue() {return this._value; }
   public autoDuration() {
-    if (this.frames.length > 0) {
+    if (this.frames.length > 1) {
       const last = this.frames[this.frames.length - 1];
       this.span = last.position;
     }
@@ -212,15 +263,7 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
       return this._frames[i - 1];
     }
   }
-  public updateValue() {
-    if (this._span > 0) {
-      const v = this.getValueAt(this._position);
-      const hasChange = this._value !==  v;
-      this._value =  v;
-      if (hasChange) {this.emit('value', v); }
-
-    } else {console.error('no span'); }
-  }
+  
 
   public getValueAt(position: number): NumOrVec {
     const fr = this.getKeyFramesForPosition(position);
@@ -240,12 +283,14 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
     this.frames.push(c);
     this.frames.sort((a, b) => a.position - b.position);
     c.setParentCurve(this);
+    
     return this;
   }
   public remove(c: KeyFrame<T>) {
     const i = this.frames.indexOf(c);
     if (i >= 0) {this.frames.splice(i, 1); }
     c.setParentCurve(undefined);
+    this.autoDuration();
     return this;
   }
   public clear() {
@@ -255,7 +300,7 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
     if (child.position > this.span) {
       this.span = child.position;
     }
-    this.updateValue();
+    
 
   }
 
@@ -328,33 +373,64 @@ public getKeyFramesForPosition(position: number): {start: KeyFrame<T>|undefined,
 class CurveStoreClass  {
 
   @SetAccessible({readonly: true})
-  private curves = new Array<CurveBaseI>();
+  private curves :{[id:string]:CurveBaseI} = {};
 
   public configureFromObj(o: any) {
-    while (this.curves.length) {this.curves.pop(); }
+    while (this.curveList.length) {this.remove(this.curveList[0]); }
     if (o && Array.isArray(o)) {
       for (const c of o) {
         const cu = new Curve<number>('new');
-        cu.configureFromObj(c);
-        if (!this.curves.some((ccu) => cu.name === ccu.name)) {this.curves.push(cu); }
+        cu.configureFromObj(c);//add to the store
+        //if (!this.curves.some((ccu) => cu.name === ccu.name)) {this.curves.push(cu); }
       }
     }
    }
   public toJSON() {
     const res = new Array<CurveBaseI>();
-    for (const c of Object.values(this.curves)) {
+    this.removeUnused();
+    for (const c of Object.values(this.curveList)) {
       res.push(c.toObj());
+      
     }
     return res;
   }
 
-  public add(c: CurveBase) {
-    return this.curves.push(c);
+  public removeUnused(){
+    this.curveList.splice(0, this.curveList.length,...this.curveList.filter(c=>c.hasConsumers()));
+  }
+  
+  @RemoteFunction()
+  public addNewCurve(name:string){
+    const cu = new Curve<number>(name);
+    this.add(cu);
+    return cu
   }
 
+  public add(c: CurveBaseI) {
+    const oldC = this.curves[c.uid]
+    if(oldC){this.remove(oldC);}
+    if(c.uid){
+      this.curves[c.uid]=c;
+      return c
+    }
+    
+    console.error("no uid on curve")
+    return undefined
+  }
 
+  public remove(c:CurveBase){
+    if(this.curves[c.uid]){
+      delete this.curves[c.uid]
+    }
+  }
+  public get curveList(){
+    return Object.values(this.curves)
+  }
+  public getCurveWithUID(uid:string){
+    return this.curves[uid]
+  }
   public getCurveNamed(name: string): CurveBase | undefined {
-    return this.curves.find((e: CurveBase) => e.name === name);
+    return this.curveList.find((e: CurveBase) => e.name === name);
   }
 }
 

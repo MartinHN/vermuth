@@ -44,6 +44,9 @@ export function buildPathForFrames(frame: KeyFrame<number>, nextFrame: KeyFrame<
   const framePixVal = valToPix(frame.value, domSize.h, valueRange);
   const nextFramePixPos = posToPix(nextFrame.position, domSize.w, positionRange);
   const nextFramePixVal = valToPix(nextFrame.value, domSize.h, valueRange);
+  if(isNaN(nextFramePixVal) || isNaN(nextFramePixPos) || isNaN(framePixVal) || isNaN(framePixPos) ){
+    debugger
+  }
   let r: string[] = ['M', '' + framePixPos, '' + framePixVal];
   if (frame.easing instanceof BezierEasing) {
     const p1 = frame.easing.getPA(framePixPos, framePixVal, nextFramePixPos, nextFramePixVal).map((e) => '' + e);

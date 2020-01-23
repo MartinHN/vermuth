@@ -19,7 +19,7 @@
             <Button @click="saveCurrentSequence()" text="add Sequence"/>
           </v-col>
           <v-col>
-            <Numbox text="idx" :value=playedIdx @change="playedIdx=$event.value" ></Numbox>
+            <Numbox text="idx" :value=playedIdx @change="playedIdx=$event" ></Numbox>
           </v-col>
         </v-row>
       </v-container>
@@ -31,67 +31,67 @@
   </template>
 
   <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
-  import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
-  import Button from '@/components/Inputs/Button.vue';
-  import Toggle from '@/components/Inputs/Toggle.vue';
-  import Numbox from '@/components/Inputs/Numbox.vue';
-  import SequenceComponent from './SequenceComponent.vue';
-  import { Sequence } from '@API/Sequence';
-  import SequenceMethods from '../store/sequence';
-  import rootState from '@API/RootState'
-  const sequenceModule = namespace('sequence');
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
+import Button from '@/components/Inputs/Button.vue';
+import Toggle from '@/components/Inputs/Toggle.vue';
+import Numbox from '@/components/Inputs/Numbox.vue';
+import SequenceComponent from './SequenceComponent.vue';
+import { Sequence } from '@API/Sequence';
+import SequenceMethods from '../store/sequence';
+import rootState from '@API/RootState';
+const sequenceModule = namespace('sequence');
 
 
-  @Component({
-    components: {Button, Numbox, SequenceComponent, Toggle},
-  })
-  export default class Sequencer extends Vue {
+@Component({
+  components: {Button, Numbox, SequenceComponent, Toggle},
+})
+export default class Sequencer extends Vue {
 
-    @sequenceModule.Mutation('addSequence') public addSequence!: SequenceMethods['addSequence'];
-    @sequenceModule.Action('saveCurrentSequence') public saveCurrentSequence!: SequenceMethods['saveCurrentSequence'];
-    @sequenceModule.State('sequenceList') public sequenceList!: SequenceMethods['sequenceList'];
-    @sequenceModule.State('globalTransport') public globalTransport!: SequenceMethods['globalTransport'];
+  @sequenceModule.Mutation('addSequence') public addSequence!: SequenceMethods['addSequence'];
+  @sequenceModule.Action('saveCurrentSequence') public saveCurrentSequence!: SequenceMethods['saveCurrentSequence'];
+  @sequenceModule.State('sequenceList') public sequenceList!: SequenceMethods['sequenceList'];
+  @sequenceModule.State('globalTransport') public globalTransport!: SequenceMethods['globalTransport'];
 
-    editOrder = false
-    get isPlayingSeq(){
-      return this.seqPlayer.isPlaying
-    }
-    get playState(){
-      return this.globalTransport.isPlaying?'stop':'play'
-    }
-    get playedIdx(){
-      return this.seqPlayer.curPlayedIdx
-    }
-    set playedIdx(n:number){
-      this.seqPlayer.curPlayedIdx = n
-    }
+  public editOrder = false;
+  get isPlayingSeq() {
+    return this.seqPlayer.isPlaying;
+  }
+  get playState() {
+    return this.globalTransport.isPlaying ? 'stop' : 'play';
+  }
+  get playedIdx() {
+    return this.seqPlayer.curPlayedIdx;
+  }
+  set playedIdx(n: number) {
+    this.seqPlayer.curPlayedIdx = n;
+  }
 
-    getHighlightedColor(i:number){
-      return this.playedIdx===i?(this.isPlayingSeq?'green':'lightgreen'):''
-    }
+  public getHighlightedColor(i: number) {
+    return this.playedIdx === i ? (this.isPlayingSeq ? 'green' : 'lightgreen') : '';
+  }
 
-    get togglePlay() {
-      return this.globalTransport.isPlaying;
-    }
-    get seqList(){
-      return this.sequenceList.listGetter
-    }
+  get togglePlay() {
+    return this.globalTransport.isPlaying;
+  }
+  get seqList() {
+    return this.sequenceList.listGetter;
+  }
 
-    get seqPlayer(){
-      return rootState.sequencePlayer
-    }
-    set togglePlay(v: boolean) {
-      if (v) {
-        this.globalTransport.start();
-      } else {
-        this.globalTransport.stop();
-      }
-    }
-    get playText() {
-      return this.togglePlay ? 'stop' : 'play';
+  get seqPlayer() {
+    return rootState.sequencePlayer;
+  }
+  set togglePlay(v: boolean) {
+    if (v) {
+      this.globalTransport.start();
+    } else {
+      this.globalTransport.stop();
     }
   }
+  get playText() {
+    return this.togglePlay ? 'stop' : 'play';
+  }
+}
 </script> 
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

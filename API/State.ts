@@ -4,20 +4,20 @@ import { Universe } from './Universe';
 import { sequencePlayer } from './Sequence';
 import { nonEnumerable, RemoteFunction, AccessibleClass,setChildAccessible } from './ServerSync';
 import {addProp, deleteProp} from './MemoryUtils';
-import {CurveBase, CurveStore} from './Curve';
-import {CurvePlayer} from './CurvePlayer';
+
+import {CurvePlayer,CurveLink, CurveLinkStore} from './CurvePlayer';
 
 interface ChannelsValuesDicTypes {[id: string]: number; }
-interface ChannelsCurvesDicTypes {[id: string]: {name: string, offset: number}; }
+interface ChannelsCurveLinkDicTypes {[id: string]: {uid: string}; }
 
 
-type SavedValueType = number|{curve: CurveBase, offset: number, dimMaster: number};
+type SavedValueType = number|CurveLink;
 export class FixtureState {
 
   get channelValues(): ChannelsValuesDicTypes {
     return Object.assign({}, this.pChannelValues) ;
   }
-  get channelCurveLinks(): ChannelsCurvesDicTypes {
+  get channelCurveLinks(): ChannelsCurveLinkDicTypes {
     return Object.assign({}, this.pChannelCurveLinks) ;
   }
 
@@ -28,7 +28,7 @@ export class FixtureState {
   }
   public name = '';
   private pChannelValues: ChannelsValuesDicTypes = {};
-  private pChannelCurveLinks: ChannelsCurvesDicTypes = {};
+  private pChannelCurveLinks: ChannelsCurveLinkDicTypes = {};
   constructor(fixture?: FixtureBase , options?: {overrideValue?: number, channelFilter?: (c: ChannelBase) => boolean, full?: boolean}) {
     if (fixture === undefined) {return; }
     this.name = fixture.name;
@@ -47,7 +47,7 @@ export class FixtureState {
         c.name,
         (options && options.overrideValue !== undefined) ?
         options.overrideValue :
-        (curveLink && {name: curveLink.curve.name, offset: curveLink.offset}) ||
+        (curveLink && {uid: curveLink.uid}) ||
         c.floatValue,
         );
     });
@@ -75,9 +75,9 @@ export class ResolvedFixtureState {
     });
     Object.entries(this.state.channelCurveLinks).forEach(([k, cv]) => {
       const c = this.fixture.getChannelForName(k);
-      const curve = CurveStore.getCurveNamed(cv.name);
-      if (c && curve) {
-        this.channels[c.name] = {channel: c, value: {curve, offset: cv.offset, dimMaster}};
+      const curveLink = CurveLinkStore.getForUID(cv.uid);
+      if (c && curveLink) {
+        this.channels[c.name] = {channel: c, value:curveLink};
       }
     });
   }
@@ -103,15 +103,14 @@ export class ResolvedFixtureState {
   }
   public applyState() {
     Object.values(this.channels).map((cv) => {
-      if (CurvePlayer.getCurveForChannel(cv.channel)) {
-        CurvePlayer.removeChannel(cv.channel);
-      }
+      
+      CurvePlayer.removeChannel(cv.channel);
+      
       if (typeof(cv.value) === 'number') {
         cv.channel.setValue(cv.value, true);
       } else {
-        const curve = cv.value.curve as CurveBase;
-        CurvePlayer.addCurve(curve);
-        CurvePlayer.assignChannelToCurveNamed(curve.name, cv.channel, cv.value.offset);
+        const curveLink = cv.value as CurveLink;
+        CurvePlayer.addCurveLink(curveLink);
       }
     });
   }
@@ -382,16 +381,16 @@ export class StateList {
   private applyResolvedState(rs:ResolvedFixtureState[]){
     rs.map((r) => r.applyFunction(
       (channel, value) => {
-        if (CurvePlayer.getCurveForChannel(channel)) {
-          CurvePlayer.removeChannel(channel);
-        }
+        
+        CurvePlayer.removeChannel(channel);
+        
         if (typeof(value) === 'number') {
           channel.setValue( value, true);
         } else {
-          if (!CurvePlayer.hasCurve(value.curve)) {
-            CurvePlayer.addCurve(value.curve);
+          const cl = value as CurveLink
+          if (!CurvePlayer.hasCurveLink(cl)) {
+            CurvePlayer.addCurveLink(cl);
           }
-          CurvePlayer.assignChannelToCurveNamed(value.curve.name, channel, value.offset);
         }
 
       }));
@@ -434,9 +433,7 @@ export class StateList {
     this.currentState.updateFromFixtures(fl);
   }
 
-  public getCurveForChannel(c: ChannelBase) {
-    return CurvePlayer.getCurveForChannel(c);
-  }
+  
 
 
 

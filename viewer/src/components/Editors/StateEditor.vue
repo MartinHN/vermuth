@@ -83,17 +83,17 @@ export default class StateEditor extends Vue {
     return this.universe.getFixtureListFromNames(this.selectedFixtureNames);
   }
 
-  
+
   get selectedFixtureNames() {
-    return this.selectedFixtureIdxs.map(i=>this.selectableFixtureListNames[i])
+    return this.selectedFixtureIdxs.map((i) => this.selectableFixtureListNames[i]);
     // return this.selectedFixtures.map(e=>e.name);
   }
   get selectableFixtureListNames() {
     return this.selectableFixtures.map((e) => e.name);
   }
 
-  get selectableFixtures(){
-    return this.universe.sortedFixtureList
+  get selectableFixtures() {
+    return this.universe.sortedFixtureList;
   }
   get selectableGroupList() {
     return ['all'].concat(this.universe.groupNames);
@@ -154,8 +154,8 @@ export default class StateEditor extends Vue {
 
   public selectAll() {
     let i = -1;
-    this.selectedFixtureIdxs = this.selectableFixtures.map(e=>{i++;return i})
-    
+    this.selectedFixtureIdxs = this.selectableFixtures.map((e) => {i++; return i; });
+
   }
 
   public needDisplay(f: FixtureBase) {
@@ -191,14 +191,14 @@ export default class StateEditor extends Vue {
 
 
   public mounted() {
-    
-    if(this.state){
-     const resolvedFixtures =  this.state.resolveState(this.universe.fixtureList,rootState.stateList.states,1)
-     for(const rf of Object.values(resolvedFixtures)){
 
-      const i = this.selectableFixtures.indexOf(rf.fixture)
-      if(i>=0 && this.selectedFixtureIdxs.indexOf(i)<0){
-        this.selectedFixtureIdxs.push(i)
+    if (this.state) {
+     const resolvedFixtures =  this.state.resolveState(this.universe.fixtureList, rootState.stateList.states, 1);
+     for (const rf of Object.values(resolvedFixtures)) {
+
+      const i = this.selectableFixtures.indexOf(rf.fixture);
+      if (i >= 0 && this.selectedFixtureIdxs.indexOf(i) < 0) {
+        this.selectedFixtureIdxs.push(i);
       }
     }
   }
