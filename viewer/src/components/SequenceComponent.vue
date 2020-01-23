@@ -6,7 +6,7 @@
           <Numbox :editable=editMode :value="seqNumber" @change="seqList.setSeqIdx(sequence,$event)"/>
         </v-col>
         <v-col cols=3>
-          <text-input :editable=editMode :value="seqName" @change="setSequenceName({sequence:sequence,value:$event})"/>
+          <text-input :editable=editMode :value="seqName" @change="setSequenceName({sequence:sequence,value:$event.value})"/>
         </v-col>
         <v-col v-if=editMode cols=1>
           <Button  text="-" color="red" @click="seqList.remove(sequence)"  />
