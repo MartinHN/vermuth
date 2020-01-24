@@ -31,7 +31,7 @@ import CurveEditor from '@/components/Editors/CurveEditor.vue';
 import Numbox from '@/components/Inputs/Numbox.vue';
 import Button from '@/components/Inputs/Button.vue';
 import Toggle from '@/components/Inputs/Toggle.vue';
-import { CurveBase, KeyFrame } from '@API/Curve';
+
 
 import Slider from '@/components/Inputs/Slider.vue';
 import * as CurveUtils from './CurveEditorUtils';

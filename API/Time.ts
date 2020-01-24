@@ -1,7 +1,7 @@
 import EventEmitter from 'events';
 import {RemoteValue, RemoteFunction, doSharedFunction, nonEnumerable} from './ServerSync';
 
-const timers: {[key: string]: any} = {};
+const timers: {[key: string]: {timeout:any,endCB?:()=>void}} = {};
 
 export function  doTimer(name: string, length: number, resolution: number, oninstance: (steps: number, count: number) => void, oncomplete?: () => void ) {
   const steps = length / resolution;
@@ -12,22 +12,26 @@ export function  doTimer(name: string, length: number, resolution: number, onins
   function instance() {
     if (++count === steps) {
       oninstance(steps, count);
-      if (oncomplete) {oncomplete(); }
+      stopTimer(name);
+      // if (oncomplete) {oncomplete(); }
     } else {
       oninstance(steps, count);
 
       const diff = (new Date().getTime() - start) - (count * speed);
-      timers[name] = setTimeout(instance, Math.max(0, speed - diff));
+      timers[name].timeout  =  setTimeout(instance, Math.max(0, speed - diff));
     }
   }
   oninstance(steps, count);
   stopTimer(name);
-  timers[name] = setTimeout(instance, speed);
+  timers[name] = {timeout :setTimeout(instance, speed),
+        endCB:oncomplete};
 }
 
 export function stopTimer(name: string) {
   if (timers[name]) {
-    clearTimeout(timers[name]);
+    clearTimeout(timers[name].timeout);
+    const endCB = timers[name].endCB
+    if(endCB){endCB();}
     delete timers[name];
   }
 }

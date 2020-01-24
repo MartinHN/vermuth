@@ -2,7 +2,7 @@ import { State, StateList, blackState, ResolvedFixtureState, MergedState } from 
 import { DirectFixture } from './Fixture';
 import { ChannelBase } from './Channel';
 import {  doTimer, stopTimer } from './Time';
-import { RemoteFunction, RemoteValue, nonEnumerable, AccessibleClass, SetAccessible } from './ServerSync';
+import { RemoteFunction, doSharedFunction, RemoteValue, nonEnumerable, AccessibleClass, SetAccessible } from './ServerSync';
 
 
 
@@ -203,7 +203,7 @@ class SequencePlayer {
   @nonEnumerable()
   private _rootProvider?: RootProvider = undefined;
 
-  @RemoteFunction({skipClientApply: true})
+  @RemoteFunction({sharedFunction: true})
   public goToStateNamed(name: string, timeIn: number, opts?: {dimMaster?: number}, cb?: () => void): void {
     const seq = new Sequence('tmp', '' + name);
     if (! timeIn) {
@@ -213,7 +213,7 @@ class SequencePlayer {
     this.goToSequence(seq, opts, cb);
   }
 
-  @RemoteFunction({skipClientApply: true})
+  @RemoteFunction({sharedFunction: true})
   public goToSequenceNamed(name: string, opts?: {dimMaster?: number}, cb?: () => void): void {
     name = '' + name;
     const tSeq = this.sequenceList.find((s) => s.name === name);
@@ -242,7 +242,7 @@ class SequencePlayer {
    this._rootProvider = rootProvider;
  }
 
-
+ @RemoteFunction({sharedFunction: true})
  private goToSequence(seq: Sequence, opts?: {dimMaster?: number}, cb?: any) {
   this.nextSeq = seq;
   const stateResolver = (n: string) => {
@@ -262,13 +262,15 @@ class SequencePlayer {
    const dimMaster = opts?opts.dimMaster!==undefined?opts.dimMaster:1:1
    this.goToStates([nextState], this.nextSeq.timeIn, {dimMasters:[dimMaster]}, 
     (...args:any[])=>{
-      this.pisPlaying=false;
-      if(cb){cb(...args);}
+      doSharedFunction(()=>{
+        this.pisPlaying=false;
+        if(cb){cb(...args);}
+      })
     });
  }
 }
 
-
+@RemoteFunction({sharedFunction: true})
 private goToStates(nextStates: State[], timeIn: number, opts?: {dimMasters?: number[]}, cb?: any) {
   const res = 100; // ms between steps
   
@@ -279,30 +281,30 @@ private goToStates(nextStates: State[], timeIn: number, opts?: {dimMasters?: num
       dimMasters.push(1)
     }
     const transitionTime = Math.max((res + 1) / 1000 , Math.max(this.curSeq.timeOut, timeIn));
-    
+    stopTimer('seqTransition') // will remove any unused curves from merged states
     const rsl = StateList.mergeStateList(nextStates,this.stateList.getCurrentFullFixtureList(),this.stateList.states,dimMasters)
     const mergedState = new MergedState(rsl);
     mergedState.checkIntegrity();
     doTimer('seqTransition', transitionTime * 1000.0, res,
       (total: number, t: number) => {
-        const pct = t * 1.0 / total;
-        const time = t * res;
+        let pct = t * 1.0 / total;
+        pct = Math.max(0,Math.min(1,pct))
+        // const time = t * res;
         // const pctIn = timeIn > 0 ? (1 - Math.max(0, (timeIn - time) / timeIn)) : 1;
         // const pctOut = timeOut>0?Math.max(0,(timeOut-time)/timeOut):0;
-
-        for (const ts of mergedState.channels) {
-          if ( ts.sourcev !== ts.targetv) {
-            const diff = ts.targetv - ts.sourcev;
-            const v = ts.sourcev + pct * diff;
-            ts.channel.setValue(v, true);
-
-            // channelDic[k].sendValue(v)
-          }
-
-        }
+        doSharedFunction(()=>
+          mergedState.applyCrossfade(pct)
+          )
       },
-      cb,
-      );
+      
+      ()=>{
+        doSharedFunction(()=>{
+          mergedState.endCB();
+          if(cb){cb();};
+        })
+      },
+      )
+
   }
 }
 

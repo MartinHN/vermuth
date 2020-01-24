@@ -138,7 +138,7 @@ ioServer.on('connection', (socket) => {
     if (clientLogger) {
       // @ts-ignore
       const isBroadCasting = socket.flags.broadcast;
-      const evt = JSON.stringify(event);
+      const evt = typeof(event)==="string"?event:JSON.stringify(event);
       if (!evt || !evt.endsWith('/_time')) {
         let a = JSON.stringify(args);
         if (evt === 'SET_STATE') {a = ''; }

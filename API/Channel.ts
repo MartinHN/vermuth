@@ -118,6 +118,12 @@ export class ChannelBase implements ChannelI {
 
   private __value: ChannelValueType = 0;
 
+  private __isDisposed=false
+  public dispose(){
+    if(!this.__isDisposed)console.log("disposing channel ",this.getUID())
+    this.__isDisposed = true
+  }
+
   constructor(public name: string, __value: ChannelValueType  , private _circ: number= 0, public _enabled: boolean= true) {
     if (!__value) {__value = 0; } // ensure numeric
     this.updateRoleForName();

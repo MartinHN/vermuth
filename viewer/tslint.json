@@ -22,7 +22,8 @@
     "max-classes-per-file":10,
     "variable-name":false,
     "no-debugger":false,
-    "import-spacing":false
+    "import-spacing":false,
+    "whitespace":false
   },
   "jsRules": {
     "no-console": false

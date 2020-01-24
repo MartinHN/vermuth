@@ -110,18 +110,18 @@ export class KeyFrame<T extends NumOrVec > {
 
 
 
-interface CurveBaseI extends EventEmitter {
+export interface CurveBaseI extends EventEmitter {
   name: string;
   uid:string;
   span: number;
   
   getValueAt(t:number): any;
-  getValue():any;
   configureFromObj(o: any): void;
   toObj(): any;
   addConsumer(c:any):void;
   removeConsumer(c:any):void;
   hasConsumers():boolean;
+  scaleToSpan(v:number):void;
   // goToPct(pct:number):void;
 }
 
@@ -129,20 +129,6 @@ function notImplemented() {
   debugger;
   console.error('calling base curve');
 
-}
-export class CurveBase extends EventEmitter implements CurveBaseI {
-  public name = 'not impl';
-  public uid="notImpl";
-  public span = 1;
-  
-  constructor() {super(); notImplemented(); }
-  public getValue():any {notImplemented();return 0 }
-  public getValueAt(t:number): any {notImplemented();return 0 }
-  public configureFromObj(o: any) {notImplemented(); }
-  public toObj() {notImplemented(); }
-  public addConsumer(c:any){notImplemented(); }
-  public removeConsumer(c:any){notImplemented(); }
-  public hasConsumers(){notImplemented(); return false;}
 }
 
 let curveNum = 0;
@@ -162,9 +148,10 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
       v= 1
     }
     const ratio = v/this.pspan
-    this._frames.map(f=>f.position=f.position*ratio)
-    debugger
     this.span = v
+    this._frames.map(f=>f.position=f.position*ratio)
+    
+    
   }
 
 
@@ -181,13 +168,11 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
   public get span(){
     return this.pspan
   }
-  // private _position: number = 0;
-  private _value: NumOrVec = 0;
+  
   @nonEnumerable()
   public consumers = new Array<any>();
   
   addConsumer(c:any){
-    
     if(this.consumers.indexOf(c)>=0){
       debugger
       console.error('consumer already registered')
@@ -198,7 +183,7 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
   removeConsumer(c:any){
     const i = this.consumers.indexOf(c)
     if(i<0){
-      debugger
+      
       console.error('consumer not registered')
       return
     }
@@ -243,7 +228,7 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
       _frames: this._frames.map((f) => f.toObj()),
     };
   }
-  public getValue() {return this._value; }
+  
   public autoDuration() {
     if (this.frames.length > 1) {
       const last = this.frames[this.frames.length - 1];
@@ -369,11 +354,12 @@ public getKeyFramesForPosition(position: number): {start: KeyFrame<T>|undefined,
 
 }
 
+type CurveBaseType = CurveBaseI
 @AccessibleClass()
 class CurveStoreClass  {
 
   @SetAccessible({readonly: true})
-  private curves :{[id:string]:CurveBaseI} = {};
+  private curves :{[id:string]:CurveBaseType} = {};
 
   public configureFromObj(o: any) {
     while (this.curveList.length) {this.remove(this.curveList[0]); }
@@ -386,7 +372,7 @@ class CurveStoreClass  {
     }
    }
   public toJSON() {
-    const res = new Array<CurveBaseI>();
+    const res = new Array<CurveBaseType>();
     this.removeUnused();
     for (const c of Object.values(this.curveList)) {
       res.push(c.toObj());
@@ -406,7 +392,7 @@ class CurveStoreClass  {
     return cu
   }
 
-  public add(c: CurveBaseI) {
+  public add(c: CurveBaseType) {
     const oldC = this.curves[c.uid]
     if(oldC){this.remove(oldC);}
     if(c.uid){
@@ -418,7 +404,7 @@ class CurveStoreClass  {
     return undefined
   }
 
-  public remove(c:CurveBase){
+  public remove(c:CurveBaseType){
     if(this.curves[c.uid]){
       delete this.curves[c.uid]
     }
@@ -429,8 +415,8 @@ class CurveStoreClass  {
   public getCurveWithUID(uid:string){
     return this.curves[uid]
   }
-  public getCurveNamed(name: string): CurveBase | undefined {
-    return this.curveList.find((e: CurveBase) => e.name === name);
+  public getCurveNamed(name: string): CurveBaseType | undefined {
+    return this.curveList.find((e: CurveBaseType) => e.name === name);
   }
 }
 

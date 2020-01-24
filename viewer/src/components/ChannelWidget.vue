@@ -28,7 +28,7 @@
     
     <modal v-if=showCurveEditor @close="showCurveEditor=0">
       <div style="position:relative;width:100%;height:100%" slot=body>
-        <FullCurveEditor :curveLink="getCurveLink()" :channel=channelProp />
+        <FullCurveEditor :curveLink="curveLink" :channel=channelProp />
         
       </div>
     </modal>
@@ -49,7 +49,7 @@ import Modal from '@/components/Utils/Modal.vue';
 import FullCurveEditor from '@/components/Editors/FullCurveEditor.vue';
 import { ChannelBase } from '@API/Channel';
 import UniversesMethods from '../store/universes';
-import {Curve,CurveStore, CurveBase} from '@API/Curve';
+import {Curve,CurveStore, CurveBaseI} from '@API/Curve';
 import {CurvePlayer,CurveLink} from '@API/CurvePlayer';
 
 import {nextTick} from '@API/MemoryUtils'
@@ -80,7 +80,7 @@ export default class ChannelWidget extends Vue {
   @Prop({default: false})    public showValue!: boolean;
   @Prop({default: false}) public showProps!: boolean;
   @Prop() public overrideName?: string;
-  public pcurveLink: CurveLink|null = null;
+  
   private showCurveEditor = false;
   public editCurve() {
     let curveLink = CurvePlayer.getCurveLinkForChannel(this.channelProp);
@@ -88,7 +88,7 @@ export default class ChannelWidget extends Vue {
       const curve = CurveStore.addNewCurve(this.channelProp.name);
       curveLink=CurvePlayer.createCurveLink(curve, this.channelProp);
     }
-    this.pcurveLink = curveLink || null;
+    // this.pcurveLink = curveLink || null;
     nextTick(()=>{
     this.showCurveEditor = true;
   })
@@ -96,7 +96,7 @@ export default class ChannelWidget extends Vue {
 
   public deleteCurve() {
     CurvePlayer.removeChannel(this.channelProp);
-    this.pcurveLink = null
+    // this.pcurveLink = null
 
   }
   public get isControlledExternally() {
@@ -109,15 +109,10 @@ export default class ChannelWidget extends Vue {
   }
 
 
-  public getCurveLink() {
-    return CurvePlayer.getCurveLinkForChannel(this.channelProp)
-    // return this.pcurveLink;
-    // return this.channelProp.externalController;
-    // this._curve = CurvePlayer.getCurveForChannel(this.channelProp) || null
-    // return this._curve
-  }
+  
   public get curveLink(){
-    return this.pcurveLink || this.getCurveLink()
+    return  CurvePlayer.getCurveLinkForChannel(this.channelProp)
+    // return this.pcurveLink || this.getCurveLink()
   }
 }
 </script>
