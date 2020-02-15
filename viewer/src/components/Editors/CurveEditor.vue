@@ -52,7 +52,7 @@ import * as CurveUtils from './CurveEditorUtils';
 import { Draggable, DraggableHandler } from '@/components/Utils/Draggable';
 
 function getPointFromEvent(e: MouseEvent): Point {
-  return new Point( e.offsetX,  e.offsetY); 
+  return new Point( e.offsetX,  e.offsetY);
 }
 
 function secondaryEvent(e: MouseEvent) {return e.metaKey; }

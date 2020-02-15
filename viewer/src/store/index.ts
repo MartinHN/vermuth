@@ -85,7 +85,7 @@ function autoSaveAllowed(state: any) {
   return !isAutoSaving && !state.loadingState && (state.savedStatus === 'Saved' || state.savedStatus === '' ) && state.config.autoSave;
 }
 
-function dispatchSave(store: any) {
+function dispatchSave(_store: any) {
   isAutoSaving = true;
 
   const sessionState = getSessionObject();
@@ -94,7 +94,7 @@ function dispatchSave(store: any) {
     // debugger
     return;
   }
-  store.dispatch('SAVE_SESSION');
+  _store.dispatch('SAVE_SESSION');
 
   isAutoSaving = false;
 }

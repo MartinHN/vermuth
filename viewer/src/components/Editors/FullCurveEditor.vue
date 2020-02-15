@@ -2,6 +2,7 @@
 
 
   <div class="main"  style="width:100%;height:100%">
+    {{curveLink.uid}}
     <v-row no-gutters>
       <v-col cols=6>
         <Numbox text="offset" v-model=curveLink.offset></Numbox>
@@ -35,39 +36,39 @@ import Toggle from '@/components/Inputs/Toggle.vue';
 
 import Slider from '@/components/Inputs/Slider.vue';
 import * as CurveUtils from './CurveEditorUtils';
-import {CurvePlayer,CurveLink} from '@API/CurvePlayer';
+import {CurvePlayer, CurveLink} from '@API/CurvePlayer';
 import {ChannelBase} from '@API/Channel';
 
-@Component({components: {Slider,CurveEditor,Numbox,Button,Toggle}})
+@Component({components: {Slider, CurveEditor, Numbox, Button, Toggle}})
 export default class FullCurveEditor extends Vue {
 
   @Prop({required: true})
   public curveLink!: CurveLink;
 
-  
 
-  
+
+
 
   // public set curveOffset(v: number) {
-    //   const cl = this.curveLink;  
+    //   const cl = this.curveLink;
     //   if (cl) {cl.offset = v; }
     // }
     // public get curveOffset() {
       //   const cl = this.curveLink;
       //   return cl ? cl.offset : 0;
       // }
-setSpan(v:number){
-this.curveLink.curve.scaleToSpan(v)
+public setSpan(v: number) {
+this.curveLink.curve.scaleToSpan(v);
 }
 
 
 
-      playNow(){
-        this.curveLink.playNow()
+      public playNow() {
+        this.curveLink.playNow();
       }
 
     }
-  </script>
+</script>
 
 
   <style scoped>

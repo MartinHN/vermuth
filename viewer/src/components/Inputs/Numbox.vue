@@ -49,8 +49,8 @@ export default class Numbox extends Vue {
     return this.errMsg !== '';
   }
 
-  private emitEv(type:string,e:string){
-    this.$emit(type,parseInt(e))
+  private emitEv(type: string, e: string) {
+    this.$emit(type, parseInt(e, 10));
   }
 
 }

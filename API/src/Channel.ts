@@ -87,10 +87,10 @@ export class ChannelBase implements ChannelI {
   get trueValue() {
     return this.__value;
   }
-
-  getUID(){
-    return (this.__parentFixture?this.__parentFixture.name:'noparent')+'/'+this.name
-  }
+  public get reactToMaster() {return this.roleFam === 'dim'; }
+ public get parentFixture() {
+  return this.__parentFixture;
+ }
 
   public static createFromObj(ob: any, parent: FixtureBase): ChannelBase|undefined {
     const cstr = channelTypes[ob.ctype];
@@ -109,7 +109,6 @@ export class ChannelBase implements ChannelI {
 
   public ctype = 'base';
   public hasDuplicatedCirc = false;
-  public get reactToMaster() {return this.roleFam === 'dim'; }
   public roleType = '';
   public roleFam = '';
 
@@ -121,16 +120,20 @@ export class ChannelBase implements ChannelI {
 
   private __value: ChannelValueType = 0;
 
-  private __isDisposed=false
-  public dispose(){
-    if(!this.__isDisposed)console.log("disposing channel ",this.getUID())
-    this.__isDisposed = true
-  }
+  private __isDisposed = false;
 
   constructor(public name: string, __value: ChannelValueType  , private _circ: number= 0, public _enabled: boolean= true) {
     if (!__value) {__value = 0; } // ensure numeric
     this.updateRoleForName();
     this.setValueChecking(__value);
+  }
+
+  public getUID() {
+    return (this.__parentFixture ? this.__parentFixture.name : 'noparent') + '/' + this.name;
+  }
+  public dispose() {
+    if (!this.__isDisposed) {console.log('disposing channel ', this.getUID()); }
+    this.__isDisposed = true;
   }
 
   public matchFilter(n: string|RegExp) {
@@ -181,7 +184,7 @@ export class ChannelBase implements ChannelI {
 
   @RemoteFunction()
   public setValue(v: number, doNotify: boolean) {
-    if (Number.isNaN(v)) { 
+    if (Number.isNaN(v)) {
       console.error('Nan error');
       return false;
     }
@@ -229,9 +232,6 @@ export class ChannelBase implements ChannelI {
     this.__parentFixture = f;
     this.checkNameDuplicate();
     if (this.__parentFixture && this.__parentFixture.universe) {this.__parentFixture.universe.checkDuplicatedCirc(); }
- }
- public get parentFixture(){
-  return this.__parentFixture;
  }
  public getState() {
   return {trueCirc: this.trueCirc, value: this.floatValue, name: this.name};

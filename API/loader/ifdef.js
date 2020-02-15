@@ -40,10 +40,10 @@ module.exports = function(source,defines,doLog){
     }
     else{
       if(!isDumping){
-        res.push(nonTrimmed)
+        res.push(l?nonTrimmed+ " // gen":"")
       }
       else{
-        res.push("//"+nonTrimmed); // keep blank line to preserve line numbers
+        res.push("// "+nonTrimmed); // keep blank line to preserve line numbers
         if(doLog){console.log("removing ",l)}
       }
     }

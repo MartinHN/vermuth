@@ -6,7 +6,7 @@ const isClient = process.env.VUE_APP_ISCLIENT;
 
 
 function getVue() {
-  
+
   if (!isClient) {return false; }
 
   try {
@@ -14,7 +14,7 @@ function getVue() {
     return require( 'vue').default;
     // #endif
   } catch (e) {
-    throw "can't require Vue"
+    throw new Error('can\'t require Vue');
   }
   return false;
 }
@@ -28,11 +28,11 @@ export function deleteProp(o: any, p: string|symbol) {
   const Vue = getVue();
   if (Vue && !Array.isArray(o)) {
     Vue.delete(o, p);
-    return
-  } 
+    return;
+  }
   // #endif
-    Reflect.deleteProperty(o, p);
-  
+  Reflect.deleteProperty(o, p);
+
 }
 
 
@@ -41,11 +41,11 @@ export function addProp(o: any, p: string|symbol, v: any) {
   const Vue = getVue();
   if (Vue && !Array.isArray(o)) {
     Vue.set(o, p, v);
-    return
-  } 
+    return;
+  }
   // #endif
-    Reflect.set(o, p, v);
-  
+  Reflect.set(o, p, v);
+
 }
 
 
@@ -54,12 +54,12 @@ export function nextTick(cb: any) {
   const Vue = getVue();
   if (Vue) {
     Vue.nextTick(cb);
-    return
-  } 
+    return;
+  }
   // #endif
-  
+
     // @ts-ignore
-    process.nextTick(cb);
-  
-  
+  process.nextTick(cb);
+
+
 }

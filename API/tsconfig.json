@@ -19,8 +19,7 @@
     "allowJs":true,
   },
   "include": [
-    "gen/*.ts",
-    "gen/*.js"
+    "src/*.ts"
   ],
 
   "exclude": [

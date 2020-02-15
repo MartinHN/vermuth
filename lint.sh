@@ -7,7 +7,7 @@ cd $DIR
 
 cd API
 
-tslint --project . --fix
+npm run lint
 
 cd ../viewer
 

@@ -142,7 +142,7 @@ export class Universe implements UniverseI {
 
   public get allChannels() {
     const res = new Array<ChannelBase>();
-    for(const f of this.fixtureList){
+    for (const f of this.fixtureList) {
       f.channels.map((c) => res.push(c));
     }
     return res;
@@ -158,12 +158,12 @@ export class Universe implements UniverseI {
     }
   }
 
-  public getUIDForChannel(c:ChannelBase){
-    return c.getUID();// like :: c.parentFixture.name + "/" + c.name
+  public getUIDForChannel(c: ChannelBase) {
+    return c.getUID(); // like :: c.parentFixture.name + "/" + c.name
   }
 
-  public getChannelFromUID(uid:string){
-    return this.allChannels.find(c=> {return this.getUIDForChannel(c)===uid})
+  public getChannelFromUID(uid: string) {
+    return this.allChannels.find((c) => this.getUIDForChannel(c) === uid);
   }
 
   @RemoteFunction({sharedFunction: true})
@@ -177,7 +177,7 @@ export class Universe implements UniverseI {
       //   this.testedChannel.setValue( 0.0, true);
       // }
 
-      this.setTestedChannelDimmer(d);
+    this.setTestedChannelDimmer(d);
       // if (this.testedChannel.circ >= 0) {
 
         // }

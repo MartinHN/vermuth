@@ -1,228 +1,221 @@
 import {CurveBaseI, CurveStore, Curve} from './Curve';
 import {ChannelBase} from './Channel';
 import {GlobalTransport, TimeListener} from './Time';
-import { SetAccessible,nonEnumerable, RemoteValue , RemoteFunction, AccessibleClass} from './ServerSync';
-import rootState from "./RootState"
-import {uuidv4} from "./Utils";
+import { SetAccessible, nonEnumerable, RemoteValue , RemoteFunction, AccessibleClass} from './ServerSync';
+import rootState from './RootState';
+import {uuidv4} from './Utils';
 
-type CurveBaseType = CurveBaseI
+type CurveBaseType = CurveBaseI;
 
 export class CurveLink {
 
-  private startTime = 0;
+  get curve() {return this.pcurve; }
+  set curve(c: CurveBaseType) {
+    if (this.pcurve) {this.pcurve.removeConsumer(this); }
+    this.pcurve = c;
+    if (this.pcurve) {this.pcurve.addConsumer(this); }
+  }
+
+  public get master() {
+    return this.pmaster;
+  }
+  public set master(v: number) {
+    this.pmaster = v;
+    this.updateValue();
+  }
+
+  public set time(t: number) {
+    if (this.doPause) {return; }
+    this._curTime = (t - (this.startTime || 0) + (this.offset || 0));
+    if (this._curTime === undefined || isNaN(this._curTime)) {
+      debugger;
+    }
+    if (this._curTime < 0) {
+      return;
+    }
+    if (this.doLoop ) {
+      if (this.curve.span > 0) {
+        this._curTime %= this.curve.span;
+      } else {
+        console.error('span is null');
+        debugger;
+      }
+    } else {
+
+    }
+    this.updateValue();
+
+  }
+
+
+  public get time() {
+    return this._curTime;
+  }
+  get value() {
+    return this._curValue;
+  }
+
+  public static createFromObj(o: any) {
+    if (!o || !o.pcurve || !o.channel) {
+      console.error('conf error');
+      debugger;
+      return undefined;
+    }
+    const cu = (o.pcurve.uid ? o.pcurve : CurveStore.getCurveWithUID( o.pcurve ) )   as CurveBaseType;
+    const ch = rootState.universe.getChannelFromUID(o.channel) as ChannelBase;
+    if (!cu ) {
+      console.error('curve not found');
+      debugger;
+      return undefined;
+    }
+    if (!ch ) {
+      console.error('ch not found');
+      debugger;
+      return undefined;
+    }
+    const c = new CurveLink(cu, ch, o.uid);
+    c.configureFromObj(o);
+    return c;
+  }
+  @RemoteValue()
   public doLoop = true;
+  @RemoteValue()
   public doPause = false;
-  private pmaster = 1;
+  @RemoteValue()
   public offset = 0;
-  
-  private _curTime = 0;
-  
+
   public _curValue = 0;
-  public uid:string;
+  public uid: string;
 
   @nonEnumerable()
   public autoSetChannelValue = true; // used when merging curves in sequence player
 
-  constructor(private pcurve: CurveBaseType, public channel: ChannelBase, uid:string) {
-    if(!this.pcurve.addConsumer){
-      debugger
+  @RemoteValue()
+  private startTime = 0;
+  private pmaster = 1;
+
+  private _curTime = 0;
+
+  constructor(private pcurve: CurveBaseType, public channel: ChannelBase, uid: string) {
+    if (!this.pcurve.addConsumer) {
+      debugger;
     }
-    if(!channel){
-      debugger
+    if (!channel) {
+      debugger;
     }
-    this.pcurve.addConsumer(this)
+    this.pcurve.addConsumer(this);
     channel.externalController = this;
-    if(!uid){console.error("no uid given"); debugger;}
-    this.uid = 'cl_'+channel.getUID()+'_'+(uid|| uuidv4());
-    CurveLinkStore.add(this)
+    if (!uid) {console.error('no uid given'); debugger; }
+    this.uid = 'cl_' + channel.getUID() + '_' + (uid || uuidv4());
+    if (CurvePlayer.hasCurveLinkWithUID(uid)) {console.error('double curvelink'); debugger; }
+    CurveLinkStore.add(this);
   }
-  
-  get curve(){return this.pcurve;}
-  set curve(c:CurveBaseType){
-    if(this.pcurve)this.pcurve.removeConsumer(this); 
-    this.pcurve = c;
-    if(this.pcurve)this.pcurve.addConsumer(this); 
-  }
+  public configureFromObj(o: any) {
 
-  static createFromObj(o:any){
-    if(!o || !o.pcurve || !o.channel){
-      console.error('conf error')
-      debugger
-      return undefined
-    }
-    const cu = (o.pcurve.uid?o.pcurve:CurveStore.getCurveWithUID( o.pcurve ) )   as CurveBaseType
-    const ch = rootState.universe.getChannelFromUID(o.channel) as ChannelBase
-    if(!cu ){
-      console.error("curve not found");
-      debugger;
-      return undefined
-    }
-    if(!ch ){
-      console.error("ch not found");
-      debugger;
-      return undefined
-    }
-    const c = new CurveLink(cu,ch,o.uid)
-    c.configureFromObj(o)
-    return c
-  }
-  public configureFromObj(o:any){
-
-    CurveLinkStore.remove(this,false)
+    CurveLinkStore.remove(this, false);
     // this.pcurve = null
-    for(const [k,v] of Object.entries(this)){
-      if(o[k]!==undefined){
-        if(k==="pcurve"){
-          const cu = CurveStore.getCurveWithUID(o[k])
-          if(cu){
-            this.curve = cu
+    for (const [k, v] of Object.entries(this)) {
+      if (o[k] !== undefined) {
+        if (k === 'pcurve') {
+          const cu = CurveStore.getCurveWithUID(o[k]);
+          if (cu) {
+            this.curve = cu;
+          } else {
+            console.error('conf error');
+            debugger;
           }
-          else{
-            console.error('conf error')
-            debugger
+        } else if (k === 'channel') {
+          const ch = rootState.universe.getChannelFromUID(o[k]);
+          if (ch) {
+            this.channel =  ch;
+          } else {
+            console.error('conf error');
+            debugger;
           }
-        }
-        else if(k=="channel"){
-          const ch = rootState.universe.getChannelFromUID(o[k])
-          if(ch){
-            this.channel =  ch
-          }
-          else{
-            console.error('conf error')
-            debugger
-          }
-        }
-        else{
-          (this as any)[k] = o[k]
+        } else {
+          (this as any)[k] = o[k];
         }
       }
     }
-    CurveLinkStore.add(this)
+    CurveLinkStore.add(this);
   }
 
-  public toJSON(){
-    const o:any = {uid:this.uid}
-    for(const [k,v] of Object.entries(this)){
-      if(k.startsWith('_')){continue;}
-      else if(k=="channel"){
-        o[k] = this.channel.getUID()
-      }
-      else{
-        o[k] = v
-      }
-
-    }
-
-    o["pcurve"] = this.pcurve.uid
-
-    return o
-  }
-
-  public get master(){
-    return this.pmaster
-  }
-  public set master(v:number){
-    this.pmaster = v
-    this.updateValue();
-  }
-
-  public set time(t:number){
-    if(this.doPause){return}
-      this._curTime = (t-(this.startTime||0) + (this.offset || 0))
-    if(this._curTime===undefined || isNaN(this._curTime)){
-      debugger
-    }
-    if(this._curTime<0){
-      return
-    }
-    if(this.doLoop ){
-      if(this.curve.span>0){
-        this._curTime%=this.curve.span
-      }
-      else{
-        console.error("span is null")
-        debugger
+  public toJSON() {
+    const o: any = {uid: this.uid};
+    for (const [k, v] of Object.entries(this)) {
+      if (k.startsWith('_')) {continue; } else if (k === 'channel') {
+        o[k] = this.channel.getUID();
+      } else {
+        o[k] = v;
       }
     }
-    else{
-
-    }
-    this.updateValue()
-
+    o.pcurve = this.pcurve.uid;
+    return o;
   }
 
   public updateValue() {
-    const nv = (this.curve.getValueAt(this._curTime) as number )*this.pmaster;
-    if(nv!==this._curValue){
-      this._curValue=nv;
-      if(this.autoSetChannelValue){
-        this.channel.setValue(this._curValue,true)
+    const nv = (this.curve.getValueAt(this._curTime) as number ) * this.pmaster;
+    if (nv !== this._curValue) {
+      this._curValue = nv;
+      if (this.autoSetChannelValue) {
+        this.channel.setValue(this._curValue, true);
       }
     }
   }
-
-
-  public get time(){
-    return this._curTime
-  }
-  get value(){
-    return this._curValue
-  }
-  public playAtTime(t:number){
-    this.startTime = t
+  public playAtTime(t: number) {
+    this.startTime = t;
   }
 
-  public playNow(){
-    this.playAtTime(GlobalTransport.time)
+  public playNow() {
+    this.playAtTime(GlobalTransport.time);
   }
-  public togglePlay(){
-    this.doPause = !this.doPause
-    if(!this.doPause){
-      this.playNow()
+
+
+  public togglePlay() {
+    this.doPause = !this.doPause;
+    if (!this.doPause) {
+      this.playNow();
     }
   }
   public dispose() {
-    if(this.pcurve)this.pcurve.removeConsumer(this)
-      this.channel.externalController = null;
+    if (this.pcurve) {this.pcurve.removeConsumer(this); }
+    this.channel.externalController = null;
   }
 
 }
 
 @AccessibleClass()
-class CurveLinkStoreClass{
+class CurveLinkStoreClass {
 
 
-  public readonly  allLinks : {[uid:string]:CurveLink} = {}
+  public readonly  allLinks: {[uid: string]: CurveLink} = {};
 
-  configureFromObj(o:any){
-    for(const v of Object.values(this.allLinks)){
-      this.remove(v)
+  public configureFromObj(o: any) {
+    for (const v of Object.values(this.allLinks)) {
+      this.remove(v);
     }
-    if(o && o.allLinks){
-
-      for(const [k,v] of Object.entries(o.allLinks)){
-        const cl = CurveLink.createFromObj(v)
-        if(cl)
-          {this.allLinks[(v as any)['uid']] = cl}
-        else{
-          console.error('conf error')
-          debugger
+    if (o && o.allLinks) {
+      for (const [k, v] of Object.entries(o.allLinks)) {
+        const cl = CurveLink.createFromObj(v);
+        if (cl) {this.allLinks[(v as any).uid] = cl; } else {
+          console.error('conf error');
+          debugger;
         }
       }
     }
   }
 
-  getForUID(uid:string){
-    return this.allLinks[uid]
+  public getForUID(uid: string) {
+    return this.allLinks[uid];
   }
-  add(cl:CurveLink){
-    this.allLinks[cl.uid] = cl
+  public add(cl: CurveLink) {
+    this.allLinks[cl.uid] = cl;
 
   }
-  remove(cl:CurveLink,doDispose=true){
-    if(this.allLinks[cl.uid]){
-     if(doDispose) {cl.dispose();}
-     delete this.allLinks[cl.uid]
+  public remove(cl: CurveLink, doDispose= true) {
+    if (this.allLinks[cl.uid]) {
+     if (doDispose) {cl.dispose(); }
+     delete this.allLinks[cl.uid];
    }
  }
 
@@ -230,56 +223,57 @@ class CurveLinkStoreClass{
 
 
 
-};
+}
 
 
-export const CurveLinkStore = new CurveLinkStoreClass()
+export const CurveLinkStore = new CurveLinkStoreClass();
 
 @AccessibleClass()
 export class CurvePlayerClass extends TimeListener {
-
-  private static _instance: CurvePlayerClass|undefined
-  private constructor() {
-    super('CurvePlayer');
-  }
-  static get i():CurvePlayerClass{ 
-    if(!CurvePlayerClass._instance){CurvePlayerClass._instance=new CurvePlayerClass();}
+  static get i(): CurvePlayerClass {
+    if (!CurvePlayerClass._instance) {CurvePlayerClass._instance = new CurvePlayerClass(); }
     return CurvePlayerClass._instance;
   }
 
-  public curveLinkStore = CurveLinkStore
+  private static _instance: CurvePlayerClass|undefined;
+
+  public curveLinkStore = CurveLinkStore;
+
+
+  private readonly  curveLinkList = new Array<CurveLink>();  // not accessible
+  private constructor() {
+    super('CurvePlayer');
+  }
 
 
 
-  public configureFromObj(o:any){
-    this.curveLinkStore.configureFromObj(o.curveLinkStore)
-    for(const v of this.curveLinkList){
-      this.removeCurveLink(v)
+  public configureFromObj(o: any) {
+    this.curveLinkStore.configureFromObj(o.curveLinkStore);
+    for (const v of this.curveLinkList) {
+      this.removeCurveLink(v);
     }
-    if(o.curveLinkList){
-      o.curveLinkList.map((uid:string)=>{
+    if (o.curveLinkList) {
+      o.curveLinkList = [...new Set(o.curveLinkList)] // avoid duplicates
+      o.curveLinkList.map((uid: string) => {
         const cl = this.curveLinkStore.getForUID(uid);
-        if(cl){this.addCurveLink(cl);}
-      })
+        if (cl) {this.addCurveLink(cl); }
+      });
     }
   }
 
-  public toJSON(){
+  public toJSON() {
     return {
-      curveLinkStore:this.curveLinkStore,
-      curveLinkList:this.curveLinkList.map(e=>e.uid)
-    }
+      curveLinkStore: this.curveLinkStore,
+      curveLinkList: this.curveLinkList.map((e) => e.uid),
+    };
   }
 
 
-  private readonly  curveLinkList= new Array<CurveLink>()  // not accessible
-
-  
 
 
   public timeChanged(t: number) {
     for (const c of this.curveLinkList) {
-      c.time = t
+      c.time = t;
     }
   }
 
@@ -287,7 +281,9 @@ export class CurvePlayerClass extends TimeListener {
   public hasCurveLink(cl: CurveLink) {
     return this.curveLinkList.indexOf(cl) >= 0;
   }
-
+  public hasCurveLinkWithUID(uid: string) {
+    return this.curveLinkList.find((e) => e.uid === uid) !== undefined;
+  }
 
 
   public getAssignedChannels() {
@@ -298,50 +294,54 @@ export class CurvePlayerClass extends TimeListener {
 
 
   public getCurveLinkForChannel(ch: ChannelBase) {
-    return this.curveLinkList.find(e=>{return e.channel===ch})
+    return this.curveLinkList.find((e) => e.channel === ch);
   }
   public getCurveForChannel(ch: ChannelBase) {
     const cl = this.getCurveLinkForChannel(ch);
     return cl ? cl.curve : undefined;
   }
-  @RemoteFunction({sharedFunction:true})
+  @RemoteFunction({sharedFunction: true})
   public removeChannel(ch: ChannelBase) {
     const cl = this.getCurveLinkForChannel(ch);
     if (cl) {
-      this.removeCurveLink(cl)
-      return true
+      this.removeCurveLink(cl);
+      return true;
     } else {
-      return false
+      return false;
     }
   }
 
-  @RemoteFunction({sharedFunction:true})
-  public removeCurveLink(cl:CurveLink){
-    const i = this.curveLinkList.indexOf(cl)
-    this.curveLinkList.splice(i,1)
+  @RemoteFunction({sharedFunction: true})
+  public removeCurveLink(cl: CurveLink) {
+    const i = this.curveLinkList.indexOf(cl);
+    this.curveLinkList.splice(i, 1);
   }
 
-  @RemoteFunction({sharedFunction:true})
-  public addCurveLink(cl:CurveLink,doRestart =  true){
-    if(this.curveLinkList.indexOf(cl)<0 || cl.autoSetChannelValue===false){
+  @RemoteFunction({sharedFunction: true})
+  public addCurveLink(cl: CurveLink, doRestart =  true) {
+
+    if (this.curveLinkList.indexOf(cl) < 0 || cl.autoSetChannelValue === false) {
+      if (this.hasCurveLinkWithUID(cl.uid)) {
+      console.error('adding existing');
+      debugger;
+    }
       this.curveLinkList.push(cl);
-      if(!cl.playNow){
-        debugger
+      if (!cl.playNow) {
+        debugger;
       }
-      if(doRestart){cl.playNow()}
-    }
-  else{
-    console.error('re-add curve link')
+      if (doRestart) {cl.playNow(); }
+    } else {
+    console.error('re-add curve link');
   }
-  return cl
+    return cl;
 }
 
-@RemoteFunction({sharedFunction:true})
-public createCurveLink(c:CurveBaseType, ch: ChannelBase,uid:string) {
-  if(this.removeChannel(ch)){
-    console.warn('reassingn channel curveLink')
+@RemoteFunction({sharedFunction: true})
+public createCurveLink(c: CurveBaseType, ch: ChannelBase, uid: string) {
+  if (this.removeChannel(ch)) {
+    console.warn('reassingn channel curveLink');
   }
-  return this.addCurveLink(new CurveLink(c, ch,uid))
+  return this.addCurveLink(new CurveLink(c, ch, uid));
 }
 
 

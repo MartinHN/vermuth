@@ -71,15 +71,17 @@ export default class Sequencer extends Vue {
     return this.playedIdx === i ? (this.isPlayingSeq ? 'green' : 'lightgreen') : '';
   }
 
-  get togglePlay() {
-    return this.globalTransport.isPlaying;
-  }
+
   get seqList() {
     return this.sequenceList.listGetter;
   }
 
   get seqPlayer() {
     return rootState.sequencePlayer;
+  }
+
+  get togglePlay() {
+    return this.globalTransport.isPlaying;
   }
   set togglePlay(v: boolean) {
     if (v) {

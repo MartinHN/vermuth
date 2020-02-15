@@ -22,7 +22,7 @@ export class Sequence {
   public hold: number = 0;
   public timeOut: number = 0;
   public stateName: string = 'none';
-  
+
 
   @nonEnumerable()
   public __state?: State;
@@ -72,84 +72,82 @@ const blackSeq = new Sequence('black', blackState);
 export class SequenceList {
 
   @SetAccessible({readonly: true})
-  private list = new Array<Sequence>()
-  
-  constructor(){
+  private list = new Array<Sequence>();
+
+  constructor() {
   }
-  configureFromObj(ob:any){
+  public configureFromObj(ob: any) {
     this.clearSequences();
     (ob.list || []).map((e: any) => this.list.push(Sequence.createFromObj(e)));
   }
 
-  public get listGetter(){
-    return this.list
+  public get listGetter() {
+    return this.list;
   }
 
-  insertAt(s:Sequence,i:number){
-    if(i>=0 || i <= this.list.length){
+  public insertAt(s: Sequence, i: number) {
+    if (i >= 0 || i <= this.list.length) {
       const ii = this.list.findIndex((ss) => ss.name === s.name);
       if (ii !== -1) {
         s.name = s.name + '.';
       }
-      if(i===this.list.length){
-        this.list.push(s)
+      if (i === this.list.length) {
+        this.list.push(s);
+      } else {
+        this.list.splice (i, 0, s);
       }
-      else{
-        this.list.splice (i,0,s)
-      }
-    }
-    else{
-      console.error('invalid index',i)
+    } else {
+      console.error('invalid index', i);
     }
   }
-  getAtIdx(i:number){
-    return this.list[i]
+  public getAtIdx(i: number) {
+    return this.list[i];
   }
-  indexOf(s:Sequence){
-    return this.list.indexOf(s)
+  public indexOf(s: Sequence) {
+    return this.list.indexOf(s);
   }
-  appendSequence(s:Sequence){
-    this.insertAt(s,this.list.length)
+  public appendSequence(s: Sequence) {
+    this.insertAt(s, this.list.length);
   }
-  remove(s:Sequence){
-    const i = this.list.indexOf(s)
-    if(i>=0){
-      this.list.splice (i,1)
+  public remove(s: Sequence) {
+    const i = this.list.indexOf(s);
+    if (i >= 0) {
+      this.list.splice (i, 1);
     }
   }
 
-  setSeqIdx(s:Sequence,i:number){
-    const ii = this.list.indexOf(s)
-    if(ii>=0){
-      this.remove(s)
-      i = Math.min(this.list.length-1,Math.max(0,i))
-      this.insertAt(s,i)
+  public setSeqIdx(s: Sequence, i: number) {
+    const ii = this.list.indexOf(s);
+    if (ii >= 0) {
+      this.remove(s);
+      i = Math.min(this.list.length - 1, Math.max(0, i));
+      this.insertAt(s, i);
     }
   }
 
-  swap(a:Sequence,b:Sequence){
-    const ia = this.list.indexOf(a)
-    const ib = this.list.indexOf(b)
+  public swap(a: Sequence, b: Sequence) {
+    const ia = this.list.indexOf(a);
+    const ib = this.list.indexOf(b);
     this.list[ia] = this.list.splice(ib, 1, this.list[ia])[0];
   }
 
-  up(s:Sequence){
-    const prev = this.list.indexOf(s)-1
-    if(prev>=0){this.swap(s,this.list[prev]);}
+  public up(s: Sequence) {
+    const prev = this.list.indexOf(s) - 1;
+    if (prev >= 0) {this.swap(s, this.list[prev]); }
   }
-  down(s:Sequence){
-    const next = this.list.indexOf(s)+1
-    if(next<this.list.length){this.swap(s,this.list[next]);}
+  public down(s: Sequence) {
+    const next = this.list.indexOf(s) + 1;
+    if (next < this.list.length) {this.swap(s, this.list[next]); }
   }
-  find(f:(s:Sequence)=>boolean){
-    return this.list.find(f)
+  public find(f: (s: Sequence) => boolean) {
+    return this.list.find(f);
   }
 
-  clearSequences(){
-    this.list.splice(0,this.list.length)
+  public clearSequences() {
+    this.list.splice(0, this.list.length);
   }
-  get length(){
-    return this.list.length
+  get length() {
+    return this.list.length;
   }
 
 }
@@ -162,12 +160,9 @@ interface RootProvider {
 
 @AccessibleClass()
 export class SequencePlayerClass {
-  
-  private constructor(){}
-  private static _instance:SequencePlayerClass|undefined
-  static get i():SequencePlayerClass{ 
-    if(!SequencePlayerClass._instance){
-      SequencePlayerClass._instance=new SequencePlayerClass();
+  static get i(): SequencePlayerClass {
+    if (!SequencePlayerClass._instance) {
+      SequencePlayerClass._instance = new SequencePlayerClass();
     }
     return SequencePlayerClass._instance;
   }
@@ -181,37 +176,40 @@ export class SequencePlayerClass {
     return this._rootProvider ? this._rootProvider.sequenceList : new SequenceList();
   }
 
+  public get isPlaying() {
+    return this.pisPlaying;
+  }
+
+
+  public get curPlayedIdx() {
+    return this.pcurPlayedIdx;
+  }
+  public set curPlayedIdx(v: number) {
+    if (v > 0 && v < this.sequenceList.length) {
+      this.goToSequence(this.sequenceList.getAtIdx(v));
+    }
+  }
+  private static _instance: SequencePlayerClass|undefined;
+
 
 
   public curSeq: Sequence = blackSeq;
   public nextSeq: Sequence = blackSeq;
-  @RemoteValue()
-  private pcurPlayedIdx = -1
 
-  @RemoteValue()
-  private pisPlaying = false
 
-  public get isPlaying(){
-    return this.pisPlaying
-  }
-
-  
-  public get curPlayedIdx(){
-    return this.pcurPlayedIdx
-  }
-  public set curPlayedIdx(v:number){
-    if(v>0 && v < this.sequenceList.length){
-      this.goToSequence(this.sequenceList.getAtIdx(v))
-    }
-  }
-
-  
 
   @RemoteValue()
   public playState: string = 'stopped';
+  @RemoteValue()
+  private pcurPlayedIdx = -1;
+
+  @RemoteValue()
+  private pisPlaying = false;
 
   @nonEnumerable()
   private _rootProvider?: RootProvider = undefined;
+
+  private constructor() {}
 
   @RemoteFunction({sharedFunction: true})
   public goToStateNamed(name: string, timeIn: number, opts?: {dimMaster?: number}, cb?: () => void): void {
@@ -249,7 +247,7 @@ export class SequencePlayerClass {
      console.error('setting empty root');
      debugger;
    }
-   this._rootProvider = rootProvider;
+    this._rootProvider = rootProvider;
  }
 
  @RemoteFunction({sharedFunction: true})
@@ -259,23 +257,23 @@ export class SequencePlayerClass {
     return this.stateList.states[n];
   };
 
-  const nIdx = this.sequenceList.indexOf(seq)
-  if(nIdx>=0){
-    this.pcurPlayedIdx=nIdx;
-    this.pisPlaying=true;
+  const nIdx = this.sequenceList.indexOf(seq);
+  if (nIdx >= 0) {
+    this.pcurPlayedIdx = nIdx;
+    this.pisPlaying = true;
   }
 
   // const timeOut =  this.curSeq.timeOut*1000;
   const timeIn =  this.nextSeq.timeIn ;
   const nextState = this.nextSeq.resolveState(stateResolver);
   if (nextState) {
-   const dimMaster = opts?opts.dimMaster!==undefined?opts.dimMaster:1:1
-   this.goToStates([nextState], this.nextSeq.timeIn, {dimMasters:[dimMaster]}, 
-    (...args:any[])=>{
-      doSharedFunction(()=>{
-        this.pisPlaying=false;
-        if(cb){cb(...args);}
-      })
+   const dimMaster = opts ? opts.dimMaster !== undefined ? opts.dimMaster : 1 : 1;
+   this.goToStates([nextState], this.nextSeq.timeIn, {dimMasters: [dimMaster]},
+    (...args: any[]) => {
+      doSharedFunction(() => {
+        this.pisPlaying = false;
+        if (cb) {cb(...args); }
+      });
     });
  }
 }
@@ -283,37 +281,37 @@ export class SequencePlayerClass {
 @RemoteFunction({sharedFunction: true})
 private goToStates(nextStates: State[], timeIn: number, opts?: {dimMasters?: number[]}, cb?: any) {
   const res = 100; // ms between steps
-  
+
 
   if (nextStates && nextStates.length) {
     const dimMasters = opts ? opts.dimMasters !== undefined ? opts.dimMasters : [] : [];
-    for(let i = dimMasters.length ; i<nextStates.length ; i++){
-      dimMasters.push(1)
+    for (let i = dimMasters.length ; i < nextStates.length ; i++) {
+      dimMasters.push(1);
     }
     const transitionTime = Math.max((res + 1) / 1000 , Math.max(this.curSeq.timeOut, timeIn));
-    stopTimer('seqTransition') // will remove any unused curves from merged states
-    const rsl = StateList.mergeStateList(nextStates,this.stateList.getCurrentFullFixtureList(),this.stateList.states,dimMasters)
+    stopTimer('seqTransition'); // will remove any unused curves from merged states
+    const rsl = StateList.mergeStateList(nextStates, this.stateList.getCurrentFullFixtureList(), this.stateList.states, dimMasters);
     const mergedState = new MergedState(rsl);
     mergedState.checkIntegrity();
     doTimer('seqTransition', transitionTime * 1000.0, res,
       (total: number, t: number) => {
         let pct = t * 1.0 / total;
-        pct = Math.max(0,Math.min(1,pct))
+        pct = Math.max(0, Math.min(1, pct));
         // const time = t * res;
         // const pctIn = timeIn > 0 ? (1 - Math.max(0, (timeIn - time) / timeIn)) : 1;
         // const pctOut = timeOut>0?Math.max(0,(timeOut-time)/timeOut):0;
-        doSharedFunction(()=>
-          mergedState.applyCrossfade(pct)
-          )
+        doSharedFunction(() =>
+          mergedState.applyCrossfade(pct),
+          );
       },
-      
-      ()=>{
-        doSharedFunction(()=>{
+
+      () => {
+        doSharedFunction(() => {
           mergedState.endCB();
-          if(cb){cb();};
-        })
+          if (cb) {cb(); }
+        });
       },
-      )
+      );
 
   }
 }

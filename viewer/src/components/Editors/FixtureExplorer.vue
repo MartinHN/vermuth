@@ -94,7 +94,7 @@ export default class FixtureExplorer extends Vue {
     let filtered = FixtureFactory.allFixtureDefsFlatList;
     const manuFilter = this.selectedFixtureManufacturer;
     if (manuFilter !== 'All') {
-      filtered = filtered.filter((e) => e.manufacturer == manuFilter);
+      filtered = filtered.filter((e) => e.manufacturer === manuFilter);
     }
     return filtered;
   }

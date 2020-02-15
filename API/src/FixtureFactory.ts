@@ -72,13 +72,33 @@ export class FixtureDef {
 
 @AccessibleClass()
 export class FixtureFactoryClass  {
-  private __factoryInited = false;
-  private static _instance : FixtureFactoryClass|undefined;
-  private constructor() {}
-  static get i():FixtureFactoryClass{ 
-    if(!FixtureFactoryClass._instance){FixtureFactoryClass._instance=new FixtureFactoryClass();}
+  static get i(): FixtureFactoryClass {
+    if (!FixtureFactoryClass._instance) {FixtureFactoryClass._instance = new FixtureFactoryClass(); }
     return FixtureFactoryClass._instance;
   }
+
+  public get allFixtureDefsByType() {
+    this.checkInited();
+    return this.__fixtureDefs;
+  }
+  public get allFixturesByManufacturers() {
+    this.checkInited();
+    const allF = this.allFixtureDefsFlatList;
+    const res: {[id: string]: FixtureDef[]} = {};
+    allF.map((f) => {const man  = f.manufacturer; res[man] ? res[man].push(f) : (res[man] = [f]); });
+    return res;
+  }
+  public get allFixtureDefsFlatList() {
+    const res = new Array<FixtureDef>();
+    for (const cl of Object.values(this.__fixtureDefs)) {
+      for (const f of Object.values(cl)) {
+        res.push(f);
+      }
+    }
+    return res;
+  }
+  private static _instance: FixtureFactoryClass|undefined;
+  private __factoryInited = false;
 
   @RemoteValue((thisObj, v) => {
     for (const [fact, fList] of Object.entries(v as FixtureFactoryClass['__fixtureDefs'])) {
@@ -88,6 +108,7 @@ export class FixtureFactoryClass  {
     }
   })
   private __fixtureDefs: {[id: string]: {[id: string]: FixtureDef}}  = {};
+  private constructor() {}
 
 
   public async init(paths: string[] = []) {
@@ -134,27 +155,6 @@ export class FixtureFactoryClass  {
     if (!Object.keys(this.__fixtureDefs).length) {
       throw new Error('trying to generate fixtureKey before init');
     }
-  }
-
-  public get allFixtureDefsByType() {
-    this.checkInited();
-    return this.__fixtureDefs;
-  }
-  public get allFixturesByManufacturers() {
-    this.checkInited();
-    const allF = this.allFixtureDefsFlatList;
-    const res: {[id: string]: FixtureDef[]} = {};
-    allF.map((f) => {const man  = f.manufacturer; res[man] ? res[man].push(f) : (res[man] = [f]); });
-    return res;
-  }
-  public get allFixtureDefsFlatList() {
-    const res = new Array<FixtureDef>();
-    for (const cl of Object.values(this.__fixtureDefs)) {
-      for (const f of Object.values(cl)) {
-        res.push(f);
-      }
-    }
-    return res;
   }
 
 

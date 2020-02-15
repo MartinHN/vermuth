@@ -1,7 +1,7 @@
 import {Easing, EasingFactory, LinearEasing} from './Easings/easings';
 import {Point} from './Utils2D';
 import {EventEmitter } from 'events';
-import {uuidv4} from "./Utils";
+import {uuidv4} from './Utils';
 import {nonEnumerable, RemoteValue , AccessibleClass, SetAccessible, RemoteFunction} from './ServerSync';
 
 
@@ -113,16 +113,16 @@ export class KeyFrame<T extends NumOrVec > {
 
 export interface CurveBaseI extends EventEmitter {
   name: string;
-  uid:string;
+  uid: string;
   span: number;
-  
-  getValueAt(t:number): any;
+
+  getValueAt(t: number): any;
   configureFromObj(o: any): void;
   toObj(): any;
-  addConsumer(c:any):void;
-  removeConsumer(c:any):void;
-  hasConsumers():boolean;
-  scaleToSpan(v:number):void;
+  addConsumer(c: any): void;
+  removeConsumer(c: any): void;
+  hasConsumers(): boolean;
+  scaleToSpan(v: number): void;
   // goToPct(pct:number):void;
 }
 
@@ -132,86 +132,86 @@ function notImplemented() {
 
 }
 
-let curveNum = 0;
+const curveNum = 0;
 export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBaseI {
+
+  get frames() {return this._frames; }
+
+
+  get length() {return this.frames.length; }
+
+
+  public set span(v: number) {
+    if (v <= 0) {
+      debugger;
+      console.error('can\'t set null span');
+      v = 1;
+    }
+
+    this.pspan  = v;
+
+  }
+  public get span() {
+    return this.pspan;
+  }
+
+  public uid: string;
+  public pspan: number = 1;
+
+  @nonEnumerable()
+  public consumers = new Array<any>();
   constructor(
     public name: string,
     private _frames: Array<KeyFrame<T>> = new Array<KeyFrame<T>>(),
-    uid?:string) {
+    uid?: string) {
     super();
     if (_frames.length === 0) {
       this.add(new KeyFrame<T>(0, 0 as T));
       this.add(new KeyFrame<T>(1000, 1 as T));
     }
     this.autoDuration();
-    this.uid=uid||uuidv4()
-    if(uid && CurveStore.hasUID(uid)){
-      console.error("re adding existing uid")
+    this.uid = uid || uuidv4();
+    if (uid && CurveStore.hasUID(uid)) {
+      console.error('re adding existing uid');
       debugger;
     }
     CurveStore.add(this);
   }
 
-  get frames() {return this._frames; }
-
-  
-  get length() {return this.frames.length; }
-  
-  public uid:string;
-  public pspan: number = 1;
-
-  scaleToSpan(v:number){
-    if(v<=0){
-      debugger
-      console.error("can't set null span")
-      v= 1
+  public scaleToSpan(v: number) {
+    if (v <= 0) {
+      debugger;
+      console.error('can\'t set null span');
+      v = 1;
     }
-    const ratio = v/this.pspan
-    this.span = v
-    this._frames.map(f=>f.position=f.position*ratio)
-    
-    
-  }
+    const ratio = v / this.pspan;
+    this.span = v;
+    this._frames.map((f) => f.position = f.position * ratio);
 
 
-  public set span(v:number){
-    if(v<=0){
-      debugger
-      console.error("can't set null span")
-      v = 1
+  }
+
+  public addConsumer(c: any) {
+    if (this.consumers.indexOf(c) >= 0) {
+      debugger;
+      console.error('consumer already registered');
+      return;
     }
-    
-    this.pspan  = v
-    
+    this.consumers.push(c);
   }
-  public get span(){
-    return this.pspan
-  }
-  
-  @nonEnumerable()
-  public consumers = new Array<any>();
-  
-  addConsumer(c:any){
-    if(this.consumers.indexOf(c)>=0){
-      debugger
-      console.error('consumer already registered')
-      return
+  public removeConsumer(c: any) {
+    const i = this.consumers.indexOf(c);
+    if (i < 0) {
+
+      console.error('consumer not registered');
+      return;
     }
-    this.consumers.push(c)
+    this.consumers.splice(i, 1);
   }
-  removeConsumer(c:any){
-    const i = this.consumers.indexOf(c)
-    if(i<0){
-      
-      console.error('consumer not registered')
-      return
-    }
-    this.consumers.splice(i,1)
+  public hasConsumers() {
+    return this.consumers.length > 0;
   }
-  hasConsumers(){
-    return this.consumers.length>0
-  }
-  
+
   public configureFromObj(o: any) {
     this.clear();
     this.name = o.name;
@@ -221,9 +221,9 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
       k.configureFromObj(f);
       this.add(k);
     });
-    this.span = o.span
-    CurveStore.remove(this)
-    this.uid = o.uid
+    this.span = o.span;
+    CurveStore.remove(this);
+    this.uid = o.uid;
     CurveStore.add(this);
 
   }
@@ -231,12 +231,12 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
 
     return {
       name: this.name,
-      uid:this.uid,
-      span:this.span,
+      uid: this.uid,
+      span: this.span,
       _frames: this._frames.map((f) => f.toObj()),
     };
   }
-  
+
   public autoDuration() {
     if (this.frames.length > 1) {
       const last = this.frames[this.frames.length - 1];
@@ -256,7 +256,7 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
       return this._frames[i - 1];
     }
   }
-  
+
 
   public getValueAt(position: number): NumOrVec {
     const fr = this.getKeyFramesForPosition(position);
@@ -276,7 +276,7 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
     this.frames.push(c);
     this.frames.sort((a, b) => a.position - b.position);
     c.setParentCurve(this);
-    
+
     return this;
   }
   public remove(c: KeyFrame<T>) {
@@ -293,7 +293,7 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
     if (child.position > this.span) {
       this.span = child.position;
     }
-    
+
 
   }
 
@@ -362,26 +362,29 @@ public getKeyFramesForPosition(position: number): {start: KeyFrame<T>|undefined,
 
 }
 
-type CurveBaseType = CurveBaseI
+type CurveBaseType = CurveBaseI;
 @AccessibleClass()
 export class CurveStoreClass  {
-  private static _instance :CurveStoreClass|undefined
-  private constructor(){}
-  static get i():CurveStoreClass{ 
-    if(!CurveStoreClass._instance){CurveStoreClass._instance=new CurveStoreClass();}
+  static get i(): CurveStoreClass {
+    if (!CurveStoreClass._instance) {CurveStoreClass._instance = new CurveStoreClass(); }
     return CurveStoreClass._instance;
   }
+  public get curveList() {
+    return Object.values(this.curves);
+  }
+  private static _instance: CurveStoreClass|undefined;
 
   @SetAccessible({readonly: true})
-  private curves :{[id:string]:CurveBaseType} = {};
+  private curves: {[id: string]: CurveBaseType} = {};
+  private constructor() {}
 
   public configureFromObj(o: any) {
     while (this.curveList.length) {this.remove(this.curveList[0]); }
     if (o && Array.isArray(o)) {
       for (const c of o) {
         const cu = new Curve<number>('new');
-        cu.configureFromObj(c);//add to the store
-        //if (!this.curves.some((ccu) => cu.name === ccu.name)) {this.curves.push(cu); }
+        cu.configureFromObj(c); // add to the store
+        // if (!this.curves.some((ccu) => cu.name === ccu.name)) {this.curves.push(cu); }
       }
     }
    }
@@ -390,45 +393,42 @@ export class CurveStoreClass  {
     this.removeUnused();
     for (const c of Object.values(this.curveList)) {
       res.push(c.toObj());
-      
+
     }
     return res;
   }
 
-  public removeUnused(){
-    this.curveList.splice(0, this.curveList.length,...this.curveList.filter(c=>c.hasConsumers()));
+  public removeUnused() {
+    this.curveList.splice(0, this.curveList.length, ...this.curveList.filter((c) => c.hasConsumers()));
   }
-  
+
   @RemoteFunction()
-  public addNewCurve(name:string,uid:string){
-    const cu = new Curve<number>(name,new Array<KeyFrame<number>>(),uid);
+  public addNewCurve(name: string, uid: string) {
+    const cu = new Curve<number>(name, new Array<KeyFrame<number>>(), uid);
     this.add(cu);
-    return cu
+    return cu;
   }
 
   public add(c: CurveBaseType) {
-    const oldC = this.curves[c.uid]
-    if(oldC){this.remove(oldC);}
-    if(c.uid){
-      this.curves[c.uid]=c;
-      return c
+    const oldC = this.curves[c.uid];
+    if (oldC) {this.remove(oldC); }
+    if (c.uid) {
+      this.curves[c.uid] = c;
+      return c;
     }
-    
-    console.error("no uid on curve")
-    return undefined
-  }
-  public hasUID(u:string){return Object.keys(this.curves).includes(u)}
 
-  public remove(c:CurveBaseType){
-    if(this.curves[c.uid]){
-      delete this.curves[c.uid]
+    console.error('no uid on curve');
+    return undefined;
+  }
+  public hasUID(u: string) {return Object.keys(this.curves).includes(u); }
+
+  public remove(c: CurveBaseType) {
+    if (this.curves[c.uid]) {
+      delete this.curves[c.uid];
     }
   }
-  public get curveList(){
-    return Object.values(this.curves)
-  }
-  public getCurveWithUID(uid:string){
-    return this.curves[uid]
+  public getCurveWithUID(uid: string) {
+    return this.curves[uid];
   }
   public getCurveNamed(name: string): CurveBaseType | undefined {
     return this.curveList.find((e: CurveBaseType) => e.name === name);

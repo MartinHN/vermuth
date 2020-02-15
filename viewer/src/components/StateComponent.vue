@@ -1,45 +1,45 @@
 <template>
-  <!-- <v-container class="main" fluid pa-1> -->
-    <div>
-      <v-row no-gutters >
-        <v-col cols=10 >
-          <v-list dense class="overflow-y-auto" style=max-height:200px >
-            <!-- <v-subheader>Presets</v-subheader> -->
-            <v-list-item-group v-model="selectedStateIdx" > <!-- v-model="item" color="primary"> -->
-              <v-list-item v-for="(s,i) in stateNames" :key=s.id>
-                <v-list-item-content >
-                  <v-list-item-title v-html="s" ></v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
-          </v-list>
-        </v-col>
-        <v-col cols=2>
-          <div id="stateActions">
-            <Button class="add" @click="saveNewState" text="save"></Button>
-            <Button class="edit" @click="editState" text="edit"></Button>
-            <Button class="rename" @click="renameStatePrompt" text="rename"></Button>
-            <Button class="remove" @click="removeStatePrompt" text="-" color='red'></Button>
-            <v-select label=linkedStates multiple  v-model="linkedStateNames" style="width:100%" :items=linkableStateNames>
-              <template v-slot:item="{item:item}">
-                {{item}}
-              </template>
-            </v-select>
+  
+  <div>
+    <v-row no-gutters >
+      <v-col cols=10 >
+        <v-list dense class="overflow-y-auto" style=max-height:200px >
+          <!-- <v-subheader>Presets</v-subheader> -->
+          <v-list-item-group v-model="selectedStateIdx" > <!-- v-model="item" color="primary"> -->
+            <v-list-item v-for="(s,i) in stateNames" :key=s.id>
+              <v-list-item-content >
+                <v-list-item-title v-html="s" ></v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+      </v-col>
+      <v-col cols=2>
+        <div id="stateActions">
+          <Button class="add" @click="saveNewState" text="save"></Button>
+          <Button class="edit" @click="editState" text="edit"></Button>
+          <Button class="rename" @click="renameStatePrompt" text="rename"></Button>
+          <Button class="remove" @click="removeStatePrompt" text="-" color='red'></Button>
+          <v-select label=linkedStates multiple  v-model="linkedStateNames" style="width:100%" :items=linkableStateNames>
+            <template v-slot:item="{item:item}">
+              {{item}}
+            </template>
+          </v-select>
 
-          </div>
-        </v-col>
+        </div>
+      </v-col>
 
-      </v-row>
+    </v-row>
 
-      <Modal v-if=showStateEditor @close="showStateEditor=false">
-        <h3  slot="header" >StateEditor : {{editedState?editedState.name:"no state"}}</h3>
-        <StateEditor  slot="body" :state=editedState></StateEditor>
-      </Modal>
-      <!-- </v-container> -->
-    </div>
-  </template>
+    <Modal v-if=showStateEditor @close="showStateEditor=false">
+      <h3  slot="header" >StateEditor : {{editedState?editedState.name:"no state"}}</h3>
+      <StateEditor  slot="body" :state=editedState></StateEditor>
+    </Modal>
+    <!-- </v-container> -->
+  </div>
+</template>
 
-  <script lang="ts">
+<script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import {  Action, Getter , Mutation , namespace} from 'vuex-class';
 import Button from '@/components/Inputs/Button.vue';
@@ -108,9 +108,7 @@ export default class StateComponent extends Vue {
     return res;
   }
 
-  get linkedStateList() {
-    return this.linkedStateNames.map((e) => new LinkedState(e, 1));
-  }
+
   public set linkedStateNames(v: string[]) {
     if (this.selectedState) {
       const res = v.map((e) => new LinkedState(e, 1));
@@ -119,6 +117,9 @@ export default class StateComponent extends Vue {
     }
   }
 
+  get linkedStateList() {
+    return this.linkedStateNames.map((e) => new LinkedState(e, 1));
+  }
   public editState() {
     if (this.selectedState == null ) {
 

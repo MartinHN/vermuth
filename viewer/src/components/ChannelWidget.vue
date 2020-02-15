@@ -49,11 +49,11 @@ import Modal from '@/components/Utils/Modal.vue';
 import FullCurveEditor from '@/components/Editors/FullCurveEditor.vue';
 import { ChannelBase } from '@API/Channel';
 import UniversesMethods from '../store/universes';
-import {Curve,CurveStore, CurveBaseI} from '@API/Curve';
-import {CurvePlayer,CurveLink} from '@API/CurvePlayer';
-import {uuidv4} from "@API/Utils"
+import {Curve, CurveStore, CurveBaseI} from '@API/Curve';
+import {CurvePlayer, CurveLink} from '@API/CurvePlayer';
+import {uuidv4} from '@API/Utils';
 
-import {nextTick} from '@API/MemoryUtils'
+import {nextTick} from '@API/MemoryUtils';
 
 const universesModule = namespace('universes');
 
@@ -81,18 +81,18 @@ export default class ChannelWidget extends Vue {
   @Prop({default: false})    public showValue!: boolean;
   @Prop({default: false}) public showProps!: boolean;
   @Prop() public overrideName?: string;
-  
+
   private showCurveEditor = false;
   public editCurve() {
     let curveLink = CurvePlayer.getCurveLinkForChannel(this.channelProp);
     if (!curveLink) {
-      const curve = CurveStore.addNewCurve(this.channelProp.name,uuidv4());
-      curveLink=CurvePlayer.createCurveLink(curve, this.channelProp,uuidv4());
+      const curve = CurveStore.addNewCurve(this.channelProp.name, uuidv4());
+      curveLink = CurvePlayer.createCurveLink(curve, this.channelProp, uuidv4());
     }
     // this.pcurveLink = curveLink || null;
-    nextTick(()=>{
+    nextTick(() => {
     this.showCurveEditor = true;
-  })
+  });
   }
 
   public deleteCurve() {
@@ -110,9 +110,9 @@ export default class ChannelWidget extends Vue {
   }
 
 
-  
-  public get curveLink(){
-    return  CurvePlayer.getCurveLinkForChannel(this.channelProp)
+
+  public get curveLink() {
+    return  CurvePlayer.getCurveLinkForChannel(this.channelProp);
     // return this.pcurveLink || this.getCurveLink()
   }
 }

@@ -1,7 +1,7 @@
 
 import { Universe } from './Universe';
 import { FixtureFactory } from './FixtureFactory';
-import { Sequence, sequencePlayer,SequencePlayerClass, SequenceList } from './Sequence';
+import { Sequence, sequencePlayer, SequencePlayerClass, SequenceList } from './Sequence';
 import { StateList } from './State';
 import { DMXControllerI } from './DMXControllerI';
 import { bindClientSocket, RemoteFunction, SetAccessible, setChildAccessible, AccessibleClass, resolveAccessible, RemoteValue , treeEvents} from './ServerSync';
@@ -77,26 +77,27 @@ export class RootStateType {
 
     if (ob.sequenceList !== undefined) {
     }
-    this.sequenceList.configureFromObj(ob.sequenceList || {})
-    
+    this.sequenceList.configureFromObj(ob.sequenceList || {});
+
+
+
+    if (ob.curveStore !== undefined) {
+    }
+
+    this.curveStore.configureFromObj(ob.curveStore || {});
+
+    if (ob.curvePlayer !== undefined) {
+    }
+    this.curvePlayer.configureFromObj(ob.curvePlayer || {});
 
     if (ob.stateList !== undefined) {
     }
     this.stateList.configureFromObj(ob.stateList || {});
 
-    if (ob.curveStore !== undefined) {
-    }
-    
-    this.curveStore.configureFromObj(ob.curveStore || {});
-
-if (ob.curvePlayer !== undefined) {
-    }
-    this.curvePlayer.configureFromObj(ob.curvePlayer || {});
-
     if (ob.dmxController !== undefined && this.dmxController) {
     }
     if (this.dmxController) {this.dmxController.configureFromObj(ob.dmxController || {}); } else {console.error('dmxController not instanciated'); }
-    
+
 
     bindClientSocket('auto');
     this.__isConfigured = validObj;

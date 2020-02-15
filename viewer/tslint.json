@@ -5,7 +5,8 @@
   ],
   "linterOptions": {
     "exclude": [
-      "node_modules/**"
+      "node_modules/**",
+      "../API/**"
     ]
   },
   "rules": {
@@ -22,8 +23,7 @@
     "max-classes-per-file":10,
     "variable-name":false,
     "no-debugger":false,
-    "import-spacing":false,
-    "whitespace":false
+    "import-spacing":false
   },
   "jsRules": {
     "no-console": false

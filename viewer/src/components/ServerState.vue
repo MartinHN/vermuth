@@ -88,9 +88,5 @@ export default class ServerState extends Vue {
 
 
 <style scoped>
-* {
-  display : flex;
-  flex-direction: row;
-  min-width:100px;
-}
+
 </style>

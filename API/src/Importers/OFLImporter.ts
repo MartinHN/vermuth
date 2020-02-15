@@ -19,7 +19,7 @@ function getValidChannels(o: any) {
 function getConfigurations(o: any) {
   const res = {};
   for ( const m of Object.values(o.modes) as any[]) {
-    const hasTemplate = m.channels.some((e:any) => (e) && typeof(e) !== 'string');
+    const hasTemplate = m.channels.some((e: any) => (e) && typeof(e) !== 'string');
     if (!hasTemplate  ) { // ignore template for now
       res[m.name] = m.channels;
     }

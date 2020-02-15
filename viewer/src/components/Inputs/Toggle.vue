@@ -13,7 +13,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue , Watch} from 'vue-property-decorator';
-let count = 0
+let count = 0;
 @Component({})
 export default class Toggle extends Vue {
   @Prop()
@@ -25,27 +25,27 @@ export default class Toggle extends Vue {
  @Prop({default: false})
   public value  !: boolean ;
 
-  
+
 
   // public value: boolean = true;
   @Prop({default: 'transparent'})
   public color?: string;
 
 
-  private _uid=""
-  mounted(){
-    
-    count+=1
-    this._uid='toggle_'+count
+  private _uid = '';
+  public mounted() {
+
+    count += 1;
+    this._uid = 'toggle_' + count;
   }
   get displayedColor() {
     return this.value ? 'green' : this.color;
   }
-  private sendEv(type:string,ev:any){
-    //this.value = !!ev.target.checked
-    if(type!=="input"){ // osx webkit don't send input event....
-    this.$emit(type, ev.target.checked)
-    this.$emit("input", ev.target.checked)
+  private sendEv(type: string, ev: any) {
+    // this.value = !!ev.target.checked
+    if (type !== 'input') { // osx webkit don't send input event....
+    this.$emit(type, ev.target.checked);
+    this.$emit('input', ev.target.checked);
     }
   }
 }
