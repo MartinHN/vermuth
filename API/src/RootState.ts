@@ -1,7 +1,7 @@
 
 import { Universe } from './Universe';
 import { FixtureFactory } from './FixtureFactory';
-import { Sequence, sequencePlayer, SequenceList } from './Sequence';
+import { Sequence, sequencePlayer,SequencePlayerClass, SequenceList } from './Sequence';
 import { StateList } from './State';
 import { DMXControllerI } from './DMXControllerI';
 import { bindClientSocket, RemoteFunction, SetAccessible, setChildAccessible, AccessibleClass, resolveAccessible, RemoteValue , treeEvents} from './ServerSync';
@@ -9,6 +9,7 @@ import { buildEscapedJSON, buildEscapedObject } from './SerializeUtils';
 import {GlobalTransport} from './Time';
 import {CurvePlayer} from './CurvePlayer';
 import {CurveStore} from './Curve';
+
 
 @AccessibleClass()
 export class RootStateType {
@@ -85,6 +86,7 @@ export class RootStateType {
 
     if (ob.curveStore !== undefined) {
     }
+    
     this.curveStore.configureFromObj(ob.curveStore || {});
 
 if (ob.curvePlayer !== undefined) {

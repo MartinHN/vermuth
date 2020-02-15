@@ -1,31 +1,30 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "declaration":true,
-    "strict":false,
-    "outDir": "dist",
-    "sourceMap": false,
-    "inlineSources": true,
-    "inlineSourceMap": true,
+    "target": "ES2019",
+    "module": "ESNext",
     "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata":true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "allowJs":false,
     "lib": [
-      "esnext",
-      "dom",
-      "dom.iterable",
-      "scripthost"
-    ]
+    ],
+    "outDir": "dist",
+    "sourceMap": true,
+    "inlineSources": false,
+    "inlineSourceMap": false,
+    "experimentalDecorators":true,
+    "emitDecoratorMetadata":true,
+    "declaration":true,
+    "declarationDir":"dist/@types",
+    "esModuleInterop":true,
+    "strict":true,
+    "noImplicitAny":false,
+    "allowJs":true,
   },
   "include": [
-    "*.ts",
-    "**/*.ts"
+    "src/*.ts",
+    "src/*.js"
   ],
+
   "exclude": [
-    "dist/**"
+    "node_modules",
+    ".vscode"
   ]
 }

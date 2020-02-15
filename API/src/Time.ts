@@ -40,7 +40,14 @@ function getMs() {
   return  new Date().getTime();
 }
 
-class GlobalTransportClass extends EventEmitter {
+export class GlobalTransportClass extends EventEmitter {
+    private static _instance = new GlobalTransportClass()
+    private constructor(){
+    super()
+    this.start()
+  }
+  static get i(){return GlobalTransportClass._instance;}
+
   @nonEnumerable()
   public static timeGranularityMs = 20;
 
@@ -64,10 +71,6 @@ class GlobalTransportClass extends EventEmitter {
   private _time = 0;
 
 
-  constructor(){
-    super()
-    this.start()
-  }
 
   @RemoteValue((parent: any, v: any) => {
     doSharedFunction(() => parent.emit('isPlaying', v));
@@ -119,7 +122,7 @@ class GlobalTransportClass extends EventEmitter {
 }
 
 }
-export const GlobalTransport = new GlobalTransportClass();
+export const GlobalTransport = GlobalTransportClass.i;
 
 export class TimeListener {
   constructor(public name: string) {

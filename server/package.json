@@ -1,5 +1,5 @@
 {
-  "name": "vermuth",
+  "name": "vermuth-server",
   "version": "1.0.0",
   "description": "light show control server",
   "main": "server.ts",
@@ -18,7 +18,7 @@
   "author": "martinHN",
   "license": "ISC",
   "dependencies": {
-    "adm-zip": "^0.4.13",
+    "adm-zip": "^0.4.14",
     "connect-history-api-fallback": "^1.6.0",
     "detect-rpi": "^1.4.0",
     "dmx": "github:martinHN/dmx#master",
@@ -26,9 +26,9 @@
     "http-proxy": "^1.18.0",
     "json-diff": "^0.5.4",
     "module-alias": "^2.2.2",
-    "osc": "^2.3.1",
+    "osc": "^2.4.0",
     "pigpio": "^2.0.0",
-    "serialport": "^8.0.6",
+    "serialport": "^8.0.7",
     "socket.io": "^2.3.0"
   },
   "nodemonConfig": {
@@ -36,7 +36,8 @@
       "**/*.test.ts",
       "**/*.spec.ts",
       ".git",
-      "node_modules"
+      "node_modules",
+      "../API/node_modules"
     ],
     "watch": [
       "src",
@@ -47,11 +48,11 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.2",
-    "@types/node": "^12.12.25",
+    "@types/node": "^12.12.27",
     "@types/socket.io": "^2.1.4",
-    "@vue/cli-service": "^4.1.2",
+    "@vue/cli-service": "^4.2.2",
     "eslint": "^6.8.0",
-    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-import": "^2.20.1",
     "nodemon": "^1.19.4",
     "reflect-metadata": "^0.1.13",
     "ts-node": "^8.6.2",
@@ -64,6 +65,6 @@
   },
   "_moduleAliases": {
     "@": "dist/server/src",
-    "@API": "dist/API"
+    "@API": "dist/src/API"
   }
 }

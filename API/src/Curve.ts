@@ -1,7 +1,7 @@
 import {Easing, EasingFactory, LinearEasing} from './Easings/easings';
 import {Point} from './Utils2D';
 import {EventEmitter } from 'events';
-import {uuidv4} from "@API/Utils";
+import {uuidv4} from "./Utils";
 import {nonEnumerable, RemoteValue , AccessibleClass, SetAccessible, RemoteFunction} from './ServerSync';
 
 
@@ -356,8 +356,10 @@ public getKeyFramesForPosition(position: number): {start: KeyFrame<T>|undefined,
 
 type CurveBaseType = CurveBaseI
 @AccessibleClass()
-class CurveStoreClass  {
-
+export class CurveStoreClass  {
+  private static _instance = new CurveStoreClass()
+  private constructor(){}
+  static get i(){return CurveStoreClass._instance}
   @SetAccessible({readonly: true})
   private curves :{[id:string]:CurveBaseType} = {};
 
@@ -420,5 +422,5 @@ class CurveStoreClass  {
   }
 }
 
-export const CurveStore = new CurveStoreClass();
+export const CurveStore = CurveStoreClass.i;
 

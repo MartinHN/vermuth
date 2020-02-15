@@ -65,7 +65,7 @@ export default class App extends Vue {
 
   private removeOldIco() {
     const head = document.head || document.getElementsByTagName('head')[0];
-    const links = head.getElementsByTagName('link');
+    const links =  Array.from(head.getElementsByTagName('link'));
     for ( const l of links) {
 
     if (l.rel === 'icon' && (l.href.includes('32x32') || l.href.includes('16x16')) ) {

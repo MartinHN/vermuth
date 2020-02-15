@@ -123,7 +123,7 @@ export class Universe implements UniverseI {
     deleteProp(this.fixtures, f.name);
   }
   public getNextCirc(d: number, forbidden?: number[]): number {
-    const circsUsed = this.fixtureList.map((ff) => ff.channels).flat().map((ch) => ch.trueCirc).concat(forbidden || []);
+    const circsUsed = this.allChannels.map((ch) => ch.trueCirc).concat(forbidden || []);
     while (circsUsed.indexOf(d) !== -1) {d += 1; }
     return d;
   }
@@ -141,7 +141,11 @@ export class Universe implements UniverseI {
   }
 
   public get allChannels() {
-    return this.fixtureList.map((f) => f.channels).flat();
+    const res = new Array<ChannelBase>();
+    for(const f of this.fixtureList){
+      f.channels.map((c) => res.push(c));
+    }
+    return res;
   }
   public updateChannelsValues() {
     const chs = this.allChannels;

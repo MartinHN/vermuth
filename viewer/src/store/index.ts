@@ -222,7 +222,7 @@ const store: StoreOptions<RootVueState> = {
         const sessionState = getSessionObject();
         context.commit('states/saveCurrentState', {name: 'current'});
         context.commit('SET_SAVE_STATUS', 'Saving...');
-        setTimeout((e) => {
+        setTimeout(() => {
           if (context.state.savedStatus === 'Saving...') {
             context.commit('SET_SAVE_STATUS', 'SaveTimeout');
           }

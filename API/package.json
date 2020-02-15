@@ -1,9 +1,10 @@
 {
-  "name": "conduktor-API",
+  "name": "vermuth-API",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "",
+    "build:server": "webpack ",
+    "build:client": "IS_CLIENT=1 webpack ",
     "lint": "tslint --project . --fix"
   },
   "dependencies": {
@@ -19,12 +20,27 @@
     "@types/node": "^12.12.25",
     "@types/socket.io": "^2.1.4",
     "@types/socket.io-client": "^1.4.32",
+    "babel-preset-env": "^1.7.0",
+    "concurrently": "^5.1.0",
+    "fork-ts-checker-webpack-plugin": "^4.0.4",
+    "nodemon": "^2.0.2",
     "reflect-metadata": "^0.1.13",
+    "thread-loader": "^2.1.3",
+    "ts-node": "^8.6.2",
     "tsconfig-paths-webpack-plugin": "^3.2.0",
     "tslib": "^1.10.0",
-    "typescript": "^3.7.5"
+    "typescript": "^3.7.5",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11"
   },
   "engines": {
     "node": ">=0.10.3 <0.12"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "src"
+    ],
+    "ext": "ts",
+    "exec": "concurrently --handle-input \"npm:build:*\""
   }
 }

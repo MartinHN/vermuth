@@ -2,8 +2,8 @@ import {CurveBaseI, CurveStore, Curve} from './Curve';
 import {ChannelBase} from './Channel';
 import {GlobalTransport, TimeListener} from './Time';
 import { SetAccessible,nonEnumerable, RemoteValue , RemoteFunction, AccessibleClass} from './ServerSync';
-import rootState from "@API/RootState"
-import {uuidv4} from "@API/Utils";
+import rootState from "./RootState"
+import {uuidv4} from "./Utils";
 
 type CurveBaseType = CurveBaseI
 
@@ -236,7 +236,13 @@ class CurveLinkStoreClass{
 export const CurveLinkStore = new CurveLinkStoreClass()
 
 @AccessibleClass()
-class CurvePlayerClass extends TimeListener {
+export class CurvePlayerClass extends TimeListener {
+
+  private static _instance = new CurvePlayerClass()
+  private constructor() {
+    super('CurvePlayer');
+  }
+  static get i(){return CurvePlayerClass._instance}
 
   public curveLinkStore = CurveLinkStore
 
@@ -265,9 +271,7 @@ class CurvePlayerClass extends TimeListener {
 
   private readonly  curveLinkList= new Array<CurveLink>()  // not accessible
 
-  constructor() {
-    super('CurvePlayer');
-  }
+  
 
 
   public timeChanged(t: number) {
@@ -344,4 +348,4 @@ public createCurveLink(c:CurveBaseType, ch: ChannelBase) {
 
 }
 
-export const CurvePlayer = new CurvePlayerClass();
+export const CurvePlayer = CurvePlayerClass.i;

@@ -30,7 +30,8 @@ export function bindClientSocket(s: any) {
 
   if (s !== 'auto' && s) { // only on new socke
     const boundSocket = s;
-    if (!isClient) {
+    // if (!isClient) {
+      // #if IS_CLIENT
       const emitF = boundSocket.emit;
       const log = require('./Logger').default;
       console.log('highjacking server socket');
@@ -43,7 +44,8 @@ export function bindClientSocket(s: any) {
       };
 
       boundSocket.emit = nF;
-    } else {
+    // } else {
+      // #else
       const onevent = boundSocket.onevent;
 
       const rS = require('./RootState').default;
@@ -63,7 +65,8 @@ export function bindClientSocket(s: any) {
          // onevent.call(this, packet);      // additional call to catch-all
        };
      }
-   }
+     // #endif
+   // }
 
  }
  safeBindSocket(s);
@@ -854,32 +857,36 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
 
 const allAccessibles = new WeakSet<any>();
 
-type Constructable = new (...args: any[]) => any;
+// type Constructable = new (...args: any[]) => any;
 
-function extendClass<T extends Constructable>(BaseClass: T): typeof DerivedClass {
-  const DerivedClass = class extends BaseClass {};
+// function extendClass<T extends Constructable>(BaseClass: T): typeof DerivedClass {
+//   const DerivedClass = class extends BaseClass {};
 
-  return DerivedClass;
-}
+//   return DerivedClass;
+// }
 
-export function AccessibleClass() {
+// export function AccessibleClass() {
 
-  return <T extends Constructable>  (BaseClass: T) => {
-    return  new Proxy(BaseClass, {
-      construct(target, args) {
-        const res = Reflect.construct(target, args);
+//   return <T extends Constructable>  (BaseClass: T) => {
+//     return  new Proxy(BaseClass, {
+//       construct(target, args) {
+//         const res = Reflect.construct(target, args);
 
-        if (allAccessibles.has(res)) {
-          debugger;
-          console.error('recreating accessible');
-        }
-        allAccessibles.add(res);
+//         if (allAccessibles.has(res)) {
+//           debugger;
+//           console.error('recreating accessible');
+//         }
+//         allAccessibles.add(res);
 
-        // initAccessibles(this);
-        return res;
-      },
-    });
-  };
+//         // initAccessibles(this);
+//         return res;
+//       },
+//     });
+//   };
+// }
+export function AccessibleClass(){
+  return (constructor:Function)=>{}
+
 }
 
 

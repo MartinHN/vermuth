@@ -1,7 +1,7 @@
 import { FixtureBase } from './Fixture';
 import { ChannelBase } from './Channel';
 import { RemoteFunction, fetchRemote, RemoteValue, SetAccessible, isClientInstance, AccessibleClass, setChildAccessible, nonEnumerable } from './ServerSync';
-const fs = require('fs');
+
 
 export class FixtureDef {
   constructor(
@@ -69,10 +69,13 @@ export class FixtureDef {
 
 
 }
-@AccessibleClass()
-class FixtureFactoryClass  {
-  private __factoryInited = false;
 
+@AccessibleClass()
+export class FixtureFactoryClass  {
+  private __factoryInited = false;
+  private static _instance = new FixtureFactoryClass();
+  private constructor() {}
+  static get i(){return FixtureFactoryClass._instance}
 
   @RemoteValue((thisObj, v) => {
     for (const [fact, fList] of Object.entries(v as FixtureFactoryClass['__fixtureDefs'])) {
@@ -83,10 +86,6 @@ class FixtureFactoryClass  {
   })
   private __fixtureDefs: {[id: string]: {[id: string]: FixtureDef}}  = {};
 
-  constructor() {
-
-  }
-
 
   public async init(paths: string[] = []) {
 
@@ -95,12 +94,12 @@ class FixtureFactoryClass  {
     } else {
       if (!this.__factoryInited) {
         this.__factoryInited = true;
-
-        const basic =  require('./Importers/BasicImporter');
+        // #if !IS_CLIENT
+        const basic =  await import('./Importers/BasicImporter');
         this.__fixtureDefs.basic =  await basic.initFactory();
-        const ofl  = require('./Importers/OFLImporter');
+        const ofl  = await import('./Importers/OFLImporter');
         this.__fixtureDefs.ofl = await ofl.initFactory();
-
+        // #endif
       }
       Object.freeze(this.__fixtureDefs);
     }
@@ -185,4 +184,4 @@ class FixtureFactoryClass  {
 }
 
 
-export const FixtureFactory = new FixtureFactoryClass();
+export const FixtureFactory =  FixtureFactoryClass.i;

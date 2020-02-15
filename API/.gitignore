@@ -1,1 +1,4 @@
 dist/
+distPacked/
+gen/
+node_modules/

@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "commonjs",
+    "target": "ES2019",
+    "module": "ESNext",
+    "moduleResolution": "node",
     "lib": [
-      "esnext"
     ],
     "outDir": "dist",
     "sourceMap": true,
@@ -11,7 +11,6 @@
     "inlineSourceMap": false,
     "experimentalDecorators":true,
     "emitDecoratorMetadata":true,
-    "moduleResolution": "node",
     "esModuleInterop":true,
     "strict":true,
     "noImplicitAny":false,
@@ -19,18 +18,17 @@
     "baseUrl":"./src",
     "paths": {
       "@/*": ["./*"],
-      "@API/*": ["../../API/*"]
+      "@API/*": ["../../API/src/*"]
     },
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.js",
-    "../API/**/*.ts",
-    "../API/**/*.js",
+    "src/**/*.js"
   ],
 
   "exclude": [
     "node_modules",
+    "../API/node_modules/*",
     ".vscode"
   ]
 }

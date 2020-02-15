@@ -152,11 +152,11 @@ export default class Universes extends VuexModule {
 
 
   get usedCircs(): number[] {
-    return Array.from(new Set<number>(this.usedChannels.map( (ch) => ch.circ).flat()));
+    return Array.from(new Set<number>(this.usedChannels.map( (ch) => ch.circ)));
   }
 
   get usedChannels(): ChannelBase[] {
-    return this.universe.fixtureList.map((f) => f.channels).flat();
+    return this.universe.allChannels;
   }
 
   get grandMaster() {

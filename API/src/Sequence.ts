@@ -160,7 +160,10 @@ interface RootProvider {
 }
 
 @AccessibleClass()
-class SequencePlayer {
+export class SequencePlayerClass {
+  private static _instance  = new SequencePlayerClass()
+  private constructor(){}
+  static get i(){return SequencePlayerClass._instance}
 
   get stateList() {
     if (this._rootProvider === undefined) {console.error('stateListNotInited'); debugger; }
@@ -311,4 +314,4 @@ private goToStates(nextStates: State[], timeIn: number, opts?: {dimMasters?: num
 
 }
 
-export const sequencePlayer = new SequencePlayer();
+export const sequencePlayer = SequencePlayerClass.i;

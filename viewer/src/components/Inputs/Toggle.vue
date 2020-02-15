@@ -4,7 +4,7 @@
     <!-- <label :for="_uid" class="slider round">{{text}}</label> -->
 
 
-    <input :id="_uid" type="checkbox" :checked="value" @change="$emit('change', $event.target.checked)" @input="$emit('input', $event.target.checked)" :tabindex="focusable?-1:''" :readonly="!editable" >
+    <input :id="_uid" type="checkbox" :checked="value" @change="sendEv('change', $event)" @input="sendEv('input',$event)" :tabindex="focusable?-1:''" :readonly="!editable" >
     {{text}}</label>
 
     
@@ -13,25 +13,41 @@
 
 <script lang="ts">
 import { Component, Prop, Vue , Watch} from 'vue-property-decorator';
-
+let count = 0
 @Component({})
 export default class Toggle extends Vue {
   @Prop()
   public text?: string;
   @Prop({default: false})
-  public focusable?: boolean;
+  public focusable!: boolean;
   @Prop({default: true})
-  public editable?: boolean;
+  public editable!: boolean;
  @Prop({default: false})
-  public value  ?: boolean ;
+  public value  !: boolean ;
+
+  
+
   // public value: boolean = true;
   @Prop({default: 'transparent'})
   public color?: string;
 
+
+  private _uid=""
+  mounted(){
+    
+    count+=1
+    this._uid='toggle_'+count
+  }
   get displayedColor() {
     return this.value ? 'green' : this.color;
   }
-
+  private sendEv(type:string,ev:any){
+    //this.value = !!ev.target.checked
+    if(type!=="input"){ // osx webkit don't send input event....
+    this.$emit(type, ev.target.checked)
+    this.$emit("input", ev.target.checked)
+    }
+  }
 }
 </script>
 
@@ -47,7 +63,7 @@ export default class Toggle extends Vue {
 
 input {
   position: absolute;
-  left: -9999px;
+  left:-9999px;
 }
 
 label {

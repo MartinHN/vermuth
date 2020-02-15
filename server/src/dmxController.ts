@@ -24,7 +24,7 @@ import { AccessibleClass, nonEnumerable, RemoteValue } from '@API/ServerSync';
 class DMXController implements DMXControllerI {
 
   get activeChannels() {
-    return rootState.universe.fixtureList.map((e) => e.channels).flat();
+    return rootState.universe.allChannels;
   }
   @RemoteValue((self, n: string) => {
     self.connectToDevice();

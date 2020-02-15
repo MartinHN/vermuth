@@ -18,13 +18,10 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@API/*": ["../API/*"]
+      "@API/*": ["../API/src/*"]
     },
     "lib": [
-      "esnext",
       "dom",
-      "dom.iterable",
-      "scripthost"
     ]
   },
   "include": [
@@ -35,6 +32,7 @@
     "tests/**/*.tsx"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "../API/node_modules"
   ]
 }
