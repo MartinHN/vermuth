@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2019",
-    "module": "ESNext",
+    "module": "commonjs",
     "moduleResolution": "node",
     "lib": [
     ],
@@ -18,7 +18,7 @@
     "baseUrl":"./src",
     "paths": {
       "@/*": ["./*"],
-      "@API/*": ["../../API/src/*"]
+      "@API/*": ["../../API/gen/server/*"]
     },
   },
   "include": [

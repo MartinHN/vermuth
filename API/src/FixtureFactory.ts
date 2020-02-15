@@ -73,9 +73,12 @@ export class FixtureDef {
 @AccessibleClass()
 export class FixtureFactoryClass  {
   private __factoryInited = false;
-  private static _instance = new FixtureFactoryClass();
+  private static _instance : FixtureFactoryClass|undefined;
   private constructor() {}
-  static get i(){return FixtureFactoryClass._instance}
+  static get i():FixtureFactoryClass{ 
+    if(!FixtureFactoryClass._instance){FixtureFactoryClass._instance=new FixtureFactoryClass();}
+    return FixtureFactoryClass._instance;
+  }
 
   @RemoteValue((thisObj, v) => {
     for (const [fact, fList] of Object.entries(v as FixtureFactoryClass['__fixtureDefs'])) {

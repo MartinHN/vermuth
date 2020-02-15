@@ -6,7 +6,7 @@
     "lib": [
     ],
     "outDir": "dist",
-    "sourceMap": true,
+    "sourceMap": false,
     "inlineSources": false,
     "inlineSourceMap": false,
     "experimentalDecorators":true,
@@ -19,8 +19,8 @@
     "allowJs":true,
   },
   "include": [
-    "src/*.ts",
-    "src/*.js"
+    "gen/*.ts",
+    "gen/*.js"
   ],
 
   "exclude": [

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "module": "esnext",
+    "module": "commonjs",
     "strict": true,
     "jsx": "preserve",
     "importHelpers": true,
@@ -18,7 +18,7 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@API/*": ["../API/src/*"]
+      "@API/*": ["../API/gen/client/*"]
     },
     "lib": [
       "dom",

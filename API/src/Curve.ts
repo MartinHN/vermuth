@@ -11,6 +11,7 @@ export interface Vector {
   // z?:number
 }
 
+
 export type NumOrVec  = Vector | number;
 
 export function isVector(v: NumOrVec): v is Vector {
@@ -133,6 +134,24 @@ function notImplemented() {
 
 let curveNum = 0;
 export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBaseI {
+  constructor(
+    public name: string,
+    private _frames: Array<KeyFrame<T>> = new Array<KeyFrame<T>>(),
+    uid?:string) {
+    super();
+    if (_frames.length === 0) {
+      this.add(new KeyFrame<T>(0, 0 as T));
+      this.add(new KeyFrame<T>(1000, 1 as T));
+    }
+    this.autoDuration();
+    this.uid=uid||uuidv4()
+    if(uid && CurveStore.hasUID(uid)){
+      console.error("re adding existing uid")
+      debugger;
+    }
+    CurveStore.add(this);
+  }
+
   get frames() {return this._frames; }
 
   
@@ -192,18 +211,7 @@ export class Curve<T extends NumOrVec> extends EventEmitter implements CurveBase
   hasConsumers(){
     return this.consumers.length>0
   }
-  constructor(
-    public name: string,
-    private _frames: Array<KeyFrame<T>> = new Array<KeyFrame<T>>()) {
-    super();
-    if (_frames.length === 0) {
-      this.add(new KeyFrame<T>(0, 0 as T));
-      this.add(new KeyFrame<T>(1000, 1 as T));
-    }
-    this.autoDuration();
-    this.uid=uuidv4()
-    CurveStore.add(this);
-  }
+  
   public configureFromObj(o: any) {
     this.clear();
     this.name = o.name;
@@ -357,9 +365,13 @@ public getKeyFramesForPosition(position: number): {start: KeyFrame<T>|undefined,
 type CurveBaseType = CurveBaseI
 @AccessibleClass()
 export class CurveStoreClass  {
-  private static _instance = new CurveStoreClass()
+  private static _instance :CurveStoreClass|undefined
   private constructor(){}
-  static get i(){return CurveStoreClass._instance}
+  static get i():CurveStoreClass{ 
+    if(!CurveStoreClass._instance){CurveStoreClass._instance=new CurveStoreClass();}
+    return CurveStoreClass._instance;
+  }
+
   @SetAccessible({readonly: true})
   private curves :{[id:string]:CurveBaseType} = {};
 
@@ -388,8 +400,8 @@ export class CurveStoreClass  {
   }
   
   @RemoteFunction()
-  public addNewCurve(name:string){
-    const cu = new Curve<number>(name);
+  public addNewCurve(name:string,uid:string){
+    const cu = new Curve<number>(name,new Array<KeyFrame<number>>(),uid);
     this.add(cu);
     return cu
   }
@@ -405,6 +417,7 @@ export class CurveStoreClass  {
     console.error("no uid on curve")
     return undefined
   }
+  public hasUID(u:string){return Object.keys(this.curves).includes(u)}
 
   public remove(c:CurveBaseType){
     if(this.curves[c.uid]){

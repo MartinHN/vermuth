@@ -1,4 +1,4 @@
-const EventEmitter = require('events').EventEmitter;
+import {EventEmitter} from 'events';
 import { ChannelBase } from './Channel';
 import { Universe } from './Universe';
 import { getNextUniqueName } from './Utils';

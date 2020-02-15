@@ -159,11 +159,18 @@ interface RootProvider {
   sequenceList: SequenceList;
 }
 
+
 @AccessibleClass()
 export class SequencePlayerClass {
-  private static _instance  = new SequencePlayerClass()
+  
   private constructor(){}
-  static get i(){return SequencePlayerClass._instance}
+  private static _instance:SequencePlayerClass|undefined
+  static get i():SequencePlayerClass{ 
+    if(!SequencePlayerClass._instance){
+      SequencePlayerClass._instance=new SequencePlayerClass();
+    }
+    return SequencePlayerClass._instance;
+  }
 
   get stateList() {
     if (this._rootProvider === undefined) {console.error('stateListNotInited'); debugger; }

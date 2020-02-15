@@ -3,7 +3,7 @@ const logServerMessages = process.env.LOG_MSG;
 let clientSocket: any = null ;
 // let ioServer: any = null;
 const listenedNodes: {[id: string]: any} = {};
-import {addProp, deleteProp, nextTick} from './MemoryUtils';
+import {addProp, deleteProp, nextTick} from './MemoryUtils';  
 let allListeners = new  Map<string, any>();
 let AccessibleSettedByServer: any = null;
 let AccessibleNotifierId: string|null = null;
@@ -13,10 +13,12 @@ import * as _ from 'lodash';
 import { Socket } from 'socket.io';
 import 'reflect-metadata';
 
-const EventEmitter = require('events');
+import {EventEmitter} from 'events';
 
 
 export const treeEvents = new EventEmitter();
+
+
 
 let blockedSocketId: any; // for big updates
 export function blockSocket(s: Socket) {
@@ -31,7 +33,7 @@ export function bindClientSocket(s: any) {
   if (s !== 'auto' && s) { // only on new socke
     const boundSocket = s;
     // if (!isClient) {
-      // #if IS_CLIENT
+      // #if !IS_CLIENT
       const emitF = boundSocket.emit;
       const log = require('./Logger').default;
       console.log('highjacking server socket');
@@ -101,6 +103,9 @@ const getFunctionParams = (func: (...args: any[]) => any) => {
 };
 
 
+
+
+
 const rebuildAccessibles = () => {
   const valSymbol = Symbol('values');
   const funSymbol = Symbol('functions');
@@ -154,6 +159,10 @@ const rebuildAccessiblesDebounced = _.debounce(rebuildAccessibles,
   200,
   {trailing: true},
   );
+
+
+
+
 
 
 export function callAnyAccessibleFromRemote(root: any, saddr: string, args: any[], notifierId: string) {// args is passed as array

@@ -1,4 +1,4 @@
-import EventEmitter from 'events';
+import {EventEmitter} from 'events';
 import {RemoteValue, RemoteFunction, doSharedFunction, nonEnumerable} from './ServerSync';
 
 const timers: {[key: string]: {timeout:any,endCB?:()=>void}} = {};
@@ -24,64 +24,67 @@ export function  doTimer(name: string, length: number, resolution: number, onins
   oninstance(steps, count);
   stopTimer(name);
   timers[name] = {timeout :setTimeout(instance, speed),
-        endCB:oncomplete};
-}
-
-export function stopTimer(name: string) {
-  if (timers[name]) {
-    clearTimeout(timers[name].timeout);
-    const endCB = timers[name].endCB
-    if(endCB){endCB();}
-    delete timers[name];
+    endCB:oncomplete};
   }
-}
 
-function getMs() {
-  return  new Date().getTime();
-}
+  export function stopTimer(name: string) {
+    if (timers[name]) {
+      clearTimeout(timers[name].timeout);
+      const endCB = timers[name].endCB
+      if(endCB){endCB();}
+      delete timers[name];
+    }
+  }
 
-export class GlobalTransportClass extends EventEmitter {
-    private static _instance = new GlobalTransportClass()
+  function getMs() {
+    return  new Date().getTime();
+  }
+
+  export class GlobalTransportClass extends EventEmitter {
+    private static _instance : GlobalTransportClass|undefined
     private constructor(){
-    super()
-    this.start()
-  }
-  static get i(){return GlobalTransportClass._instance;}
+      super()
+      this.start()
+    }
+    static get i():GlobalTransportClass{ 
+     if(!GlobalTransportClass._instance){GlobalTransportClass._instance=new GlobalTransportClass();}
+     return GlobalTransportClass._instance;
+   }
 
-  @nonEnumerable()
-  public static timeGranularityMs = 20;
+   @nonEnumerable()
+   public static timeGranularityMs = 20;
 
-  @nonEnumerable()
-  private _startMs = getMs();
-  @nonEnumerable()
-  private _interval?: any;
-  @nonEnumerable()
-  private _timeListeners = new Map<TimeListener, Map<string, (...args: any[]) => void>>();
+   @nonEnumerable()
+   private _startMs = getMs();
+   @nonEnumerable()
+   private _interval?: any;
+   @nonEnumerable()
+   private _timeListeners = new Map<TimeListener, Map<string, (...args: any[]) => void>>();
 
-  @RemoteValue()
-  private _bpm = 60;
+   @RemoteValue()
+   private _bpm = 60;
 
-  @RemoteValue((parent: any, t: any) => {
+   @RemoteValue((parent: any, t: any) => {
     doSharedFunction(
       () => {
        parent.emit('time', t);
      },
      );
   })
-  private _time = 0;
+   private _time = 0;
 
 
 
-  @RemoteValue((parent: any, v: any) => {
+   @RemoteValue((parent: any, v: any) => {
     doSharedFunction(() => parent.emit('isPlaying', v));
   })
-  private _isPlaying = false;
+   private _isPlaying = false;
 
-  get isPlaying() {return this._isPlaying; }
-  get time(){return this._time}
+   get isPlaying() {return this._isPlaying; }
+   get time(){return this._time}
 
-  @RemoteFunction({skipClientApply: true})
-  public start() {
+   @RemoteFunction({skipClientApply: true})
+   public start() {
     this.stop();
     this._startMs = getMs();
     this._isPlaying = true;

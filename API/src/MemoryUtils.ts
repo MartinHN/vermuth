@@ -13,7 +13,9 @@ function getVue() {
     // #if IS_CLIENT
     return require( 'vue').default;
     // #endif
-  } catch (e) {}
+  } catch (e) {
+    throw "can't require Vue"
+  }
   return false;
 }
 
@@ -28,13 +30,9 @@ export function deleteProp(o: any, p: string|symbol) {
     Vue.delete(o, p);
     return
   } 
-  else {throw "client can't access vue"}
-  // #else
-  
-  
+  // #endif
     Reflect.deleteProperty(o, p);
   
-  // #endif
 }
 
 
@@ -44,10 +42,10 @@ export function addProp(o: any, p: string|symbol, v: any) {
   if (Vue && !Array.isArray(o)) {
     Vue.set(o, p, v);
     return
-  } else {throw "client can't access vue"}
-  // #else
-    Reflect.set(o, p, v);
+  } 
   // #endif
+    Reflect.set(o, p, v);
+  
 }
 
 
@@ -57,11 +55,11 @@ export function nextTick(cb: any) {
   if (Vue) {
     Vue.nextTick(cb);
     return
-  } else {throw "client can't access vue"}
-  // #else
+  } 
+  // #endif
   
     // @ts-ignore
     process.nextTick(cb);
   
-  // #endif
+  
 }

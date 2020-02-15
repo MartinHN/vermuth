@@ -3,6 +3,9 @@ import { FixtureBase } from './Fixture';
 import { RemoteFunction, RemoteValue, nonEnumerable, AccessibleClass } from './ServerSync';
 type ChannelValueType = number; // |number[];
 
+import {EventEmitter} from 'events'; // for universe listener class
+
+
 export const ChannelRoles: {[id: string]: {[id: string]: {names: Array<string|RegExp>}}} = {
   color: {
     r: {names: ['red', 'r', /red.*master/]},
@@ -261,7 +264,7 @@ export class LogChannel extends ChannelBase {
 
 }
 
-const EventEmitter = require( 'events' );
+
 class UniverseListenerClass extends EventEmitter {
   public setListener(f: (c: number, v: number) => void) {
     this.listener = f;

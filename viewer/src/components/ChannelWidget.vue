@@ -51,6 +51,7 @@ import { ChannelBase } from '@API/Channel';
 import UniversesMethods from '../store/universes';
 import {Curve,CurveStore, CurveBaseI} from '@API/Curve';
 import {CurvePlayer,CurveLink} from '@API/CurvePlayer';
+import {uuidv4} from "@API/Utils"
 
 import {nextTick} from '@API/MemoryUtils'
 
@@ -85,8 +86,8 @@ export default class ChannelWidget extends Vue {
   public editCurve() {
     let curveLink = CurvePlayer.getCurveLinkForChannel(this.channelProp);
     if (!curveLink) {
-      const curve = CurveStore.addNewCurve(this.channelProp.name);
-      curveLink=CurvePlayer.createCurveLink(curve, this.channelProp);
+      const curve = CurveStore.addNewCurve(this.channelProp.name,uuidv4());
+      curveLink=CurvePlayer.createCurveLink(curve, this.channelProp,uuidv4());
     }
     // this.pcurveLink = curveLink || null;
     nextTick(()=>{

@@ -23,7 +23,7 @@ export class CurveLink {
   @nonEnumerable()
   public autoSetChannelValue = true; // used when merging curves in sequence player
 
-  constructor(private pcurve: CurveBaseType, public channel: ChannelBase) {
+  constructor(private pcurve: CurveBaseType, public channel: ChannelBase, uid:string) {
     if(!this.pcurve.addConsumer){
       debugger
     }
@@ -32,7 +32,8 @@ export class CurveLink {
     }
     this.pcurve.addConsumer(this)
     channel.externalController = this;
-    this.uid = 'cl_'+channel.getUID()+'_'+uuidv4();
+    if(!uid){console.error("no uid given"); debugger;}
+    this.uid = 'cl_'+channel.getUID()+'_'+(uid|| uuidv4());
     CurveLinkStore.add(this)
   }
   
@@ -61,7 +62,7 @@ export class CurveLink {
       debugger;
       return undefined
     }
-    const c = new CurveLink(cu,ch)
+    const c = new CurveLink(cu,ch,o.uid)
     c.configureFromObj(o)
     return c
   }
@@ -84,7 +85,6 @@ export class CurveLink {
         else if(k=="channel"){
           const ch = rootState.universe.getChannelFromUID(o[k])
           if(ch){
-
             this.channel =  ch
           }
           else{
@@ -101,7 +101,7 @@ export class CurveLink {
   }
 
   public toJSON(){
-    const o:any = {}
+    const o:any = {uid:this.uid}
     for(const [k,v] of Object.entries(this)){
       if(k.startsWith('_')){continue;}
       else if(k=="channel"){
@@ -238,11 +238,14 @@ export const CurveLinkStore = new CurveLinkStoreClass()
 @AccessibleClass()
 export class CurvePlayerClass extends TimeListener {
 
-  private static _instance = new CurvePlayerClass()
+  private static _instance: CurvePlayerClass|undefined
   private constructor() {
     super('CurvePlayer');
   }
-  static get i(){return CurvePlayerClass._instance}
+  static get i():CurvePlayerClass{ 
+    if(!CurvePlayerClass._instance){CurvePlayerClass._instance=new CurvePlayerClass();}
+    return CurvePlayerClass._instance;
+  }
 
   public curveLinkStore = CurveLinkStore
 
@@ -333,12 +336,12 @@ export class CurvePlayerClass extends TimeListener {
   return cl
 }
 
-// @RemoteFunction()
-public createCurveLink(c:CurveBaseType, ch: ChannelBase) {
+@RemoteFunction({sharedFunction:true})
+public createCurveLink(c:CurveBaseType, ch: ChannelBase,uid:string) {
   if(this.removeChannel(ch)){
     console.warn('reassingn channel curveLink')
   }
-  return this.addCurveLink(new CurveLink(c, ch))
+  return this.addCurveLink(new CurveLink(c, ch,uid))
 }
 
 

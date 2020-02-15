@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "light show control server",
   "main": "server.ts",
+  "type":"module",
   "scripts": {
     "start": "node --inspect=0.0.0.0:9222 -r tsconfig-paths/register -r ts-node/register ./src/server.ts",
     "start:watch": "nodemon",
