@@ -254,7 +254,7 @@ export class FixtureBase implements FixtureBaseI {
 
 
   public removeChannel(c: ChannelBase) {
-    c.dispose();
+    c.__dispose();
     c.setParentFixture (null);
     const i = this.channels.indexOf(c);
     if (i >= 0) {this.channels.splice(i, 1); }// = this.channels.filter((v) => c !== v); // delete?

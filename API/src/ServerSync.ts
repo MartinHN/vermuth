@@ -3,7 +3,7 @@ const logServerMessages = process.env.LOG_MSG;
 let clientSocket: any = null ;
 // let ioServer: any = null;
 const listenedNodes: {[id: string]: any} = {};
-import {addProp, deleteProp, nextTick} from './MemoryUtils';
+import {addProp, deleteProp, nextTick,isProxyfiable} from './MemoryUtils';
 let allListeners = new  Map<string, any>();
 let AccessibleSettedByServer: any = null;
 let AccessibleNotifierId: string|null = null;
@@ -675,7 +675,8 @@ function isChildOfRoot(o: any) {
 const allAccessibleSet = new WeakSet();
 const accessibleNameSymbol = Symbol('name');
 const accessibleAddressSymbol = Symbol('address');
-const isProxySymbol = Symbol('isProxy');
+const setContextSymbol = Symbol("context")
+export const isProxySymbol = Symbol('isProxy');
 let reentrancyLock = false;
 
 export function setChildAccessible(parent: any, key: string|symbol, opts?: {immediate?: boolean, defaultValue?: any, readonly?: boolean, blockRecursion?: boolean}) {
@@ -691,11 +692,12 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
 
   if (parent.__accessibleMembers && parent.__accessibleMembers[key] ) {
     debugger;
-    console.error('re register accessible');
+    console.error('re register child accessible');
     return; // avoid reregistering
   }
   if (typeof(childAcc) === 'object' && childAcc !== null) {
     allAccessibleSet.add(childAcc);
+
     Reflect.defineProperty(childAcc, '__accessibleParent', {
       value: parent,
       enumerable: false,
@@ -721,7 +723,11 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
 
     const handler = {
       set(obj: any, prop: symbol|string, value: any, thisProxy: any) {
-
+        // if(prop===setContextSymbol){ // TODO precreate proxys
+        //   if(value.parent){parent=value.parent};
+        //   if(value.key){parent=value.key};
+        //   return
+        // }
 
 
         const res = Reflect.set(obj, prop, value, thisProxy);
@@ -751,7 +757,11 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
       ,
       get: (target: any, k: symbol|string, thisProxy: any) => {
         if (k === isProxySymbol) {
-          return true;
+          if(target[isProxySymbol]){
+            console.error('proxy nesting !!!!')
+            debugger
+          }
+          return target;
         } else if (k === accessibleAddressSymbol) {
           return buildAddressFromObj(target);
         } else if ((target instanceof Map  || target instanceof Set) && typeof((target as any)[k]) === 'function') {
@@ -782,7 +792,16 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
       }
       */
     };
-    if (!childAcc[isProxySymbol]) {
+    if(childAcc[isProxyfiable]){
+      childAcc.sourceHandler = handler;
+      for (const [k, v] of Object.entries(childAcc)) {
+        // @ts-ignore
+        if (typeof(v) === 'object' && (v === null || !v[isProxySymbol])) {
+          handler.set(childAcc, k, v, undefined);
+        }
+      }
+    }
+    else if (!childAcc[isProxySymbol]) {
       // recurse on initial values
       for (const [k, v] of Object.entries(childAcc)) {
         // @ts-ignore
@@ -790,8 +809,9 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
           handler.set(childAcc, k, v, undefined);
         }
       }
-      childAcc = new Proxy(childAcc, handler);
 
+      childAcc = new Proxy(childAcc, handler);
+      if(childAcc.__onProxyfication){childAcc.__onProxyfication()}
     } else {
 
       debugger;
@@ -861,8 +881,13 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
   return parent[key];
 }
 
-
-
+// const limboRoot = {};
+// export function getFutureAccessible(obj){
+//   if(obj[isProxySymbol]){return obj}
+//     else{
+//       return setChildAccessible(limboRoot)
+//     }
+// }
 
 const allAccessibles = new WeakSet<any>();
 

@@ -405,13 +405,12 @@ export class CurveStoreClass  {
   @RemoteFunction()
   public addNewCurve(name: string, uid: string) {
     const cu = new Curve<number>(name, new Array<KeyFrame<number>>(), uid);
-    this.add(cu);
     return cu;
   }
 
   public add(c: CurveBaseType) {
     const oldC = this.curves[c.uid];
-    if (oldC) {this.remove(oldC); }
+    if (oldC) {debugger;this.remove(oldC); }
     if (c.uid) {
       this.curves[c.uid] = c;
       return c;

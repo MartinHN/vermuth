@@ -32,15 +32,15 @@ export class FixtureState {
   constructor(fixture?: FixtureBase , options?: {overrideValue?: number, channelFilter?: (c: ChannelBase) => boolean, full?: boolean}) {
     if (fixture === undefined) {return; }
     this.name = fixture.name;
-    let validFix ;
+    let validChs ;
     if (options && options.full) {
-      validFix = fixture.channels;
+      validChs = fixture.channels;
     } else if (options && options.channelFilter) {
-      validFix = fixture.channels.filter(options.channelFilter);
+      validChs = fixture.channels.filter(options.channelFilter);
     } else {
-      validFix = fixture.channels.filter((c) => c.enabled);
+      validChs = fixture.channels.filter((c) => c.enabled);
     }
-    validFix.map((c) => {
+    validChs.map((c) => {
       const curveLink = CurvePlayer.getCurveLinkForChannel(c);
 
       addProp(curveLink ? this.pChannelCurveLinks : this.pChannelValues,
@@ -527,6 +527,7 @@ class WholeState extends State {
     const res: ResolvedFixtureState[] = [];
     const opt = {};
     for (const f of context) {
+      f.channels.map(c=>{if(c.reactToMaster){CurvePlayer.removeChannel(c);}})
       const fs = new FixtureState(f, {overrideValue: this.value, channelFilter: (c: ChannelBase) => c.reactToMaster});
       res.push(new ResolvedFixtureState(fs, f, dimMaster));
     }

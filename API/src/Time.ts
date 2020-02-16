@@ -133,7 +133,7 @@ export class TimeListener {
   }
   public timeChanged(t: number) {console.log('base time changed'); }
   public playStateChanged(s: boolean) {}
-  public dispose() {
+  public __dispose() {
     GlobalTransport.removeTimeListener(this);
   }
 
