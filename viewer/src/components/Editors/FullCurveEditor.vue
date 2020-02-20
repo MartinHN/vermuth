@@ -2,7 +2,13 @@
 
 
   <div class="main"  style="width:100%;height:100%">
-    {{curveLink.uid}}
+    {{curveLink.uid}},{{this.curveLink.curve.uid}}
+
+    <v-select label=curves  v-model="selectedCurve" style="width:100%" :items=availableCurves>
+            <template v-slot:item="{item:item}">
+              {{item}}
+            </template>
+    </v-select>
     <v-row no-gutters>
       <v-col cols=6>
         <Numbox text="offset" v-model=curveLink.offset></Numbox>
@@ -37,6 +43,7 @@ import Toggle from '@/components/Inputs/Toggle.vue';
 import Slider from '@/components/Inputs/Slider.vue';
 import * as CurveUtils from './CurveEditorUtils';
 import {CurvePlayer, CurveLink} from '@API/CurvePlayer';
+import {CurveStore, CurveBaseI} from '@API/Curve'
 import {ChannelBase} from '@API/Channel';
 
 @Component({components: {Slider, CurveEditor, Numbox, Button, Toggle}})
@@ -46,8 +53,21 @@ export default class FullCurveEditor extends Vue {
   public curveLink!: CurveLink;
 
 
-
-
+  get selectedCurve(){
+    return this.curveLink.curve.uid
+  }
+  set selectedCurve(u:string){
+    const cu = CurveStore.getForUID(u)
+    if(cu){
+    this.curveLink.curve = cu;
+  }
+  else{
+    console.error('curve not found')
+  }
+  }
+  get availableCurves(){
+    return CurveStore.curveList.map(c=>c.uid)
+  }
 
   // public set curveOffset(v: number) {
     //   const cl = this.curveLink;

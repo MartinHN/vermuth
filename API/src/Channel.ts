@@ -129,7 +129,7 @@ export class ChannelBase implements ChannelI {
   }
 
   public getUID() {
-    return (this.__parentFixture ? this.__parentFixture.name : 'noparent') + '/' + this.name;
+    return (this.__parentFixture ? this.__parentFixture.name : 'noparent') + ':' + this.name;
   }
   public __dispose() {
     if (!this.__isDisposed) {console.log('disposing channel ', this.getUID()); }

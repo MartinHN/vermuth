@@ -391,7 +391,7 @@ export class StateList {
 
   }
 
-
+  @RemoteFunction({sharedFunction:true})
   public removeStateNamed(name: string) {
     if (this.states[name]) {
       if (!(this.states[name] === blackState || this.states[name] === fullState)) {
@@ -448,6 +448,7 @@ public getCurrentFullFixtureList() {
   return this.universe.fixtureList;
 }
 
+@RemoteFunction({sharedFunction:true})
 public saveCurrentState(name: string, linkedStates?: LinkedState[]) {
 
 

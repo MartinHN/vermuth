@@ -106,7 +106,7 @@ export interface Refable{
 }
 
 export interface Disposable{
-  __dispose()
+  __dispose():void
 }
 
 export interface Configurable{
@@ -127,7 +127,7 @@ type FElemType =  WithUID & Disposable
 
 export class Factory <T extends  FElemType>{
   public factory :{[id:string]:T} = {}
-  constructor(private createFromObj:(any)=>T|undefined){
+  constructor(private createFromObj:(a:any)=>T|undefined){
 
   }
   clear(){
@@ -136,7 +136,7 @@ export class Factory <T extends  FElemType>{
     }
   }
   
-  configureFromObj(o){
+  configureFromObj(o:any){
     this.clear()
     if(o.factory){
       for (const [k,v] of Object.entries(o.factory)){
@@ -144,7 +144,7 @@ export class Factory <T extends  FElemType>{
         if(t){
         this.add(t)
       }
-      else{console.error('no created');debugger}
+      else{console.error('no created');debugger;}
       }
     }
   }
@@ -188,11 +188,11 @@ export function getUnusedRefs<T extends Refable>(l:Array<T>){
 
 
 export class Ref <T extends Refable> extends Proxyfiable{
-
+  private [refDisposedSymbol] = false;
   constructor(private __r:T){
     super()
    this.__r.__references.push(this);
-   this[refDisposedSymbol] = false;
+   
   }
   toJSON(){
     return this.__r.uid

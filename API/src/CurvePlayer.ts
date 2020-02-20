@@ -34,7 +34,7 @@ export class CurveLink extends Proxyfiable implements Refable{
   __onceProxyfied(){
 
   }
-  __references = new Array<Ref<CurveLink>>();
+  __references = new Array<Ref<CurveLink>>(); // for refable
 
   get curve() {return this.pcurve; }
   set curve(c: CurveBaseType) {
@@ -88,7 +88,7 @@ export class CurveLink extends Proxyfiable implements Refable{
       debugger;
       return undefined;
     }
-    const cu = (o.pcurve.uid ? o.pcurve : CurveStore.getCurveWithUID( o.pcurve ) )   as CurveBaseType;
+    const cu = (o.pcurve.uid ? o.pcurve : CurveStore.getForUID( o.pcurve ) )   as CurveBaseType;
     const ch = rootState.universe.getChannelFromUID(o.channel) as ChannelBase;
     if (!cu ) {
       console.error('curve not found');
@@ -132,7 +132,7 @@ export class CurveLink extends Proxyfiable implements Refable{
     for (const [k, v] of Object.entries(this)) {
       if (o[k] !== undefined) {
         if (k === 'pcurve') {
-          const cu = CurveStore.getCurveWithUID(o[k]);
+          const cu = CurveStore.getForUID(o[k]);
           if (cu) {
             this.curve = cu;
           } else {

@@ -426,7 +426,7 @@ export class CurveStoreClass  {
       delete this.curves[c.uid];
     }
   }
-  public getCurveWithUID(uid: string) {
+  public getForUID(uid: string) {
     return this.curves[uid];
   }
   public getCurveNamed(name: string): CurveBaseType | undefined {
