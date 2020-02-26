@@ -27,7 +27,7 @@
 
 
     </div>
-    <ChannelRack :displayableFixtureList=state.getFixtureList() />
+    <ChannelRack :displayableFixtureList="state.getSavedFixtureList(universe.fixtureList)" />
   </div>
 
 </div>
@@ -40,12 +40,13 @@ import Button from '@/components/Inputs/Button.vue';
 import Numbox from '@/components/Inputs/Numbox.vue';
 import Toggle from '@/components/Inputs/Toggle.vue';
 import TextInput from '@/components/Inputs/TextInput.vue';
+import ChannelRack from '@/components/ChannelRack.vue' ;
 import FixtureWidget from '@/components/FixtureWidget.vue' ;
 import Modal from '@/components/Utils/Modal.vue';
 
 import UniversesMethods from '../../store/universes';
 import {FixtureBase} from '@API/Fixture';
-import {State} from '@API/State';
+import {State, StateList} from '@API/State';
 import rootState from '@API/RootState';
 import { FixtureFactory } from '@API/FixtureFactory';
 import { ChannelRoles } from '@API/Channel';
@@ -55,7 +56,7 @@ const universesModule = namespace('universes');
 
 
 @Component({
-  components: {Button, Numbox, Toggle, TextInput, FixtureWidget},
+  components: {Button, Numbox, Toggle, TextInput, FixtureWidget, ChannelRack},
 })
 export default class StateEditor extends Vue {
   @Prop({default: null, required: true})
@@ -70,6 +71,8 @@ export default class StateEditor extends Vue {
   public showProps = false;
   public showValues = false;
   public showNames = false;
+
+
 
   @universesModule.State('universe') private universe!: UniversesMethods['universe'];
 

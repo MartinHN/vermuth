@@ -43,7 +43,7 @@ import Toggle from '@/components/Inputs/Toggle.vue';
 import Slider from '@/components/Inputs/Slider.vue';
 import * as CurveUtils from './CurveEditorUtils';
 import {CurvePlayer, CurveLink} from '@API/CurvePlayer';
-import {CurveStore, CurveBaseI} from '@API/Curve'
+import {CurveStore, CurveBaseI} from '@API/Curve';
 import {ChannelBase} from '@API/Channel';
 
 @Component({components: {Slider, CurveEditor, Numbox, Button, Toggle}})
@@ -53,20 +53,19 @@ export default class FullCurveEditor extends Vue {
   public curveLink!: CurveLink;
 
 
-  get selectedCurve(){
-    return this.curveLink.curve.uid
+  get selectedCurve() {
+    return this.curveLink.curve.uid;
   }
-  set selectedCurve(u:string){
-    const cu = CurveStore.getForUID(u)
-    if(cu){
+  set selectedCurve(u: string) {
+    const cu = CurveStore.getForUID(u);
+    if (cu) {
     this.curveLink.curve = cu;
+  } else {
+    console.error('curve not found');
   }
-  else{
-    console.error('curve not found')
   }
-  }
-  get availableCurves(){
-    return CurveStore.curveList.map(c=>c.uid)
+  get availableCurves() {
+    return CurveStore.curveList.map((c) => c.uid);
   }
 
   // public set curveOffset(v: number) {

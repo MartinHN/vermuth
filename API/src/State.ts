@@ -94,13 +94,12 @@ export class ResolvedFixtureState {
   }
 
   public mergeWith(r: ResolvedFixtureState) {
-    for (const [k,ob] of Object.entries(r.channels)) {
+    for (const [k, ob] of Object.entries(r.channels)) {
       const thisO = this.getStateForChannel(ob.channel);
       if (thisO) {
         thisO.value = ob.value;
-      }
-      else{
-        this.channels[k] = Object.assign({},ob)
+      } else {
+        this.channels[k] = Object.assign({}, ob);
       }
     }
   }
@@ -296,6 +295,7 @@ export class State {
   }
 
   public getSavedFixtureList(context: FixtureBase[]) {
+    if (!context) {console.error('nofixtureL'); debugger; return; }
     const res = this.fixtureStates.map((fs) => context.find((e) => e.name === fs.name));
     return res;
   }
@@ -304,8 +304,8 @@ export class State {
     for ( const fs of this.fixtureStates) {
       const f = context.find((e) => e.name === fs.name);
       if (f) {
-        let allChannelNames = Object.keys(fs.channelValues)
-        allChannelNames = allChannelNames.concat(Object.keys(fs.channelCurveLinks))
+        let allChannelNames = Object.keys(fs.channelValues);
+        allChannelNames = allChannelNames.concat(Object.keys(fs.channelCurveLinks));
         for (const  name of allChannelNames) {
           const c =  f.getChannelForName(name);
           if (c) {res.push(c); }
@@ -391,7 +391,7 @@ export class StateList {
 
   }
 
-  @RemoteFunction({sharedFunction:true})
+  @RemoteFunction({sharedFunction: true})
   public removeStateNamed(name: string) {
     if (this.states[name]) {
       if (!(this.states[name] === blackState || this.states[name] === fullState)) {
@@ -448,7 +448,7 @@ public getCurrentFullFixtureList() {
   return this.universe.fixtureList;
 }
 
-@RemoteFunction({sharedFunction:true})
+@RemoteFunction({sharedFunction: true})
 public saveCurrentState(name: string, linkedStates?: LinkedState[]) {
 
 
@@ -528,7 +528,7 @@ class WholeState extends State {
     const res: ResolvedFixtureState[] = [];
     const opt = {};
     for (const f of context) {
-      f.channels.map(c=>{if(c.reactToMaster){CurvePlayer.removeChannel(c);}})
+      f.channels.map((c) => {if (c.reactToMaster) {CurvePlayer.removeChannel(c); }});
       const fs = new FixtureState(f, {overrideValue: this.value, channelFilter: (c: ChannelBase) => c.reactToMaster});
       res.push(new ResolvedFixtureState(fs, f, dimMaster));
     }

@@ -1,40 +1,15 @@
 import {CurveBaseI, CurveStore, Curve} from './Curve';
 import {ChannelBase} from './Channel';
 import {GlobalTransport, TimeListener} from './Time';
-import { SetAccessible, nonEnumerable, RemoteValue , RemoteFunction, AccessibleClass,isProxySymbol} from './ServerSync';
-import {Ref,Refable,Factory,Proxyfiable,generateFromUIDList} from './MemoryUtils'
+import { SetAccessible, nonEnumerable, RemoteValue , RemoteFunction, AccessibleClass, isProxySymbol} from './ServerSync';
+import {Ref, Refable, Factory, Proxyfiable, generateFromUIDList} from './MemoryUtils';
 import rootState from './RootState';
 import {uuidv4} from './Utils';
 
 
 type CurveBaseType = CurveBaseI;
 
-export class CurveLink extends Proxyfiable implements Refable{
-
-
-  constructor(private pcurve: CurveBaseType, public channel: ChannelBase, uid: string) {
-    
-    super()
-    debugger
-    if (!this.pcurve.addConsumer) {
-      debugger;
-    }
-    if (!channel) {
-      debugger;
-    }
-
-    this.pcurve.addConsumer(this);
-    channel.externalController = this;
-    if (!uid) {console.error('no uid given'); debugger; }
-    this.uid = 'cl_' + channel.getUID() + '_' + (uid || uuidv4());
-    if (CurvePlayer.hasCurveLinkWithUID(uid)) {console.error('double curvelink'); debugger; }
-    CurveLinkStore.add(this);
-  }
-
-  __onceProxyfied(){
-
-  }
-  __references = new Array<Ref<CurveLink>>(); // for refable
+export class CurveLink extends Proxyfiable implements Refable {
 
   get curve() {return this.pcurve; }
   set curve(c: CurveBaseType) {
@@ -42,7 +17,7 @@ export class CurveLink extends Proxyfiable implements Refable{
     this.pcurve = c;
     if (this.pcurve) {this.pcurve.addConsumer(this); }
   }
-  
+
   public get master() {
     return this.pmaster;
   }
@@ -104,6 +79,7 @@ export class CurveLink extends Proxyfiable implements Refable{
     c.configureFromObj(o);
     return c;
   }
+  public __references: Array<Ref<CurveLink>> = new Array<Ref<CurveLink>>(); // for refable
   @RemoteValue()
   public doLoop = true;
   @RemoteValue()
@@ -116,6 +92,7 @@ export class CurveLink extends Proxyfiable implements Refable{
 
   @nonEnumerable()
   public autoSetChannelValue = true; // used when merging curves in sequence player
+  public __disposed = false;
 
   @RemoteValue()
   private startTime = 0;
@@ -124,7 +101,31 @@ export class CurveLink extends Proxyfiable implements Refable{
   private _curTime = 0;
 
 
-  
+  constructor(private pcurve: CurveBaseType, public channel: ChannelBase, uid: string) {
+
+    super();
+
+    if (!this.pcurve.addConsumer) {
+      debugger;
+    }
+    if (!channel) {
+      debugger;
+    }
+
+    this.pcurve.addConsumer(this);
+    channel.externalController = this;
+    if (!uid) {console.error('no uid given'); debugger; }
+    this.uid = 'cl_' + channel.getUID() + '_' + (uid || uuidv4());
+    if (CurvePlayer.hasCurveLinkWithUID(uid)) {console.error('double curvelink'); debugger; }
+    CurveLinkStore.add(this);
+  }
+
+  public __onceProxyfied() {
+
+  }
+
+
+
   public configureFromObj(o: any) {
 
     CurveLinkStore.remove(this, false);
@@ -192,13 +193,12 @@ export class CurveLink extends Proxyfiable implements Refable{
       this.playNow();
     }
   }
-  __disposed = false;
   public __dispose() {
-    if(this.__disposed){
-      console.error('double disposal')
-      debugger
+    if (this.__disposed) {
+      console.error('double disposal');
+      debugger;
     }
-    this.__disposed = true
+    this.__disposed = true;
     if (this.pcurve) {this.pcurve.removeConsumer(this); }
     this.channel.externalController = null;
   }
@@ -271,7 +271,7 @@ export class CurvePlayerClass extends TimeListener {
 
 
   private readonly  curveLinkRefList = new Array< Ref<CurveLink> >();  // not accessible
-  get curveLinkList(){return this.curveLinkRefList.map(e=>e.getPointed())}
+  get curveLinkList() {return this.curveLinkRefList.map((e) => e.getPointed()); }
 
   private constructor() {
     super('CurvePlayer');
@@ -284,11 +284,11 @@ export class CurvePlayerClass extends TimeListener {
       this.removeCurveLink(v);
     }
     this.curveLinkStore.configureFromObj(o.curveLinkStore);
-    
+
     if (o.curveLinkRefList) {
-      o.curveLinkRefList = [...new Set(o.curveLinkList)] // avoid duplicates
-      const cls = generateFromUIDList(o.curveLinkRefList,this.curveLinkStore)
-      cls.map(e=>this.addCurveLink(e))
+      o.curveLinkRefList = [...new Set(o.curveLinkList)]; // avoid duplicates
+      const cls = generateFromUIDList(o.curveLinkRefList, this.curveLinkStore);
+      cls.map((e) => this.addCurveLink(e));
       // o.curveLinkRefList.map((uid: string) => {
       //   const cl = this.curveLinkStore.getForUID(uid);
       //   if (cl) {this.addCurveLink(cl); }

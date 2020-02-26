@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "light show control server",
   "main": "server.ts",
-  "type":"module",
+  "type": "module",
   "scripts": {
     "start": "node --inspect=0.0.0.0:9222 -r tsconfig-paths/register -r ts-node/register ./src/server.ts",
     "start:watch": "nodemon",
-    "build": "tsc",
+    "build": "webpack src/server.ts",
     "buildNrun": "NODE_ENV=production ts-node src/server.ts -P . --files",
     "run": "NODE_ENV=production node dist/server/src/server.js",
     "lint": "tslint --project . --fix"
@@ -54,18 +54,22 @@
     "@vue/cli-service": "^4.2.2",
     "eslint": "^6.8.0",
     "eslint-plugin-import": "^2.20.1",
+    "fork-ts-checker-webpack-plugin": "^4.0.4",
     "nodemon": "^1.19.4",
     "reflect-metadata": "^0.1.13",
     "ts-node": "^8.6.2",
     "tsconfig-paths": "^3.9.0",
+    "tsconfig-paths-webpack-plugin": "^3.2.0",
     "typescript": "^3.7.5",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "webpack-cli": "^3.3.11",
+    "webpack-node-externals": "^1.7.2"
   },
   "engines": {
     "node": ">=0.12"
   },
   "_moduleAliases": {
     "@": "dist/server/src",
-    "@API": "dist/src/API"
+    "@API": "dist/API/gen/server"
   }
 }

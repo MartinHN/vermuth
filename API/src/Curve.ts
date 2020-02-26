@@ -410,7 +410,7 @@ export class CurveStoreClass  {
 
   public add(c: CurveBaseType) {
     const oldC = this.curves[c.uid];
-    if (oldC) {debugger;this.remove(oldC); }
+    if (oldC) {debugger; this.remove(oldC); }
     if (c.uid) {
       this.curves[c.uid] = c;
       return c;

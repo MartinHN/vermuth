@@ -40,7 +40,7 @@ export const ChannelRoles: {[id: string]: {[id: string]: {names: Array<string|Re
 };
 
 export interface ChannelI {
-  ctype: string;
+
   name: string;
   // private __value: ChannelValueType;
   _enabled: boolean;
@@ -58,7 +58,7 @@ export interface ChannelI {
 type ChannelConstructorI  = new (...args: any[]) => ChannelBase;
 
 
-const channelTypes: {[key: string]: ChannelConstructorI} = {};
+
 
 @AccessibleClass()
 export class ChannelBase implements ChannelI {
@@ -88,26 +88,23 @@ export class ChannelBase implements ChannelI {
     return this.__value;
   }
   public get reactToMaster() {return this.roleFam === 'dim'; }
- public get parentFixture() {
-  return this.__parentFixture;
- }
+  public get parentFixture() {
+    return this.__parentFixture;
+  }
 
   public static createFromObj(ob: any, parent: FixtureBase): ChannelBase|undefined {
-    const cstr = channelTypes[ob.ctype];
-    if (cstr) {
-      const c =  new cstr(ob.name, ob.value, ob.circ);
-      c.setParentFixture(parent);
-      c.configureFromObj(ob);
-      return c;
-    } else {
-      return undefined;
-    }
+
+    const c =  new  ChannelBase(ob.name, ob.value, ob.circ);
+    c.setParentFixture(parent);
+    c.configureFromObj(ob);
+    return c;
+
   }
 
 
 
 
-  public ctype = 'base';
+
   public hasDuplicatedCirc = false;
   public roleType = '';
   public roleFam = '';
@@ -251,18 +248,8 @@ private setValueChecking(__value: number) {
 
 
 }
-// register type
-channelTypes.base =  ChannelBase.prototype.constructor as new (...args: any[]) => ChannelBase;
 
 
-export class LogChannel extends ChannelBase {
-  public ctype = 'logChanel';
-  public setValueInternal( v: ChannelValueType) {
-    console.log('set channel' + v);
-    return true;
-  }
-
-}
 
 
 class UniverseListenerClass extends EventEmitter {
