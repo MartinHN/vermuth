@@ -1,0 +1,4081 @@
+{
+  "universe": {
+    "testedChannel": {
+      "name": "tested",
+      "_circ": -1,
+      "_enabled": false,
+      "ctype": "base",
+      "hasDuplicatedCirc": false,
+      "roleType": "other",
+      "roleFam": "other"
+    },
+    "testedFixture": {
+      "name": "testedFixture",
+      "ftype": "base",
+      "globalValue": 0,
+      "channels": [
+        {
+          "name": "tested",
+          "_circ": -1,
+          "_enabled": false,
+          "ctype": "base",
+          "hasDuplicatedCirc": false,
+          "roleType": "other",
+          "roleFam": "other"
+        }
+      ],
+      "_baseCirc": 0
+    },
+    "driverName": "none",
+    "fixtures": {
+      "PAR": {
+        "name": "PAR",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 1
+      },
+      "PAR 1": {
+        "name": "PAR 1",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 2
+      },
+      "PAR 2": {
+        "name": "PAR 2",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 3
+      },
+      "PAR:default": {
+        "name": "PAR:default",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 4
+      },
+      "PAR:default 1": {
+        "name": "PAR:default 1",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 20
+      },
+      "PAR:default 2": {
+        "name": "PAR:default 2",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 21
+      },
+      "PAR:default 3": {
+        "name": "PAR:default 3",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 22
+      },
+      "PAR:default 4": {
+        "name": "PAR:default 4",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 23
+      },
+      "PAR:default 5": {
+        "name": "PAR:default 5",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 24
+      },
+      "PAR:default 6": {
+        "name": "PAR:default 6",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 25
+      },
+      "PAR:default 7": {
+        "name": "PAR:default 7",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 26
+      },
+      "PAR:default 8": {
+        "name": "PAR:default 8",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 27
+      },
+      "PAR:default 9": {
+        "name": "PAR:default 9",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 28
+      },
+      "PAR:default 10": {
+        "name": "PAR:default 10",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 29
+      },
+      "PAR:default 11": {
+        "name": "PAR:default 11",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 30
+      },
+      "PAR:default 12": {
+        "name": "PAR:default 12",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 31
+      },
+      "PAR:default 13": {
+        "name": "PAR:default 13",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 32
+      },
+      "PAR:default 14": {
+        "name": "PAR:default 14",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 33
+      },
+      "PAR:default 15": {
+        "name": "PAR:default 15",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 34
+      },
+      "PAR:default 16": {
+        "name": "PAR:default 16",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 35
+      },
+      "PAR:default 17": {
+        "name": "PAR:default 17",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 36
+      },
+      "PAR:default 18": {
+        "name": "PAR:default 18",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 37
+      },
+      "PAR:default 19": {
+        "name": "PAR:default 19",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 38
+      },
+      "PAR:default 20": {
+        "name": "PAR:default 20",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 39
+      },
+      "PAR:default 21": {
+        "name": "PAR:default 21",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 40
+      },
+      "PAR:default 22": {
+        "name": "PAR:default 22",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 41
+      },
+      "PAR:default 23": {
+        "name": "PAR:default 23",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 42
+      },
+      "PAR:default 24": {
+        "name": "PAR:default 24",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 43
+      },
+      "PAR:default 25": {
+        "name": "PAR:default 25",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 44
+      },
+      "PAR:default 26": {
+        "name": "PAR:default 26",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 45
+      },
+      "PAR:default 27": {
+        "name": "PAR:default 27",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 46
+      },
+      "PAR:default 28": {
+        "name": "PAR:default 28",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 47
+      },
+      "PAR:default 29": {
+        "name": "PAR:default 29",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 48
+      },
+      "PAR:default 30": {
+        "name": "PAR:default 30",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 49
+      },
+      "PAR:default 31": {
+        "name": "PAR:default 31",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 50
+      },
+      "PAR:default 32": {
+        "name": "PAR:default 32",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 51
+      },
+      "PAR:default 33": {
+        "name": "PAR:default 33",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 52
+      },
+      "PAR:default 34": {
+        "name": "PAR:default 34",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 53
+      },
+      "PAR:default 35": {
+        "name": "PAR:default 35",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 54
+      },
+      "PAR:default 36": {
+        "name": "PAR:default 36",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 55
+      },
+      "PAR:default 37": {
+        "name": "PAR:default 37",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 56
+      },
+      "PAR:default 38": {
+        "name": "PAR:default 38",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 57
+      },
+      "PAR:default 39": {
+        "name": "PAR:default 39",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 58
+      },
+      "PAR:default 40": {
+        "name": "PAR:default 40",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 59
+      },
+      "PAR:default 41": {
+        "name": "PAR:default 41",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 60
+      },
+      "PAR:default 42": {
+        "name": "PAR:default 42",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 61
+      },
+      "PAR:default 43": {
+        "name": "PAR:default 43",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 62
+      },
+      "PAR:default 44": {
+        "name": "PAR:default 44",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 63
+      },
+      "PAR:default 45": {
+        "name": "PAR:default 45",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 64
+      },
+      "PAR:default 46": {
+        "name": "PAR:default 46",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 65
+      },
+      "PAR:default 47": {
+        "name": "PAR:default 47",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 66
+      },
+      "PAR:default 48": {
+        "name": "PAR:default 48",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 67
+      },
+      "PAR:default 49": {
+        "name": "PAR:default 49",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 68
+      },
+      "PAR:default 50": {
+        "name": "PAR:default 50",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 69
+      },
+      "PAR:default 51": {
+        "name": "PAR:default 51",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 70
+      },
+      "PAR:default 52": {
+        "name": "PAR:default 52",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 71
+      },
+      "PAR:default 53": {
+        "name": "PAR:default 53",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 72
+      },
+      "PAR:default 54": {
+        "name": "PAR:default 54",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 73
+      },
+      "PAR:default 55": {
+        "name": "PAR:default 55",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 74
+      },
+      "PAR:default 56": {
+        "name": "PAR:default 56",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 75
+      },
+      "PAR:default 57": {
+        "name": "PAR:default 57",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 76
+      },
+      "PAR:default 58": {
+        "name": "PAR:default 58",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 77
+      },
+      "PAR:default 59": {
+        "name": "PAR:default 59",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 78
+      },
+      "PAR:default 60": {
+        "name": "PAR:default 60",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 79
+      },
+      "PAR:default 61": {
+        "name": "PAR:default 61",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 80
+      },
+      "PAR:default 62": {
+        "name": "PAR:default 62",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 81
+      },
+      "PAR:default 63": {
+        "name": "PAR:default 63",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 82
+      },
+      "PAR:default 64": {
+        "name": "PAR:default 64",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 83
+      },
+      "PAR:default 65": {
+        "name": "PAR:default 65",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 84
+      },
+      "PAR:default 66": {
+        "name": "PAR:default 66",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 85
+      },
+      "PAR:default 67": {
+        "name": "PAR:default 67",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 86
+      },
+      "PAR:default 68": {
+        "name": "PAR:default 68",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 87
+      },
+      "PAR:default 69": {
+        "name": "PAR:default 69",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 88
+      },
+      "PAR:default 70": {
+        "name": "PAR:default 70",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 89
+      },
+      "PAR:default 71": {
+        "name": "PAR:default 71",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 90
+      },
+      "PAR:default 72": {
+        "name": "PAR:default 72",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 91
+      },
+      "PAR:default 73": {
+        "name": "PAR:default 73",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 92
+      },
+      "PAR:default 74": {
+        "name": "PAR:default 74",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 93
+      },
+      "PAR:default 75": {
+        "name": "PAR:default 75",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 94
+      },
+      "PAR:default 76": {
+        "name": "PAR:default 76",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 95
+      },
+      "PAR:default 77": {
+        "name": "PAR:default 77",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 96
+      },
+      "PAR:default 78": {
+        "name": "PAR:default 78",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 97
+      },
+      "PAR:default 79": {
+        "name": "PAR:default 79",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 98
+      },
+      "PAR:default 80": {
+        "name": "PAR:default 80",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 99
+      },
+      "PAR:default 81": {
+        "name": "PAR:default 81",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 100
+      },
+      "PAR:default 82": {
+        "name": "PAR:default 82",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 101
+      },
+      "PAR:default 83": {
+        "name": "PAR:default 83",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 102
+      },
+      "PAR:default 84": {
+        "name": "PAR:default 84",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 103
+      },
+      "PAR:default 85": {
+        "name": "PAR:default 85",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 104
+      },
+      "PAR:default 86": {
+        "name": "PAR:default 86",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 105
+      },
+      "PAR:default 87": {
+        "name": "PAR:default 87",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 106
+      },
+      "PAR:default 88": {
+        "name": "PAR:default 88",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 107
+      },
+      "PAR:default 89": {
+        "name": "PAR:default 89",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 108
+      },
+      "PAR:default 90": {
+        "name": "PAR:default 90",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 109
+      },
+      "PAR:default 91": {
+        "name": "PAR:default 91",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 110
+      },
+      "PAR:default 92": {
+        "name": "PAR:default 92",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 111
+      },
+      "PAR:default 93": {
+        "name": "PAR:default 93",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 112
+      },
+      "PAR:default 94": {
+        "name": "PAR:default 94",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 113
+      },
+      "PAR:default 95": {
+        "name": "PAR:default 95",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 114
+      },
+      "PAR:default 96": {
+        "name": "PAR:default 96",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 115
+      },
+      "PAR:default 97": {
+        "name": "PAR:default 97",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 116
+      },
+      "PAR:default 98": {
+        "name": "PAR:default 98",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 117
+      },
+      "PAR:default 99": {
+        "name": "PAR:default 99",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 118
+      },
+      "PAR:default 100": {
+        "name": "PAR:default 100",
+        "ftype": "base",
+        "globalValue": 0,
+        "channels": [
+          {
+            "name": "dim",
+            "_circ": 0,
+            "_enabled": true,
+            "ctype": "base",
+            "hasDuplicatedCirc": false,
+            "roleType": "dimmer",
+            "roleFam": "dim"
+          }
+        ],
+        "_baseCirc": 119
+      }
+    },
+    "groups": {},
+    "_master": 1
+  },
+  "sequenceList": {
+    "list": [
+      {
+        "name": "gdfsfq",
+        "timeIn": 10,
+        "hold": 0,
+        "timeOut": 0,
+        "stateName": "cu"
+      },
+      {
+        "name": "gfdsq",
+        "timeIn": 10,
+        "hold": 0,
+        "timeOut": 0,
+        "stateName": "nocu"
+      },
+      {
+        "name": "fgds.",
+        "timeIn": 10,
+        "hold": 0,
+        "timeOut": 0,
+        "stateName": "__full"
+      },
+      {
+        "name": "dfs.",
+        "timeIn": 10,
+        "hold": 0,
+        "timeOut": 0,
+        "stateName": "__black"
+      }
+    ]
+  },
+  "sequencePlayer": {
+    "curSeq": {
+      "name": "black",
+      "timeIn": 0,
+      "hold": 0,
+      "timeOut": 0,
+      "stateName": "__black"
+    },
+    "nextSeq": {
+      "name": "black",
+      "timeIn": 0,
+      "hold": 0,
+      "timeOut": 0,
+      "stateName": "__black"
+    },
+    "playState": "stopped",
+    "pcurPlayedIdx": -1,
+    "pisPlaying": false
+  },
+  "globalTransport": {
+    "_bpm": 60,
+    "_time": 975522,
+    "_isPlaying": false
+  },
+  "curveStore": [
+    {
+      "name": "dim",
+      "uid": "5074",
+      "span": 1000,
+      "_frames": [
+        {
+          "_position": 0,
+          "_value": 0,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 1000,
+          "_value": 1,
+          "_easing": {
+            "etype": "l"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dim",
+      "uid": "7731",
+      "span": 1000,
+      "_frames": [
+        {
+          "_position": 0,
+          "_value": 0,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 1000,
+          "_value": 1,
+          "_easing": {
+            "etype": "l"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dim",
+      "uid": "e41c",
+      "span": 1000,
+      "_frames": [
+        {
+          "_position": 0,
+          "_value": 0,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 307.1500503524673,
+          "_value": 0.6997742663656885,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 1000,
+          "_value": 1,
+          "_easing": {
+            "etype": "l"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dim",
+      "uid": "e109",
+      "span": 1000,
+      "_frames": [
+        {
+          "_position": 0,
+          "_value": 0,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 832.8298086606244,
+          "_value": 0.2528216704288939,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 1000,
+          "_value": 1,
+          "_easing": {
+            "etype": "l"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dim",
+      "uid": "631d",
+      "span": 1000,
+      "_frames": [
+        {
+          "_position": 0,
+          "_value": 0,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 1000,
+          "_value": 1,
+          "_easing": {
+            "etype": "l"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dim",
+      "uid": "fc3e",
+      "span": 1000,
+      "_frames": [
+        {
+          "_position": 0,
+          "_value": 0,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 1000,
+          "_value": 1,
+          "_easing": {
+            "etype": "l"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dim",
+      "uid": "8a4d",
+      "span": 1000,
+      "_frames": [
+        {
+          "_position": 0,
+          "_value": 0,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 1000,
+          "_value": 1,
+          "_easing": {
+            "etype": "l"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dim",
+      "uid": "27db",
+      "span": 1000,
+      "_frames": [
+        {
+          "_position": 0,
+          "_value": 0,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 1000,
+          "_value": 1,
+          "_easing": {
+            "etype": "l"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dim",
+      "uid": "addb",
+      "span": 1000,
+      "_frames": [
+        {
+          "_position": 0,
+          "_value": 0,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 1000,
+          "_value": 1,
+          "_easing": {
+            "etype": "l"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dim",
+      "uid": "241e",
+      "span": 1000,
+      "_frames": [
+        {
+          "_position": 0,
+          "_value": 0,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 1000,
+          "_value": 1,
+          "_easing": {
+            "etype": "l"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dim",
+      "uid": "050a",
+      "span": 1000,
+      "_frames": [
+        {
+          "_position": 0,
+          "_value": 0,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 1000,
+          "_value": 1,
+          "_easing": {
+            "etype": "l"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dim",
+      "uid": "888a",
+      "span": 1000,
+      "_frames": [
+        {
+          "_position": 0,
+          "_value": 0,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 1000,
+          "_value": 1,
+          "_easing": {
+            "etype": "l"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dim",
+      "uid": "f009",
+      "span": 1000,
+      "_frames": [
+        {
+          "_position": 0,
+          "_value": 0,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 1000,
+          "_value": 1,
+          "_easing": {
+            "etype": "l"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dim",
+      "uid": "bba4",
+      "span": 1000,
+      "_frames": [
+        {
+          "_position": 0,
+          "_value": 0,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 1000,
+          "_value": 1,
+          "_easing": {
+            "etype": "l"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dim",
+      "uid": "fd6b",
+      "span": 1000,
+      "_frames": [
+        {
+          "_position": 0,
+          "_value": 0,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 1000,
+          "_value": 1,
+          "_easing": {
+            "etype": "l"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dim",
+      "uid": "6d17",
+      "span": 1000,
+      "_frames": [
+        {
+          "_position": 0,
+          "_value": 0,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 1000,
+          "_value": 1,
+          "_easing": {
+            "etype": "l"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dim",
+      "uid": "ece2",
+      "span": 1000,
+      "_frames": [
+        {
+          "_position": 0,
+          "_value": 0,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 1000,
+          "_value": 1,
+          "_easing": {
+            "etype": "l"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dim",
+      "uid": "ccfc",
+      "span": 1000,
+      "_frames": [
+        {
+          "_position": 0,
+          "_value": 0,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 1000,
+          "_value": 1,
+          "_easing": {
+            "etype": "l"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dim",
+      "uid": "0888",
+      "span": 1000,
+      "_frames": [
+        {
+          "_position": 0,
+          "_value": 0,
+          "_easing": {
+            "etype": "l"
+          }
+        },
+        {
+          "_position": 1000,
+          "_value": 1,
+          "_easing": {
+            "etype": "l"
+          }
+        }
+      ]
+    }
+  ],
+  "curvePlayer": {
+    "name": "CurvePlayer",
+    "curveLinkStore": {
+      "factory": {
+        "cl_PAR:dim_697d": {
+          "uid": "cl_PAR:dim_697d",
+          "pcurve": "e41c",
+          "channel": "PAR:dim",
+          "doLoop": true,
+          "doPause": false,
+          "offset": 0,
+          "startTime": 940092,
+          "pmaster": 1
+        },
+        "cl_PAR 1:dim_6caa": {
+          "uid": "cl_PAR 1:dim_6caa",
+          "pcurve": "e109",
+          "channel": "PAR 1:dim",
+          "doLoop": true,
+          "doPause": false,
+          "offset": 0,
+          "startTime": 32545,
+          "pmaster": 1
+        },
+        "cl_PAR 1:dim_e6d4": {
+          "uid": "cl_PAR 1:dim_e6d4",
+          "pcurve": "5074",
+          "channel": "PAR 1:dim",
+          "doLoop": true,
+          "doPause": false,
+          "offset": 0,
+          "startTime": 940092,
+          "pmaster": 1
+        },
+        "cl_PAR 2:dim_c2a4": {
+          "uid": "cl_PAR 2:dim_c2a4",
+          "pcurve": "631d",
+          "channel": "PAR 2:dim",
+          "doLoop": true,
+          "doPause": true,
+          "offset": 0,
+          "startTime": 940092,
+          "pmaster": 1
+        },
+        "cl_PAR:default:dim_6129": {
+          "uid": "cl_PAR:default:dim_6129",
+          "pcurve": "fc3e",
+          "channel": "PAR:default:dim",
+          "doLoop": true,
+          "doPause": false,
+          "offset": 0,
+          "startTime": 940092,
+          "pmaster": 1
+        },
+        "cl_PAR:default 1:dim_10a1": {
+          "uid": "cl_PAR:default 1:dim_10a1",
+          "pcurve": "8a4d",
+          "channel": "PAR:default 1:dim",
+          "doLoop": true,
+          "doPause": false,
+          "offset": 0,
+          "startTime": 940092,
+          "pmaster": 1
+        },
+        "cl_PAR:default 10:dim_1ab5": {
+          "uid": "cl_PAR:default 10:dim_1ab5",
+          "pcurve": "7731",
+          "channel": "PAR:default 10:dim",
+          "doLoop": true,
+          "doPause": false,
+          "offset": 0,
+          "startTime": 940092,
+          "pmaster": 1
+        },
+        "cl_PAR:default 100:dim_fc9c": {
+          "uid": "cl_PAR:default 100:dim_fc9c",
+          "pcurve": "27db",
+          "channel": "PAR:default 100:dim",
+          "doLoop": true,
+          "doPause": false,
+          "offset": 0,
+          "startTime": 940092,
+          "pmaster": 1
+        },
+        "cl_PAR:default 11:dim_d992": {
+          "uid": "cl_PAR:default 11:dim_d992",
+          "pcurve": "addb",
+          "channel": "PAR:default 11:dim",
+          "doLoop": true,
+          "doPause": false,
+          "offset": 0,
+          "startTime": 940092,
+          "pmaster": 1
+        },
+        "cl_PAR:default 12:dim_ff63": {
+          "uid": "cl_PAR:default 12:dim_ff63",
+          "pcurve": "241e",
+          "channel": "PAR:default 12:dim",
+          "doLoop": true,
+          "doPause": false,
+          "offset": 0,
+          "startTime": 940092,
+          "pmaster": 1
+        },
+        "cl_PAR:default 13:dim_db1a": {
+          "uid": "cl_PAR:default 13:dim_db1a",
+          "pcurve": "050a",
+          "channel": "PAR:default 13:dim",
+          "doLoop": true,
+          "doPause": false,
+          "offset": 0,
+          "startTime": 940092,
+          "pmaster": 1
+        },
+        "cl_PAR:default 14:dim_4578": {
+          "uid": "cl_PAR:default 14:dim_4578",
+          "pcurve": "888a",
+          "channel": "PAR:default 14:dim",
+          "doLoop": true,
+          "doPause": false,
+          "offset": 0,
+          "startTime": 940092,
+          "pmaster": 1
+        },
+        "cl_PAR:default 15:dim_3a43": {
+          "uid": "cl_PAR:default 15:dim_3a43",
+          "pcurve": "f009",
+          "channel": "PAR:default 15:dim",
+          "doLoop": true,
+          "doPause": false,
+          "offset": 0,
+          "startTime": 940092,
+          "pmaster": 1
+        },
+        "cl_PAR:default 16:dim_a1d6": {
+          "uid": "cl_PAR:default 16:dim_a1d6",
+          "pcurve": "bba4",
+          "channel": "PAR:default 16:dim",
+          "doLoop": true,
+          "doPause": false,
+          "offset": 0,
+          "startTime": 940092,
+          "pmaster": 1
+        },
+        "cl_PAR:default 17:dim_e75d": {
+          "uid": "cl_PAR:default 17:dim_e75d",
+          "pcurve": "fd6b",
+          "channel": "PAR:default 17:dim",
+          "doLoop": true,
+          "doPause": false,
+          "offset": 0,
+          "startTime": 940092,
+          "pmaster": 1
+        },
+        "cl_PAR:default 18:dim_ae55": {
+          "uid": "cl_PAR:default 18:dim_ae55",
+          "pcurve": "6d17",
+          "channel": "PAR:default 18:dim",
+          "doLoop": true,
+          "doPause": false,
+          "offset": 0,
+          "startTime": 940092,
+          "pmaster": 1
+        },
+        "cl_PAR:default 19:dim_7930": {
+          "uid": "cl_PAR:default 19:dim_7930",
+          "pcurve": "ece2",
+          "channel": "PAR:default 19:dim",
+          "doLoop": true,
+          "doPause": false,
+          "offset": 0,
+          "startTime": 940092,
+          "pmaster": 1
+        },
+        "cl_PAR:default 2:dim_8673": {
+          "uid": "cl_PAR:default 2:dim_8673",
+          "pcurve": "ccfc",
+          "channel": "PAR:default 2:dim",
+          "doLoop": true,
+          "doPause": false,
+          "offset": 0,
+          "startTime": 940092,
+          "pmaster": 1
+        },
+        "cl_PAR:default 20:dim_19ac": {
+          "uid": "cl_PAR:default 20:dim_19ac",
+          "pcurve": "0888",
+          "channel": "PAR:default 20:dim",
+          "doLoop": true,
+          "doPause": false,
+          "offset": 0,
+          "startTime": 940092,
+          "pmaster": 1
+        }
+      }
+    },
+    "curveLinkRefList": [
+      "cl_PAR:dim_697d",
+      "cl_PAR 1:dim_e6d4",
+      "cl_PAR 2:dim_c2a4",
+      "cl_PAR:default:dim_6129",
+      "cl_PAR:default 1:dim_10a1",
+      "cl_PAR:default 2:dim_8673",
+      "cl_PAR:default 10:dim_1ab5",
+      "cl_PAR:default 11:dim_d992",
+      "cl_PAR:default 12:dim_ff63",
+      "cl_PAR:default 13:dim_db1a",
+      "cl_PAR:default 14:dim_4578",
+      "cl_PAR:default 15:dim_3a43",
+      "cl_PAR:default 16:dim_a1d6",
+      "cl_PAR:default 17:dim_e75d",
+      "cl_PAR:default 18:dim_ae55",
+      "cl_PAR:default 19:dim_7930",
+      "cl_PAR:default 20:dim_19ac",
+      "cl_PAR:default 100:dim_fc9c"
+    ]
+  },
+  "fixtureFactory": {},
+  "stateList": {
+    "states": {
+      "cu": {
+        "name": "cu",
+        "full": false,
+        "fixtureStates": [
+          {
+            "name": "PAR",
+            "pChannelValues": {},
+            "pChannelCurveLinks": {
+              "dim": {
+                "uid": "cl_PAR:dim_697d"
+              }
+            }
+          },
+          {
+            "name": "PAR 1",
+            "pChannelValues": {
+              "dim": 0.1520882845062657
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR 2",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          }
+        ],
+        "linkedStates": []
+      },
+      "cuF": {
+        "name": "cuF",
+        "full": false,
+        "fixtureStates": [
+          {
+            "name": "PAR",
+            "pChannelValues": {},
+            "pChannelCurveLinks": {
+              "dim": {
+                "uid": "cl_PAR:dim_697d"
+              }
+            }
+          },
+          {
+            "name": "PAR 1",
+            "pChannelValues": {},
+            "pChannelCurveLinks": {
+              "dim": {
+                "uid": "cl_PAR 1:dim_e6d4"
+              }
+            }
+          },
+          {
+            "name": "PAR 2",
+            "pChannelValues": {},
+            "pChannelCurveLinks": {
+              "dim": {
+                "uid": "cl_PAR 2:dim_c2a4"
+              }
+            }
+          },
+          {
+            "name": "PAR:default",
+            "pChannelValues": {},
+            "pChannelCurveLinks": {
+              "dim": {
+                "uid": "cl_PAR:default:dim_6129"
+              }
+            }
+          },
+          {
+            "name": "PAR:default 1",
+            "pChannelValues": {},
+            "pChannelCurveLinks": {
+              "dim": {
+                "uid": "cl_PAR:default 1:dim_10a1"
+              }
+            }
+          },
+          {
+            "name": "PAR:default 2",
+            "pChannelValues": {},
+            "pChannelCurveLinks": {
+              "dim": {
+                "uid": "cl_PAR:default 2:dim_8673"
+              }
+            }
+          },
+          {
+            "name": "PAR:default 3",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 4",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 5",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 6",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 7",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 8",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 9",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 10",
+            "pChannelValues": {},
+            "pChannelCurveLinks": {
+              "dim": {
+                "uid": "cl_PAR:default 10:dim_1ab5"
+              }
+            }
+          },
+          {
+            "name": "PAR:default 11",
+            "pChannelValues": {},
+            "pChannelCurveLinks": {
+              "dim": {
+                "uid": "cl_PAR:default 11:dim_d992"
+              }
+            }
+          },
+          {
+            "name": "PAR:default 12",
+            "pChannelValues": {},
+            "pChannelCurveLinks": {
+              "dim": {
+                "uid": "cl_PAR:default 12:dim_ff63"
+              }
+            }
+          },
+          {
+            "name": "PAR:default 13",
+            "pChannelValues": {},
+            "pChannelCurveLinks": {
+              "dim": {
+                "uid": "cl_PAR:default 13:dim_db1a"
+              }
+            }
+          },
+          {
+            "name": "PAR:default 14",
+            "pChannelValues": {},
+            "pChannelCurveLinks": {
+              "dim": {
+                "uid": "cl_PAR:default 14:dim_4578"
+              }
+            }
+          },
+          {
+            "name": "PAR:default 15",
+            "pChannelValues": {},
+            "pChannelCurveLinks": {
+              "dim": {
+                "uid": "cl_PAR:default 15:dim_3a43"
+              }
+            }
+          },
+          {
+            "name": "PAR:default 16",
+            "pChannelValues": {},
+            "pChannelCurveLinks": {
+              "dim": {
+                "uid": "cl_PAR:default 16:dim_a1d6"
+              }
+            }
+          },
+          {
+            "name": "PAR:default 17",
+            "pChannelValues": {},
+            "pChannelCurveLinks": {
+              "dim": {
+                "uid": "cl_PAR:default 17:dim_e75d"
+              }
+            }
+          },
+          {
+            "name": "PAR:default 18",
+            "pChannelValues": {},
+            "pChannelCurveLinks": {
+              "dim": {
+                "uid": "cl_PAR:default 18:dim_ae55"
+              }
+            }
+          },
+          {
+            "name": "PAR:default 19",
+            "pChannelValues": {},
+            "pChannelCurveLinks": {
+              "dim": {
+                "uid": "cl_PAR:default 19:dim_7930"
+              }
+            }
+          },
+          {
+            "name": "PAR:default 20",
+            "pChannelValues": {},
+            "pChannelCurveLinks": {
+              "dim": {
+                "uid": "cl_PAR:default 20:dim_19ac"
+              }
+            }
+          },
+          {
+            "name": "PAR:default 21",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 22",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 23",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 24",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 25",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 26",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 27",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 28",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 29",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 30",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 31",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 32",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 33",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 34",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 35",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 36",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 37",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 38",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 39",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 40",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 41",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 42",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 43",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 44",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 45",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 46",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 47",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 48",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 49",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 50",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 51",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 52",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 53",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 54",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 55",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 56",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 57",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 58",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 59",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 60",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 61",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 62",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 63",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 64",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 65",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 66",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 67",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 68",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 69",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 70",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 71",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 72",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 73",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 74",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 75",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 76",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 77",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 78",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 79",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 80",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 81",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 82",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 83",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 84",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 85",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 86",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 87",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 88",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 89",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 90",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 91",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 92",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 93",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 94",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 95",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 96",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 97",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 98",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 99",
+            "pChannelValues": {
+              "dim": 0
+            },
+            "pChannelCurveLinks": {}
+          },
+          {
+            "name": "PAR:default 100",
+            "pChannelValues": {},
+            "pChannelCurveLinks": {
+              "dim": {
+                "uid": "cl_PAR:default 100:dim_fc9c"
+              }
+            }
+          }
+        ],
+        "linkedStates": []
+      }
+    },
+    "currentState": {
+      "name": "current",
+      "full": true,
+      "fixtureStates": [
+        {
+          "name": "PAR",
+          "pChannelValues": {},
+          "pChannelCurveLinks": {
+            "dim": {
+              "uid": "cl_PAR:dim_697d"
+            }
+          }
+        },
+        {
+          "name": "PAR 1",
+          "pChannelValues": {},
+          "pChannelCurveLinks": {
+            "dim": {
+              "uid": "cl_PAR 1:dim_e6d4"
+            }
+          }
+        },
+        {
+          "name": "PAR 2",
+          "pChannelValues": {},
+          "pChannelCurveLinks": {
+            "dim": {
+              "uid": "cl_PAR 2:dim_c2a4"
+            }
+          }
+        },
+        {
+          "name": "PAR:default",
+          "pChannelValues": {},
+          "pChannelCurveLinks": {
+            "dim": {
+              "uid": "cl_PAR:default:dim_6129"
+            }
+          }
+        },
+        {
+          "name": "PAR:default 1",
+          "pChannelValues": {},
+          "pChannelCurveLinks": {
+            "dim": {
+              "uid": "cl_PAR:default 1:dim_10a1"
+            }
+          }
+        },
+        {
+          "name": "PAR:default 2",
+          "pChannelValues": {},
+          "pChannelCurveLinks": {
+            "dim": {
+              "uid": "cl_PAR:default 2:dim_8673"
+            }
+          }
+        },
+        {
+          "name": "PAR:default 3",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 4",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 5",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 6",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 7",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 8",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 9",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 10",
+          "pChannelValues": {},
+          "pChannelCurveLinks": {
+            "dim": {
+              "uid": "cl_PAR:default 10:dim_1ab5"
+            }
+          }
+        },
+        {
+          "name": "PAR:default 11",
+          "pChannelValues": {},
+          "pChannelCurveLinks": {
+            "dim": {
+              "uid": "cl_PAR:default 11:dim_d992"
+            }
+          }
+        },
+        {
+          "name": "PAR:default 12",
+          "pChannelValues": {},
+          "pChannelCurveLinks": {
+            "dim": {
+              "uid": "cl_PAR:default 12:dim_ff63"
+            }
+          }
+        },
+        {
+          "name": "PAR:default 13",
+          "pChannelValues": {},
+          "pChannelCurveLinks": {
+            "dim": {
+              "uid": "cl_PAR:default 13:dim_db1a"
+            }
+          }
+        },
+        {
+          "name": "PAR:default 14",
+          "pChannelValues": {},
+          "pChannelCurveLinks": {
+            "dim": {
+              "uid": "cl_PAR:default 14:dim_4578"
+            }
+          }
+        },
+        {
+          "name": "PAR:default 15",
+          "pChannelValues": {},
+          "pChannelCurveLinks": {
+            "dim": {
+              "uid": "cl_PAR:default 15:dim_3a43"
+            }
+          }
+        },
+        {
+          "name": "PAR:default 16",
+          "pChannelValues": {},
+          "pChannelCurveLinks": {
+            "dim": {
+              "uid": "cl_PAR:default 16:dim_a1d6"
+            }
+          }
+        },
+        {
+          "name": "PAR:default 17",
+          "pChannelValues": {},
+          "pChannelCurveLinks": {
+            "dim": {
+              "uid": "cl_PAR:default 17:dim_e75d"
+            }
+          }
+        },
+        {
+          "name": "PAR:default 18",
+          "pChannelValues": {},
+          "pChannelCurveLinks": {
+            "dim": {
+              "uid": "cl_PAR:default 18:dim_ae55"
+            }
+          }
+        },
+        {
+          "name": "PAR:default 19",
+          "pChannelValues": {},
+          "pChannelCurveLinks": {
+            "dim": {
+              "uid": "cl_PAR:default 19:dim_7930"
+            }
+          }
+        },
+        {
+          "name": "PAR:default 20",
+          "pChannelValues": {},
+          "pChannelCurveLinks": {
+            "dim": {
+              "uid": "cl_PAR:default 20:dim_19ac"
+            }
+          }
+        },
+        {
+          "name": "PAR:default 21",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 22",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 23",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 24",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 25",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 26",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 27",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 28",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 29",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 30",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 31",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 32",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 33",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 34",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 35",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 36",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 37",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 38",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 39",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 40",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 41",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 42",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 43",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 44",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 45",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 46",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 47",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 48",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 49",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 50",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 51",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 52",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 53",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 54",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 55",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 56",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 57",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 58",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 59",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 60",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 61",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 62",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 63",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 64",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 65",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 66",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 67",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 68",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 69",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 70",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 71",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 72",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 73",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 74",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 75",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 76",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 77",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 78",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 79",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 80",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 81",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 82",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 83",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 84",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 85",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 86",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 87",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 88",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 89",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 90",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 91",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 92",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 93",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 94",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 95",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 96",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 97",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 98",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 99",
+          "pChannelValues": {
+            "dim": 0
+          },
+          "pChannelCurveLinks": {}
+        },
+        {
+          "name": "PAR:default 100",
+          "pChannelValues": {},
+          "pChannelCurveLinks": {
+            "dim": {
+              "uid": "cl_PAR:default 100:dim_fc9c"
+            }
+          }
+        }
+      ],
+      "linkedStates": []
+    },
+    "loadedStateName": "current"
+  },
+  "testValue": 1,
+  "dmxController": {
+    "selectedPortName": "/dev/tty.usbserial-EN132891",
+    "selectedDriverName": "QLC"
+  }
+}
