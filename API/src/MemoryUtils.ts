@@ -133,7 +133,7 @@ export class Factory <T extends  FElemType> {
 
   public configureFromObj(o: any) {
     this.clear();
-    if (o.factory) {
+    if (o && o.factory) {
       for (const [k, v] of Object.entries(o.factory)) {
         const t = this.createFromObj(v); // new this.TConstructor()
         if (t) {

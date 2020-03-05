@@ -65,6 +65,9 @@
         <Button text="edit" class="button pa-0 ma-0" @click='editedFixture = f'/>
       </td>
       <td>
+        <Button text="clone" class="button pa-0 ma-0" @click='cloneFixture(f)'/>
+      </td>
+      <td>
         <Toggle v-if='f.dimmerChannels && f.dimmerChannels.length ' text="test" :value="universe.testedChannel.circ===f.dimmerChannels[0].trueCirc" @input=testDimmerNum($event?f.dimmerChannels[0].trueCirc:-1) > T </Toggle>
       </td>
     </tr>
@@ -143,7 +146,11 @@ export default class FixturePatch extends Vue {
     // ,{text:"edit",sortable:false},{text:"test",sortable:false}
     ];
   }
-
+  cloneFixture(f:FixtureBase){
+    const c = f.clone();
+    c.baseCirc++;
+    this.universe.addFixture(c);
+  }
 
   public editedFixture = null;
 @universesModule.Mutation('addFixture') public addFixture!: UniversesMethods['addFixture'];

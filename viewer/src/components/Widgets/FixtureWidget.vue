@@ -49,7 +49,7 @@ import Point2DEditor from '@/components/Editors/Point2DEditor.vue';
 import ChannelWidget from './ChannelWidget.vue';
 import { DirectFixture } from '@API/Fixture';
 import { ChannelBase } from '@API/Channel';
-import UniversesMethods from '../store/universes';
+import UniversesMethods from '@/store/universes';
 import {rgbToHex, hexToRgb} from '@API/ColorUtils';
 import _ from 'lodash';
 

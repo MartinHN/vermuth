@@ -185,7 +185,7 @@ export class SequencePlayerClass {
     return this.pcurPlayedIdx;
   }
   public set curPlayedIdx(v: number) {
-    if (v > 0 && v < this.sequenceList.length) {
+    if (v >= 0 && v < this.sequenceList.length) {
       this.goToSequence(this.sequenceList.getAtIdx(v));
     }
   }
@@ -196,7 +196,7 @@ export class SequencePlayerClass {
   public curSeq: Sequence = blackSeq;
   public nextSeq: Sequence = blackSeq;
 
-
+  public pctDone = 0;
 
   @RemoteValue()
   public playState: string = 'stopped';
@@ -280,7 +280,7 @@ export class SequencePlayerClass {
 
 @RemoteFunction({sharedFunction: true})
 private goToStates(nextStates: State[], timeIn: number, opts?: {dimMasters?: number[]}, cb?: any) {
-  const res = 100; // ms between steps
+  const res = 25; // ms between steps
 
 
   if (nextStates && nextStates.length) {
@@ -300,8 +300,10 @@ private goToStates(nextStates: State[], timeIn: number, opts?: {dimMasters?: num
         // const time = t * res;
         // const pctIn = timeIn > 0 ? (1 - Math.max(0, (timeIn - time) / timeIn)) : 1;
         // const pctOut = timeOut>0?Math.max(0,(timeOut-time)/timeOut):0;
-        doSharedFunction(() =>
-          mergedState.applyCrossfade(pct),
+        doSharedFunction(() =>{
+                  mergedState.applyCrossfade(pct)
+                  this.pctDone = pct;
+                },
           );
       },
 
@@ -315,6 +317,7 @@ private goToStates(nextStates: State[], timeIn: number, opts?: {dimMasters?: num
 
   }
 }
+
 
 
 }

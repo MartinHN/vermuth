@@ -45,7 +45,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import {rgbToHex, hexToRgb} from '@API/ColorUtils';
-import FixtureWidget from './FixtureWidget.vue' ;
+import FixtureWidget from './Widgets/FixtureWidget.vue' ;
 import StateComponent from './StateComponent.vue';
 
 import Button from '@/components/Inputs/Button.vue';

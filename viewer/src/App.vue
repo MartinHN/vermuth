@@ -1,20 +1,21 @@
 <template>
   <v-app id="app">
-  <div id="fixHead" >
-    <div id="nav">
-      
-      <router-link to="/Sequencer">Sequencer</router-link>
-      <router-link to="/">Dashboard</router-link>
-      
-      <router-link to="/Patch">Patch</router-link>
-      <router-link to="/Config">Config</router-link>
+    <div id="fixHead" >
+      <div id="nav">
+
+        <router-link to="/Sequencer">Sequencer</router-link>
+        <router-link to="/">Dashboard</router-link>
+
+        <router-link to="/Patch">Patch</router-link>
+        <router-link to="/Config">Config</router-link>
+      </div>
     </div>
-  </div>
-  <div id="navContent">
-    <ServerState id="serverState"/>
-    
-    <router-view/>
-  </div>
+    <div id="navContent">
+      <ServerState id="serverState"/>
+
+      <router-view/>
+    </div>
+    <input ref="fakeFileInput" type="file" name="name" style="display: none;" @change="loadLocally($event.target.files)" />
   </v-app>
 </template>
 <script lang="ts">
@@ -44,8 +45,10 @@ export default class App extends Vue {
     originalFaviconNode = this.loadIconNode('favicon.ico');
     redFaviconNode = this.loadIconNode('favicon_red.ico');
     this.changeFavIcon(false);
-  }
+    window.addEventListener('keydown', (event)=> {this.processKey(event)})
 
+  }
+  
 
   @Watch('isConnected')
   public changeFavIcon(value: boolean) {
@@ -68,10 +71,10 @@ export default class App extends Vue {
     const links =  Array.from(head.getElementsByTagName('link'));
     for ( const l of links) {
 
-    if (l.rel === 'icon' && (l.href.includes('32x32') || l.href.includes('16x16')) ) {
-      head.removeChild(l);
+      if (l.rel === 'icon' && (l.href.includes('32x32') || l.href.includes('16x16')) ) {
+        head.removeChild(l);
+      }
     }
-   }
   }
 
   private loadIconNode(src: string) {
@@ -84,8 +87,52 @@ export default class App extends Vue {
     return link;
   }
 
+  @Action('SAVE_SESSION') public SAVE_SESSION!: () => void;
+  @Action('SAVE_LOCALLY') public SAVE_LOCALLY!:()=> void;
+  @Action('SET_SESSION_STATE') public SET_SESSION_STATE!:(o:any)=> void;
+  private processKey(event:KeyboardEvent){
+    console.log(event)
+    if (event.ctrlKey || event.metaKey) {
+      switch (String.fromCharCode(event.which).toLowerCase()) {
+        case 's':
+        event.preventDefault();
+        if(event.shiftKey){
+          this.SAVE_LOCALLY()
+        }else{
+          // alert('ctrl-s');
+          this.SAVE_SESSION();
+        }
+
+        break;
+        case 'o':
+        event.preventDefault();
+        (this.$refs.fakeFileInput as HTMLElement).click();
+        // event.preventDefault();
+        // alert('ctrl-f');
+        break;
+        case 'g':
+        // event.preventDefault();
+        // alert('ctrl-g');
+        break;
+      }
+    }
+    
+
+  }
+
+    public loadLocally(files: FileList) {
+    if (files && files.length === 1) {
+      const file = files[0];
+      const fileReader = new FileReader();
+      fileReader.addEventListener('load', (event: any) => {
+               this.SET_SESSION_STATE(JSON.parse(event.target.result));
+          });
+      fileReader.readAsText(file);
 
 
+    }
+
+  }
 
 }
 </script>
@@ -100,12 +147,12 @@ export default class App extends Vue {
   min-height: 100%;
   min-width: 100%;
 
-      -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 #fixHead{
   z-index:1000;

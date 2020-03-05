@@ -3,7 +3,7 @@ const util  = require("util");
 const EventEmitter = require("events").EventEmitter;
 
 const CachedOSCMessages = {} ;
-for (let i = 0 ; i < 512 ; i++) {
+for (let i = 1 ; i <= 512 ; i++) {
   CachedOSCMessages[i] = {address: `/${i}`, args: [{type: "f", value: 0 / 255.0}]};
 }
 
@@ -36,6 +36,7 @@ function OSCDriver(deviceId = "127.0.0.1", options = {}) {
 }
 
 OSCDriver.prototype.createMsg = function(c, v) {
+   if(!CachedOSCMessages[c]){debugger; return;}
   CachedOSCMessages[c].args[0].value = v / 255.0;
   return CachedOSCMessages[c];
 };

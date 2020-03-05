@@ -20,6 +20,8 @@ export class FixtureBase implements FixtureBaseI {
 
 
   public set baseCirc(n: number) {
+    if(isNaN(n)){debugger;return;}
+    if(n===0){n=1;debugger;}
     this.__setBaseCirc(n);
   }
   public get baseCirc() {return this._baseCirc; }
@@ -193,6 +195,7 @@ export class FixtureBase implements FixtureBaseI {
 
   @RemoteFunction({sharedFunction: true})
   public setMaster(v: ChannelValueType) {
+    if(isNaN(v)){debugger;return;}
     this.globalValue = v;
     this.syncToGlobalValue(v);
   }
@@ -243,7 +246,6 @@ export class FixtureBase implements FixtureBaseI {
 
   public addChannel(c: ChannelBase|undefined) {
     if (c === undefined) {
-      debugger;
       c = new ChannelBase('channel', 0, this.span, true);
     }
     c.setParentFixture (this);

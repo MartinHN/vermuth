@@ -54,6 +54,30 @@ export default class Sequencer extends Vue {
   @sequenceModule.State('globalTransport') public globalTransport!: SequenceMethods['globalTransport'];
 
   public editOrder = false;
+
+
+  mounted(){
+    window.addEventListener('keydown', this.processKey)
+  }
+  destroyed(){
+    window.removeEventListener('keydown', this.processKey)
+  }
+  private processKey(event:KeyboardEvent){
+    // console.log(event)
+    if (event.ctrlKey || event.metaKey) {
+      if(event.key==="ArrowDown"){
+        this.next()
+      }
+      else if(event.key==="ArrowUp"){
+        this.prev()
+      }
+      // const letter  =String.fromCharCode(event.which).toLowerCase();
+        
+    }
+    
+
+  }
+
   get isPlayingSeq() {
     return this.seqPlayer.isPlaying;
   }
@@ -92,6 +116,13 @@ export default class Sequencer extends Vue {
   }
   get playText() {
     return this.togglePlay ? 'stop' : 'play';
+  }
+
+  next(){
+    this.playedIdx = Math.max(0,Math.min(this.seqList.length-1,this.playedIdx+1))
+  }
+  prev(){
+    this.playedIdx = Math.max(0,Math.min(this.seqList.length-1,this.playedIdx-1))
   }
 }
 </script> 

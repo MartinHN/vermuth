@@ -157,7 +157,7 @@ class DMXController implements DMXControllerI {
     }
   }
   public setCircs(msg: Array<{c: number, v: number}>, fromSocket) {
-    // console.log('set_circ',msg,this.__connected)
+    
 
     // const allC = this.__universe.allChannels;
     // msg.map(m=>{allC.map(cc=>{if(cc.circ === m.c){cc.setValue(m.v,false)}})})
@@ -188,6 +188,10 @@ class DMXController implements DMXControllerI {
   public arrayToObj(a: Array<{c: number, v: number}>, mult: number= 1) {
     const res = {};
     for (const e of a ) {
+      if(isNaN(e.c) || isNaN(e.v)){
+        debugger;
+        continue;
+      }
       res[e.c] = e.v * mult;
     }
     // console.log(res)

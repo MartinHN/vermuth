@@ -285,7 +285,7 @@ export class CurvePlayerClass extends TimeListener {
     }
     this.curveLinkStore.configureFromObj(o.curveLinkStore);
 
-    if (o.curveLinkRefList) {
+    if (o && o.curveLinkRefList) {
       o.curveLinkRefList = [...new Set(o.curveLinkList)]; // avoid duplicates
       const cls = generateFromUIDList(o.curveLinkRefList, this.curveLinkStore);
       cls.map((e) => this.addCurveLink(e));

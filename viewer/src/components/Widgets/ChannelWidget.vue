@@ -48,7 +48,7 @@ import Toggle from '@/components/Inputs/Toggle.vue';
 import Modal from '@/components/Utils/Modal.vue';
 import FullCurveEditor from '@/components/Editors/FullCurveEditor.vue';
 import { ChannelBase } from '@API/Channel';
-import UniversesMethods from '../store/universes';
+import UniversesMethods from '@/store/universes';
 import {Curve, CurveStore, CurveBaseI} from '@API/Curve';
 import {CurvePlayer, CurveLink} from '@API/CurvePlayer';
 import {uuidv4} from '@API/Utils';

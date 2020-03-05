@@ -8,6 +8,7 @@
   <Button text="clear session" color="red"  @click="clearSession"/>
   <Button text="panic (all to 0)" color="red"  @click="panic"/>
   <Button text="try other ip than default" @click="alertTryIP"/>
+  <Button text="go to Backups" @click="goToBackups"/>
   </div>
 </template>
 
@@ -71,6 +72,16 @@ export default class Config extends Vue {
     if (res) {
       this.tryIP(res);
     }
+  }
+
+  public goToBackups(){
+    const loc = window.location
+    let bkLocation = loc.origin
+    if(loc.port==="8081"){
+      bkLocation = loc.protocol+"//"+loc.hostname+":3000/backups"
+    }
+    window.open(bkLocation)
+
   }
 
   // @configModule.State('fixtures') private fixtures!: ConfigMethods['fixtures'];

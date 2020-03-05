@@ -10,7 +10,7 @@ export function  doTimer(name: string, length: number, resolution: number, onins
   const start = new Date().getTime();
 
   function instance() {
-    if (++count === steps) {
+    if (++count >= steps) {
       oninstance(steps, count);
       stopTimer(name);
       // if (oncomplete) {oncomplete(); }

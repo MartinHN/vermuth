@@ -41,7 +41,7 @@ import Numbox from '@/components/Inputs/Numbox.vue';
 import Toggle from '@/components/Inputs/Toggle.vue';
 import TextInput from '@/components/Inputs/TextInput.vue';
 import ChannelRack from '@/components/ChannelRack.vue' ;
-import FixtureWidget from '@/components/FixtureWidget.vue' ;
+import FixtureWidget from '@/components/Widgets/FixtureWidget.vue' ;
 import Modal from '@/components/Utils/Modal.vue';
 
 import UniversesMethods from '../../store/universes';
@@ -56,7 +56,7 @@ const universesModule = namespace('universes');
 
 
 @Component({
-  components: {Button, Numbox, Toggle, TextInput, FixtureWidget, ChannelRack},
+  components: {Button, Numbox, Toggle, TextInput, FixtureWidget, "ChannelRack":ChannelRack},
 })
 export default class StateEditor extends Vue {
   @Prop({default: null, required: true})

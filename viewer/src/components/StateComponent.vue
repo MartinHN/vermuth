@@ -17,7 +17,7 @@
       <v-col cols=2>
         <div id="stateActions">
           <Button class="add" @click="saveNewState" text="save"></Button>
-          <Button class="edit" @click="editState" text="edit"></Button>
+          <Button v-if="selectedState && !selectedState.name.startsWith('__')"  class="edit" @click="editState" text="edit"></Button>
           <Button class="rename" @click="renameStatePrompt" text="rename"></Button>
           <Button class="remove" @click="removeStatePrompt" text="-" color='red'></Button>
           <v-select label=linkedStates multiple  v-model="linkedStateNames" style="width:100%" :items=linkableStateNames>

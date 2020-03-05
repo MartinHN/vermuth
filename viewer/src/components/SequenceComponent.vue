@@ -15,8 +15,11 @@
           <Button  text="up"  @click="seqList.up(sequence)"  />
           <Button  text="down"  @click="seqList.down(sequence)" />
         </v-col>
-          <v-col cols=2 v-if=!editMode>
+          <v-col cols=2 v-if=!editMode style="display:block">
           <Button  text="Go" @click="goToSequenceNamed({name:sequence.name})"/>
+          <div :style="{width:'100%', height:'5px'}">
+            <div :style='{width:progess,height:"100%",background:"red"}'></div>
+        </div>
         </v-col>
         <!-- <Button text="Black" @click="goToSequenceNamed({name:sequence.name,dimMaster:0})" style="width:20%" /> -->
         <v-col cols=2>
@@ -84,7 +87,15 @@ export default class SequenceComponent extends Vue {
       return this.sequence.stateName;
     }
   }
-
+  get seqPlayer() {
+    return rootState.sequencePlayer;
+  }
+  get isPlaying(){
+    return this.seqPlayer.isPlaying && (this.seqPlayer.curPlayedIdx===this.seqNumber);
+  }
+  get progess(){
+    return (this.isPlaying?(this.seqPlayer.pctDone*100)+"":"0") + "%"
+  }
 
 
 

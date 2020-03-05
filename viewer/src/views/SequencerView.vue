@@ -18,5 +18,7 @@ import Sequencer from '@/components/Sequencer.vue'; // @ is an alias to /src
     // CurveEditor,
   },
 })
-export default class SequencerView extends Vue {}
+export default class SequencerView extends Vue {
+
+}
 </script>
