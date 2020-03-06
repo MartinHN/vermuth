@@ -147,8 +147,10 @@ function setStateFromObject(msg: any, socket: any) {
     }
     // no need to sync as we already brodcasted the state
     doSharedFunction(() =>
-      rootState.configureFromObj(msg));
-
+      {
+        rootState.configureFromObj(msg)
+      });
+    console.log('end configure')
     // if(socket){
       //   nextTick(()=>unblockSocket(socket))
       // }

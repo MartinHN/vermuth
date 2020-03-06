@@ -378,7 +378,8 @@ export class StateList {
   }
 
   public configureFromObj(ob: any) {
-    Object.keys(this.states).map((name) => this.removeStateNamed( name) );
+    Object.keys(this.states).filter(e=>!e.startsWith("__")).map((name) => this.removeStateNamed( name) );
+    if(ob){
     if (ob.states) {
       Object.keys(ob.states).map((name) => this.addState(State.createFromObj(ob.states[name])));
     }
@@ -387,7 +388,7 @@ export class StateList {
       this.currentState.configureFromObj(ob.currentState);
       this.recallState(this.currentState, 1);
     }
-
+  }
 
   }
 
