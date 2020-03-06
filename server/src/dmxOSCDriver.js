@@ -66,6 +66,7 @@ OSCDriver.prototype.update = function(u) {
   for (const c in u) {
     this.universe[c] = u[c];
     const m = this.createMsg(c, this.universe[c]);
+    if(!m){continue;}
     this.dev.send(m);
   }
 };
@@ -74,6 +75,7 @@ OSCDriver.prototype.updateAll = function(v) {
   for (let i = 1; i <= this.bufSize ; i++) {
     this.universe[i] = v;
     const m = this.createMsg(i, this.universe[i]);
+    if(!m){continue;}
     this.dev.send(m);
   }
 };

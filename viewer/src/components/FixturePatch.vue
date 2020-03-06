@@ -1,7 +1,7 @@
 <template>
   <div class="main">
-    
-    
+
+
     <v-container class="FixturePatch" fluid>
       <v-row no-gutter>
         <v-col cols=8 >
@@ -59,7 +59,7 @@
          {{f.ftype}} ({{f.span}} ch)
        </td>
        <td>
-        <Button class=" removeFixture " color='red' @click="removeFixture({fixture:f})" tabIndex="-1" text="-"/>
+        <Button class=" removeFixture " color='red' @click="askToRmFixture(f)" tabIndex="-1" text="-"/>
       </td>
       <td>
         <Button text="edit" class="button pa-0 ma-0" @click='editedFixture = f'/>
@@ -133,7 +133,7 @@ export default class FixturePatch extends Vue {
   get fixtureColors() {
     const cols: {[id: string]: string} = {};
     for (const f of Object.values(this.universe.fixtures)) {
-       cols[f.name] = this.fixtureErrorMsgs[f.name] ? 'red' : 'inherit';
+      cols[f.name] = this.fixtureErrorMsgs[f.name] ? 'red' : 'inherit';
     }
     return cols;
   }
@@ -153,53 +153,59 @@ export default class FixturePatch extends Vue {
   }
 
   public editedFixture = null;
-@universesModule.Mutation('addFixture') public addFixture!: UniversesMethods['addFixture'];
-@universesModule.Mutation('duplicateFixture') public duplicateFixture!: UniversesMethods['duplicateFixture'];
+  @universesModule.Mutation('addFixture') public addFixture!: UniversesMethods['addFixture'];
+  @universesModule.Mutation('duplicateFixture') public duplicateFixture!: UniversesMethods['duplicateFixture'];
 
-@universesModule.Mutation('setFixtureBaseCirc') public setFixtureBaseCirc!: UniversesMethods['setFixtureBaseCirc'];
-
-
-
-
-@universesModule.Mutation('linkChannelToCirc') public linkChannelToCirc!: UniversesMethods['linkChannelToCirc'];
-@universesModule.Mutation('setChannelName') public setChannelName!: UniversesMethods['setChannelName'];
-@universesModule.Mutation('removeChannel') public removeChannel!: UniversesMethods['removeChannel'];
-
-@universesModule.Mutation('removeFixture') public removeFixture!: UniversesMethods['removeFixture'];
-@universesModule.Mutation('setFixtureName') public setFixtureName!: UniversesMethods['setFixtureName'];
-
-@universesModule.Getter('testDimmerNumVal') public testDimmerNumVal!: UniversesMethods['testDimmerNumVal'];
-@universesModule.Mutation('testDimmerNum') public testDimmerNum!: UniversesMethods['testDimmerNum'];
-
-@universesModule.State('universe') private universe!: UniversesMethods['universe'];
+  @universesModule.Mutation('setFixtureBaseCirc') public setFixtureBaseCirc!: UniversesMethods['setFixtureBaseCirc'];
 
 
 
 
-@universesModule.Getter('usedChannels') private usedChannels!: UniversesMethods['usedChannels'];
+  @universesModule.Mutation('linkChannelToCirc') public linkChannelToCirc!: UniversesMethods['linkChannelToCirc'];
+  @universesModule.Mutation('setChannelName') public setChannelName!: UniversesMethods['setChannelName'];
+  @universesModule.Mutation('removeChannel') public removeChannel!: UniversesMethods['removeChannel'];
 
-private searchFixtureText = '';
-private showFixtureExplorer = false;
+  @universesModule.Mutation('removeFixture') public removeFixture!: UniversesMethods['removeFixture'];
+  @universesModule.Mutation('setFixtureName') public setFixtureName!: UniversesMethods['setFixtureName'];
+
+  @universesModule.Getter('testDimmerNumVal') public testDimmerNumVal!: UniversesMethods['testDimmerNumVal'];
+  @universesModule.Mutation('testDimmerNum') public testDimmerNum!: UniversesMethods['testDimmerNum'];
+
+  @universesModule.State('universe') private universe!: UniversesMethods['universe'];
+
+
+
+
+  @universesModule.Getter('usedChannels') private usedChannels!: UniversesMethods['usedChannels'];
+
+  private searchFixtureText = '';
+  private showFixtureExplorer = false;
   public addAndQuitFExplorer(e: FixtureBase) {
-   this.showFixtureExplorer = false;
-   if (e) {
-    const numFixture = parseInt(prompt('how much do you want to add', '1') || '0', 10);
-    const baseAddr  = parseInt(prompt('starting dimmer number', '1') || '1', 10);
-    for (let i = 0 ; i < numFixture ; i++) {
-      e.name = e.fixtureType;
-      e.baseCirc = baseAddr + e.span * i;
-      this.universe.addFixture(e);
-      e = e.clone();
-    }
+    this.showFixtureExplorer = false;
+    if (e) {
+      const numFixture = parseInt(prompt('how much do you want to add', '1') || '0', 10);
+      const baseAddr  = parseInt(prompt('starting dimmer number', '1') || '1', 10);
+      for (let i = 0 ; i < numFixture ; i++) {
+        e.name = e.fixtureType;
+        e.baseCirc = baseAddr + e.span * i;
+        this.universe.addFixture(e);
+        e = e.clone();
+      }
 
+    }
   }
-}
-public open() {
-  // debugger
-}
-public close() {
-  debugger;
-}
+
+  private askToRmFixture(f:FixtureBase){
+    if(window.confirm (`areYouSure to DELETE fixture ${f.name}`)){
+      this.removeFixture({fixture:f})
+    }
+  }
+  public open() {
+    // debugger
+  }
+  public close() {
+    debugger;
+  }
 
 
 }
