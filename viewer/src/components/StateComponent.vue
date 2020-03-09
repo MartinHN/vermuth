@@ -2,7 +2,7 @@
   
   <div>
     <v-row no-gutters >
-      <v-col cols=10 >
+      <v-col cols=6 >
         <v-list dense class="overflow-y-auto" style=max-height:200px >
           <!-- <v-subheader>Presets</v-subheader> -->
           <v-list-item-group v-model="selectedStateIdx" > <!-- v-model="item" color="primary"> -->
@@ -14,7 +14,7 @@
           </v-list-item-group>
         </v-list>
       </v-col>
-      <v-col cols=2>
+      <v-col >
         <div id="stateActions">
           <Button class="add" @click="saveNewState" text="save"></Button>
           <Button v-if="selectedState && !selectedState.name.startsWith('__')"  class="edit" @click="editState" text="edit"></Button>

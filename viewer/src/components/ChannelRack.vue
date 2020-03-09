@@ -193,7 +193,7 @@ export default class ChannelRack extends Vue {
       needDisplay = needDisplay && f.channels.some((c) => c.enabled);
     }
     if (this.showActive) {
-      needDisplay = needDisplay && f.channels.some((c) => c.floatValue > 0);
+      needDisplay = needDisplay && f.hasActiveChannels();
     }
     if (!(this.selectedFixtureNames && this.selectedFixtureNames.length === 0) ) {
       needDisplay = needDisplay && (this.selectedFixtureNames.find((fn) => fn === f.name) !== undefined);

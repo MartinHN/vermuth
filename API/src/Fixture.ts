@@ -200,6 +200,10 @@ export class FixtureBase implements FixtureBaseI {
 
   }
 
+  public hasActiveChannels(){
+    return (this.dimmerChannels || this.channels).some((c) => c.floatValue > 0)
+  }
+
   @RemoteFunction({sharedFunction: true})
   public setMaster(v: ChannelValueType) {
     if(isNaN(v)){debugger;return;}
