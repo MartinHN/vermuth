@@ -50,24 +50,14 @@ export class FixtureBase implements FixtureBaseI {
     return this.channels.map((c) => c.getState());
   }
   public get colorChannels() {
-    return this.getChannelsOfRole('color');
+    return this.getUniqueChannelsOfRole('color');
   }
   public get positionChannels() {
-    return this.getChannelsOfRole('position');
+    return this.getUniqueChannelsOfRole('position');
   }
 
-  public get dimmerChannels() { // flatten if multiple dimmers
-    let dimOrDims = this.getChannelsOfRole('dim');
-    if (dimOrDims && dimOrDims.dimmer) {
-      dimOrDims = dimOrDims.dimmer;
-      if ( (dimOrDims.length === undefined) ) {
-      dimOrDims = [dimOrDims];
-    }
-
-    } else {
-      dimOrDims = [];
-    }
-    return dimOrDims;
+  public get dimmerChannels() { 
+    return this.getChannelsOfRole('dim')["dimmer"];
   }
 
   public get enabled() {return this.channels.some((c) => c.enabled); }
@@ -132,7 +122,6 @@ export class FixtureBase implements FixtureBaseI {
 
 
   public clone() {
-    debugger;
     const res =  FixtureBase.createFromObj(buildEscapedObject(this)) as FixtureBase;
     res.ftype = this.ftype;
     return res;
@@ -169,15 +158,33 @@ export class FixtureBase implements FixtureBaseI {
     return '/mainUniverse/' + this.name;
   }
 
-  public  getChannelsOfRole(n: string) {
-    const cch: any = {};
+  public  getChannelsOfRole(n: string) :{[id:string]:ChannelBase[]}{
+    const cch: {[id:string]:ChannelBase[]} = {};
     for (const ch of this.channels ) {
       if (ch.roleFam === n) {
         if (Object.keys(cch).includes(ch.roleType)) {
-          if (!cch[ch.roleType].length) {
-            cch[ch.roleType] = [cch[ch.roleType]];
-          }
+          // if (!cch[ch.roleType].length) {
+          //   cch[ch.roleType] = [cch[ch.roleType]];
+          // }
           cch[ch.roleType].push(ch);
+
+        } else {
+        cch[ch.roleType] = [ch];
+        }
+      }
+    }
+    return cch ;
+  }
+  public  getUniqueChannelsOfRole(n: string) :{[id:string]:ChannelBase}{
+    const cch: {[id:string]:ChannelBase} = {};
+    for (const ch of this.channels ) {
+      if (ch.roleFam === n) {
+        if (Object.keys(cch).includes(ch.roleType)) {
+          // if (!cch[ch.roleType].length) {
+          //   cch[ch.roleType] = [cch[ch.roleType]];
+          // }
+          console.error("not unique, ignoring" ,ch.roleType)
+          // cch[ch.roleType].push(ch);
 
         } else {
         cch[ch.roleType] = ch;

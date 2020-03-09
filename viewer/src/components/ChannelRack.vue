@@ -65,7 +65,7 @@ const universesModule = namespace('universes');
 })
 export default class ChannelRack extends Vue {
 
-
+  
   @Prop({required: true})
   public displayableFixtureList!: FixtureBase[];
 

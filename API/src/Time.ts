@@ -9,9 +9,9 @@ export function  doTimer(name: string, length: number, resolution: number, onins
   let count = 0;
   const start = new Date().getTime();
 
-  function instance() {
+  const instance=()=> {
     if (++count >= steps) {
-      oninstance(steps, count);
+      oninstance(steps,Math.min(steps, count));
       stopTimer(name);
       // if (oncomplete) {oncomplete(); }
     } else {
@@ -21,10 +21,12 @@ export function  doTimer(name: string, length: number, resolution: number, onins
       timers[name].timeout  =  setTimeout(instance, Math.max(0, speed - diff));
     }
   }
-  oninstance(steps, count);
   stopTimer(name);
-  timers[name] = {timeout : setTimeout(instance, speed),
-    endCB: oncomplete};
+  timers[name] = {timeout : null,endCB: ()=>{console.log('end timer');if(oncomplete){oncomplete()};}};
+    console.log("timer",name)
+  instance()
+  // oninstance(steps, count);
+  
   }
 
 export function stopTimer(name: string) {

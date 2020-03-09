@@ -4,12 +4,11 @@
       <v-container fluid>
         <v-row no-gutters >
           <v-col cols=3>
-      <div> {{globalTransport.beat}}</div>
-    </v-col>
-    <v-col cols=3>
-        <Toggle v-model=togglePlay style="height:40px" :text=playState> </Toggle>
-
-      </v-col>
+            <div> {{Number.parseFloat(globalTransport.beat).toFixed(2)}}</div>
+          </v-col>
+          <v-col cols=3>
+            <Toggle v-model=togglePlay style="height:40px" :text=playState> </Toggle>
+          </v-col>
         </v-row>
         <v-row no-gutters >
           <v-col cols=6>
@@ -22,15 +21,18 @@
             <Numbox text="idx" :value=playedIdx @change="playedIdx=$event" ></Numbox>
           </v-col>
         </v-row>
+        <div :style="{width:'100%', height:'5px'}">
+            <div :style='{width:pctDone,height:"100%",background:"red"}'></div>
+        </div>
       </v-container>
-        <SequenceComponent v-for="(s,i) in seqList" :editMode=editOrder :key='s.id' :seqNumber=i :sequence="s" :style="{background:getHighlightedColor(i)}" />
+      <SequenceComponent v-for="(s,i) in seqList" :editMode=editOrder :key='s.id' :seqNumber=i :sequence="s" :style="{background:getHighlightedColor(i)}" />
 
-      </div>
     </div>
+  </div>
 
-  </template>
+</template>
 
-  <script lang="ts">
+<script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 import Button from '@/components/Inputs/Button.vue';
@@ -65,14 +67,18 @@ export default class Sequencer extends Vue {
   private processKey(event:KeyboardEvent){
     // console.log(event)
     if (event.ctrlKey || event.metaKey) {
-      if(event.key==="ArrowDown"){
+      const letter = String.fromCharCode(event.which).toLowerCase()
+      if(letter==='e'){
+        this.editOrder = !this.editOrder
+      }
+      else if(event.key==="ArrowDown"){
         this.next()
       }
       else if(event.key==="ArrowUp"){
         this.prev()
       }
       // const letter  =String.fromCharCode(event.which).toLowerCase();
-        
+      
     }
     
 
@@ -80,6 +86,9 @@ export default class Sequencer extends Vue {
 
   get isPlayingSeq() {
     return this.seqPlayer.isPlaying;
+  }
+  get pctDone() {
+    return this.seqPlayer.pctDone<1?this.seqPlayer.pctDone*100+"%":"0%";
   }
   get playState() {
     return this.globalTransport.isPlaying ? 'stop' : 'play';

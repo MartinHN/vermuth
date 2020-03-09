@@ -1,6 +1,6 @@
 <template>
   <div class="NumboxPH tooltip pa-0 ma-0">
-    <span class="tooltiptext">{{errMsg}}</span>
+    <span v-if=errMsg class="tooltiptext">{{errMsg}}</span>
     <v-text-field v-if=editable 
     class="pa-0 ma-0"
     type="number" :value="value" 
@@ -80,19 +80,20 @@ input{
   }*/
 
   .tooltip .tooltiptext {
-    display: none;
-    width: 120px;
+    /*display: none;*/
+    width: 110px;
     background-color: black;
     color: #fff;
     text-align: center;
     border-radius: 6px;
     padding: 5px 0;
-
+    font-size: 8px;
     /* Position the tooltip */
-    position: absolute;
+    /*position: absolute;*/
     z-index: 1;
-    top: -5px;
-    left: 105%;
+    top: 5px;
+    left: 15%;
+    display: inherit;
   }
 
   .tooltip:hover .tooltiptext {

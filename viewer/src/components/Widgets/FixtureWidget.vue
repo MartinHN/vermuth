@@ -24,12 +24,12 @@
         <Point2DEditor slot="body" :value="fixturePositionList" @input="setFixturePosition($event)"></Point2DEditor>
       </modal>
 
-      <ChannelWidget v-for='c of fixtureProp.getChannelsOfRole("position")' :key='c.id' :channelProp="c" v-if='c.matchFilterList(filterList)' :showProps=showProps />
+      <ChannelWidget v-for='c of fixtureProp.positionChannels' :key='c.id' :channelProp="c" v-if='c.matchFilterList(filterList)' :showProps=showProps />
 
     </div>
     <div style="width:100%">
-
-      <ChannelWidget style="width:100%" v-for="c of otherChannels" v-if='c.matchFilterList(filterList)' :key='c.id' :channelProp="c" :showProps=showProps />
+        
+      <ChannelWidget style="width:100%" v-for="c of otherChannels" v-if='c && c.matchFilterList(filterList)' :key='c.id' :channelProp="c" :showProps=showProps />
 
     </div>
 
@@ -59,21 +59,18 @@ const universesModule = namespace('universes');
   components: {Slider, Button, Toggle, ChannelWidget, Modal, Point2DEditor},
 })
 export default class FixtureWidget extends Vue {
-  get colorChannels(): any {
+  get colorChannels() {
     return this.fixtureProp.colorChannels;
   }
   get matchedDimmerChannels() {
-    return Object.values(this.dimmerChannels).filter( (c) => (c as ChannelBase).matchFilterList(this.filterList));
+    return Object.values(this.dimmerChannels).filter( (c) => c.matchFilterList(this.filterList));
   }
-  get dimmerChannels(): any {
+  get dimmerChannels() {
     return this.fixtureProp.dimmerChannels;
   }
 
   get otherChannels() {
     const res =  this.fixtureProp.getChannelsOfRole('other');
-    if (Object.keys(res).length > 1) {
-      debugger;
-    }
     if (res && res.other) {
       return res.other;
     }

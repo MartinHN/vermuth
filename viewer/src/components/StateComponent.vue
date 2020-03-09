@@ -60,6 +60,31 @@ type ValueOf<T> = T[keyof T];
 })
 export default class StateComponent extends Vue {
 
+  public mounted(){
+       window.addEventListener('keydown',this.processKey)
+
+  }
+  public destroyed(){
+    window.removeEventListener('keydown',this.processKey)
+  }
+  public processKey(event:KeyboardEvent){
+    if (event.ctrlKey || event.metaKey) {
+      const letter = String.fromCharCode(event.which).toLowerCase()
+      if(letter==='e'){
+        
+      }
+      else if(event.key==="ArrowDown"){
+        event.preventDefault()
+        if(this.selectedStateIdx<this.stateNames.length-1){this.selectedStateIdx++;}
+      }
+      else if(event.key==="ArrowUp"){
+        event.preventDefault()
+       if(this.selectedStateIdx>0){this.selectedStateIdx--;}
+      }
+      // const letter  =String.fromCharCode(event.which).toLowerCase();
+      
+    }
+  }
 
   get editedState() {
     return this.selectedState;

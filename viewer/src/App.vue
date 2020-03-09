@@ -45,8 +45,11 @@ export default class App extends Vue {
     originalFaviconNode = this.loadIconNode('favicon.ico');
     redFaviconNode = this.loadIconNode('favicon_red.ico');
     this.changeFavIcon(false);
-    window.addEventListener('keydown', (event)=> {this.processKey(event)})
+    window.addEventListener('keydown',this.processKey)
 
+  }
+  public destroyed(){
+    window.removeEventListener('keydown',this.processKey)
   }
   
 
@@ -91,7 +94,7 @@ export default class App extends Vue {
   @Action('SAVE_LOCALLY') public SAVE_LOCALLY!:()=> void;
   @Action('SET_SESSION_STATE') public SET_SESSION_STATE!:(o:any)=> void;
   private processKey(event:KeyboardEvent){
-    console.log(event)
+    // console.log(event)
     if (event.ctrlKey || event.metaKey) {
       switch (String.fromCharCode(event.which).toLowerCase()) {
         case 's':

@@ -27,7 +27,7 @@
 
 
     </div>
-    <ChannelRack :displayableFixtureList="state.getSavedFixtureList(universe.fixtureList)" />
+    <channel-rack :displayableFixtureList="state.getSavedFixtureList(universe.fixtureList)" />
   </div>
 
 </div>

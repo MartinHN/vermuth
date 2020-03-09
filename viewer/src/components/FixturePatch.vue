@@ -185,13 +185,15 @@ export default class FixturePatch extends Vue {
     if (e) {
       const numFixture = parseInt(prompt('how much do you want to add', '1') || '0', 10);
       const baseAddr  = parseInt(prompt('starting dimmer number', '1') || '1', 10);
-      for (let i = 0 ; i < numFixture ; i++) {
-        e.name = e.fixtureType;
-        e.baseCirc = baseAddr + e.span * i;
-        this.universe.addFixture(e);
-        e = e.clone();
+      const name  = prompt('name of the fixture?', e.fixtureType);
+      if(name){
+        for (let i = 0 ; i < numFixture ; i++) {
+          e.name = name;
+          e.baseCirc = baseAddr + e.span * i;
+          this.universe.addFixture(e);
+          e = e.clone();
+        }
       }
-
     }
   }
 

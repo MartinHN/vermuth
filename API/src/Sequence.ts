@@ -17,17 +17,22 @@ export class Sequence {
     // o.pChannelValues.map( (oo: any) => res.pChannelValues.push(new ChannelWithValue(oo.channelName, oo.value)) );
     // return res;
   }
-
+  @RemoteValue()
   public timeIn: number = 0;
+  @RemoteValue()
   public hold: number = 0;
+  @RemoteValue()
   public timeOut: number = 0;
+  @RemoteValue()
   public stateName: string = 'none';
-
+  @RemoteValue() 
+  public name: string;
 
   @nonEnumerable()
   public __state?: State;
 
-  constructor(public name: string, state: string|State) {
+  constructor(_name:string, state: string|State) {
+    this.name = _name
     // debugger
     if (typeof state === 'string') {
       this.stateName = state;
@@ -247,7 +252,7 @@ export class SequencePlayerClass {
      console.error('setting empty root');
      debugger;
    }
-    this._rootProvider = rootProvider;
+   this._rootProvider = rootProvider;
  }
 
  @RemoteFunction({sharedFunction: true})
@@ -260,7 +265,7 @@ export class SequencePlayerClass {
   const nIdx = this.sequenceList.indexOf(seq);
   if (nIdx >= 0) {
     this.pcurPlayedIdx = nIdx;
-    this.pisPlaying = true;
+    
   }
 
   // const timeOut =  this.curSeq.timeOut*1000;
@@ -293,33 +298,39 @@ private goToStates(nextStates: State[], timeIn: number, opts?: {dimMasters?: num
     const rsl = StateList.mergeStateList(nextStates, this.stateList.getCurrentFullFixtureList(), this.stateList.states, dimMasters);
     const mergedState = new MergedState(rsl);
     mergedState.checkIntegrity();
+    this.pisPlaying = true;
     doTimer('seqTransition', transitionTime * 1000.0, res,
       (total: number, t: number) => {
+
         let pct = t * 1.0 / total;
         pct = Math.max(0, Math.min(1, pct));
         // const time = t * res;
         // const pctIn = timeIn > 0 ? (1 - Math.max(0, (timeIn - time) / timeIn)) : 1;
         // const pctOut = timeOut>0?Math.max(0,(timeOut-time)/timeOut):0;
         doSharedFunction(() =>{
-                  mergedState.applyCrossfade(pct)
-                  this.pctDone = pct;
-                },
-          );
+          mergedState.applyCrossfade(pct)
+          this.pctDone = pct;
+        },
+        );
       },
 
       () => {
         doSharedFunction(() => {
+
           mergedState.endCB();
           if (cb) {cb(); }
+          
+            this.pisPlaying = false;
+          
         });
-      },
-      );
+        },
+        );
+
+      }
+    }
+
+
 
   }
-}
 
-
-
-}
-
-export const sequencePlayer = SequencePlayerClass.i;
+  export const sequencePlayer = SequencePlayerClass.i;
