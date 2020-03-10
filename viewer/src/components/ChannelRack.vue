@@ -4,7 +4,7 @@
       <StateComponent class="StateComponent"></StateComponent>
     </div> -->
     <div style="display:flex;width:100%;padding:5px">
-      <slider style="flex:1 0 75%" class="grandMaster" @input="setGrandMasterValue($event)" :value="grandMaster" name="grandMaster"  showName="1" showValue="1" ></slider>
+      <slider style="flex:1 0 75%" class="displayedMaster" @input="displayedMaster=$event" :value="displayedMaster" name="displayedMaster"  showName="1" showValue="1" ></slider>
       <input type="color" @input="setAllColorHex($event.target.value)"></input>
     </div>
     <div style="display:flex;flex-direction:row;width:100%">
@@ -12,8 +12,6 @@
         <v-select label=fixtures class="selectclass" multiple  v-model="selectedFixtureNames" style="width:100%" :items=displayableFixtureNames>
         </v-select>
         
-        <Button text="addGroup" @click="addGroup()" color="green"></Button>
-        <Button text="removeGroup" @click="removeGroup()" color="red"></Button>
         
         <v-select label=groups multiple class="selectclass"  v-model="selectedGroupNames" style="width:100%" :items=selectableGroupList>
         </v-select>
@@ -28,6 +26,7 @@
             <Toggle  v-model=showProps text="show props"></Toggle>
             <Toggle  v-model=showEnabled text="show only enabled"></Toggle>
             <Toggle  v-model=showActive text="show only active"></Toggle>
+            
           </v-col>
           <v-col cols>
             <Button  @click="disableOrEnableAll(false)" text="disable All"></Button>
@@ -36,7 +35,10 @@
           
         </v-row>
       </v-row>
-      <fixture-widget  style="margin:10px 0 0 0;width:100%;background-color:#FFF5" class="channel" v-for="f in displayedFixtures" :key="f.id" :fixtureProp="f" :showName="showNames" :showValue="showValues" :filterList="selectedChannelFilterNames" :showProps="showProps"></fixture-widget>
+      
+      <FixtureGroupWidget v-for="gN in displayedGroupNames" style="margin:10px 0 0 0;width:100%;background-color:#FFF5" :key="gN.id" :fixtureProps="fixturesForGroup(gN)" :groupName="gN" :showProps="showProps" :showName="showNames" ></FixtureGroupWidget>
+
+      <FixtureWidget v-for="f in displayedFixtures" style="margin:10px 0 0 0;width:100%;background-color:#FFF5" class="channel" :key="f.id" :fixtureProp="f" :showName="showNames" :showValue="showValues" :filterList="selectedChannelFilterNames" :showProps="showProps"></FixtureWidget>
     </div>
   </div>
 </div>
@@ -46,6 +48,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import {rgbToHex, hexToRgb} from '@API/ColorUtils';
 import FixtureWidget from './Widgets/FixtureWidget.vue' ;
+import FixtureGroupWidget from './Widgets/FixtureGroupWidget.vue' ;
 import StateComponent from './StateComponent.vue';
 
 import Button from '@/components/Inputs/Button.vue';
@@ -61,11 +64,11 @@ import UniversesMethods from '../store/universes';
 const universesModule = namespace('universes');
 
 @Component({
-  components: {FixtureWidget, Button, Toggle, StateComponent, Slider},
+  components: {FixtureWidget, Button, Toggle, StateComponent, Slider,FixtureGroupWidget},
 })
 export default class ChannelRack extends Vue {
 
-  
+
   @Prop({required: true})
   public displayableFixtureList!: FixtureBase[];
 
@@ -75,6 +78,8 @@ export default class ChannelRack extends Vue {
       this.selectedGroupNames = [];
     }
   }
+
+
   get selectedFixtureNames() {
     return this.pselectedFixtureNames;
   }
@@ -105,6 +110,16 @@ export default class ChannelRack extends Vue {
     return this.displayableFixtureList.filter((f) => this.needDisplay(f) && f.hasChannelMatchingFilters(this.selectedChannelFilterNames));
   }
 
+  get displayedGroupNames(){
+    return this.universe.groupNames
+  }
+
+  fixturesForGroup(gN:string){
+    return this.universe.getFixturesInGroup(gN)
+  }
+
+  
+
   get selectableChannelFilterList() {
     const res: string[] = ['all'];
 
@@ -130,6 +145,7 @@ export default class ChannelRack extends Vue {
   public showProps = false;
   public showEnabled = false;
   public showActive = false;
+  
 
 
   private pselectedFixtureNames: string[] = [];
@@ -137,14 +153,18 @@ export default class ChannelRack extends Vue {
   private pselectedChannelFilterNames: string[] = ['all'];
   private extendedTypeFilter = false;
   @universesModule.State('universe') private universe!: UniversesMethods['universe'];
-  @universesModule.Getter('grandMaster') private grandMaster!: UniversesMethods['grandMaster'];
+  // @universesModule.Getter('grandMaster') private grandMaster!: UniversesMethods['grandMaster'];
   @universesModule.Mutation('setAllColor') private setAllColor!: UniversesMethods['setAllColor'];
 
-  public setGrandMasterValue(v: number) {
-    debugger;
+  public set displayedMaster(v: number) {
+
     for (const f of this.displayedFixtures) {
       if (f.enabled) {f.setMaster(v); }
     }
+  }
+
+  public get displayedMaster(){
+    return this.displayedFixtures.length? this.displayedFixtures[0].dimmerValue:0;
   }
 
   public disableOrEnableAll(en: boolean) {
@@ -198,26 +218,16 @@ export default class ChannelRack extends Vue {
     if (!(this.selectedFixtureNames && this.selectedFixtureNames.length === 0) ) {
       needDisplay = needDisplay && (this.selectedFixtureNames.find((fn) => fn === f.name) !== undefined);
     }
+    if(this.universe.getGroupsForFixture(f).length>0){
+      needDisplay = false;
+    }
+    
     return needDisplay;
   }
 
 
-  public addGroup() {
-    if (this.selectedFixtureNames && this.selectedFixtureNames.length > 0) {
-      const gname = prompt('save new group', 'group');
-      if (gname) {
-        this.universe.addGroup(gname, this.selectedFixtureNames);
-      }
-    } else {
-      alert('no fixtures selected');
-    }
-  }
-  public removeGroup() {
-    const gname = prompt('remove group', this.firstGroupSelected);
-    if (gname && gname !== 'all') {
-      this.universe.removeGroup(gname);
-    }
-  }
+
+
 
 }
 </script>
@@ -245,9 +255,9 @@ export default class ChannelRack extends Vue {
 .StateComponent{
   flex: 1 1 30%;
 }
-.grandMaster{
+/*.grandMaster{
   width:100%;
-}
+  }*/
 /*.selectclass:focus {
     outline: none;
     }*/

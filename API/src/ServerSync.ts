@@ -803,8 +803,8 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
 
             if (k in target) { // TODO lockCallbacks? for deleted objects?
               treeEvents.emit('rm', target, k);
-              delete target.__accessibleMembers[k];
-              delete target.__accessibleTypes[k];
+              if(target.__accessibleMembers)delete target.__accessibleMembers[k];
+              if(target.__accessibleTypes)delete target.__accessibleTypes[k];
 
               deleteProp(target, k);
               delete target[k];

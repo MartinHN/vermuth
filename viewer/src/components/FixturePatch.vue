@@ -4,7 +4,7 @@
 
     <v-container class="FixturePatch" fluid>
       <v-row no-gutter>
-        <v-col cols=8 >
+        <v-col cols=4 >
           <Button class="button" @click="showFixtureExplorer=true" text="add Fixture"/>
           <Modal v-if="showFixtureExplorer" @close="showFixtureExplorer=false">
 
@@ -12,6 +12,14 @@
             <FixtureExplorer  slot="body" @change="addAndQuitFExplorer($event) "></FixtureExplorer>
 
           </Modal>
+        </v-col>
+        <v-col cols=4> 
+          <!-- <Button text="Manage Groups" @click="showGroupExplorer=true"/> -->
+          <Button text="addGroup" @click="addGroup()" color="green"></Button>
+          <Button text="removeGroup" @click="removeGroup()" color="red"></Button>
+          <!-- <Modal v-if="showGroupExplorer" @close="showGroupExplorer=false">
+            <GroupExplorer  slot="body" ></GroupExplorer>
+          </Modal> -->
         </v-col>
 
         <v-col cols=2 >
@@ -51,13 +59,21 @@
       <tr>
         <td>
           <input :style="{'background-color':'#0003','width':'100%'}" :value="f.name" @change="setFixtureName({fixture:f,value:$event.target.value})"/>
+       
+         {{f.ftype}} ({{f.span}} ch)
+       
         </td>
         <td>
           <Numbox :errMsg="fixtureErrorMsgs[f.name]" class="baseCirc pa-0 ma-0" :value="f.baseCirc" :min="0" :max="512" @input="$event && setFixtureBaseCirc({fixture: f, circ:$event})"></Numbox>
         </td>
         <td>
-         {{f.ftype}} ({{f.span}} ch)
-       </td>
+          <v-select label=groups multiple  style="width:100%" :value="assignedGroupsOnFixture(f)" :items="universe.groupNames" @change="assignToGroups(f,$event)">
+            <template v-slot:item="{item:item}">
+              {{item}}
+            </template>
+          </v-select>
+        </td>
+        
        <td>
         <Button class=" removeFixture " color='red' @click="askToRmFixture(f)" tabIndex="-1" text="-"/>
       </td>
@@ -98,6 +114,7 @@ import Toggle from '@/components/Inputs/Toggle.vue';
 import Modal from '@/components/Utils/Modal.vue';
 import FixtureEditor from '@/components/Editors/FixtureEditor.vue';
 import FixtureExplorer  from '@/components/Editors/FixtureExplorer.vue';
+import GroupExplorer  from '@/components/Editors/GroupExplorer.vue';
 import { DirectFixture, FixtureBase } from '@API/Fixture';
 import { FixtureFactory } from '@API/FixtureFactory';
 import UniversesMethods from '../store/universes';
@@ -106,7 +123,7 @@ import UniversesMethods from '../store/universes';
 const universesModule = namespace('universes');
 
 @Component({
-  components: {Button, Numbox, Toggle, Modal, FixtureEditor, FixtureExplorer},
+  components: {Button, Numbox, Toggle, Modal, FixtureEditor, FixtureExplorer,GroupExplorer},
 })
 export default class FixturePatch extends Vue {
   public get fixtureErrorMsgs() {
@@ -141,7 +158,7 @@ export default class FixturePatch extends Vue {
   get fixtureHeaders() {
     return [{text: 'Name', value: 'name'},
     {text: 'Dimmer', value: 'baseCirc'},
-    {text: 'Type', value: 'ftype'},
+    {text: 'Group', value: 'groupNames'},
     {text: 'Actions', sortable: false, filterable: false},
     // ,{text:"edit",sortable:false},{text:"test",sortable:false}
     ];
@@ -202,11 +219,36 @@ export default class FixturePatch extends Vue {
       this.removeFixture({fixture:f})
     }
   }
+
+  private showGroupExplorer = false;
+
   public open() {
     // debugger
   }
   public close() {
     debugger;
+  }
+
+
+  public assignToGroups(f:FixtureBase,event:string[]){
+    this.universe.setGroupsForFixture(f,event)
+  }
+
+  public assignedGroupsOnFixture(f:FixtureBase){
+    // debugger
+    return  this.universe.getGroupsForFixture(f)
+  }
+  public addGroup() {
+    const gname = prompt('save new group', 'group');
+    if (gname) {
+      this.universe.addGroup(gname, []);
+    }
+  }
+  public removeGroup() {
+    const gname = prompt('remove group', "");
+    if (gname && gname !== 'all') {
+      this.universe.removeGroup(gname);
+    }
   }
 
 

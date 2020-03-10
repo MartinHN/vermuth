@@ -1,5 +1,6 @@
 <template>
   <div class="fixtureWidget" >
+
     <div style="display:flex;width:100%">
         
       <ChannelWidget v-for='d in matchedDimmerChannels' :key='d.id' :channelProp=d :overrideName="matchedDimmerChannels.length==1?fixtureProp.name:d.name" style="width:100%" :showProps=showProps ></ChannelWidget>
@@ -66,7 +67,7 @@ export default class FixtureWidget extends Vue {
     return Object.values(this.dimmerChannels).filter( (c) => c.matchFilterList(this.filterList));
   }
   get dimmerChannels() {
-    return this.fixtureProp.dimmerChannels;
+    return this.fixtureProp.dimmerChannels || [];
   }
 
   get otherChannels() {
@@ -90,13 +91,9 @@ export default class FixtureWidget extends Vue {
     this.debouncedColorSetter(c);
   }
 
-  @universesModule.Mutation('addChannelToFixture') public addChannelToFixture!: UniversesMethods['addChannelToFixture'];
-  @universesModule.Mutation('setFixtureName') public setFixtureName!: UniversesMethods['setFixtureName'];
+  
 
-  @universesModule.Mutation('setFixtureValue') public setFixtureValue!: UniversesMethods['setFixtureValue'];
   @universesModule.Mutation('setFixtureColor') public setFixtureColor!: UniversesMethods['setFixtureColor'];
-
-  @universesModule.Mutation('setChannelValue') public setChannelValue!: UniversesMethods['setChannelValue'];
 
 
   @Prop() public fixtureProp!: DirectFixture;
@@ -104,7 +101,7 @@ export default class FixtureWidget extends Vue {
   @Prop({default: false})    public showValue?: boolean;
   @Prop({default: false})    public showProps?: boolean;
 
-  @Prop ({default: []}) public filterList!: string[];
+  @Prop ({default: ()=>{return []}}) public filterList!: string[];
   private showPosModal = false;
   private debouncedColorSetter = _.debounce((c: string) => {
     const color: any = hexToRgb(c, true);
@@ -127,7 +124,8 @@ export default class FixtureWidget extends Vue {
     return [this.fixtureProp.getPosition()];
   }
 
-
+  mounted(){
+  }
   // get disabledV(): boolean {return !this.fixtureProp.channel.enabled; }
   // set disabledV(v: boolean) {this.setChannelEnabled({channel: this.fixtureProp.channel, value: !v}); }
 

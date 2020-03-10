@@ -38,6 +38,31 @@ export class Universe implements UniverseI {
   public removeGroup(name: string) {
     deleteProp(this.groups, name);
   }
+  public getGroupsForFixture(f:FixtureBase){
+    return Object.entries(this.groups).filter(([k,v])=>v.includes(f.name)).map(([k,v])=>k);
+  }
+
+  public getFixturesInGroup(gName:string){
+    return Object.values(this.groups[gName]).map(e=>this.fixtures[e]).filter(f=>f!==undefined) as FixtureBase[];
+  }
+
+  public setGroupsForFixture(f:FixtureBase,gNames:string[]){
+    const validGNames = gNames.filter(g=>this.groupNames.includes(g))
+    const toAdd  = validGNames.filter(v=>!this.getGroupsForFixture(f).includes(v))
+    const toRm = this.getGroupsForFixture(f).filter(v=>!validGNames.includes(v))
+    for(const g of toRm){
+      const idx = this.groups[g].indexOf(f.name)
+      if(idx>=0){
+        this.groups[g].splice(idx,1)
+      }
+    }
+    for(const g of toAdd){
+      const idx = this.groups[g].indexOf(f.name)
+      if(idx<0){
+        this.groups[g].push(f.name)
+      }
+    }
+  }
   public get groupList() {
     return Object.values(this.groups);
   }
@@ -171,29 +196,31 @@ export class Universe implements UniverseI {
     this.fixtureList.map((f) => f.setColor(color, setWhiteToZero));
   }
 
+  @RemoteFunction({sharedFunction: true})
+  public setGroupColor(gName:string,color: {r: number, g: number, b: number}, setWhiteToZero: boolean) {
+    this.getFixturesInGroup(gName).map((f) => f.setColor(color, setWhiteToZero));
+  }
+  @RemoteFunction({sharedFunction: true})
+  public setGroupMaster(gName:string,v:number) {
+    this.getFixturesInGroup(gName).map((f) => f.dimmerValue = v);
+  }
+
   public testDimmerNum(d: number) {
     debugger;
-    // if (this.testedChannel.circ >= 0) {
-      //   this.testedChannel.setValue( 0.0, true);
-      // }
-
     this.setTestedChannelDimmer(d);
-      // if (this.testedChannel.circ >= 0) {
-
-        // }
-      }
+  }
 
 
-      @RemoteFunction({skipClientApply: true})
-      public panic() {
-        this.allChannels.map((c) => c.setValue(0.0, true));
-        this.updateChannelsValues();
-      }
+  @RemoteFunction({skipClientApply: true})
+  public panic() {
+    this.allChannels.map((c) => c.setValue(0.0, true));
+    this.updateChannelsValues();
+  }
 
-      public setTestedChannelDimmer(dimmerNum: number ) {
-        this.testedChannel.setCirc( dimmerNum);
-      }
+  public setTestedChannelDimmer(dimmerNum: number ) {
+    this.testedChannel.setCirc( dimmerNum);
+  }
 
 
-    }
+}
 

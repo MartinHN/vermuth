@@ -27,12 +27,7 @@ export class FixtureBase implements FixtureBaseI {
   public get baseCirc() {return this._baseCirc; }
 
 
-  get inSync() {
-    for (const c of this.channels.filter((cc) => cc.reactToMaster)) {
-      if ( c.floatValue !== this.globalValue) { return false; }
-    }
-    return true;
-  }
+  
 
   public get universe() {
     return this.__universe;
@@ -42,7 +37,9 @@ export class FixtureBase implements FixtureBaseI {
     this.__universe = uni;
     this.channels.map( (c) => c.setParentFixture(this));
   }
-
+  get groupNames(){
+    return this.universe?this.universe.getGroupsForFixture(this):[]
+  }
   get channelNames() {
     return this.channels.map((c) => c.name);
   }
@@ -59,6 +56,9 @@ export class FixtureBase implements FixtureBaseI {
   public get dimmerChannels() { 
     return this.getChannelsOfRole('dim')["dimmer"];
   }
+  
+
+  
 
   public get enabled() {return this.channels.some((c) => c.enabled); }
 
@@ -92,9 +92,10 @@ export class FixtureBase implements FixtureBaseI {
       }
     }
   }
+  
+  private pdimmerValue= 0;
 
-  @RemoteValue()
-  public globalValue = 0;
+  
 
   @nonEnumerable()
   public __events = new EventEmitter();
@@ -204,11 +205,36 @@ export class FixtureBase implements FixtureBaseI {
     return (this.dimmerChannels || this.channels).some((c) => c.floatValue > 0)
   }
 
-  @RemoteFunction({sharedFunction: true})
-  public setMaster(v: ChannelValueType) {
+
+  public get dimmerValue(){
+    return this.pdimmerValue;
+  } 
+  
+  
+  public set dimmerValue(v: ChannelValueType) {
     if(isNaN(v)){debugger;return;}
-    this.globalValue = v;
-    this.syncToGlobalValue(v);
+    this.pdimmerValue = v;
+    if (this.channels) {
+      for (const c of this.channels) {
+        if (c.reactToMaster) {
+          c.setValue(v, true);
+        }
+      }
+    } else {
+      debugger;
+    }
+  }
+  @RemoteFunction({sharedFunction: true})
+  public setMaster(v:ChannelValueType){
+    this.dimmerValue = v;
+  }
+
+  
+  public get dimmerInSync(){
+    for (const c of this.channels.filter((cc) => cc.reactToMaster)) {
+      if ( c.floatValue !== this.dimmerValue) { return false; }
+    }
+    return true;
   }
 
   @RemoteFunction({sharedFunction: true})
@@ -220,8 +246,22 @@ export class FixtureBase implements FixtureBaseI {
       if (cch.b) {this.setCoarseAndFine(c.b, cch.b, cch.b_fine); }
       if (setWhiteToZero && cch.w) {this.setCoarseAndFine(0, cch.w, cch.w_fine); }
     }
-
   }
+
+  @RemoteFunction({sharedFunction: true})
+  public getColor(includeWhite=true) {
+    const res:{r:number,g:number,b:number,w?:number} = {r: 0, g: 0,b:0};
+    const cch = this.colorChannels;
+    if (cch !== {}) {
+      if (cch.r) res.r = this.getCoarseAndFine( cch.r, cch.r_fine);
+      if (cch.g) res.g = this.getCoarseAndFine( cch.g, cch.g_fine);
+      if (cch.b) res.b = this.getCoarseAndFine( cch.b, cch.b_fine);
+      if (includeWhite && cch.w) {res.w = this.getCoarseAndFine( cch.w, cch.w_fine); }
+    }
+    return res
+  }
+
+
   @RemoteFunction({sharedFunction: true})
   public setPosition(c: {x: number, y: number}) {
     const pch = this.positionChannels;
@@ -243,17 +283,7 @@ export class FixtureBase implements FixtureBaseI {
   }
 
 
-  public syncToGlobalValue(v: ChannelValueType) {
-    if (this.channels) {
-      for (const c of this.channels) {
-        if (c.reactToMaster) {
-          c.setValue(v, true);
-        }
-      }
-    } else {
-      debugger;
-    }
-  }
+  
 
   public addChannel(c: ChannelBase|undefined) {
     if (c === undefined) {
