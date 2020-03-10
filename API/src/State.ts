@@ -38,7 +38,9 @@ export class FixtureState {
     } else if (options && options.channelFilter) {
       validChs = fixture.channels.filter(options.channelFilter);
     } else {
-      validChs = fixture.channels.filter((c) => c.enabled);
+      validChs = [];
+      debugger;
+      console.error('old way of creating state');
     }
     validChs.map((c) => {
       const curveLink = CurvePlayer.getCurveLinkForChannel(c);
@@ -378,8 +380,8 @@ export class StateList {
   }
 
   public configureFromObj(ob: any) {
-    Object.keys(this.states).filter(e=>!e.startsWith("__")).map((name) => this.removeStateNamed( name) );
-    if(ob){
+    Object.keys(this.states).filter((e) => !e.startsWith('__')).map((name) => this.removeStateNamed( name) );
+    if (ob) {
     if (ob.states) {
       Object.keys(ob.states).map((name) => this.addState(State.createFromObj(ob.states[name])));
     }
@@ -431,11 +433,9 @@ export class StateList {
     const rs = s.resolveState(fl, this.states, dimMaster);
     this.applyResolvedState(rs);
     const channelList = s.getSavedChannels(fl, false);
-    for (const c of this.universe.allChannels) {
-    const found = channelList.find((cc) => cc === c);
-    c.enabled =  found !== undefined;
-  }
+
     this.setLoadedStateName(s.name);
+    return  channelList;
 }
 
 public getResolvedStateNamed(n: string, dimMaster= 1) {

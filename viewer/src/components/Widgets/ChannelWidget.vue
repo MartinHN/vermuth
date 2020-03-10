@@ -65,22 +65,31 @@ export default class ChannelWidget extends Vue {
   get displayedName() {
     if ( this.overrideName) {return this.overrideName; } else {return this.channelProp.name; }
   }
-  get enabledV(): boolean {return this.channelProp.enabled; }
-  set enabledV(v: boolean) {this.setChannelEnabled({channel: this.channelProp, value: v}); }
+  // get enabledV(): boolean {return this.channelProp.enabled; }
+  // set enabledV(v: boolean) {this.setChannelEnabled({channel: this.channelProp, value: v}); }
   get sliderColor(): string {
     return this.enabledV ? 'inherit' : 'dark';
+  }
+  public get isControlledExternally() {
+    return  !!this.channelProp.externalController;
+  }
+
+  public get curveLink() {
+    return  CurvePlayer.getCurveLinkForChannel(this.channelProp);
+    // return this.pcurveLink || this.getCurveLink()
   }
 
   @universesModule.Getter('usedChannels') public usedChannels!: UniversesMethods['usedChannels'];
   @universesModule.Mutation('setChannelValue') public setChannelValue!: UniversesMethods['setChannelValue'];
   @universesModule.Mutation('setChannelName') public setChannelName!: UniversesMethods['setChannelName'];
-  @universesModule.Mutation('setChannelEnabled') public setChannelEnabled!: UniversesMethods['setChannelEnabled'];
+
 
   @Prop() public channelProp!: ChannelBase;
   @Prop({default: false})    public showName!: boolean;
   @Prop({default: false})    public showValue!: boolean;
   @Prop({default: false}) public showProps!: boolean;
   @Prop() public overrideName?: string;
+  private enabledV: boolean  = true;
 
   private showCurveEditor = false;
   public editCurve() {
@@ -100,20 +109,10 @@ export default class ChannelWidget extends Vue {
     // this.pcurveLink = null
 
   }
-  public get isControlledExternally() {
-    return  !!this.channelProp.externalController;
-  }
 
   public mounted() {
     // debugger
     // this._curve = CurvePlayer.getCurveForChannel(this.channelProp) || null;
-  }
-
-
-
-  public get curveLink() {
-    return  CurvePlayer.getCurveLinkForChannel(this.channelProp);
-    // return this.pcurveLink || this.getCurveLink()
   }
 }
 </script>

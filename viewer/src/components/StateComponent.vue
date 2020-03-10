@@ -60,37 +60,9 @@ type ValueOf<T> = T[keyof T];
 })
 export default class StateComponent extends Vue {
 
-  public mounted(){
-       window.addEventListener('keydown',this.processKey)
-
-  }
-  public destroyed(){
-    window.removeEventListener('keydown',this.processKey)
-  }
-  public processKey(event:KeyboardEvent){
-    if (event.ctrlKey || event.metaKey) {
-      const letter = String.fromCharCode(event.which).toLowerCase()
-      if(letter==='e'){
-        
-      }
-      else if(event.key==="ArrowDown"){
-        event.preventDefault()
-        if(this.selectedStateIdx<this.stateNames.length-1){this.selectedStateIdx++;}
-      }
-      else if(event.key==="ArrowUp"){
-        event.preventDefault()
-       if(this.selectedStateIdx>0){this.selectedStateIdx--;}
-      }
-      // const letter  =String.fromCharCode(event.which).toLowerCase();
-      
-    }
-  }
-
   get editedState() {
     return this.selectedState;
   }
-
-  public selectedState: State | null = null;
 
   set selectedStateIdx(i: number) {
     if (this.selectedState && i === undefined) {this.stateList.recallState(this.selectedState, 0); }
@@ -101,22 +73,6 @@ export default class StateComponent extends Vue {
     return this.stateNames.indexOf(this.selectedState ? this.selectedState.name : '');
 
   }
-
-  @statesModule.Mutation('saveCurrentState') public saveCurrentState!: StateMethods['saveCurrentState'];
-  @statesModule.Mutation('removeState') public removeState!: StateMethods['removeState'];
-  @statesModule.Mutation('renameState') public renameState!: StateMethods['renameState'];
-
-  @statesModule.Mutation('recallState') public recallState!: StateMethods['recallState'];
-
-  // @Prop({default:false})
-  public showStateEditor = false; // !:boolean
-
-  @statesModule.Getter('channels') private channels!: StateMethods['channels'];
-  @statesModule.Getter('stateNames') private stateNames!: StateMethods['stateNames'];
-  @statesModule.Getter('loadedStateName') private ploadedStateName!: StateMethods['loadedStateName'];
-
-
-  private stateList = rootState.stateList;
 
   get linkableStateNames() {
     const n = this.selectedState ? this.selectedState.name : '';
@@ -144,6 +100,48 @@ export default class StateComponent extends Vue {
 
   get linkedStateList() {
     return this.linkedStateNames.map((e) => new LinkedState(e, 1));
+  }
+
+  public selectedState: State | null = null;
+
+  @statesModule.Mutation('saveCurrentState') public saveCurrentState!: StateMethods['saveCurrentState'];
+  @statesModule.Mutation('removeState') public removeState!: StateMethods['removeState'];
+  @statesModule.Mutation('renameState') public renameState!: StateMethods['renameState'];
+
+  @statesModule.Mutation('recallState') public recallState!: StateMethods['recallState'];
+
+  // @Prop({default:false})
+  public showStateEditor = false; // !:boolean
+
+  @statesModule.Getter('channels') private channels!: StateMethods['channels'];
+  @statesModule.Getter('stateNames') private stateNames!: StateMethods['stateNames'];
+  @statesModule.Getter('loadedStateName') private ploadedStateName!: StateMethods['loadedStateName'];
+
+
+  private stateList = rootState.stateList;
+
+  public mounted() {
+       window.addEventListener('keydown', this.processKey);
+
+  }
+  public destroyed() {
+    window.removeEventListener('keydown', this.processKey);
+  }
+  public processKey(event: KeyboardEvent) {
+    if (event.ctrlKey || event.metaKey) {
+      const letter = String.fromCharCode(event.which).toLowerCase();
+      if (letter === 'e') {
+
+      } else if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        if (this.selectedStateIdx < this.stateNames.length - 1) {this.selectedStateIdx++; }
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        if (this.selectedStateIdx > 0) {this.selectedStateIdx--; }
+      }
+      // const letter  =String.fromCharCode(event.which).toLowerCase();
+
+    }
   }
   public editState() {
     if (this.selectedState == null ) {

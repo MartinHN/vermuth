@@ -39,19 +39,23 @@ export default class App extends Vue {
 
   @Getter('isConnected') public isConnected!: string;
 
+  @Action('SAVE_SESSION') public SAVE_SESSION!: () => void;
+  @Action('SAVE_LOCALLY') public SAVE_LOCALLY!: () => void;
+  @Action('SET_SESSION_STATE') public SET_SESSION_STATE!: (o: any) => void;
+
   public mounted() {
     Server.connect(this.$store, window.location.hostname);
     this.removeOldIco();
     originalFaviconNode = this.loadIconNode('favicon.ico');
     redFaviconNode = this.loadIconNode('favicon_red.ico');
     this.changeFavIcon(false);
-    window.addEventListener('keydown',this.processKey)
+    window.addEventListener('keydown', this.processKey);
 
   }
-  public destroyed(){
-    window.removeEventListener('keydown',this.processKey)
+  public destroyed() {
+    window.removeEventListener('keydown', this.processKey);
   }
-  
+
 
   @Watch('isConnected')
   public changeFavIcon(value: boolean) {
@@ -66,6 +70,20 @@ export default class App extends Vue {
 
 
 
+
+  }
+
+    public loadLocally(files: FileList) {
+    if (files && files.length === 1) {
+      const file = files[0];
+      const fileReader = new FileReader();
+      fileReader.addEventListener('load', (event: any) => {
+               this.SET_SESSION_STATE(JSON.parse(event.target.result));
+          });
+      fileReader.readAsText(file);
+
+
+    }
 
   }
 
@@ -89,19 +107,15 @@ export default class App extends Vue {
     head.appendChild(link);
     return link;
   }
-
-  @Action('SAVE_SESSION') public SAVE_SESSION!: () => void;
-  @Action('SAVE_LOCALLY') public SAVE_LOCALLY!:()=> void;
-  @Action('SET_SESSION_STATE') public SET_SESSION_STATE!:(o:any)=> void;
-  private processKey(event:KeyboardEvent){
+  private processKey(event: KeyboardEvent) {
     // console.log(event)
     if (event.ctrlKey || event.metaKey) {
       switch (String.fromCharCode(event.which).toLowerCase()) {
         case 's':
         event.preventDefault();
-        if(event.shiftKey){
-          this.SAVE_LOCALLY()
-        }else{
+        if (event.shiftKey) {
+          this.SAVE_LOCALLY();
+        } else {
           // alert('ctrl-s');
           this.SAVE_SESSION();
         }
@@ -119,21 +133,7 @@ export default class App extends Vue {
         break;
       }
     }
-    
 
-  }
-
-    public loadLocally(files: FileList) {
-    if (files && files.length === 1) {
-      const file = files[0];
-      const fileReader = new FileReader();
-      fileReader.addEventListener('load', (event: any) => {
-               this.SET_SESSION_STATE(JSON.parse(event.target.result));
-          });
-      fileReader.readAsText(file);
-
-
-    }
 
   }
 

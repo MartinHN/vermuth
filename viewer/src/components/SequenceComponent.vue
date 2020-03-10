@@ -90,11 +90,11 @@ export default class SequenceComponent extends Vue {
   get seqPlayer() {
     return rootState.sequencePlayer;
   }
-  get isPlaying(){
-    return this.seqPlayer.isPlaying && (this.seqPlayer.curPlayedIdx===this.seqNumber);
+  get isPlaying() {
+    return this.seqPlayer.isPlaying && (this.seqPlayer.curPlayedIdx === this.seqNumber);
   }
-  get progess(){
-    return (this.isPlaying?(this.seqPlayer.pctDone*100)+"":"0") + "%"
+  get progess() {
+    return (this.isPlaying ? (this.seqPlayer.pctDone * 100) + '' : '0') + '%';
   }
 
 

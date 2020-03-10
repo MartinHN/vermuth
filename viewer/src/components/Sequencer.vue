@@ -50,45 +50,11 @@ const sequenceModule = namespace('sequence');
 })
 export default class Sequencer extends Vue {
 
-  @sequenceModule.Mutation('addSequence') public addSequence!: SequenceMethods['addSequence'];
-  @sequenceModule.Action('saveCurrentSequence') public saveCurrentSequence!: SequenceMethods['saveCurrentSequence'];
-  @sequenceModule.State('sequenceList') public sequenceList!: SequenceMethods['sequenceList'];
-  @sequenceModule.State('globalTransport') public globalTransport!: SequenceMethods['globalTransport'];
-
-  public editOrder = false;
-
-
-  mounted(){
-    window.addEventListener('keydown', this.processKey)
-  }
-  destroyed(){
-    window.removeEventListener('keydown', this.processKey)
-  }
-  private processKey(event:KeyboardEvent){
-    // console.log(event)
-    if (event.ctrlKey || event.metaKey) {
-      const letter = String.fromCharCode(event.which).toLowerCase()
-      if(letter==='e'){
-        this.editOrder = !this.editOrder
-      }
-      else if(event.key==="ArrowDown"){
-        this.next()
-      }
-      else if(event.key==="ArrowUp"){
-        this.prev()
-      }
-      // const letter  =String.fromCharCode(event.which).toLowerCase();
-      
-    }
-    
-
-  }
-
   get isPlayingSeq() {
     return this.seqPlayer.isPlaying;
   }
   get pctDone() {
-    return this.seqPlayer.pctDone<1?this.seqPlayer.pctDone*100+"%":"0%";
+    return this.seqPlayer.pctDone < 1 ? this.seqPlayer.pctDone * 100 + '%' : '0%';
   }
   get playState() {
     return this.globalTransport.isPlaying ? 'stop' : 'play';
@@ -98,10 +64,6 @@ export default class Sequencer extends Vue {
   }
   set playedIdx(n: number) {
     this.seqPlayer.curPlayedIdx = n;
-  }
-
-  public getHighlightedColor(i: number) {
-    return this.playedIdx === i ? (this.isPlayingSeq ? 'green' : 'lightgreen') : '';
   }
 
 
@@ -127,11 +89,47 @@ export default class Sequencer extends Vue {
     return this.togglePlay ? 'stop' : 'play';
   }
 
-  next(){
-    this.playedIdx = Math.max(0,Math.min(this.seqList.length-1,this.playedIdx+1))
+  @sequenceModule.Mutation('addSequence') public addSequence!: SequenceMethods['addSequence'];
+  @sequenceModule.Action('saveCurrentSequence') public saveCurrentSequence!: SequenceMethods['saveCurrentSequence'];
+  @sequenceModule.State('sequenceList') public sequenceList!: SequenceMethods['sequenceList'];
+  @sequenceModule.State('globalTransport') public globalTransport!: SequenceMethods['globalTransport'];
+
+  public editOrder = false;
+
+
+  public mounted() {
+    window.addEventListener('keydown', this.processKey);
   }
-  prev(){
-    this.playedIdx = Math.max(0,Math.min(this.seqList.length-1,this.playedIdx-1))
+  public destroyed() {
+    window.removeEventListener('keydown', this.processKey);
+  }
+
+  public getHighlightedColor(i: number) {
+    return this.playedIdx === i ? (this.isPlayingSeq ? 'green' : 'lightgreen') : '';
+  }
+
+  public next() {
+    this.playedIdx = Math.max(0, Math.min(this.seqList.length - 1, this.playedIdx + 1));
+  }
+  public prev() {
+    this.playedIdx = Math.max(0, Math.min(this.seqList.length - 1, this.playedIdx - 1));
+  }
+  private processKey(event: KeyboardEvent) {
+    // console.log(event)
+    if (event.ctrlKey || event.metaKey) {
+      const letter = String.fromCharCode(event.which).toLowerCase();
+      if (letter === 'e') {
+        this.editOrder = !this.editOrder;
+      } else if (event.key === 'ArrowDown') {
+        this.next();
+      } else if (event.key === 'ArrowUp') {
+        this.prev();
+      }
+      // const letter  =String.fromCharCode(event.which).toLowerCase();
+
+    }
+
+
   }
 }
 </script> 

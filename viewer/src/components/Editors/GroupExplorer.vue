@@ -64,8 +64,8 @@ export default class GroupExplorer extends Vue {
 
   // private pselectedGroupIdx = 0
 
-  // get selectedGroupIdx(){return this.pselectedGroupIdx} 
-  // set  selectedGroupIdx(v:number){ this.showGroup = v} 
+  // get selectedGroupIdx(){return this.pselectedGroupIdx}
+  // set  selectedGroupIdx(v:number){ this.showGroup = v}
   // get displayedGroups(){
   //   return this.universe.groupNames
   // }
@@ -76,9 +76,9 @@ export default class GroupExplorer extends Vue {
   // }
 
   // set selectedFixtureIdxs(v:number[]){
-    
+
   // }
-  
+
 
 
 }

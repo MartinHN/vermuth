@@ -91,7 +91,7 @@ export default class FixtureWidget extends Vue {
     this.debouncedColorSetter(c);
   }
 
-  
+
 
   @universesModule.Mutation('setFixtureColor') public setFixtureColor!: UniversesMethods['setFixtureColor'];
 
@@ -101,7 +101,7 @@ export default class FixtureWidget extends Vue {
   @Prop({default: false})    public showValue?: boolean;
   @Prop({default: false})    public showProps?: boolean;
 
-  @Prop ({default: ()=>{return []}}) public filterList!: string[];
+  @Prop ({default: () => []}) public filterList!: string[];
   private showPosModal = false;
   private debouncedColorSetter = _.debounce((c: string) => {
     const color: any = hexToRgb(c, true);
@@ -124,11 +124,8 @@ export default class FixtureWidget extends Vue {
     return [this.fixtureProp.getPosition()];
   }
 
-  mounted(){
+  public mounted() {
   }
-  // get disabledV(): boolean {return !this.fixtureProp.channel.enabled; }
-  // set disabledV(v: boolean) {this.setChannelEnabled({channel: this.fixtureProp.channel, value: !v}); }
-
 
 
 

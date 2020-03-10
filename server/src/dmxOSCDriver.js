@@ -36,9 +36,9 @@ function OSCDriver(deviceId = "127.0.0.1", options = {}) {
 }
 
 OSCDriver.prototype.createMsg = function(c, v) {
-   if(!CachedOSCMessages[c]){debugger; return;}
-  CachedOSCMessages[c].args[0].value = v / 255.0;
-  return CachedOSCMessages[c];
+   if (!CachedOSCMessages[c]) {debugger; return; }
+   CachedOSCMessages[c].args[0].value = v / 255.0;
+   return CachedOSCMessages[c];
 };
 
 OSCDriver.prototype.sendUniverse = function() {
@@ -66,7 +66,7 @@ OSCDriver.prototype.update = function(u) {
   for (const c in u) {
     this.universe[c] = u[c];
     const m = this.createMsg(c, this.universe[c]);
-    if(!m){continue;}
+    if (!m) {continue; }
     this.dev.send(m);
   }
 };
@@ -75,7 +75,7 @@ OSCDriver.prototype.updateAll = function(v) {
   for (let i = 1; i <= this.bufSize ; i++) {
     this.universe[i] = v;
     const m = this.createMsg(i, this.universe[i]);
-    if(!m){continue;}
+    if (!m) {continue; }
     this.dev.send(m);
   }
 };

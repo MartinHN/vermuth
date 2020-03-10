@@ -116,18 +116,7 @@ export default class Universes extends VuexModule {
     }
   }
 
-  @Mutation
-  public setChannelEnabled(pl: {channel: ChannelBase, value: boolean}) {
-    const {value} = pl;
-    const { channel}  = pl;
-    if (value !== channel.enabled) {
-      if (!this.universe.fixtureList.find( (f) => f.channels.includes(channel) )) {
-        console.error('fixture not managed');
-      }
 
-      channel.enabled  =  value ? true : false;
-    }
-  }
 
   @Mutation
   public addChannelToFixture(pl: {fixture: FixtureBase}) {

@@ -11,7 +11,7 @@ export interface UniverseI {
 @AccessibleClass()
 export class Universe implements UniverseI {
 
-  public readonly testedChannel = new ChannelBase('tested', 0, -1, false);
+  public readonly testedChannel = new ChannelBase('tested', 0, -1);
   @SetAccessible({readonly: true})
   public  testedFixture = new FixtureBase('testedFixture', [this.testedChannel]);
   public driverName = 'none';
@@ -38,28 +38,28 @@ export class Universe implements UniverseI {
   public removeGroup(name: string) {
     deleteProp(this.groups, name);
   }
-  public getGroupsForFixture(f:FixtureBase){
-    return Object.entries(this.groups).filter(([k,v])=>v.includes(f.name)).map(([k,v])=>k);
+  public getGroupsForFixture(f: FixtureBase) {
+    return Object.entries(this.groups).filter(([k, v]) => v.includes(f.name)).map(([k, v]) => k);
   }
 
-  public getFixturesInGroup(gName:string){
-    return Object.values(this.groups[gName]).map(e=>this.fixtures[e]).filter(f=>f!==undefined) as FixtureBase[];
+  public getFixturesInGroup(gName: string) {
+    return Object.values(this.groups[gName]).map((e) => this.fixtures[e]).filter((f) => f !== undefined) as FixtureBase[];
   }
 
-  public setGroupsForFixture(f:FixtureBase,gNames:string[]){
-    const validGNames = gNames.filter(g=>this.groupNames.includes(g))
-    const toAdd  = validGNames.filter(v=>!this.getGroupsForFixture(f).includes(v))
-    const toRm = this.getGroupsForFixture(f).filter(v=>!validGNames.includes(v))
-    for(const g of toRm){
-      const idx = this.groups[g].indexOf(f.name)
-      if(idx>=0){
-        this.groups[g].splice(idx,1)
+  public setGroupsForFixture(f: FixtureBase, gNames: string[]) {
+    const validGNames = gNames.filter((g) => this.groupNames.includes(g));
+    const toAdd  = validGNames.filter((v) => !this.getGroupsForFixture(f).includes(v));
+    const toRm = this.getGroupsForFixture(f).filter((v) => !validGNames.includes(v));
+    for (const g of toRm) {
+      const idx = this.groups[g].indexOf(f.name);
+      if (idx >= 0) {
+        this.groups[g].splice(idx, 1);
       }
     }
-    for(const g of toAdd){
-      const idx = this.groups[g].indexOf(f.name)
-      if(idx<0){
-        this.groups[g].push(f.name)
+    for (const g of toAdd) {
+      const idx = this.groups[g].indexOf(f.name);
+      if (idx < 0) {
+        this.groups[g].push(f.name);
       }
     }
   }
@@ -197,11 +197,11 @@ export class Universe implements UniverseI {
   }
 
   @RemoteFunction({sharedFunction: true})
-  public setGroupColor(gName:string,color: {r: number, g: number, b: number}, setWhiteToZero: boolean) {
+  public setGroupColor(gName: string, color: {r: number, g: number, b: number}, setWhiteToZero: boolean) {
     this.getFixturesInGroup(gName).map((f) => f.setColor(color, setWhiteToZero));
   }
   @RemoteFunction({sharedFunction: true})
-  public setGroupMaster(gName:string,v:number) {
+  public setGroupMaster(gName: string, v: number) {
     this.getFixturesInGroup(gName).map((f) => f.dimmerValue = v);
   }
 

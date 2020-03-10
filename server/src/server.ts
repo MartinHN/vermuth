@@ -29,14 +29,14 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const backupDir = fs.mkdtempSync(path.join(os.tmpdir(), 'vermuth-'));
-console.log('backup dir is at ',backupDir)
+console.log('backup dir is at ', backupDir);
 
 const publicDir = debug ? path.resolve(__dirname, '..', 'dist', 'server', 'public') : path.resolve(__dirname, '..', 'public');
 console.log('served Folder  :' + publicDir, __dirname);
 
 const app = express();
 const serveIndex = require('serve-index');
-app.use('/backups',express.static(backupDir),serveIndex(backupDir));
+app.use('/backups', express.static(backupDir), serveIndex(backupDir));
 app.use(history());
 const httpServer = new http.Server(app);
 
@@ -83,48 +83,45 @@ fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8'
 });
 
 
-function backupFiles(){
+function backupFiles() {
   const bDir = backupDir;
-  if(!fs.existsSync(bDir)){
+  if (!fs.existsSync(bDir)) {
     fs.mkdirSync(bDir);
   }
-  const dName = ""+new Date()
-  fs.copyFileSync(localStateFile,path.join(bDir,dName))
-  fs.readdir(bDir,(err,files)=>{
+  const dName = '' + new Date();
+  fs.copyFileSync(localStateFile, path.join(bDir, dName));
+  fs.readdir(bDir, (err, files) => {
 
-    if(!files)return;
+    if (!files) {return; }
     // const shortBkTime = 5* 60 * 1000 ;// 60 * 60  * 1000
     // const longBkTime = 60 * 60 * 1000;
-    const shortBkTime = 5 * 1000 ;// 60 * 60  * 1000
+    const shortBkTime = 5 * 1000 ; // 60 * 60  * 1000
     const longBkTime = 20 * 1000;
     const now = Date.now();
-    const filesWithDate = files.map(e=>{return {path:path.join(bDir,e),date:new Date(e)}}).sort((a,b)=>{return b.date-a.date})
-    console.log("backups : ",filesWithDate)
-    let lastHourBackup:any =undefined
-    const filesToRm = new Array<string>()
-    for(const e of filesWithDate){
+    const filesWithDate = files.map((e) => ({path: path.join(bDir, e), date: new Date(e)})).sort((a, b) => b.date - a.date);
+    console.log('backups : ', filesWithDate);
+    let lastHourBackup: any;
+    const filesToRm = new Array<string>();
+    for (const e of filesWithDate) {
       const l =  e.date.getTime();
       const diff = (now - l);
-      if( diff<shortBkTime){
-        continue
-      }
-      else if (!lastHourBackup){
-        lastHourBackup =e
-      }
-      else if (lastHourBackup.date.getTime() - e.date.getTime() > longBkTime){
-        lastHourBackup = e
-      }
-      else{
-        filesToRm.push(e.path)
+      if ( diff < shortBkTime) {
+        continue;
+      } else if (!lastHourBackup) {
+        lastHourBackup = e;
+      } else if (lastHourBackup.date.getTime() - e.date.getTime() > longBkTime) {
+        lastHourBackup = e;
+      } else {
+        filesToRm.push(e.path);
       }
     }
 
-    console.log("backups to rm: ",filesToRm)
-    filesToRm.map(f=>fs.unlink(f,(err) => {
-      if (err) throw err;
-      console.log(f,' was deleted');
-    }))
-  })
+    console.log('backups to rm: ', filesToRm);
+    filesToRm.map((f) => fs.unlink(f, (err) => {
+      if (err) { throw err; }
+      console.log(f, ' was deleted');
+    }));
+  });
 
 }
 
@@ -146,19 +143,18 @@ function setStateFromObject(msg: any, socket: any) {
       //  blockSocket(socket)
     }
     // no need to sync as we already brodcasted the state
-    doSharedFunction(() =>
-      {
-        rootState.configureFromObj(msg)
+    doSharedFunction(() => {
+        rootState.configureFromObj(msg);
       });
-    console.log('end configure')
+    console.log('end configure');
     // if(socket){
       //   nextTick(()=>unblockSocket(socket))
       // }
-      states = rootState.toJSONObj(); // update persistent changes
+    states = rootState.toJSONObj(); // update persistent changes
 
-      backupFiles();
+    backupFiles();
 
-      fs.writeFile(localStateFile,
+    fs.writeFile(localStateFile,
         JSON.stringify(states, null, '  '),
         'utf8',
         (v: any) => {
@@ -176,11 +172,11 @@ function setStateFromObject(msg: any, socket: any) {
 
   }
 
-  if (debug && process.env.LOG_SOCKET_FILE) {
+if (debug && process.env.LOG_SOCKET_FILE) {
     const logFile =  process.env.LOG_SOCKET_FILE;
     fs.unlinkSync(logFile);
   }
-  ioServer.on('connection', (socket) => {
+ioServer.on('connection', (socket) => {
     console.log('a user connected', socket.id, debug, Object.keys(ioServer.clients().connected));
 
     log.bindToSocket(socket);
@@ -250,8 +246,8 @@ function setStateFromObject(msg: any, socket: any) {
 
 
   });
-  dmxController.register(ioServer, rootState.universe);
+dmxController.register(ioServer, rootState.universe);
 
-  httpServer.listen(PORT, () => {
+httpServer.listen(PORT, () => {
    console.log(`Server is running in http://localhost:${PORT}`);
  });

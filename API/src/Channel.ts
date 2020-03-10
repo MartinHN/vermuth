@@ -43,7 +43,7 @@ export interface ChannelI {
 
   name: string;
   // private __value: ChannelValueType;
-  _enabled: boolean;
+
   circ: number;
   roleType: string;
   roleFam: string;
@@ -77,12 +77,6 @@ export class ChannelBase implements ChannelI {
   get intValue() {return this.__value * 255; }
 
   get floatValue() {return this.__value; }
-  public set enabled(v: boolean) {
-    this._enabled = v;
-  }
-  public get enabled() {
-    return this._enabled;
-  }
 
   get trueValue() {
     return this.__value;
@@ -119,7 +113,7 @@ export class ChannelBase implements ChannelI {
 
   private __isDisposed = false;
 
-  constructor(public name: string, __value: ChannelValueType  , private _circ: number= 0, public _enabled: boolean= true) {
+  constructor(public name: string, __value: ChannelValueType  , private _circ: number= 0) {
     if (!__value) {__value = 0; } // ensure numeric
     this.updateRoleForName();
     this.setValueChecking(__value);
@@ -128,6 +122,7 @@ export class ChannelBase implements ChannelI {
   public getUID() {
     return (this.__parentFixture ? this.__parentFixture.name : 'noparent') + ':' + this.name;
   }
+
   public __dispose() {
     if (!this.__isDisposed) {console.log('disposing channel ', this.getUID()); }
     this.__isDisposed = true;

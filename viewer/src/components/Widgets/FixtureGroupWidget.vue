@@ -2,27 +2,32 @@
   <div class="fixtureGroupWidget" >
     <Toggle :text="expanded?'collapse':'expand'" v-model=expanded />
     <div v-if=expanded class="pa-0 ma-0" style="width:100%;background-color:inherit">
-      <FixtureWidget v-for="f in fixtureProps" :key="f.id" :fixtureProp=f :filterList="['all']"/>
+      <FixtureWidget v-for="f in fixtureProps" :key="f.id" :fixtureProp=f :filterList="['all']" />
     </div>
     <div v-else style="display:flex;width:100%">
       {{groupName}}
-      <Slider v-if="hasDimmerChannels" v-model="dimmerValue" :text="groupName" style="width:100%" :enabled=masterInSync ></Slider>
-    </div>
+      <div style="display:flex;width:100%" v-if="hasDimmerChannels" >
+        <Toggle text="presetable" v-model=dimmerPresetable />
+        <Slider  v-model="dimmerValue" :text="groupName" style="width:100%" :enabled=masterInSync ></Slider>
+      </div>
 
-    <div style="display:flex;width:100%" v-if='hasColorChannels' >
 
-      <input type="color" style="flex:1 1 30%" v-if='!showProps' v-model=hexColorValue></input>
+      <div style="display:flex;width:100%" v-if='hasColorChannels' >
+        <Toggle text="presetable" v-model=colorPresetable />
+        <input type="color" style="flex:1 1 30%" v-if='!showProps' v-model=hexColorValue></input>
 
-    </div>
+      </div>
 
-    <div style="display:flex;width:100%" v-if='hasPositionChannels' >
-      <Button text="setPos" @click="showPosModal=true"/>
-      <modal v-if="showPosModal" @close="showPosModal = false">
+      <div style="display:flex;width:100%" v-if='hasPositionChannels' >
+        <Toggle text="presetable" v-model=posPresetable />
+        <Button text="setPos" @click="showPosModal=true"/>
+        <modal v-if="showPosModal" @close="showPosModal = false">
 
-        <h3 slot="header">{{groupName}} pos</h3>
-        <Point2DEditor slot="body" :value="position" @input="position = ($event?$event[0]:[])"></Point2DEditor>
-      </modal>
+          <h3 slot="header">{{groupName}} pos</h3>
+          <Point2DEditor slot="body" :value="position" @input="position = ($event?$event[0]:[])"></Point2DEditor>
+        </modal>
 
+      </div>
     </div>
 
 
@@ -31,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue,Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { mapState, mapActions } from 'vuex';
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 import Slider from '@/components/Inputs/Slider.vue';
@@ -51,64 +56,52 @@ import _ from 'lodash';
 
 const universesModule = namespace('universes');
 
-function isNonEmpty(o:any){
-  return Object.keys(o).length!==0
+function isNonEmpty(o: any) {
+  return Object.keys(o).length !== 0;
 }
 
 @Component({
-  components: {Slider, Button, Toggle, Modal, Point2DEditor,FixtureWidget},
+  components: {Slider, Button, Toggle, Modal, Point2DEditor, FixtureWidget},
 })
 export default class FixtureGroupWidget extends Vue {
 
-
-  @Prop() public fixtureProps!: DirectFixture[];
-  @Prop() public groupName!: DirectFixture;
-  @Prop({default: false})    public showName?: boolean;
-  @Prop({default: false})    public showProps?: boolean;
-  private showPosModal = false;
-  public expanded=false;
-
-  
-  get masterInSync(){
+  get masterInSync() {
     // debugger
     // const fk = this.dimmerChannels
-    if(this.fixtureProps.length){
-      const v = this.fixtureProps[0].dimmerValue
-      return this.fixtureProps.every(f=>{return f.dimmerInSync && (f.dimmerValue ===v)})
+    if (this.fixtureProps.length) {
+      const v = this.fixtureProps[0].dimmerValue;
+      return this.fixtureProps.every((f) => f.dimmerInSync && (f.dimmerValue === v));
     }
     return false;
   }
   get hasColorChannels() {
-    return this.fixtureProps.some(f=>isNonEmpty(f.colorChannels));
+    return this.fixtureProps.some((f) => isNonEmpty(f.colorChannels));
   }
-  setColor(c:{r:number,g:number,b:number},setWhiteToZero:boolean){
-    this.fixtureProps.map(f=>f.setColor(c,setWhiteToZero))
+  get colorValue() {
+    return this.fixtureProps ? this.fixtureProps[0].getColor() : {r: 0, g: 0, b: 0};
   }
-  get colorValue(){
-    return this.fixtureProps?this.fixtureProps[0].getColor():{r:0,g:0,b:0};
-  }
-  
+
 
 
   get hasDimmerChannels() {
-    return this.fixtureProps.some(f=>isNonEmpty(f.dimmerChannels));
+    return this.fixtureProps.some((f) => isNonEmpty(f.dimmerChannels));
   }
-  set dimmerValue(v:number) {
-    this.fixtureProps.map(f=>f.setMaster(v));
+  set dimmerValue(v: number) {
+    this.fixtureProps.map((f) => f.setMaster(v));
   }
-  get dimmerValue(){
-   return this.fixtureProps ? this.fixtureProps[0].dimmerValue:0;
+  get dimmerValue() {
+   return this.fixtureProps ? this.fixtureProps[0].dimmerValue : 0;
  }
 
 
- get hasPositionChannels(){
-  return  this.fixtureProps.some(f=>isNonEmpty(f.positionChannels))
+ get hasPositionChannels() {
+  return  this.fixtureProps.some((f) => isNonEmpty(f.positionChannels));
 }
 set position(p: Array<{x: number, y: number}>) {
-  this.fixtureProps.map(f=>f.setPosition(p[0]));
+  this.fixtureProps.map((f) => f.setPosition(p[0]));
 }
-get position() : Array<{x: number, y: number}>{
-  return this.fixtureProps?[this.fixtureProps[0].getPosition()]:new Array<{x: number, y: number}>();
+get position(): Array<{x: number, y: number}> {
+  return this.fixtureProps ? [this.fixtureProps[0].getPosition()] : new Array<{x: number, y: number}>();
 }
 
 // get fixturePositionList() {
@@ -119,8 +112,8 @@ get position() : Array<{x: number, y: number}>{
 
 
   get otherChannels() {
-    const res = []
-    for (const f of this.fixtureProps){
+    const res = [];
+    for (const f of this.fixtureProps) {
       const otherf =  f.getChannelsOfRole('other');
       if (otherf && otherf.other) {
         res.push(otherf.other);
@@ -132,15 +125,26 @@ get position() : Array<{x: number, y: number}>{
 
   get hexColorValue(): string {
     const cch = this.colorValue;
-    return rgbToHex(cch.r ? cch.r*255 : 0,
-      cch.g ? cch.g*255 : 0,
-      cch.b ? cch.b*255 : 0);
+    return rgbToHex(cch.r ? cch.r * 255 : 0,
+      cch.g ? cch.g * 255 : 0,
+      cch.b ? cch.b * 255 : 0);
 
   }
 
   set hexColorValue(c: string) {
     this.debouncedColorSetter(c);
   }
+
+
+  @Prop() public fixtureProps!: DirectFixture[];
+  @Prop() public groupName!: DirectFixture;
+  @Prop({default: false})    public showName?: boolean;
+  @Prop({default: false})    public showProps?: boolean;
+  public expanded = false;
+  public dimmerPresetable = false;
+  public colorPresetable = false;
+  public positionPresetable = false;
+  private showPosModal = false;
 
   private debouncedColorSetter = _.debounce((c: string) => {
     const color: any = hexToRgb(c, true);
@@ -149,8 +153,11 @@ get position() : Array<{x: number, y: number}>{
   },
   50,
   {maxWait: 50});
+  public setColor(c: {r: number, g: number, b: number}, setWhiteToZero: boolean) {
+    this.fixtureProps.map((f) => f.setColor(c, setWhiteToZero));
+  }
 
-  
+
 
 
 

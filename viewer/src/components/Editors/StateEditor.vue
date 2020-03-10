@@ -56,7 +56,7 @@ const universesModule = namespace('universes');
 
 
 @Component({
-  components: {Button, Numbox, Toggle, TextInput, FixtureWidget, "ChannelRack":ChannelRack},
+  components: {Button, Numbox, Toggle, TextInput, FixtureWidget, "ChannelRack": ChannelRack},
 })
 export default class StateEditor extends Vue {
   @Prop({default: null, required: true})

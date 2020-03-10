@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 import dmxClient from './DMXClient';
-import { bindClientSocket, nonEnumerable,doSharedFunction } from '@API/ServerSync';
+import { bindClientSocket, nonEnumerable, doSharedFunction } from '@API/ServerSync';
 import rootState from '@API/RootState';
 import {getCircular} from '@API/SerializeUtils';
 
@@ -52,17 +52,17 @@ class Server {
 
 
     socket.on('SET_STATE', (msg: any) => {
-      doSharedFunction(()=>{
+      doSharedFunction(() => {
       store.dispatch('SET_SESSION_STATE', msg).then(() => {
         hasRemoteState = true;
       },
       );
-    })
+    });
     });
     socket.on('UPDATE_STATE', (msg: any) => {
-      doSharedFunction(()=>{
+      doSharedFunction(() => {
       store.dispatch('UPDATE_SESSION_STATE', msg);
-    })
+    });
     });
     socket.on('disconnect', () => {
       // unsubscribe();

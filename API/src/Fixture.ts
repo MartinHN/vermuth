@@ -20,14 +20,14 @@ export class FixtureBase implements FixtureBaseI {
 
 
   public set baseCirc(n: number) {
-    if(isNaN(n)){debugger;return;}
-    if(n===0){n=1;debugger;}
+    if (isNaN(n)) {debugger; return; }
+    if (n === 0) {n = 1; debugger; }
     this.__setBaseCirc(n);
   }
   public get baseCirc() {return this._baseCirc; }
 
 
-  
+
 
   public get universe() {
     return this.__universe;
@@ -37,8 +37,8 @@ export class FixtureBase implements FixtureBaseI {
     this.__universe = uni;
     this.channels.map( (c) => c.setParentFixture(this));
   }
-  get groupNames(){
-    return this.universe?this.universe.getGroupsForFixture(this):[]
+  get groupNames() {
+    return this.universe ? this.universe.getGroupsForFixture(this) : [];
   }
   get channelNames() {
     return this.channels.map((c) => c.name);
@@ -53,14 +53,14 @@ export class FixtureBase implements FixtureBaseI {
     return this.getUniqueChannelsOfRole('position');
   }
 
-  public get dimmerChannels() { 
-    return this.getChannelsOfRole('dim')["dimmer"];
+  public get dimmerChannels() {
+    return this.getChannelsOfRole('dim').dimmer;
   }
-  
 
-  
 
-  public get enabled() {return this.channels.some((c) => c.enabled); }
+
+
+
 
   get span() {
     let span = 0;
@@ -75,6 +75,34 @@ export class FixtureBase implements FixtureBaseI {
 
   get endCirc() {
     return this.span + this._baseCirc - 1;
+  }
+
+
+  public get dimmerValue() {
+    return this.pdimmerValue;
+  }
+
+
+  public set dimmerValue(v: ChannelValueType) {
+    if (isNaN(v)) {debugger; return; }
+    this.pdimmerValue = v;
+    if (this.channels) {
+      for (const c of this.channels) {
+        if (c.reactToMaster) {
+          c.setValue(v, true);
+        }
+      }
+    } else {
+      debugger;
+    }
+  }
+
+
+  public get dimmerInSync() {
+    for (const c of this.channels.filter((cc) => cc.reactToMaster)) {
+      if ( c.floatValue !== this.dimmerValue) { return false; }
+    }
+    return true;
   }
 
   public static createFromObj(ob: any): FixtureBase |undefined {
@@ -92,16 +120,16 @@ export class FixtureBase implements FixtureBaseI {
       }
     }
   }
-  
-  private pdimmerValue= 0;
 
-  
+
 
   @nonEnumerable()
   public __events = new EventEmitter();
 
   @SetAccessible({readonly: true})
   public readonly channels = new Array<ChannelBase>();
+
+  private pdimmerValue = 0;
 
   // protected ftype = 'base';
 
@@ -159,8 +187,8 @@ export class FixtureBase implements FixtureBaseI {
     return '/mainUniverse/' + this.name;
   }
 
-  public  getChannelsOfRole(n: string) :{[id:string]:ChannelBase[]}{
-    const cch: {[id:string]:ChannelBase[]} = {};
+  public  getChannelsOfRole(n: string): {[id: string]: ChannelBase[]} {
+    const cch: {[id: string]: ChannelBase[]} = {};
     for (const ch of this.channels ) {
       if (ch.roleFam === n) {
         if (Object.keys(cch).includes(ch.roleType)) {
@@ -176,15 +204,15 @@ export class FixtureBase implements FixtureBaseI {
     }
     return cch ;
   }
-  public  getUniqueChannelsOfRole(n: string) :{[id:string]:ChannelBase}{
-    const cch: {[id:string]:ChannelBase} = {};
+  public  getUniqueChannelsOfRole(n: string): {[id: string]: ChannelBase} {
+    const cch: {[id: string]: ChannelBase} = {};
     for (const ch of this.channels ) {
       if (ch.roleFam === n) {
         if (Object.keys(cch).includes(ch.roleType)) {
           // if (!cch[ch.roleType].length) {
           //   cch[ch.roleType] = [cch[ch.roleType]];
           // }
-          console.error("not unique, ignoring" ,ch.roleType)
+          console.error('not unique, ignoring' , ch.roleType);
           // cch[ch.roleType].push(ch);
 
         } else {
@@ -201,40 +229,12 @@ export class FixtureBase implements FixtureBaseI {
 
   }
 
-  public hasActiveChannels(){
-    return (this.dimmerChannels || this.channels).some((c) => c.floatValue > 0)
-  }
-
-
-  public get dimmerValue(){
-    return this.pdimmerValue;
-  } 
-  
-  
-  public set dimmerValue(v: ChannelValueType) {
-    if(isNaN(v)){debugger;return;}
-    this.pdimmerValue = v;
-    if (this.channels) {
-      for (const c of this.channels) {
-        if (c.reactToMaster) {
-          c.setValue(v, true);
-        }
-      }
-    } else {
-      debugger;
-    }
+  public hasActiveChannels() {
+    return (this.dimmerChannels || this.channels).some((c) => c.floatValue > 0);
   }
   @RemoteFunction({sharedFunction: true})
-  public setMaster(v:ChannelValueType){
+  public setMaster(v: ChannelValueType) {
     this.dimmerValue = v;
-  }
-
-  
-  public get dimmerInSync(){
-    for (const c of this.channels.filter((cc) => cc.reactToMaster)) {
-      if ( c.floatValue !== this.dimmerValue) { return false; }
-    }
-    return true;
   }
 
   @RemoteFunction({sharedFunction: true})
@@ -249,16 +249,16 @@ export class FixtureBase implements FixtureBaseI {
   }
 
   @RemoteFunction({sharedFunction: true})
-  public getColor(includeWhite=true) {
-    const res:{r:number,g:number,b:number,w?:number} = {r: 0, g: 0,b:0};
+  public getColor(includeWhite= true) {
+    const res: {r: number, g: number, b: number, w?: number} = {r: 0, g: 0, b: 0};
     const cch = this.colorChannels;
     if (cch !== {}) {
-      if (cch.r) res.r = this.getCoarseAndFine( cch.r, cch.r_fine);
-      if (cch.g) res.g = this.getCoarseAndFine( cch.g, cch.g_fine);
-      if (cch.b) res.b = this.getCoarseAndFine( cch.b, cch.b_fine);
+      if (cch.r) { res.r = this.getCoarseAndFine( cch.r, cch.r_fine); }
+      if (cch.g) { res.g = this.getCoarseAndFine( cch.g, cch.g_fine); }
+      if (cch.b) { res.b = this.getCoarseAndFine( cch.b, cch.b_fine); }
       if (includeWhite && cch.w) {res.w = this.getCoarseAndFine( cch.w, cch.w_fine); }
     }
-    return res
+    return res;
   }
 
 
@@ -283,11 +283,11 @@ export class FixtureBase implements FixtureBaseI {
   }
 
 
-  
+
 
   public addChannel(c: ChannelBase|undefined) {
     if (c === undefined) {
-      c = new ChannelBase('channel', 0, this.span, true);
+      c = new ChannelBase('channel', 0, this.span);
     }
     c.setParentFixture (this);
     this.channels.push(c);

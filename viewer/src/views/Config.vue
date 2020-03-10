@@ -74,13 +74,13 @@ export default class Config extends Vue {
     }
   }
 
-  public goToBackups(){
-    const loc = window.location
-    let bkLocation = loc.origin
-    if(loc.port==="8081"){
-      bkLocation = loc.protocol+"//"+loc.hostname+":3000/backups"
+  public goToBackups() {
+    const loc = window.location;
+    let bkLocation = loc.origin;
+    if (loc.port === '8081') {
+      bkLocation = loc.protocol + '//' + loc.hostname + ':3000/backups';
     }
-    window.open(bkLocation)
+    window.open(bkLocation);
 
   }
 

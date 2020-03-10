@@ -123,7 +123,7 @@ import UniversesMethods from '../store/universes';
 const universesModule = namespace('universes');
 
 @Component({
-  components: {Button, Numbox, Toggle, Modal, FixtureEditor, FixtureExplorer,GroupExplorer},
+  components: {Button, Numbox, Toggle, Modal, FixtureEditor, FixtureExplorer, GroupExplorer},
 })
 export default class FixturePatch extends Vue {
   public get fixtureErrorMsgs() {
@@ -163,11 +163,6 @@ export default class FixturePatch extends Vue {
     // ,{text:"edit",sortable:false},{text:"test",sortable:false}
     ];
   }
-  cloneFixture(f:FixtureBase){
-    const c = f.clone();
-    c.baseCirc++;
-    this.universe.addFixture(c);
-  }
 
   public editedFixture = null;
   @universesModule.Mutation('addFixture') public addFixture!: UniversesMethods['addFixture'];
@@ -197,13 +192,20 @@ export default class FixturePatch extends Vue {
 
   private searchFixtureText = '';
   private showFixtureExplorer = false;
+
+  private showGroupExplorer = false;
+  public cloneFixture(f: FixtureBase) {
+    const c = f.clone();
+    c.baseCirc++;
+    this.universe.addFixture(c);
+  }
   public addAndQuitFExplorer(e: FixtureBase) {
     this.showFixtureExplorer = false;
     if (e) {
       const numFixture = parseInt(prompt('how much do you want to add', '1') || '0', 10);
       const baseAddr  = parseInt(prompt('starting dimmer number', '1') || '1', 10);
       const name  = prompt('name of the fixture?', e.fixtureType);
-      if(name){
+      if (name) {
         for (let i = 0 ; i < numFixture ; i++) {
           e.name = name;
           e.baseCirc = baseAddr + e.span * i;
@@ -214,14 +216,6 @@ export default class FixturePatch extends Vue {
     }
   }
 
-  private askToRmFixture(f:FixtureBase){
-    if(window.confirm (`areYouSure to DELETE fixture ${f.name}`)){
-      this.removeFixture({fixture:f})
-    }
-  }
-
-  private showGroupExplorer = false;
-
   public open() {
     // debugger
   }
@@ -230,13 +224,13 @@ export default class FixturePatch extends Vue {
   }
 
 
-  public assignToGroups(f:FixtureBase,event:string[]){
-    this.universe.setGroupsForFixture(f,event)
+  public assignToGroups(f: FixtureBase, event: string[]) {
+    this.universe.setGroupsForFixture(f, event);
   }
 
-  public assignedGroupsOnFixture(f:FixtureBase){
+  public assignedGroupsOnFixture(f: FixtureBase) {
     // debugger
-    return  this.universe.getGroupsForFixture(f)
+    return  this.universe.getGroupsForFixture(f);
   }
   public addGroup() {
     const gname = prompt('save new group', 'group');
@@ -245,9 +239,15 @@ export default class FixturePatch extends Vue {
     }
   }
   public removeGroup() {
-    const gname = prompt('remove group', "");
+    const gname = prompt('remove group', '');
     if (gname && gname !== 'all') {
       this.universe.removeGroup(gname);
+    }
+  }
+
+  private askToRmFixture(f: FixtureBase) {
+    if (window.confirm (`areYouSure to DELETE fixture ${f.name}`)) {
+      this.removeFixture({fixture: f});
     }
   }
 

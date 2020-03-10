@@ -25,14 +25,14 @@ export class Sequence {
   public timeOut: number = 0;
   @RemoteValue()
   public stateName: string = 'none';
-  @RemoteValue() 
+  @RemoteValue()
   public name: string;
 
   @nonEnumerable()
   public __state?: State;
 
-  constructor(_name:string, state: string|State) {
-    this.name = _name
+  constructor(_name: string, state: string|State) {
+    this.name = _name;
     // debugger
     if (typeof state === 'string') {
       this.stateName = state;
@@ -252,7 +252,7 @@ export class SequencePlayerClass {
      console.error('setting empty root');
      debugger;
    }
-   this._rootProvider = rootProvider;
+    this._rootProvider = rootProvider;
  }
 
  @RemoteFunction({sharedFunction: true})
@@ -265,7 +265,7 @@ export class SequencePlayerClass {
   const nIdx = this.sequenceList.indexOf(seq);
   if (nIdx >= 0) {
     this.pcurPlayedIdx = nIdx;
-    
+
   }
 
   // const timeOut =  this.curSeq.timeOut*1000;
@@ -307,8 +307,8 @@ private goToStates(nextStates: State[], timeIn: number, opts?: {dimMasters?: num
         // const time = t * res;
         // const pctIn = timeIn > 0 ? (1 - Math.max(0, (timeIn - time) / timeIn)) : 1;
         // const pctOut = timeOut>0?Math.max(0,(timeOut-time)/timeOut):0;
-        doSharedFunction(() =>{
-          mergedState.applyCrossfade(pct)
+        doSharedFunction(() => {
+          mergedState.applyCrossfade(pct);
           this.pctDone = pct;
         },
         );
@@ -319,9 +319,9 @@ private goToStates(nextStates: State[], timeIn: number, opts?: {dimMasters?: num
 
           mergedState.endCB();
           if (cb) {cb(); }
-          
-            this.pisPlaying = false;
-          
+
+          this.pisPlaying = false;
+
         });
         },
         );
@@ -333,4 +333,4 @@ private goToStates(nextStates: State[], timeIn: number, opts?: {dimMasters?: num
 
   }
 
-  export const sequencePlayer = SequencePlayerClass.i;
+export const sequencePlayer = SequencePlayerClass.i;

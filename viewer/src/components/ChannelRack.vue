@@ -24,13 +24,12 @@
         <v-row no-gutters>
           <v-col cols=6>
             <Toggle  v-model=showProps text="show props"></Toggle>
-            <Toggle  v-model=showEnabled text="show only enabled"></Toggle>
+            <Toggle  v-model=showPresetable text="show only presetable"></Toggle>
             <Toggle  v-model=showActive text="show only active"></Toggle>
             
           </v-col>
           <v-col cols>
-            <Button  @click="disableOrEnableAll(false)" text="disable All"></Button>
-            <Button  @click="disableOrEnableAll(true)" text="enable All"></Button>
+            <Button  @click="disableAllPresetable()" text="disable All"></Button>
           </v-col>
           
         </v-row>
@@ -64,13 +63,9 @@ import UniversesMethods from '../store/universes';
 const universesModule = namespace('universes');
 
 @Component({
-  components: {FixtureWidget, Button, Toggle, StateComponent, Slider,FixtureGroupWidget},
+  components: {FixtureWidget, Button, Toggle, StateComponent, Slider, FixtureGroupWidget},
 })
 export default class ChannelRack extends Vue {
-
-
-  @Prop({required: true})
-  public displayableFixtureList!: FixtureBase[];
 
   set selectedFixtureNames(l: string[]) {
     this.pselectedFixtureNames = l;
@@ -110,15 +105,11 @@ export default class ChannelRack extends Vue {
     return this.displayableFixtureList.filter((f) => this.needDisplay(f) && f.hasChannelMatchingFilters(this.selectedChannelFilterNames));
   }
 
-  get displayedGroupNames(){
-    return this.universe.groupNames
+  get displayedGroupNames() {
+    return this.universe.groupNames;
   }
 
-  fixturesForGroup(gN:string){
-    return this.universe.getFixturesInGroup(gN)
-  }
 
-  
 
   get selectableChannelFilterList() {
     const res: string[] = ['all'];
@@ -138,41 +129,49 @@ export default class ChannelRack extends Vue {
     return this.selectedGroupNames.length > 0 ? this.selectedGroupNames[0] : '';
   }
 
+  public set displayedMaster(v: number) {
+
+    for (const f of this.displayedFixtures) {
+      if (this.fixtureInPreset(f)) {f.setMaster(v); }
+    }
+  }
+  public get displayedMaster() {
+    return this.displayedFixtures.length ? this.displayedFixtures[0].dimmerValue : 0;
+  }
+
+
+  @Prop({required: true})
+  public displayableFixtureList!: FixtureBase[];
+
 
 
   public showNames = false;
   public showValues = true;
   public showProps = false;
-  public showEnabled = false;
+  public showPresetable = false;
   public showActive = false;
-  
+
 
 
   private pselectedFixtureNames: string[] = [];
   private pselectedGroupNames: string[] = ['all'];
   private pselectedChannelFilterNames: string[] = ['all'];
   private extendedTypeFilter = false;
+
+  private presetableNames: string[] = [];
   @universesModule.State('universe') private universe!: UniversesMethods['universe'];
   // @universesModule.Getter('grandMaster') private grandMaster!: UniversesMethods['grandMaster'];
   @universesModule.Mutation('setAllColor') private setAllColor!: UniversesMethods['setAllColor'];
 
-  public set displayedMaster(v: number) {
-
-    for (const f of this.displayedFixtures) {
-      if (f.enabled) {f.setMaster(v); }
-    }
+  public fixturesForGroup(gN: string) {
+    return this.universe.getFixturesInGroup(gN);
+  }
+  public fixtureInPreset(f: FixtureBase) {
+    return true;
   }
 
-  public get displayedMaster(){
-    return this.displayedFixtures.length? this.displayedFixtures[0].dimmerValue:0;
-  }
-
-  public disableOrEnableAll(en: boolean) {
-    for (const f of this.displayableFixtureList) {
-      for (const c of f.channels) {
-        c.enabled = en;
-      }
-    }
+  public disableAllPreseted() {
+    this.presetableNames = [];
   }
 
   public setAllColorHex(h: string) {
@@ -209,8 +208,8 @@ export default class ChannelRack extends Vue {
 
   public needDisplay(f: FixtureBase) {
     let needDisplay = true;
-    if (this.showEnabled) {
-      needDisplay = needDisplay && f.channels.some((c) => c.enabled);
+    if (this.showPresetable) {
+      needDisplay = needDisplay && (this.presetableNames.includes(f.name) || f.channels.some((c) => this.presetableNames.includes(c.name)));
     }
     if (this.showActive) {
       needDisplay = needDisplay && f.hasActiveChannels();
@@ -218,10 +217,10 @@ export default class ChannelRack extends Vue {
     if (!(this.selectedFixtureNames && this.selectedFixtureNames.length === 0) ) {
       needDisplay = needDisplay && (this.selectedFixtureNames.find((fn) => fn === f.name) !== undefined);
     }
-    if(this.universe.getGroupsForFixture(f).length>0){
+    if (this.universe.getGroupsForFixture(f).length > 0) {
       needDisplay = false;
     }
-    
+
     return needDisplay;
   }
 
