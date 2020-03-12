@@ -60,12 +60,10 @@
       <tr>
         <td>
           <input :style="{'background-color':'#0003','width':'100%'}" :value="f.name" @change="setFixtureName({fixture:f,value:$event.target.value})"/>
-
-          {{f.ftype}} ({{f.span}} ch)
-
         </td>
         <td>
           <Numbox :errMsg="fixtureErrorMsgs[f.name]" class="baseCirc pa-0 ma-0" :value="f.baseCirc" :min="0" :max="512" @input="$event && setFixtureBaseCirc({fixture: f, circ:$event})"></Numbox>
+          <span>({{f.span}} ch)</span>
         </td>
         <td>
           <v-select label=groups multiple  style="width:100%" :value="assignedGroupsOnFixture(f)" :items="universe.groupNames" @change="assignToGroups(f,$event)">

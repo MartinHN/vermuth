@@ -1,8 +1,6 @@
 <template>
-  <div class="ChannelRack">
-    <!-- <div class="header">
-      <StateComponent class="StateComponent"></StateComponent>
-    </div> -->
+  <div class="ChannelRackClass">
+    
     <div style="display:flex;width:100%;padding:5px">
       <slider style="flex:1 0 75%" class="displayedMaster" @input="displayedMaster=$event" :value="displayedMaster" name="displayedMaster"  showName="1" showValue="1" ></slider>
       <input type="color" @input="setAllColorHex($event.target.value)"></input>
@@ -48,7 +46,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import {rgbToHex, hexToRgb} from '@API/ColorUtils';
 import FixtureWidget from './Widgets/FixtureWidget.vue' ;
 import FixtureGroupWidget from './Widgets/FixtureGroupWidget.vue' ;
-import StateComponent from './StateComponent.vue';
+
 
 import Button from '@/components/Inputs/Button.vue';
 import Toggle from '@/components/Inputs/Toggle.vue';
@@ -65,7 +63,7 @@ const universesModule = namespace('universes');
 const statesModule = namespace('states');
 
 @Component({
-  components: {FixtureWidget, Button, Toggle, StateComponent, Slider, FixtureGroupWidget},
+  components: {FixtureWidget, Button, Toggle, Slider, FixtureGroupWidget},
 })
 export default class ChannelRack extends Vue {
 
@@ -223,7 +221,7 @@ export default class ChannelRack extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.ChannelRack {
+.ChannelRackClass {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -241,9 +239,7 @@ export default class ChannelRack extends Vue {
 .channel{
   width:100%;
 }
-.StateComponent{
-  flex: 1 1 30%;
-}
+
 /*.grandMaster{
   width:100%;
   }*/

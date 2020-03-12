@@ -312,9 +312,14 @@ export class State {
   public getSavedFixtureList(context: FixtureBase[]) {
     if (!context) {console.error('nofixtureL'); debugger; return; }
     const res = this.fixtureStates.map((fs) => context.find((e) => e.name === fs.name));
-    return res;
+    const defined = res.filter(e=>!!e);
+    if(defined.length!==res.length){
+      console.error('some saved fixture are deleted')
+      debugger;
+    }
+    return defined;
   }
-  public getSavedChannels(context: FixtureBase[], recurse= false) {
+  public getSavedChannels(context: FixtureBase[]) {
     const res = new Array<ChannelBase>();
     for ( const fs of this.fixtureStates) {
       const f = context.find((e) => e.name === fs.name);
@@ -446,7 +451,7 @@ export class StateList {
     }
     const rs = s.resolveState(fl, this.states, dimMaster);
     this.applyResolvedState(rs);
-    const channelList = s.getSavedChannels(fl, false);
+    const channelList = s.getSavedChannels(fl);
 
     this.setLoadedStateName(s.name);
     this.setPresetableNames(channelList.map((c) => c.getUID()));

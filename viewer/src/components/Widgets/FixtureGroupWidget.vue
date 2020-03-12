@@ -3,7 +3,10 @@
 
     <Toggle v-if=isGroup :text="(expanded?'collapse':'expand')+' '+groupName" v-model=expanded />
     <div v-if="expanded && isGroup" style="width:100%;background-color:inherit">
-      <FixtureWidget v-for="ff of fixtureProp.fixtures" :key="ff.id" :fixtureProp="ff"  />
+      <div style="background-color:inherit" v-for="ff of fixtureProp.fixtures" :key="ff.id">
+        <FixtureWidget  :fixtureProp="ff"  :style="{backgroundColor:getFixtureColor(ff)}" />
+        <div class=spacer />
+      </div>
     </div>
     <div v-else style="display:flex;width:100%">
       <FixtureWidget  :fixtureProp=fixtureProp  />
@@ -154,7 +157,7 @@ export default class FixtureGroupWidget extends Vue {
   {maxWait: 50});
 
   public getFixtureColor(f: FixtureBase) {
-    return this.isGroup ? 'black' : 'grey';
+    return FixtureGroup.isFixtureGroup(f) ? 'black' : 'grey';
   }
 
   public setColor(c: {r: number, g: number, b: number}, setWhiteToZero: boolean) {
@@ -182,6 +185,12 @@ export default class FixtureGroupWidget extends Vue {
 .fixtureWidget{
   width:100%;
   background-color:inherit;
+}
+
+.spacer{
+  width:100%;
+  height:3px;
+  background:white;
 }
 
 </style>

@@ -3,7 +3,7 @@
 
 
 
-      <div style="display:flex;width:100%;background-color:inherit" >
+      <div style="display:flex;width:100%;background-color:transparent" >
 
         <ChannelWidget v-for='d in matchedDimmerChannels' :key='d.id' :channelProp=d :overrideName="matchedDimmerChannels.length==1?fixtureProp.name:d.name" style="width:100%" :showProps=showProps ></ChannelWidget>
 

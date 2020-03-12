@@ -89,14 +89,15 @@ export default class Sequencer extends Vue {
     return this.togglePlay ? 'stop' : 'play';
   }
 
-  @sequenceModule.Mutation('addSequence') public addSequence!: SequenceMethods['addSequence'];
-  @sequenceModule.Action('saveCurrentSequence') public saveCurrentSequence!: SequenceMethods['saveCurrentSequence'];
+
   @sequenceModule.State('sequenceList') public sequenceList!: SequenceMethods['sequenceList'];
   @sequenceModule.State('globalTransport') public globalTransport!: SequenceMethods['globalTransport'];
 
   public editOrder = false;
 
-
+  addSequence(){
+    
+  }
   public mounted() {
     window.addEventListener('keydown', this.processKey);
   }

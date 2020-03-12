@@ -216,9 +216,7 @@ export class FixtureBase implements FixtureBaseI {
 
   public  getChannelsOfRole(n: string): {[id: string]: ChannelBase[]} {
     // @ts-ignore
-    // if(this.isGroup){
-    //   debugger
-    // }
+    // if(this.isGroup){debugger}
     const cch: {[id: string]: ChannelBase[]} = {};
     for (const ch of this.channels ) {
       if (ch.roleFam === n) {
@@ -234,9 +232,7 @@ export class FixtureBase implements FixtureBaseI {
   }
   public  getUniqueChannelsOfRole(n: string): {[id: string]: ChannelBase} {
     // @ts-ignore
-    // if(this.isGroup){
-    //   debugger
-    // }
+    // if(this.isGroup){debugger}
     const cch: {[id: string]: ChannelBase} = {};
     for (const ch of this.channels ) {
       if (ch.roleFam === n) {
@@ -270,11 +266,17 @@ export class FixtureBase implements FixtureBaseI {
   @RemoteFunction({sharedFunction: true})
   public setColor(c: {r: number, g: number, b: number}, setWhiteToZero: boolean) {
     const cch = this.colorChannels;
-    if (cch !== {}) {
-      if (cch.r) {this.setCoarseAndFine(c.r, cch.r, cch.r_fine); }
-      if (cch.g) {this.setCoarseAndFine(c.g, cch.g, cch.g_fine); }
-      if (cch.b) {this.setCoarseAndFine(c.b, cch.b, cch.b_fine); }
-      if (setWhiteToZero && cch.w) {this.setCoarseAndFine(0, cch.w, cch.w_fine); }
+    if (cch !== {} ) {
+      if(c){
+        if (cch.r) {this.setCoarseAndFine(c.r, cch.r, cch.r_fine); }
+        if (cch.g) {this.setCoarseAndFine(c.g, cch.g, cch.g_fine); }
+        if (cch.b) {this.setCoarseAndFine(c.b, cch.b, cch.b_fine); }
+        if (setWhiteToZero && cch.w) {this.setCoarseAndFine(0, cch.w, cch.w_fine); }
+      }
+      else{
+        console.error('color not valid')
+        debugger
+      }
     }
   }
 
@@ -317,9 +319,7 @@ export class FixtureBase implements FixtureBaseI {
   @RemoteFunction({sharedFunction:true})
   public addChannel(c: ChannelBase|undefined) {
     // @ts-ignore
-    // if(this.isGroup){
-    //   debugger
-    // }
+    // if(this.isGroup){debugger}
     if (c === undefined || c===null) {
       c = new ChannelBase('channel', 0, this.span);
     }
@@ -409,173 +409,176 @@ export class FixtureGroup extends FixtureBase {
   private _cachedChannelNames : string []  =[]
 
   // get _cachedChannelNames(){
-  //   return this._cachedChannelGroups.map(e=>e.name)
-  // }
-  private get channelsMap(): {[id: string]: FixtureBase[]} {
-    const res :{[id: string]: FixtureBase[]} = {}
-    this.fixtures.map(f=>{
-      f.channels.map(c=>{
-        if(res[c.name]===undefined){res[c.name] = [];}
-        res[c.name].push(f)
+    //   return this._cachedChannelGroups.map(e=>e.name)
+    // }
+    private get channelsMap(): {[id: string]: FixtureBase[]} {
+      const res :{[id: string]: FixtureBase[]} = {}
+      this.fixtures.map(f=>{
+        f.channels.map(c=>{
+          if(res[c.name]===undefined){res[c.name] = [];}
+          res[c.name].push(f)
 
+        })
       })
-    })
 
-    return res
-  };
-  private __updatingChannels = false
-  get channelNames(){
-    return Object.keys(this.channelsMap)
-  }
-
-  // @SetAccessible({readonly: true, blockRecursion: true})
-  // public fixtures = new Array<FixtureBase>();
-
-  constructor(public name: string, public fixtureNames : string[],_universe:Universe) {
-    super(name, [], 'group');
-    
-    // super.channels.map(c=>super.removeChannel(c))
-    // const oldCh = super.channels;
-    this.universe = _universe
-    if(this.channels && this.channels.length){
-      console.log(name,this.channels)
-      debugger
+      return res
+    };
+    private __updatingChannels = false
+    get channelNames(){
+      return Object.keys(this.channelsMap)
     }
-    // const newCh = super.channels;
-    
 
-  }
-  get fixtures(){
-    if(!this.universe){
-      debugger
-      return [] as FixtureBase[]
-    }
-    return (this.universe as Universe).getFixtureListFromNames(this.fixtureNames).filter(e=>e!==undefined) as FixtureBase[]
-  }
-  addFixtureName(n:string){
-    if(this.fixtureNames.includes(n)){
-      console.error('already existing name in group')
-      return
-    }
-    this.fixtureNames.push(n);
-  }
-  removeFixtureName(n:string){
-    const idx = this.fixtureNames.indexOf(n);
-    if(idx<0){
-      console.error('non existing name in group')
-      return
-    }
-    this.fixtureNames.splice(idx,1)
-    
-  }
-  
+    // @SetAccessible({readonly: true, blockRecursion: true})
+    // public fixtures = new Array<FixtureBase>();
 
-public configureFromObj(ob: any) {
-  this.fixtureNames.map((f) => this.removeFixtureName(f));
-  if (ob.name && this.name !== ob.name) {console.error('name mismatch in group'); debugger; }
-  if (this.universe !== undefined && this.universe !== null) {
-    ob.fixtureNames.map((e:string)=>this.addFixtureName(e))
-  } else {
-    debugger;
-    console.error('universe not set in fixture group');
-    return;
-  }
-}
+    constructor(public name: string, public fixtureNames : string[],_universe:Universe) {
+      super(name, [], 'group');
 
-public toJSON() {
-  return {fixtureNames: this.fixtureNames, name: this.name};
-}
-
-// get fixtureNames() {return   this.fixtures.map((f) => f.name); }
-
-public isConsistent() {
-  if (this.fixtures.length) {
-    const t = this.fixtures[0].getType();
-    return !this.fixtures.some((f) => f.getType() !== t);
-  }
-  return true;
-}
-
-get dimmerInSync() {
-  if (this.fixtures.length) {
-    const v = this.fixtures[0].dimmerValue;
-    return this.fixtures.every((f) => f.dimmerInSync && (f.dimmerValue === v));
-  }
-  return true;
-
-}
-
-get channels() {
-  if(!arraysEqual(this._cachedChannelNames,this.channelNames)){
-    if(!this.__updatingChannels){
-    this.__updatingChannels = true
-    this._cachedChannelNames.map(cn=>this.removeChannelNamed(cn))
-    this._cachedChannelNames = this.channelNames
-    this.channelNames.map((n) => this.addChannel(new ChannelGroup(n, this)));
-    this.__updatingChannels = false
-  }
-  else{
-    console.error('weird recursion error')
-    debugger
-    // this._cachedChannelGroups.map((cg,i)=>setChildAccessible(this.channels,''+i))
-  }
-  }
-  const tCh  = this.pchannels;
-  return tCh  as ChannelGroup[]
-  
-}
-set channels(c: ChannelGroup[]) {
-  if (!c || c.length === 0) {return; }
-  debugger;
-  // return Object.entries(this.channelsMap).map(([k,v])=>f.getChannelNamed(k))
-}
-
-@RemoteFunction({sharedFunction:true})
-public addChannel(c: ChannelBase|undefined) {
-  if(!c || !ChannelGroup.isChannelGroup(c)){
-    console.error("can't manually add channel on group");
-    debugger
-    return new ChannelBase('channel', 0, this.span);
-  }
-  else{
-    return super.addChannel(c)
-  }
-}
-
-// get fixtures(){
-  //   return this.fixtureNames.map(n=>this.universe.getFixtureForName(n))
-  // }
-
-  // getChannelForName(n:string):ChannelBase|undefined{
-    //   const cl = this.fixtures.map(f=>f.getChannelForName(n))
-    //   if(cl && cl.length){
-      //     return new ChannelGroup(n,this)
-      //   }
-      // }
-
+      // super.channels.map(c=>super.removeChannel(c))
+      // const oldCh = super.channels;
+      this.universe = _universe
+      if(this.channels && this.channels.length){
+        console.log(name,this.channels)
+        debugger
+      }
+      // const newCh = super.channels;
 
 
     }
+    get fixtures(){
+      if(!this.universe){
+        debugger
+        return [] as FixtureBase[]
+      }
+      return (this.universe as Universe).getFixtureListFromNames(this.fixtureNames).filter(e=>e!==undefined) as FixtureBase[]
+    }
+    addFixtureName(n:string){
+      if(this.fixtureNames.includes(n)){
+        console.error('already existing name in group')
+        return
+      }
+      this.fixtureNames.push(n);
+    }
+    removeFixtureName(n:string){
+      const idx = this.fixtureNames.indexOf(n);
+      if(idx<0){
+        console.error('non existing name in group')
+        return
+      }
+      this.fixtureNames.splice(idx,1)
 
-    export class DirectFixture extends FixtureBase {
+    }
 
-      constructor( fixtureName: string,  circs: number[] ) {
-        super(fixtureName, circs.map((c) => new ChannelBase('channel', 0, c)));
-        this.ftype = 'direct';
+
+    public configureFromObj(ob: any) {
+      this.fixtureNames.map((f) => this.removeFixtureName(f));
+      if (ob.name && this.name !== ob.name) {console.error('name mismatch in group'); debugger; }
+      if (this.universe !== undefined && this.universe !== null) {
+        ob.fixtureNames.map((e:string)=>this.addFixtureName(e))
+      } else {
+        debugger;
+        console.error('universe not set in fixture group');
+        return;
+      }
+    }
+
+    public toJSON() {
+      return {fixtureNames: this.fixtureNames, name: this.name};
+    }
+
+    // get fixtureNames() {return   this.fixtures.map((f) => f.name); }
+
+    public isConsistent() {
+      if (this.fixtures.length) {
+        const t = this.fixtures[0].getType();
+        return !this.fixtures.some((f) => f.getType() !== t);
+      }
+      return true;
+    }
+
+    get dimmerInSync() {
+      if (this.fixtures.length) {
+        const v = this.fixtures[0].dimmerValue;
+        return this.fixtures.every((f) => f.dimmerInSync && (f.dimmerValue === v));
+      }
+      return true;
+
+    }
+
+    get channels() {
+      if(!arraysEqual(this._cachedChannelNames,this.channelNames)){
+        if(!this.__updatingChannels){
+          this.__updatingChannels = true
+          const newChNames = this.channelNames
+          const toAdd  = newChNames.filter((v) => !this._cachedChannelNames.includes(v));
+          const toRm = this._cachedChannelNames.filter((v) => !newChNames.includes(v));
+          toRm.map(cn=>this.removeChannelNamed(cn))
+          toAdd.map((n) => this.addChannel(new ChannelGroup(n, this)));
+          this._cachedChannelNames = newChNames
+          this.__updatingChannels = false
+        }
+        // else{
+          //   console.error('weird recursion error')
+          //   debugger
+          //   // this._cachedChannelGroups.map((cg,i)=>setChildAccessible(this.channels,''+i))
+          // }
+        }
+        const tCh  = this.pchannels;
+        return tCh  as ChannelGroup[]
 
       }
+      set channels(c: ChannelGroup[]) {
+        if (!c || c.length === 0) {return; }
+        debugger;
+        // return Object.entries(this.channelsMap).map(([k,v])=>f.getChannelNamed(k))
+      }
+
+      @RemoteFunction({sharedFunction:true})
+      public addChannel(c: ChannelBase|undefined) {
+        if(!c || !ChannelGroup.isChannelGroup(c)){
+          console.error("can't manually add channel on group");
+          debugger
+          return new ChannelBase('channel', 0, this.span);
+        }
+        else{
+          return super.addChannel(c)
+        }
+      }
+
+      // get fixtures(){
+        //   return this.fixtureNames.map(n=>this.universe.getFixtureForName(n))
+        // }
+
+        // getChannelForName(n:string):ChannelBase|undefined{
+          //   const cl = this.fixtures.map(f=>f.getChannelForName(n))
+          //   if(cl && cl.length){
+            //     return new ChannelGroup(n,this)
+            //   }
+            // }
 
 
-    }
-    fixtureTypes.direct = (...args: any[]) => new DirectFixture(args[0], args[1]);
+
+          }
+
+          export class DirectFixture extends FixtureBase {
+
+            constructor( fixtureName: string,  circs: number[] ) {
+              super(fixtureName, circs.map((c) => new ChannelBase('channel', 0, c)));
+              this.ftype = 'direct';
+
+            }
 
 
-    // console.log('started')
-    // const f = new DirectFixture('lala',[0])
-    // console.log("setName")
-    // f.setName("lala")
-    // const  allCircs  = new Array(512).fill(0).map((_, idx) => idx);
-    // export const fixtureAll = new DirectFixture('all', allCircs);
+          }
+          fixtureTypes.direct = (...args: any[]) => new DirectFixture(args[0], args[1]);
+
+
+          // console.log('started')
+          // const f = new DirectFixture('lala',[0])
+          // console.log("setName")
+          // f.setName("lala")
+          // const  allCircs  = new Array(512).fill(0).map((_, idx) => idx);
+          // export const fixtureAll = new DirectFixture('all', allCircs);
 
 
 

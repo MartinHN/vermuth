@@ -45,7 +45,7 @@ export class Universe implements UniverseI {
   @RemoteFunction({sharedFunction: true})
   public removeGroupNamed(name: string) {
     if (this.groups[name] !== undefined) {
-      this.groups[name].universe = null;
+      //this.groups[name].universe = null;
       delete this.groups[name];
     }
   }
@@ -78,7 +78,7 @@ export class Universe implements UniverseI {
     return Object.values(this.groups);
   }
 
-  
+
   public refreshGroupList() {
     // const oldNames = this.groupNames
     // this.groupNames.map(n=>this.removeGroupNamed(n))

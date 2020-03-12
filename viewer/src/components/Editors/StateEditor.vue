@@ -9,7 +9,7 @@
         <v-col cols=12>
           <v-list dense class="overflow-y-auto" style=max-height:200px >
 
-            <v-list-item-group v-model="selectedFixtureIdxs" multiple> <!-- v-model="item" color="primary"> -->
+            <v-list-item-group v-model="selectedFixtureIdxs" multiple>
               <v-list-item v-for="(s,i) in selectableFixtureListNames" :key=s.id>
                 <v-list-item-content >
                   <v-list-item-title v-html="s" ></v-list-item-title>
@@ -27,10 +27,10 @@
 
 
     </div>
-    <channel-rack :displayableFixtureList="state.getSavedFixtureList(universe.fixtureList)" />
-  </div>
+    <ChannelRack :displayableFixtureList="state.getSavedFixtureList(universe.fixtureAndGroupList)" />
 
-</div>
+
+  </div>
 </template>
 
 <script lang="ts">
@@ -56,7 +56,7 @@ const universesModule = namespace('universes');
 
 
 @Component({
-  components: {Button, Numbox, Toggle, TextInput, FixtureWidget, ChannelRack: ChannelRack},
+  components: {Button, Numbox, Toggle, TextInput, FixtureWidget, ChannelRack},
 })
 export default class StateEditor extends Vue {
   @Prop({default: null, required: true})

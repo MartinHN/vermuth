@@ -111,6 +111,12 @@ export class SequenceList {
   public indexOf(s: Sequence) {
     return this.list.indexOf(s);
   }
+  @RemoteFunction({sharedFunction:true})
+  public appendNewSequence(name:string,stateName:string){
+    const s = new Sequence(name,stateName)
+    this.appendSequence(s)
+
+  }
   public appendSequence(s: Sequence) {
     this.insertAt(s, this.list.length);
   }
