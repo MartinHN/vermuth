@@ -230,7 +230,8 @@ function buildAddressFromObj(o: any, errorIfEmpty = true) {
     let insp = o;
     let addr = new Array<string>();
     let found;
-    while (insp && !insp.__isRoot) {
+    let maxDepth = 100;
+    while (insp && !insp.__isRoot && (maxDepth--) > 0) {
       found = false;
       if (insp.__accessibleName) {
         addr.push(insp.__accessibleName);
@@ -258,6 +259,11 @@ function buildAddressFromObj(o: any, errorIfEmpty = true) {
       }
 
       insp = insp.__accessibleParent;
+    }
+    if (maxDepth < 1) {
+      console.error('recursive tree');
+      debugger;
+      return null;
     }
     if (addr && addr.length) {
       addr = addr.reverse();
@@ -384,11 +390,12 @@ function defineOnInstance(targetClass: any, key: string | symbol, onInstance: (o
 }
 
 
-export function SetAccessible(opts?: {readonly?: boolean}) {
+export function SetAccessible(opts?: {readonly?: boolean, blockRecursion?: boolean}) {
   const readonly = opts && opts.readonly;
+  const blockRecursion = opts && opts.blockRecursion;
   return (target: any, key: string | symbol) => {
     defineOnInstance(target, key, (parent: any, defaultValue: any) => {
-      return setChildAccessible(parent, key, {immediate: false, defaultValue, readonly});
+      return setChildAccessible(parent, key, {immediate: false, defaultValue, readonly, blockRecursion});
     },
     );
   };
@@ -551,20 +558,23 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
           }
 
           // just check if we are not passing complex args as Vue's
-
-          const prunedArgs = args.map((e) => {
-            if (typeof(e) === 'object' && e !== null) {
+          const pruneArg = (e: any): any => {
+            if (Array.isArray(e)) {
+              return e.map(pruneArg);
+            } else if (typeof(e) === 'object' && e !== null) {
               const addr = buildAddressFromObj(e, false);
               if (addr) {console.log('setting addr as arg'); return '/?' + addr; }
               if (e.__ob__) {
-
                 const c = Object.assign({}, e);
                 delete c.__ob__;
                 return c;
               }
+            } else {
+              return e;
             }
-            return e;
-          });
+          };
+          const prunedArgs = pruneArg(args);
+
           if (isClient) {
 
             if ( AccessibleSettedByServer !== registeredAddr  ) {
@@ -724,9 +734,13 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
       console.error('re register child accessible');
       return; // avoid reregistering
     }
+
     if (typeof(childAcc) === 'object' && childAcc !== null) {
       allAccessibleSet.add(childAcc);
+      if (childAcc.__accessibleParent && childAcc.__accessibleParent !== parent) {
+        console.error(key, 'overriding parent', childAcc.__accessibleParent, ' with ', parent);
 
+      }
       Reflect.defineProperty(childAcc, '__accessibleParent', {
         value: parent,
         enumerable: false,
@@ -740,7 +754,10 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
         configurable: false,
         writable: true,
       });
+      if (key === 'parentGroup') {
 
+        debugger;
+      }
       defineObjTable(childAcc, '__accessibleMembers'); //
 
       const types = defineObjTable(parent, '__accessibleTypes');
@@ -842,7 +859,7 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
       if (childAcc.__onProxyfication) {childAcc.__onProxyfication(); }
     } else {
 
-      debugger;
+      // debugger;
       console.error('reproxying!!!');
 
     }

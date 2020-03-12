@@ -1,4 +1,4 @@
-import { FixtureBase } from './Fixture';
+import { FixtureBase, FixtureGroup } from './Fixture';
 import { ChannelBase, UniverseListener } from './Channel';
 import { getNextUniqueName , compareValues} from './Utils';
 import { SetAccessible, setChildAccessible, AccessibleClass , RemoteFunction} from './ServerSync';
@@ -20,7 +20,9 @@ export class Universe implements UniverseI {
   public  fixtures: {[id: string]: FixtureBase} = {};
 
   @SetAccessible({readonly: true})
-  public  groups: {[id: string]: string[]} = {};
+  public  groups: {[id: string]: FixtureGroup} = {};
+
+
 
 
   private _master = 1.0;
@@ -32,42 +34,68 @@ export class Universe implements UniverseI {
 
   public get grandMaster() {return this._master; }
   public get groupNames() { return Object.keys(this.groups); }
-  public addGroup(name: string, nl: string[]) {
-    addProp(this.groups, name,  nl);
+
+  @RemoteFunction({sharedFunction: true})
+  public addGroup(name: string) {
+    this.groups[name] = new FixtureGroup(name,[],this);
+    this.groups[name].universe = this;
+    return this.groups[name] as FixtureGroup;
   }
-  public removeGroup(name: string) {
-    deleteProp(this.groups, name);
+
+  @RemoteFunction({sharedFunction: true})
+  public removeGroupNamed(name: string) {
+    if (this.groups[name] !== undefined) {
+      this.groups[name].universe = null;
+      delete this.groups[name];
+    }
   }
+
+
   public getGroupsForFixture(f: FixtureBase) {
-    return Object.entries(this.groups).filter(([k, v]) => v.includes(f.name)).map(([k, v]) => k);
+    return Object.values(this.groups).filter( (v) => v.fixtureNames.includes(f.name));
+  }
+  public getGroupNamesForFixture(f: FixtureBase) {
+    return this.getGroupsForFixture(f).map((g) => g.name);
+  }
+  public getFixturesInGroupNamed(gName: string) {
+    return this.groups[gName] ? this.groups[gName].fixtures : [];
   }
 
-  public getFixturesInGroup(gName: string) {
-    return Object.values(this.groups[gName]).map((e) => this.fixtures[e]).filter((f) => f !== undefined) as FixtureBase[];
-  }
-
-  public setGroupsForFixture(f: FixtureBase, gNames: string[]) {
+  @RemoteFunction({sharedFunction: true})
+  public setGroupNamesForFixture(f: FixtureBase, gNames: string[]) {
     const validGNames = gNames.filter((g) => this.groupNames.includes(g));
-    const toAdd  = validGNames.filter((v) => !this.getGroupsForFixture(f).includes(v));
-    const toRm = this.getGroupsForFixture(f).filter((v) => !validGNames.includes(v));
+    const toAdd  = validGNames.filter((v) => !this.getGroupNamesForFixture(f).includes(v));
+    const toRm = this.getGroupNamesForFixture(f).filter((v) => !validGNames.includes(v));
     for (const g of toRm) {
-      const idx = this.groups[g].indexOf(f.name);
-      if (idx >= 0) {
-        this.groups[g].splice(idx, 1);
-      }
+      this.groups[g].removeFixtureName(f.name);
     }
     for (const g of toAdd) {
-      const idx = this.groups[g].indexOf(f.name);
-      if (idx < 0) {
-        this.groups[g].push(f.name);
-      }
+      this.groups[g].addFixtureName(f.name);
     }
   }
   public get groupList() {
+    // this.refreshGroupList()
     return Object.values(this.groups);
   }
+
+  
+  public refreshGroupList() {
+    // const oldNames = this.groupNames
+    // this.groupNames.map(n=>this.removeGroupNamed(n))
+
+    // oldNames.map(k=> {
+    //   this.groups[k] =new FixtureGroup(k,this.getFixturesInGroupNamed(k))
+    //   this.groups[k].universe = this
+    // });
+  }
   public get fixtureList() {return Object.values(this.fixtures); }
+
+  public get fixtureAndGroupList() {
+    return (this.groupList as Array<FixtureBase | FixtureGroup>).concat(this.fixtureList);
+  }
+
   public getFixtureListFromNames(n: string[]) {return n.map((e) => this.fixtures[e]).filter((e) => e !== undefined); }
+  public getFixtureNamed(n: string) {return this.fixtures[n]; }
   public get sortedFixtureList() {return this.fixtureList.slice().sort(compareValues('name', 'asc')); }
 
   // singleton guard
@@ -87,10 +115,11 @@ export class Universe implements UniverseI {
       }
 
     }
-    Object.keys(this.groups).map((g) => this.removeGroup(g));
+    this.groupNames.map((g) => this.removeGroupNamed(g));
     if (ob.groups) {
-      for ( const g of Object.keys(ob.groups)) {
-        this.addGroup(g, ob.groups[g]);
+      for ( const [k, v] of Object.entries(ob.groups)) {
+        const gi = this.addGroup(k);
+        gi.configureFromObj(v);
       }
     }
 
@@ -198,11 +227,11 @@ export class Universe implements UniverseI {
 
   @RemoteFunction({sharedFunction: true})
   public setGroupColor(gName: string, color: {r: number, g: number, b: number}, setWhiteToZero: boolean) {
-    this.getFixturesInGroup(gName).map((f) => f.setColor(color, setWhiteToZero));
+    this.getFixturesInGroupNamed(gName).map((f) => f.setColor(color, setWhiteToZero));
   }
   @RemoteFunction({sharedFunction: true})
   public setGroupMaster(gName: string, v: number) {
-    this.getFixturesInGroup(gName).map((f) => f.dimmerValue = v);
+    this.getFixturesInGroupNamed(gName).map((f) => f.dimmerValue = v);
   }
 
   public testDimmerNum(d: number) {

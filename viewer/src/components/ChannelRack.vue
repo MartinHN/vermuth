@@ -35,9 +35,9 @@
         </v-row>
       </v-row>
       
-      <FixtureGroupWidget v-for="gN in displayedGroupNames" style="margin:10px 0 0 0;width:100%;background-color:#FFF5" :key="gN.id" :fixtureProps="fixturesForGroup(gN)" :groupName="gN" :showProps="showProps" :showName="showNames" ></FixtureGroupWidget>
-
-      <FixtureWidget v-for="f in displayedFixtures" style="margin:10px 0 0 0;width:100%;background-color:#FFF5" class="channel" :key="f.id" :fixtureProp="f" :showName="showNames" :showValue="showValues" :filterList="selectedChannelFilterNames" :showProps="showProps"></FixtureWidget>
+<!--       <FixtureGroupWidget v-for="gN in displayedGroupNames" style="margin:10px 0 0 0;width:100%;background-color:#FFF5" :key="gN.id" :fixtureProps="fixturesForGroup(gN)" :groupName="gN" :showProps="showProps" :showName="showNames" ></FixtureGroupWidget>
+ -->
+      <FixtureGroupWidget v-for="f in displayedFixtures" style="margin:10px 0 0 0;width:100%;" class="channel" :key="f.id" :fixtureProp="f" :showName="showNames" :showValue="showValues" :filterList="selectedChannelFilterNames" :showProps="showProps"></FixtureGroupWidget>
     </div>
   </div>
 </div>
@@ -55,12 +55,14 @@ import Toggle from '@/components/Inputs/Toggle.vue';
 import Slider from '@/components/Inputs/Slider.vue';
 
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
-import { DirectFixture , FixtureBase} from '@API/Fixture';
+import { DirectFixture , FixtureBase, FixtureGroup} from '@API/Fixture';
 import { ChannelRoles } from '@API/Channel';
 import UniversesMethods from '../store/universes';
+import StatesMethods from '../store/states';
 
 
 const universesModule = namespace('universes');
+const statesModule = namespace('states');
 
 @Component({
   components: {FixtureWidget, Button, Toggle, StateComponent, Slider, FixtureGroupWidget},
@@ -89,12 +91,12 @@ export default class ChannelRack extends Vue {
   }
   public set selectedGroupNames(v: string[]) {
     this.pselectedGroupNames = v;
-    this.syncGroupSelection();
+
   }
 
   set selectedChannelFilterNames(l: string[]) {
     this.pselectedChannelFilterNames = l;
-    this.syncFilterSelection();
+
   }
   get selectedChannelFilterNames() {
     return this.pselectedChannelFilterNames;
@@ -106,7 +108,8 @@ export default class ChannelRack extends Vue {
   }
 
   get displayedGroupNames() {
-    return this.universe.groupNames;
+    return [];
+    // return this.universe.groupNames;
   }
 
 
@@ -158,20 +161,22 @@ export default class ChannelRack extends Vue {
   private pselectedChannelFilterNames: string[] = ['all'];
   private extendedTypeFilter = false;
 
-  private presetableNames: string[] = [];
+
   @universesModule.State('universe') private universe!: UniversesMethods['universe'];
   // @universesModule.Getter('grandMaster') private grandMaster!: UniversesMethods['grandMaster'];
   @universesModule.Mutation('setAllColor') private setAllColor!: UniversesMethods['setAllColor'];
 
+  @statesModule.State('stateList') private stateList!: StatesMethods['stateList'];
+
   public fixturesForGroup(gN: string) {
-    return this.universe.getFixturesInGroup(gN);
+    return this.universe.getFixturesInGroupNamed(gN);
   }
   public fixtureInPreset(f: FixtureBase) {
     return true;
   }
 
   public disableAllPreseted() {
-    this.presetableNames = [];
+    this.stateList.setPresetableNames([]);
   }
 
   public setAllColorHex(h: string) {
@@ -181,35 +186,17 @@ export default class ChannelRack extends Vue {
     }
   }
 
-  public syncGroupSelection() {
-    if (this.selectedGroupNames.length === 0) {return; }
-    if (this.selectedGroupNames.find((e) => e === 'all')) {
-      this.pselectedFixtureNames = this.displayableFixtureNames;
-      return;
-    }
-    const toSel: {[id: string]: boolean} = {};
-    const lastSel = this.selectedGroupNames;
-    for (const g of this.selectedGroupNames) {
-      for (const f  of this.universe.groups[g]) {
-        toSel[f] = true;
-      }
-    }
-    const toSelL = Object.keys(toSel);
-    this.pselectedFixtureNames = toSelL;
-  }
-
-  public syncFilterSelection() {
-
-  }
 
   public selectAll() {
     this.selectedFixtureNames = this.displayableFixtureList.map((e) => e.name);
   }
 
+
+
   public needDisplay(f: FixtureBase) {
     let needDisplay = true;
     if (this.showPresetable) {
-      needDisplay = needDisplay && (this.presetableNames.includes(f.name) || f.channels.some((c) => this.presetableNames.includes(c.name)));
+      needDisplay = needDisplay && (this.stateList.presetableNames.includes(f.name) || f.channels.some((c) => this.stateList.presetableNames.includes(c.name)));
     }
     if (this.showActive) {
       needDisplay = needDisplay && f.hasActiveChannels();
@@ -219,6 +206,9 @@ export default class ChannelRack extends Vue {
     }
     if (this.universe.getGroupsForFixture(f).length > 0) {
       needDisplay = false;
+    }
+    if (FixtureGroup.isFixtureGroup(f) && !this.selectedGroupNames.includes('all')) {
+      needDisplay = needDisplay && this.selectedGroupNames.includes(f.name);
     }
 
     return needDisplay;

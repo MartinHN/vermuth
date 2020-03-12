@@ -210,7 +210,7 @@ class DMXController implements DMXControllerI {
       this.stopWatchSerialPorts();
       this.__connected = true;
       console.log('successfully connected to ' + uri);
-      this.dmx.update(this.universeName, this.activeChannels.map((c) => [c.trueCirc, c.intValue]));
+      this.dmx.update(this.universeName, this.arrayToObj(this.activeChannels.map((c) => ({c: c.trueCirc, v: c.intValue}))));
     };
     const closeCB = () => {
       this.watchSerialPorts();

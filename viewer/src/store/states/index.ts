@@ -14,6 +14,7 @@ export default class States extends VuexModule {
 
   public stateList = RootState.stateList;
 
+
   @Action
   public configureFromObj(ob: any) {
     this.context.commit('configureFromObjMut', ob);
@@ -45,8 +46,8 @@ export default class States extends VuexModule {
   @Mutation
   public renameState(pl: {oldName: string, newName: string}) {
     this.stateList.renameState(pl.oldName, pl.newName);
-      // Vue.set(this.states, pl.newName,  s);
-      // Vue.delete(this.states, pl.oldName);
+    // Vue.set(this.states, pl.newName,  s);
+    // Vue.delete(this.states, pl.oldName);
   }
 
 
@@ -61,9 +62,9 @@ export default class States extends VuexModule {
 
   }
 
+
   get channels() {
     return this.context.rootGetters['universes/usedChannels'];
-
   }
 
   get stateNames() {

@@ -1,11 +1,13 @@
 <template>
-  <div class="fixtureGroupWidget" >
-    <Toggle :text="expanded?'collapse':'expand'" v-model=expanded />
-    <div v-if=expanded class="pa-0 ma-0" style="width:100%;background-color:inherit">
-      <FixtureWidget v-for="f in fixtureProps" :key="f.id" :fixtureProp=f :filterList="['all']" />
+  <div class="fixtureGroupWidget" :style="{backgroundColor:getFixtureColor(fixtureProp)}">
+
+    <Toggle v-if=isGroup :text="(expanded?'collapse':'expand')+' '+groupName" v-model=expanded />
+    <div v-if="expanded && isGroup" style="width:100%;background-color:inherit">
+      <FixtureWidget v-for="ff of fixtureProp.fixtures" :key="ff.id" :fixtureProp="ff"  />
     </div>
     <div v-else style="display:flex;width:100%">
-      {{groupName}}
+      <FixtureWidget  :fixtureProp=fixtureProp  />
+<!-- 
       <div style="display:flex;width:100%" v-if="hasDimmerChannels" >
         <Toggle text="presetable" v-model=dimmerPresetable />
         <Slider  v-model="dimmerValue" :text="groupName" style="width:100%" :enabled=masterInSync ></Slider>
@@ -27,7 +29,7 @@
           <Point2DEditor slot="body" :value="position" @input="position = ($event?$event[0]:[])"></Point2DEditor>
         </modal>
 
-      </div>
+      </div> -->
     </div>
 
 
@@ -46,7 +48,7 @@ import Modal from '@/components/Utils/Modal.vue' ;
 import Point2DEditor from '@/components/Editors/Point2DEditor.vue';
 import FixtureWidget from '@/components/Widgets/FixtureWidget.vue';
 
-import { DirectFixture } from '@API/Fixture';
+import {FixtureBase, DirectFixture, FixtureGroup } from '@API/Fixture';
 import { ChannelBase } from '@API/Channel';
 import UniversesMethods from '@/store/universes';
 import {rgbToHex, hexToRgb} from '@API/ColorUtils';
@@ -66,61 +68,56 @@ function isNonEmpty(o: any) {
 export default class FixtureGroupWidget extends Vue {
 
   get masterInSync() {
-    // debugger
-    // const fk = this.dimmerChannels
-    if (this.fixtureProps.length) {
-      const v = this.fixtureProps[0].dimmerValue;
-      return this.fixtureProps.every((f) => f.dimmerInSync && (f.dimmerValue === v));
+    if (FixtureGroup.isFixtureGroup(this.fixtureProp)) {
+      return this.fixtureProp.dimmerInSync;
     }
-    return false;
+    return true;
   }
   get hasColorChannels() {
-    return this.fixtureProps.some((f) => isNonEmpty(f.colorChannels));
+    return this.fixtureProp.hasColorChannels;
   }
   get colorValue() {
-    return this.fixtureProps ? this.fixtureProps[0].getColor() : {r: 0, g: 0, b: 0};
+    return this.fixtureProp.getColor() ;
   }
-
-
-
+  get isGroup() {
+    return FixtureGroup.isFixtureGroup(this.fixtureProp);
+  }
   get hasDimmerChannels() {
-    return this.fixtureProps.some((f) => isNonEmpty(f.dimmerChannels));
+    return this.fixtureProp.hasDimmerChannels;
   }
   set dimmerValue(v: number) {
-    this.fixtureProps.map((f) => f.setMaster(v));
+    this.fixtureProp.dimmerValue = v;
   }
   get dimmerValue() {
-   return this.fixtureProps ? this.fixtureProps[0].dimmerValue : 0;
- }
+    return this.fixtureProp.dimmerValue;
+  }
 
-
- get hasPositionChannels() {
-  return  this.fixtureProps.some((f) => isNonEmpty(f.positionChannels));
-}
-set position(p: Array<{x: number, y: number}>) {
-  this.fixtureProps.map((f) => f.setPosition(p[0]));
-}
-get position(): Array<{x: number, y: number}> {
-  return this.fixtureProps ? [this.fixtureProps[0].getPosition()] : new Array<{x: number, y: number}>();
-}
-
-// get fixturePositionList() {
-  //   return [this.fixtureProps.getPosition()];
-  // }
+  get fixtureProps() {
+    return FixtureGroup.isFixtureGroup(this.fixtureProp) ? this.fixtureProp.fixtures : [];
+  }
+  get groupName() {
+    return this.fixtureProp.name;
+  }
+  get hasPositionChannels() {
+    return   this.fixtureProp.hasPositionChannels;
+  }
+  set position(p: Array<{x: number, y: number}>) {
+    this.fixtureProp.setPosition(p[0]);
+  }
+  get position(): Array<{x: number, y: number}> {
+    return [this.fixtureProp.getPosition()];
+  }
 
 
 
 
   get otherChannels() {
-    const res = [];
-    for (const f of this.fixtureProps) {
-      const otherf =  f.getChannelsOfRole('other');
-      if (otherf && otherf.other) {
-        res.push(otherf.other);
-      }
+    const otherf = this.fixtureProp.getChannelsOfRole('other');
 
+    if (otherf && otherf.other) {
+      return otherf.other;
     }
-    return res;
+    return [];
   }
 
   get hexColorValue(): string {
@@ -136,11 +133,13 @@ get position(): Array<{x: number, y: number}> {
   }
 
 
-  @Prop() public fixtureProps!: DirectFixture[];
-  @Prop() public groupName!: DirectFixture;
+  @Prop({required: true}) public fixtureProp!: DirectFixture|FixtureGroup;
+
   @Prop({default: false})    public showName?: boolean;
   @Prop({default: false})    public showProps?: boolean;
   public expanded = false;
+  // @statesModule.Getter('presetableNames') public presetableNames!: StatesMethods['presetableNames'];
+  // @statesModule.Mutation('setNamePresetable') public setNamePresetable!: StatesMethods['setNamePresetable'];
   public dimmerPresetable = false;
   public colorPresetable = false;
   public positionPresetable = false;
@@ -153,8 +152,13 @@ get position(): Array<{x: number, y: number}> {
   },
   50,
   {maxWait: 50});
+
+  public getFixtureColor(f: FixtureBase) {
+    return this.isGroup ? 'black' : 'grey';
+  }
+
   public setColor(c: {r: number, g: number, b: number}, setWhiteToZero: boolean) {
-    this.fixtureProps.map((f) => f.setColor(c, setWhiteToZero));
+    this.fixtureProp.setColor(c, setWhiteToZero);
   }
 
 
@@ -173,7 +177,7 @@ get position(): Array<{x: number, y: number}> {
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  background-color: gray;
+  
 }
 .fixtureWidget{
   width:100%;

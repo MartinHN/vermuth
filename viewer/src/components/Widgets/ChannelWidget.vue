@@ -16,7 +16,7 @@
     <div v-else style="width:100%">
       <v-row no-gutters>
       <v-col cols=2 >
-          <Toggle v-model="enabledV" text="enabled"/>
+          <Toggle v-model="enabledV" text="preset"/>
         </v-col>
         <v-col>
       <slider class="slider" @input="setChannelValue({channel:channelProp,value:$event})" :value="channelProp.floatValue" :name="displayedName"  :showName="true" :showValue="true" :enabled="enabledV && !isControlledExternally"></slider>
@@ -49,6 +49,7 @@ import Modal from '@/components/Utils/Modal.vue';
 import FullCurveEditor from '@/components/Editors/FullCurveEditor.vue';
 import { ChannelBase } from '@API/Channel';
 import UniversesMethods from '@/store/universes';
+import StatesMethods from '@/store/states';
 import {Curve, CurveStore, CurveBaseI} from '@API/Curve';
 import {CurvePlayer, CurveLink} from '@API/CurvePlayer';
 import {uuidv4} from '@API/Utils';
@@ -56,6 +57,7 @@ import {uuidv4} from '@API/Utils';
 import {nextTick} from '@API/MemoryUtils';
 
 const universesModule = namespace('universes');
+const statesModule = namespace('states');
 
 @Component({
   components: {Slider, Button, Numbox, Toggle, Modal, FullCurveEditor},
@@ -65,8 +67,11 @@ export default class ChannelWidget extends Vue {
   get displayedName() {
     if ( this.overrideName) {return this.overrideName; } else {return this.channelProp.name; }
   }
-  // get enabledV(): boolean {return this.channelProp.enabled; }
-  // set enabledV(v: boolean) {this.setChannelEnabled({channel: this.channelProp, value: v}); }
+  get presetableName() {
+    return this.channelProp.getUID();
+  }
+  get enabledV(): boolean {return this.stateList.presetableNames.includes(this.presetableName); }
+  set enabledV(v: boolean) {this.stateList.setNamePresetable(this.presetableName, v); }
   get sliderColor(): string {
     return this.enabledV ? 'inherit' : 'dark';
   }
@@ -80,8 +85,13 @@ export default class ChannelWidget extends Vue {
   }
 
   @universesModule.Getter('usedChannels') public usedChannels!: UniversesMethods['usedChannels'];
+
   @universesModule.Mutation('setChannelValue') public setChannelValue!: UniversesMethods['setChannelValue'];
   @universesModule.Mutation('setChannelName') public setChannelName!: UniversesMethods['setChannelName'];
+
+
+  @statesModule.State('stateList') public stateList!: StatesMethods['stateList'];
+
 
 
   @Prop() public channelProp!: ChannelBase;
@@ -89,7 +99,7 @@ export default class ChannelWidget extends Vue {
   @Prop({default: false})    public showValue!: boolean;
   @Prop({default: false}) public showProps!: boolean;
   @Prop() public overrideName?: string;
-  private enabledV: boolean  = true;
+
 
   private showCurveEditor = false;
   public editCurve() {
@@ -123,7 +133,7 @@ export default class ChannelWidget extends Vue {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  /*background-color: gray;*/
+  background-color: inherit;
   width:100%;
 
 }

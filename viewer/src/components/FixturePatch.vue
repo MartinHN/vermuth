@@ -32,6 +32,7 @@
     <v-card>
       <v-text-field
       v-model="searchFixtureText"
+      ref=searchBar
       append-icon="search"
       label="Search"
       single-line
@@ -59,9 +60,9 @@
       <tr>
         <td>
           <input :style="{'background-color':'#0003','width':'100%'}" :value="f.name" @change="setFixtureName({fixture:f,value:$event.target.value})"/>
-       
-         {{f.ftype}} ({{f.span}} ch)
-       
+
+          {{f.ftype}} ({{f.span}} ch)
+
         </td>
         <td>
           <Numbox :errMsg="fixtureErrorMsgs[f.name]" class="baseCirc pa-0 ma-0" :value="f.baseCirc" :min="0" :max="512" @input="$event && setFixtureBaseCirc({fixture: f, circ:$event})"></Numbox>
@@ -74,21 +75,21 @@
           </v-select>
         </td>
         
-       <td>
-        <Button class=" removeFixture " color='red' @click="askToRmFixture(f)" tabIndex="-1" text="-"/>
-      </td>
-      <td>
-        <Button text="edit" class="button pa-0 ma-0" @click='editedFixture = f'/>
-      </td>
-      <td>
-        <Button text="clone" class="button pa-0 ma-0" @click='cloneFixture(f)'/>
-      </td>
-      <td>
-        <Toggle v-if='f.dimmerChannels && f.dimmerChannels.length ' text="test" :value="universe.testedChannel.circ===f.dimmerChannels[0].trueCirc" @input=testDimmerNum($event?f.dimmerChannels[0].trueCirc:-1) > T </Toggle>
-      </td>
-    </tr>
-  </v-row>
-</template>
+        <td>
+          <Button class=" removeFixture " color='red' @click="askToRmFixture(f)" tabIndex="-1" text="-"/>
+        </td>
+        <td>
+          <Button text="edit" class="button pa-0 ma-0" @click='editedFixture = f'/>
+        </td>
+        <td>
+          <Button text="clone" class="button pa-0 ma-0" @click='cloneFixture(f)'/>
+        </td>
+        <td>
+          <Toggle v-if='f.dimmerChannels && f.dimmerChannels.length ' text="test" :value="universe.testedChannel.circ===f.dimmerChannels[0].trueCirc" @input=testDimmerNum($event?f.dimmerChannels[0].trueCirc:-1) > T </Toggle>
+        </td>
+      </tr>
+    </v-row>
+  </template>
 </v-data-table>
 <!-- 
 </v-row>-->
@@ -126,132 +127,163 @@ const universesModule = namespace('universes');
   components: {Button, Numbox, Toggle, Modal, FixtureEditor, FixtureExplorer, GroupExplorer},
 })
 export default class FixturePatch extends Vue {
-  public get fixtureErrorMsgs() {
-    // const dum = this.usedChannels
-    const errs: {[id: string]: string} = {};
-    for (const f of Object.values(this.universe.fixtures)) {
-      const overlap  = [];
-      for (const ff of Object.values(this.universe.fixtures)) {
-        if (f !== ff) {
-          const o = (f.baseCirc >= ff.baseCirc && f.baseCirc <= ff.endCirc ) ||
-          (f.endCirc >= ff.baseCirc && f.endCirc <= ff.endCirc );
-          if (o) {
-            overlap.push(ff.name);
-          }
-        }
-      }
-      if (overlap.length) {
-        errs[f.name] = 'overlap with ' + overlap.join(',');
-      }
-    }
-    return errs;
-  }
-
-  get fixtureColors() {
-    const cols: {[id: string]: string} = {};
-    for (const f of Object.values(this.universe.fixtures)) {
-      cols[f.name] = this.fixtureErrorMsgs[f.name] ? 'red' : 'inherit';
-    }
-    return cols;
-  }
-
-  get fixtureHeaders() {
-    return [{text: 'Name', value: 'name'},
-    {text: 'Dimmer', value: 'baseCirc'},
-    {text: 'Group', value: 'groupNames'},
-    {text: 'Actions', sortable: false, filterable: false},
-    // ,{text:"edit",sortable:false},{text:"test",sortable:false}
-    ];
-  }
-
-  public editedFixture = null;
-  @universesModule.Mutation('addFixture') public addFixture!: UniversesMethods['addFixture'];
-  @universesModule.Mutation('duplicateFixture') public duplicateFixture!: UniversesMethods['duplicateFixture'];
-
-  @universesModule.Mutation('setFixtureBaseCirc') public setFixtureBaseCirc!: UniversesMethods['setFixtureBaseCirc'];
 
 
-
-
-  @universesModule.Mutation('linkChannelToCirc') public linkChannelToCirc!: UniversesMethods['linkChannelToCirc'];
-  @universesModule.Mutation('setChannelName') public setChannelName!: UniversesMethods['setChannelName'];
-  @universesModule.Mutation('removeChannel') public removeChannel!: UniversesMethods['removeChannel'];
-
-  @universesModule.Mutation('removeFixture') public removeFixture!: UniversesMethods['removeFixture'];
-  @universesModule.Mutation('setFixtureName') public setFixtureName!: UniversesMethods['setFixtureName'];
-
-  @universesModule.Getter('testDimmerNumVal') public testDimmerNumVal!: UniversesMethods['testDimmerNumVal'];
-  @universesModule.Mutation('testDimmerNum') public testDimmerNum!: UniversesMethods['testDimmerNum'];
-
-  @universesModule.State('universe') private universe!: UniversesMethods['universe'];
-
-
-
-
-  @universesModule.Getter('usedChannels') private usedChannels!: UniversesMethods['usedChannels'];
-
-  private searchFixtureText = '';
-  private showFixtureExplorer = false;
-
-  private showGroupExplorer = false;
-  public cloneFixture(f: FixtureBase) {
-    const c = f.clone();
-    c.baseCirc++;
-    this.universe.addFixture(c);
-  }
-  public addAndQuitFExplorer(e: FixtureBase) {
-    this.showFixtureExplorer = false;
-    if (e) {
-      const numFixture = parseInt(prompt('how much do you want to add', '1') || '0', 10);
-      const baseAddr  = parseInt(prompt('starting dimmer number', '1') || '1', 10);
-      const name  = prompt('name of the fixture?', e.fixtureType);
-      if (name) {
-        for (let i = 0 ; i < numFixture ; i++) {
-          e.name = name;
-          e.baseCirc = baseAddr + e.span * i;
-          this.universe.addFixture(e);
-          e = e.clone();
+public get fixtureErrorMsgs() {
+  // const dum = this.usedChannels
+  const errs: {[id: string]: string} = {};
+  for (const f of Object.values(this.universe.fixtures)) {
+    const overlap  = [];
+    for (const ff of Object.values(this.universe.fixtures)) {
+      if (f !== ff) {
+        const o = (f.baseCirc >= ff.baseCirc && f.baseCirc <= ff.endCirc ) ||
+        (f.endCirc >= ff.baseCirc && f.endCirc <= ff.endCirc );
+        if (o) {
+          overlap.push(ff.name);
         }
       }
     }
-  }
-
-  public open() {
-    // debugger
-  }
-  public close() {
-    debugger;
-  }
-
-
-  public assignToGroups(f: FixtureBase, event: string[]) {
-    this.universe.setGroupsForFixture(f, event);
-  }
-
-  public assignedGroupsOnFixture(f: FixtureBase) {
-    // debugger
-    return  this.universe.getGroupsForFixture(f);
-  }
-  public addGroup() {
-    const gname = prompt('save new group', 'group');
-    if (gname) {
-      this.universe.addGroup(gname, []);
+    if (overlap.length) {
+      errs[f.name] = 'overlap with ' + overlap.join(',');
     }
   }
-  public removeGroup() {
-    const gname = prompt('remove group', '');
-    if (gname && gname !== 'all') {
-      this.universe.removeGroup(gname);
+  return errs;
+}
+
+get fixtureColors() {
+  const cols: {[id: string]: string} = {};
+  for (const f of Object.values(this.universe.fixtures)) {
+    cols[f.name] = this.fixtureErrorMsgs[f.name] ? 'red' : 'inherit';
+  }
+  return cols;
+}
+
+get fixtureHeaders() {
+  return [{text: 'Name', value: 'name'},
+  {text: 'Dimmer', value: 'baseCirc'},
+  {text: 'Group', value: 'groupNames', filterable: true},
+  {text: 'Actions', sortable: false, filterable: false},
+  // ,{text:"edit",sortable:false},{text:"test",sortable:false}
+  ];
+}
+
+public editedFixture = null;
+@universesModule.Mutation('addFixture') public addFixture!: UniversesMethods['addFixture'];
+@universesModule.Mutation('duplicateFixture') public duplicateFixture!: UniversesMethods['duplicateFixture'];
+
+@universesModule.Mutation('setFixtureBaseCirc') public setFixtureBaseCirc!: UniversesMethods['setFixtureBaseCirc'];
+
+
+
+
+@universesModule.Mutation('linkChannelToCirc') public linkChannelToCirc!: UniversesMethods['linkChannelToCirc'];
+@universesModule.Mutation('setChannelName') public setChannelName!: UniversesMethods['setChannelName'];
+@universesModule.Mutation('removeChannel') public removeChannel!: UniversesMethods['removeChannel'];
+
+@universesModule.Mutation('removeFixture') public removeFixture!: UniversesMethods['removeFixture'];
+@universesModule.Mutation('setFixtureName') public setFixtureName!: UniversesMethods['setFixtureName'];
+
+@universesModule.Getter('testDimmerNumVal') public testDimmerNumVal!: UniversesMethods['testDimmerNumVal'];
+@universesModule.Mutation('testDimmerNum') public testDimmerNum!: UniversesMethods['testDimmerNum'];
+
+@universesModule.State('universe') private universe!: UniversesMethods['universe'];
+
+
+
+
+@universesModule.Getter('usedChannels') private usedChannels!: UniversesMethods['usedChannels'];
+
+private searchFixtureText = '';
+private showFixtureExplorer = false;
+
+private showGroupExplorer = false;
+  public mounted() {
+   window.addEventListener('keydown', this.processKey);
+ }
+ public destroyed() {
+  window.removeEventListener('keydown', this.processKey);
+}
+public cloneFixture(f: FixtureBase) {
+  const c = f.clone();
+  c.baseCirc++;
+  this.universe.addFixture(c);
+}
+public addAndQuitFExplorer(e: FixtureBase) {
+  this.showFixtureExplorer = false;
+  if (e) {
+    const numFixture = parseInt(prompt('how much do you want to add', '1') || '0', 10);
+    const baseAddr  = parseInt(prompt('starting dimmer number', '1') || '1', 10);
+    const name  = prompt('name of the fixture?', e.fixtureType);
+    if (name) {
+      for (let i = 0 ; i < numFixture ; i++) {
+        e.name = name;
+        e.baseCirc = baseAddr + e.span * i;
+        this.universe.addFixture(e);
+        e = e.clone();
+      }
     }
   }
+}
 
-  private askToRmFixture(f: FixtureBase) {
-    if (window.confirm (`areYouSure to DELETE fixture ${f.name}`)) {
-      this.removeFixture({fixture: f});
-    }
+public open() {
+  // debugger
+}
+public close() {
+  debugger;
+}
+
+
+public assignToGroups(f: FixtureBase, event: string[]) {
+  this.universe.setGroupNamesForFixture(f, event);
+}
+
+public assignedGroupsOnFixture(f: FixtureBase): string[] {
+  // debugger
+  return  this.universe.getGroupNamesForFixture(f);
+}
+public addGroup() {
+  const gname = prompt('save new group', 'group');
+  if (gname) {
+    this.universe.addGroup(gname);
   }
+}
+public removeGroup() {
+  const gname = prompt('remove group', '');
+  if (gname && gname !== 'all') {
+    this.universe.removeGroupNamed(gname);
+  }
+}
+
+private askToRmFixture(f: FixtureBase) {
+  if (window.confirm (`areYouSure to DELETE fixture ${f.name}`)) {
+    this.removeFixture({fixture: f});
+  }
+}
 
 
+private processKey(event: KeyboardEvent) {
+
+    if (event.ctrlKey || event.metaKey) {
+      switch (String.fromCharCode(event.which).toLowerCase()) {
+        case 'f':
+        event.preventDefault();
+        (this.$refs.searchBar as HTMLElement).focus();
+
+        break;
+        case 'o':
+        event.preventDefault();
+        (this.$refs.fakeFileInput as HTMLElement).click();
+        // event.preventDefault();
+        // alert('ctrl-f');
+        break;
+        case 'g':
+        // event.preventDefault();
+        // alert('ctrl-g');
+        break;
+      }
+    }
+
+}
 }
 </script>
 

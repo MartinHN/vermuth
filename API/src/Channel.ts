@@ -1,5 +1,5 @@
 import { getNextUniqueName } from './Utils';
-import { FixtureBase } from './Fixture';
+import { FixtureBase, FixtureGroup , FixtureBaseI} from './Fixture';
 import { RemoteFunction, RemoteValue, nonEnumerable, AccessibleClass } from './ServerSync';
 type ChannelValueType = number; // |number[];
 
@@ -63,6 +63,7 @@ type ChannelConstructorI  = new (...args: any[]) => ChannelBase;
 @AccessibleClass()
 export class ChannelBase implements ChannelI {
 
+
   get trueCirc() {
     let baseCirc = 0;
     if (this.__parentFixture && !isNaN(this.__parentFixture.baseCirc)) {
@@ -82,9 +83,7 @@ export class ChannelBase implements ChannelI {
     return this.__value;
   }
   public get reactToMaster() {return this.roleFam === 'dim'; }
-  public get parentFixture() {
-    return this.__parentFixture;
-  }
+  public get parentFixture() {return this.__parentFixture; }
 
   public static createFromObj(ob: any, parent: FixtureBase): ChannelBase|undefined {
 
@@ -113,11 +112,15 @@ export class ChannelBase implements ChannelI {
 
   private __isDisposed = false;
 
-  constructor(public name: string, __value: ChannelValueType  , private _circ: number= 0) {
+  @RemoteValue()
+  public name:string
+  constructor( _name: string, __value: ChannelValueType  , private _circ: number= 0) {
+    this.name = _name
     if (!__value) {__value = 0; } // ensure numeric
     this.updateRoleForName();
     this.setValueChecking(__value);
   }
+
 
   public getUID() {
     return (this.__parentFixture ? this.__parentFixture.name : 'noparent') + ':' + this.name;
@@ -132,7 +135,7 @@ export class ChannelBase implements ChannelI {
     return (n === 'all') || (this.roleFam === n) || (this.roleFam + ':' + this.roleType === n);
   }
   public matchFilterList(l: string[]) {
-    if (!l) {return true; }
+    if (!l || l.length === 0) {return true; }
     return l.some((e) => this.matchFilter(e));
 
   }
@@ -215,7 +218,7 @@ export class ChannelBase implements ChannelI {
 
   public setValueInternal(v: ChannelValueType) {return true; }
 
-  public setParentFixture(f: FixtureBase|null) {
+  public setParentFixture(f: FixtureBaseI|null) {
     if (f && this.__parentFixture) {
       if (f.name !== this.__parentFixture.name) {
        // debugger;
@@ -244,6 +247,67 @@ private setValueChecking(__value: number) {
 
 }
 
+
+export class ChannelGroup extends ChannelBase {
+
+  // updateChannelsInternal(){
+  //   this.channels = this.parentFixtures.map(f=>{return f.getChannelForName(name)})
+  // }
+  static isChannelGroup(c:ChannelBase):c is ChannelGroup{
+    return (c as ChannelGroup).isGroup
+  }
+  get channels(): ChannelBase[] {
+    return this.parentFixtures.map((f) => f.getChannelForName(this.name)).filter((c) => c !== undefined) as ChannelBase[];
+  }
+  get universe() {
+    return this.parentFixtures.length ? this.parentFixture[0].universe : null;
+  }
+
+  get parentFixtures() {
+    return this.__parentGroup.fixtures ;
+  }
+  //   if(this.universe){
+  //     return this.parentFixtureNames.map(n=>this.universe.getFixtureWithName(n)).filter(f=>f!==undefined)
+  //   }
+  //   return new Array<FixtureBase>()
+  // }
+
+  public static createFromObj(ob: any, parent: FixtureBase): ChannelBase|undefined {
+
+    const c =  new  ChannelGroup(ob.name, ob.value);
+    c.setParentFixture(parent);
+    c.configureFromObj(ob);
+    return c;
+
+  }
+  // private channels = new Array<ChannelBase>();
+  // @nonEnumerable()
+  // private __parentGroup : FixtureGroup|null= null
+  @nonEnumerable()
+  public isGroup=true
+
+  
+  constructor(public name: string , private __parentGroup: FixtureGroup) {
+    super(name, 0);
+    Reflect.defineProperty(this, '__parentGroup', {
+      value: this.__parentGroup,
+      enumerable: false,
+      writable: false,
+    });
+
+
+  }
+
+  public setCirc(n: number) {
+     debugger; console.error('no circ fro channel group');
+  }
+
+  @RemoteFunction({sharedFunction: true})
+  public setValue(v: number, doNotify: boolean) {
+    this.channels.map((c) => c.setValue(v, doNotify))
+    return super.setValue(v,doNotify)
+  }
+}
 
 
 

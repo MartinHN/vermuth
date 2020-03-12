@@ -25,7 +25,8 @@ export default class Home extends Vue {
 @universesModule.State('universe') private universe!: UniversesMethods['universe'];
 
   get allFixture() {
-    return this.universe.sortedFixtureList;
+    return this.universe.fixtureAndGroupList;
+    // return this.universe.sortedFixtureList;
   }
 
 }

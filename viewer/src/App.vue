@@ -1,7 +1,7 @@
 <template>
   <v-app id="app">
     <div id="fixHead" >
-      <div id="nav">
+      <div id="nav" ref=navBar>
 
         <router-link to="/Sequencer">Sequencer</router-link>
         <router-link to="/">Dashboard</router-link>
@@ -33,6 +33,12 @@ let redFaviconNode: any;
   components: { ServerState},
 })
 export default class App extends Vue {
+
+  get routePathList() {
+    const routePaths = Array.from((this.$refs.navBar as HTMLElement).childNodes).map((e: any) => e.pathname);
+    console.log(routePaths);
+    return routePaths;
+  }
 
   // @Mutation('addFixture') public addFixture!: FixtureMethods['addFixture'];
   @State('savedStatus') public savedStatus!: string;
@@ -86,6 +92,21 @@ export default class App extends Vue {
     }
 
   }
+  public getRouteIdx() {
+    const path = (this.$router as any).history.current.path;
+    return this.routePathList.findIndex((e) => e === path);
+  }
+  public nav(left: boolean) {
+    let nI = this.getRouteIdx();
+    const rl = this.routePathList;
+    if (left) {
+      nI = (nI + 1) % rl.length;
+    } else {
+      nI = (nI - 1);
+      if (nI < 0) {nI += rl.length; }
+    }
+    this.$router.push(this.routePathList[nI]);
+  }
 
   private removeOldIco() {
     const head = document.head || document.getElementsByTagName('head')[0];
@@ -108,8 +129,16 @@ export default class App extends Vue {
     return link;
   }
   private processKey(event: KeyboardEvent) {
-    // console.log(event)
     if (event.ctrlKey || event.metaKey) {
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        this.nav(false);
+        return;
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        this.nav(true);
+        return;
+      }
       switch (String.fromCharCode(event.which).toLowerCase()) {
         case 's':
         event.preventDefault();

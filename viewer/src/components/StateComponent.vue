@@ -110,12 +110,14 @@ export default class StateComponent extends Vue {
 
   @statesModule.Mutation('recallState') public recallState!: StateMethods['recallState'];
 
+
   // @Prop({default:false})
   public showStateEditor = false; // !:boolean
 
   @statesModule.Getter('channels') private channels!: StateMethods['channels'];
   @statesModule.Getter('stateNames') private stateNames!: StateMethods['stateNames'];
   @statesModule.Getter('loadedStateName') private ploadedStateName!: StateMethods['loadedStateName'];
+
 
 
   private stateList = rootState.stateList;

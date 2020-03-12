@@ -4,7 +4,7 @@
   <div class="main"  style="width:100%;height:100%">
 
     <div style="display:flex;flex-direction:row;width:100%">
-  
+
       <v-row style="width:100%">
         <v-col cols=12>
           <v-list dense class="overflow-y-auto" style=max-height:200px >
@@ -56,7 +56,7 @@ const universesModule = namespace('universes');
 
 
 @Component({
-  components: {Button, Numbox, Toggle, TextInput, FixtureWidget, "ChannelRack": ChannelRack},
+  components: {Button, Numbox, Toggle, TextInput, FixtureWidget, ChannelRack: ChannelRack},
 })
 export default class StateEditor extends Vue {
   @Prop({default: null, required: true})
@@ -143,8 +143,8 @@ export default class StateEditor extends Vue {
     const toSel: {[id: string]: boolean} = {};
     const lastSel = this.selectedGroupNames;
     for (const g of this.selectedGroupNames) {
-      for (const f  of this.universe.groups[g]) {
-        toSel[f] = true;
+      for (const f  of this.universe.groups[g].fixtures) {
+        toSel[f.name] = true;
       }
     }
     const toSelL = Object.keys(toSel);
@@ -175,22 +175,7 @@ export default class StateEditor extends Vue {
   }
 
 
-  public addGroup() {
-    if (this.selectedFixtureNames && this.selectedFixtureNames.length > 0) {
-      const gname = prompt('save new group', 'group');
-      if (gname) {
-        this.universe.addGroup(gname, this.selectedFixtureNames);
-      }
-    } else {
-      alert('no fixtures selected');
-    }
-  }
-  public removeGroup() {
-    const gname = prompt('remove group', this.firstGroupSelected);
-    if (gname && gname !== 'all') {
-      this.universe.removeGroup(gname);
-    }
-  }
+
 
 
   public mounted() {

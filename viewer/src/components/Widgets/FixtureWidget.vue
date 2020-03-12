@@ -1,38 +1,38 @@
 <template>
   <div class="fixtureWidget" >
 
-    <div style="display:flex;width:100%">
-        
-      <ChannelWidget v-for='d in matchedDimmerChannels' :key='d.id' :channelProp=d :overrideName="matchedDimmerChannels.length==1?fixtureProp.name:d.name" style="width:100%" :showProps=showProps ></ChannelWidget>
 
-    </div>
 
-    <div style="display:flex;width:100%" v-if='(fixtureProp.hasChannelsOfRole("color") && hasFilterType("color"))' >
+      <div style="display:flex;width:100%;background-color:inherit" >
 
-      <input type="color" style="flex:1 1 30%" v-if='!showProps && fixtureProp.hasChannelsOfRole("color") && hasFilterType("color")' v-model=hexColorValue></input>
-      <ChannelWidget v-for="c of colorChannels" :key='c.id' :channelProp="c" v-if='c.matchFilterList(filterList)' :showProps=showProps />
+        <ChannelWidget v-for='d in matchedDimmerChannels' :key='d.id' :channelProp=d :overrideName="matchedDimmerChannels.length==1?fixtureProp.name:d.name" style="width:100%" :showProps=showProps ></ChannelWidget>
 
-    </div>
+      </div>
 
-    <div style="display:flex;width:100%" v-if='(fixtureProp.hasChannelsOfRole("position") && hasFilterType("position"))' >
-      <Button text="setPos" @click="showPosModal=true"/>
-      <modal v-if="showPosModal" @close="showPosModal = false">
-    <!--
-      you can use custom content here to overwrite
-      default content
-    -->
-        <h3 slot="header">fixtur pos</h3>
-        <Point2DEditor slot="body" :value="fixturePositionList" @input="setFixturePosition($event)"></Point2DEditor>
-      </modal>
+      <div style="display:flex;width:100%" v-if='(fixtureProp.hasChannelsOfRole("color") && hasFilterType("color"))' >
 
-      <ChannelWidget v-for='c of fixtureProp.positionChannels' :key='c.id' :channelProp="c" v-if='c.matchFilterList(filterList)' :showProps=showProps />
+        <input type="color" style="flex:1 1 30%" v-if='!showProps && fixtureProp.hasChannelsOfRole("color") && hasFilterType("color")' v-model=hexColorValue></input>
+        <ChannelWidget v-for="c of colorChannels" :key='c.id' :channelProp="c" v-if='c.matchFilterList(filterList)' :showProps=showProps />
 
-    </div>
-    <div style="width:100%">
-        
-      <ChannelWidget style="width:100%" v-for="c of otherChannels" v-if='c && c.matchFilterList(filterList)' :key='c.id' :channelProp="c" :showProps=showProps />
+      </div>
 
-    </div>
+      <div style="display:flex;width:100%" v-if='(fixtureProp.hasChannelsOfRole("position") && hasFilterType("position"))' >
+        <Button text="setPos" @click="showPosModal=true"/>
+        <modal v-if="showPosModal" @close="showPosModal = false">
+
+          <h3 slot="header">fixtur pos</h3>
+          <Point2DEditor slot="body" :value="fixturePositionList" @input="setFixturePosition($event)"></Point2DEditor>
+        </modal>
+
+        <ChannelWidget v-for='c of fixtureProp.positionChannels' :key='c.id' :channelProp="c" v-if='c.matchFilterList(filterList)' :showProps=showProps />
+
+      </div>
+      <div style="width:100%">
+
+        <ChannelWidget style="width:100%" v-for="c of otherChannels" v-if='c && c.matchFilterList(filterList)' :key='c.id' :channelProp="c" :showProps=showProps />
+
+      </div>
+
 
     
   </div>
@@ -60,6 +60,8 @@ const universesModule = namespace('universes');
   components: {Slider, Button, Toggle, ChannelWidget, Modal, Point2DEditor},
 })
 export default class FixtureWidget extends Vue {
+
+
   get colorChannels() {
     return this.fixtureProp.colorChannels;
   }
@@ -112,7 +114,7 @@ export default class FixtureWidget extends Vue {
   {maxWait: 50});
 
   public hasFilterType(n: string) {
-    if (!this.filterList) {return true; }
+    if (!this.filterList || !this.filterList.length) {return true; }
     if (this.filterList.some((e) => e === 'all')) {return true; }
     return this.filterList.some((e) => e.startsWith(n));
   }
@@ -139,7 +141,7 @@ export default class FixtureWidget extends Vue {
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  background-color: gray;
+  background-color: inherit;
 }
 .fixtureValue{
   width:100%;
