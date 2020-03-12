@@ -9,23 +9,49 @@
           <v-col cols=3>
             <Toggle v-model=togglePlay style="height:40px" :text=playState> </Toggle>
           </v-col>
+          <v-col>
+            <Numbox text="idx" :value=playedIdx @change="playedIdx=$event" ></Numbox>
+            <div style="display:flex">
+            <Button @click="prev" text="prev" />
+            <Button @click="next" text="next" />
+          </div>
+          </v-col>
         </v-row>
         <v-row no-gutters >
           <v-col cols=6>
             <Toggle v-model=editOrder text="Edit"/>
           </v-col>
           <v-col cols=3>
-            <Button @click="saveCurrentSequence()" text="add Sequence"/>
+            
+    <v-menu offset-y class="text-center">
+      <template v-slot:activator="{ on }">
+        <v-btn
+          color="primary"
+          dark
+          v-on="on"
+        >
+          Add Sequence
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item
+          v-for="(item, index) in stateList.stateNames"
+          :key="index"
+          @click="addSequence(item)"
+        >
+          <v-list-item-title>{{ item}}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+  
           </v-col>
-          <v-col>
-            <Numbox text="idx" :value=playedIdx @change="playedIdx=$event" ></Numbox>
-          </v-col>
+          
         </v-row>
         <div :style="{width:'100%', height:'5px'}">
             <div :style='{width:pctDone,height:"100%",background:"red"}'></div>
         </div>
       </v-container>
-      <SequenceComponent v-for="(s,i) in seqList" :editMode=editOrder :key='s.id' :seqNumber=i :sequence="s" :style="{background:getHighlightedColor(i)}" />
+      <SequenceComponent v-for="(s,i) in seqList" :editMode=editOrder :key='s.id' :seqNumber=i :sequence="s" :style="{background:getHighlightedColor(i)}" @click="seqClicked(i)" :selected="selectedIdx===i"/>
 
     </div>
   </div>
@@ -33,7 +59,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 import Button from '@/components/Inputs/Button.vue';
 import Toggle from '@/components/Inputs/Toggle.vue';
@@ -41,14 +67,22 @@ import Numbox from '@/components/Inputs/Numbox.vue';
 import SequenceComponent from './SequenceComponent.vue';
 import { Sequence } from '@API/Sequence';
 import SequenceMethods from '../store/sequence';
+import StatesMethods from '../store/states';
 import rootState from '@API/RootState';
 const sequenceModule = namespace('sequence');
-
+const statesModule = namespace('states');
 
 @Component({
   components: {Button, Numbox, SequenceComponent, Toggle},
 })
 export default class Sequencer extends Vue {
+
+
+  selectedIdx = 0
+  
+  seqClicked(i:number){
+    this.selectedIdx=i
+  }
 
   get isPlayingSeq() {
     return this.seqPlayer.isPlaying;
@@ -93,10 +127,12 @@ export default class Sequencer extends Vue {
   @sequenceModule.State('sequenceList') public sequenceList!: SequenceMethods['sequenceList'];
   @sequenceModule.State('globalTransport') public globalTransport!: SequenceMethods['globalTransport'];
 
+  @statesModule.State('stateList') public stateList!: StatesMethods['stateList'];
+
   public editOrder = false;
 
-  addSequence(){
-    
+  addSequence(n:string){
+    this.sequenceList.insertNewSequence(n,n,this.selectedIdx)
   }
   public mounted() {
     window.addEventListener('keydown', this.processKey);
@@ -132,6 +168,10 @@ export default class Sequencer extends Vue {
 
 
   }
+
+  
+
+  
 }
 </script> 
 

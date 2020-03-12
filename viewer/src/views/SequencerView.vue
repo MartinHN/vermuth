@@ -1,6 +1,6 @@
 <template>
   <div >
-    <h1>SequencerView</h1>
+    
     <!-- <CurveEditor /> -->
     <Sequencer/>
   </div>

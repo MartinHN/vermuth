@@ -3,7 +3,7 @@
     <!-- <label :for="_uid"> -->
       {{text}}
       <!-- </label> -->
-      <input :id="_uid" type="button" class="button" @click="$emit('click')" :tabindex="focusable?-1:''"/>
+      <input :id="_uid" type="button" class="button"  @click="$emit('click')" :tabindex="focusable?-1:''"/>
       
     </label>
   </template>

@@ -3,10 +3,11 @@ import { DirectFixture } from './Fixture';
 import { ChannelBase } from './Channel';
 import {  doTimer, stopTimer } from './Time';
 import { RemoteFunction, doSharedFunction, RemoteValue, nonEnumerable, AccessibleClass, SetAccessible } from './ServerSync';
+import { Proxyfiable } from './MemoryUtils'
 
 
 
-export class Sequence {
+export class Sequence extends Proxyfiable {
 
 
   public static createFromObj(o: any): any {
@@ -32,6 +33,7 @@ export class Sequence {
   public __state?: State;
 
   constructor(_name: string, state: string|State) {
+    super()
     this.name = _name;
     // debugger
     if (typeof state === 'string') {
@@ -112,9 +114,9 @@ export class SequenceList {
     return this.list.indexOf(s);
   }
   @RemoteFunction({sharedFunction:true})
-  public appendNewSequence(name:string,stateName:string){
+  public insertNewSequence(name:string,stateName:string,idx:number){
     const s = new Sequence(name,stateName)
-    this.appendSequence(s)
+    return this.insertAt(s,idx)
 
   }
   public appendSequence(s: Sequence) {

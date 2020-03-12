@@ -1,9 +1,9 @@
 <template>
-  <div class="main">
+  <div class="main" >
     <v-container fluid class="pa-0 ma-0">
       <v-row dense>
-        <v-col cols=1>
-          <Numbox :editable=editMode :value="seqNumber" @change="seqList.setSeqIdx(sequence,$event)"/>
+        <v-col cols=1 @click="$emit('click')" >
+          <Numbox :editable=editMode :value="seqNumber" @change="seqList.setSeqIdx(sequence,$event);" :style="{backgroundColor:(selected?'red':'transparent')}" />
         </v-col>
         <v-col cols=3>
           <text-input :editable=editMode :value="seqName" @change="setSequenceName({sequence:sequence,value:$event.value})"/>
@@ -16,7 +16,7 @@
           <Button  text="down"  @click="seqList.down(sequence)" />
         </v-col>
           <v-col cols=2 v-if=!editMode style="display:block">
-          <Button  text="Go" @click="goToSequenceNamed({name:sequence.name})"/>
+          <Button  text="Go" @mousedown.native="seqPlayer.curPlayedIdx=seqNumber"/>
           <div :style="{width:'100%', height:'5px'}">
             <div :style='{width:progess,height:"100%",background:"red"}'></div>
         </div>
@@ -29,6 +29,7 @@
           <v-select :active=editMode :items=stateNames :value="seqStateName" @change="setSequenceStateName({sequence:sequence,value:$event})" hide-details>
           </v-select>
         </v-col>
+
       </v-row>
     </v-container>
   </div>
@@ -62,6 +63,9 @@ export default class SequenceComponent extends Vue {
 
   @Prop({default: false})
   public editMode!: boolean;
+
+  @Prop({default: false})
+  public selected!: boolean;
 
   @Prop({required: true})
   public seqNumber!: number;

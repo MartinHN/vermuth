@@ -413,6 +413,10 @@ export class StateList {
 
   }
 
+  get stateNames(){
+    return Array.from(Object.keys(this.states))
+  }
+
   @RemoteFunction({sharedFunction: true})
   public removeStateNamed(name: string) {
     if (this.states[name]) {

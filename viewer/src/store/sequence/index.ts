@@ -37,14 +37,8 @@ export default class Sequences extends VuexModule {
     // if (ob.curSequenceName) {this.context.commit('set__curSequenceName', ob.curSequenceName); }
   }
 
-  
 
-    @Mutation
-    public addSequence(s: Sequence) {
-      if (s) {
-        this.sequenceList.appendSequence(s);
-      }
-    }
+    
     @Mutation
     public setSequenceName(pl: {sequence: Sequence, value: string} ) {
       pl.sequence.name = pl.value;
