@@ -122,6 +122,8 @@ export class SequenceList {
   public appendSequence(s: Sequence) {
     this.insertAt(s, this.list.length);
   }
+
+  @RemoteFunction({sharedFunction:true})
   public remove(s: Sequence) {
     const i = this.list.indexOf(s);
     if (i >= 0) {
@@ -265,6 +267,16 @@ export class SequencePlayerClass {
 
  @RemoteFunction({sharedFunction: true})
  private goToSequence(seq: Sequence, opts?: {dimMaster?: number}, cb?: any) {
+  if(!seq){
+    console.error('go to null sequence')
+    debugger;
+    return 
+  }
+  if(!seq.resolveState){
+    console.error('non valid sequence',seq)
+    debugger;
+    return 
+  }
   this.nextSeq = seq;
   const stateResolver = (n: string) => {
     return this.stateList.states[n];

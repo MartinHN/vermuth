@@ -36,10 +36,10 @@ export function bindClientSocket(s: any) {
     const boundSocket = s;
     // if (!isClient) {
       // #if !IS_CLIENT
-    const emitF = boundSocket.emit;
-    const log = require('./Logger').default;
-    console.log('highjacking server socket');
-    const nF = (e: string, a: any, l: any) => {
+      const emitF = boundSocket.emit;
+      const log = require('./Logger').default;
+      console.log('highjacking server socket');
+      const nF = (e: string, a: any, l: any) => {
         if (logServerMessages) {
           if (e === 'SET_STATE') {a = ''; }
           log.log('server >> all clients : ' + e + ' : ' + a + '\n');
@@ -47,13 +47,13 @@ export function bindClientSocket(s: any) {
         emitF.apply(boundSocket, [e, a, l]);
       };
 
-    boundSocket.emit = nF;
+      boundSocket.emit = nF;
       // } else {
         // #else
-    const onevent = boundSocket.onevent;
+        const onevent = boundSocket.onevent;
 
 
-    if (!boundSocket.__eventOverriden) {
+        if (!boundSocket.__eventOverriden) {
           boundSocket.__eventOverriden =  true;
           boundSocket.onevent =  (packet: any) => {
             const args = (packet.data || []).slice();
@@ -73,15 +73,15 @@ export function bindClientSocket(s: any) {
        // }
 
      }
-  safeBindSocket(s);
+     safeBindSocket(s);
 
 
    }
 
 
-let   msgToSocketQueue: any = {};
+   let   msgToSocketQueue: any = {};
 
-const updateMsgToSocketQueue = _.debounce(() => {
+   const updateMsgToSocketQueue = _.debounce(() => {
 
     for (const addr of Object.keys(msgToSocketQueue)) {
       const q = msgToSocketQueue[addr];
@@ -90,11 +90,11 @@ const updateMsgToSocketQueue = _.debounce(() => {
     msgToSocketQueue = {};
   }, 10, {trailing: true, maxWait: 30});
 
-const sendToSocketDebounced = (addr: string, args: any) => {msgToSocketQueue[addr] = {msg: args, sid: AccessibleNotifierId}; updateMsgToSocketQueue(); };
+   const sendToSocketDebounced = (addr: string, args: any) => {msgToSocketQueue[addr] = {msg: args, sid: AccessibleNotifierId}; updateMsgToSocketQueue(); };
 
 
 
-const getFunctionParams = (func: (...args: any[]) => any) => {
+   const getFunctionParams = (func: (...args: any[]) => any) => {
     const ARGUMENT_NAMES = /([^\s,]+)/g;
     const STRIP_COMMENTS = /(\/\/.*$)|(\/\*[\s\S]*?\*\/)|(\s*=[^,\)]*(('(?:\\'|[^'\r\n])*')|("(?:\\"|[^"\r\n])*"))|(\s*=[^,\)]*))/mg;
     const fnStr = func.toString().replace(STRIP_COMMENTS, '');
@@ -108,7 +108,7 @@ const getFunctionParams = (func: (...args: any[]) => any) => {
 
 
 
-const rebuildAccessibles = () => {
+  const rebuildAccessibles = () => {
     const valSymbol = Symbol('values');
     const funSymbol = Symbol('functions');
 
@@ -157,7 +157,7 @@ const rebuildAccessibles = () => {
     // console.log('listen to messages' , accessibleTree); // Array.from(allListeners.keys()));
   };
 
-const rebuildAccessiblesDebounced = _.debounce(rebuildAccessibles,
+  const rebuildAccessiblesDebounced = _.debounce(rebuildAccessibles,
     200,
     {trailing: true},
     );
@@ -167,7 +167,7 @@ const rebuildAccessiblesDebounced = _.debounce(rebuildAccessibles,
 
 
 
-export function callAnyAccessibleFromRemote(root: any, saddr: string, args: any[], notifierId: string) {// args is passed as array
+  export function callAnyAccessibleFromRemote(root: any, saddr: string, args: any[], notifierId: string) {// args is passed as array
     if (!root) {
       console.error('root not set, can\'t call');
       return ;
@@ -219,14 +219,14 @@ export function callAnyAccessibleFromRemote(root: any, saddr: string, args: any[
     }
   }
 
-function safeBindSocket(s: any) {
+  function safeBindSocket(s: any) {
     if (clientSocket !== null && s !== 'auto') {console.error('reassigning socket'); }
     if (s !== 'auto') {clientSocket = s; }
     // rebuildAccessibles();
 
   }
 
-function buildAddressFromObj(o: any, errorIfEmpty = true) {
+  function buildAddressFromObj(o: any, errorIfEmpty = true) {
     let insp = o;
     let addr = new Array<string>();
     let found;
@@ -283,9 +283,9 @@ function buildAddressFromObj(o: any, errorIfEmpty = true) {
   }
 
 
-let   msgQueue: any = {};
+  let   msgQueue: any = {};
 
-const updateQueue = _.debounce(() => {
+  const updateQueue = _.debounce(() => {
 
     for (const addr of Object.keys(msgQueue)) {
       const msg = msgQueue[addr];
@@ -294,9 +294,9 @@ const updateQueue = _.debounce(() => {
     }
     msgQueue = {};
   }, 50, {trailing: true, maxWait: 100});
-const broadcastMessageFromServerDebounced = (addr: string, args: any) => {msgQueue[addr] = {args, sid: AccessibleNotifierId}; updateQueue(); };
+  const broadcastMessageFromServerDebounced = (addr: string, args: any) => {msgQueue[addr] = {args, sid: AccessibleNotifierId}; updateQueue(); };
 
-function broadcastMessageFromServer(addr: string, args: any, sid?: string) {
+  function broadcastMessageFromServer(addr: string, args: any, sid?: string) {
     // let log;
     if (!addr) {
       debugger;
@@ -425,12 +425,12 @@ export function RemoteValue(cb?: (parent: any, value: any) => void) {
              registeredAddr = newRAddr;
              allListeners.set(registeredAddr, defaultValue);
            }
-            registeredAddr = newRAddr;
-            return hasChanged;
+           registeredAddr = newRAddr;
+           return hasChanged;
          }
 
        };
-        const updateAccessibleAddress = (deferIfUnattached = true, ncb?: () => void) => {
+       const updateAccessibleAddress = (deferIfUnattached = true, ncb?: () => void) => {
 
         const result = updateAddr(deferIfUnattached);
         if (result === null && deferIfUnattached) {
@@ -446,7 +446,7 @@ export function RemoteValue(cb?: (parent: any, value: any) => void) {
 
 
 
-        const fetchFunction = (passedCB: (...args: any[]) => any) => {
+      const fetchFunction = (passedCB: (...args: any[]) => any) => {
         updateAccessibleAddress();
         if (clientSocket ) {
           clientSocket.emit(registeredAddr, undefined, passedCB);
@@ -455,7 +455,7 @@ export function RemoteValue(cb?: (parent: any, value: any) => void) {
 
       // const oldProp = Object.getOwnPropertyDescriptor(parent, k);
       // if (oldProp) {debugger; }
-        Reflect.defineProperty(parent, k, {
+      Reflect.defineProperty(parent, k, {
         get: () => storedValue,
         set: (v: any) => {
           const hasChanged = !_.isEqual(v, storedValue); // for array
@@ -494,12 +494,12 @@ export function RemoteValue(cb?: (parent: any, value: any) => void) {
       });
 
 
-        defineObjTable(parent, '__fetch')[k] = fetchFunction;
-        defineObjTable(parent, '__accessibleTypes')[k] = type;
-        defineObjTable(parent, '__remoteValues')[k] = fetchFunction;
-        defineObjTable(parent, '__registerRemoteValuesAddr')[k] = updateAccessibleAddress;
-        defineObjTable(parent, '__remoteCBs')[k] = cb;
-        return parent[k];
+      defineObjTable(parent, '__fetch')[k] = fetchFunction;
+      defineObjTable(parent, '__accessibleTypes')[k] = type;
+      defineObjTable(parent, '__remoteValues')[k] = fetchFunction;
+      defineObjTable(parent, '__registerRemoteValuesAddr')[k] = updateAccessibleAddress;
+      defineObjTable(parent, '__remoteCBs')[k] = cb;
+      return parent[k];
     });
 
   };
@@ -526,14 +526,14 @@ export function RemoteFunction(options?: {skipClientApply?: boolean, sharedFunct
          registeredAddr = newRAddr;
          allListeners.set(registeredAddr, method);
        }
-        registeredAddr = newRAddr;
-        return hasChanged;
+       registeredAddr = newRAddr;
+       return hasChanged;
      }
 
    };
-    const fl = defineObjTable(target, '__registerFunctionAddr')[key] = updateAddr;
-    const rf = defineObjTable(target, '__remoteFunctions')[key] = method;
-    descriptor.value = function(...args: any[]) { // need plain function for this
+   const fl = defineObjTable(target, '__registerFunctionAddr')[key] = updateAddr;
+   const rf = defineObjTable(target, '__remoteFunctions')[key] = method;
+   descriptor.value = function(...args: any[]) { // need plain function for this
 
     // target.notifyRemote()
     let res: any;
@@ -677,7 +677,7 @@ function initAccessibles(parent: any) {
 
 let rootAccessible: any;
 function getRoot(hint?: any) {
-// circlar Refs forces dynamic import
+  // circlar Refs forces dynamic import
   if (rootAccessible === undefined) {
     import('./RootState').then((e: any) => {rootAccessible = e.default; console.warn('loadedRoot', e); });
     rootAccessible = null;
@@ -685,31 +685,31 @@ function getRoot(hint?: any) {
 
   return rootAccessible;
 
-  }
+}
 
 function findRoot(o: any) {
-    let insp = o;
-    let maxDepth = 1000;
+  let insp = o;
+  let maxDepth = 1000;
 
-    while (insp) {
-      maxDepth--;
-      if (insp.__isRoot) {return insp; }
-      insp = insp.__accessibleParent;
-    }
-
+  while (insp) {
+    maxDepth--;
+    if (insp.__isRoot) {return insp; }
+    insp = insp.__accessibleParent;
   }
+
+}
 function isChildOfRoot(o: any) {
-    // if(!rootAccessible){   console.error('no root attached') }
-    let insp = o;
-    let maxDepth = 1000;
+  // if(!rootAccessible){   console.error('no root attached') }
+  let insp = o;
+  let maxDepth = 1000;
 
-    while (insp) {
-      maxDepth--;
-      if (insp.__isRoot) {return true; }
-      insp = insp.__accessibleParent;
-    }
-    return false;
+  while (insp) {
+    maxDepth--;
+    if (insp.__isRoot) {return true; }
+    insp = insp.__accessibleParent;
   }
+  return false;
+}
 
 const allAccessibleSet = new WeakSet();
 const accessibleNameSymbol = Symbol('name');
@@ -719,118 +719,140 @@ export const isProxySymbol = Symbol('isProxy');
 let reentrancyLock = false;
 
 export function setChildAccessible(parent: any, key: string|symbol, opts?: {immediate?: boolean, defaultValue?: any, readonly?: boolean, blockRecursion?: boolean}) {
-    if (reentrancyLock) {
-      return parent[key];
+  if (reentrancyLock) {
+    return parent[key];
+  }
+  if (key === '-1') {
+    debugger;
+  }
+  const {defaultValue, immediate, readonly, blockRecursion} = opts || {};
+  let childAcc = defaultValue !== undefined ? defaultValue : parent[key];
+  // debugger
+
+  if (parent.__accessibleMembers && parent.__accessibleMembers[key] ) {
+    debugger;
+    console.error('re register child accessible');
+    return; // avoid reregistering
+  }
+
+  if (typeof(childAcc) === 'object' && childAcc !== null) {
+    allAccessibleSet.add(childAcc);
+    if (childAcc.__accessibleParent && childAcc.__accessibleParent !== parent) {
+      console.error(key, 'overriding parent', childAcc.__accessibleParent, ' with ', parent);
+
     }
-    if (key === '-1') {
+    Reflect.defineProperty(childAcc, '__accessibleParent', {
+      value: parent,
+      enumerable: false,
+      configurable: false,
+      writable: true,
+    });
+
+    Reflect.defineProperty(childAcc, '__accessibleName', {
+      value: key,
+      enumerable: false,
+      configurable: false,
+      writable: true,
+    });
+    if (key === 'parentGroup') {
+
       debugger;
     }
-    const {defaultValue, immediate, readonly, blockRecursion} = opts || {};
-    let childAcc = defaultValue !== undefined ? defaultValue : parent[key];
-    // debugger
+    defineObjTable(childAcc, '__accessibleMembers'); //
 
-    if (parent.__accessibleMembers && parent.__accessibleMembers[key] ) {
+    const types = defineObjTable(parent, '__accessibleTypes');
+    if (types[key] && types[key] !== Reflect.getPrototypeOf(childAcc).constructor) {
+      console.error('changing type of accessible');
       debugger;
-      console.error('re register child accessible');
-      return; // avoid reregistering
     }
+    types[key] = Reflect.getPrototypeOf(childAcc).constructor;
 
-    if (typeof(childAcc) === 'object' && childAcc !== null) {
-      allAccessibleSet.add(childAcc);
-      if (childAcc.__accessibleParent && childAcc.__accessibleParent !== parent) {
-        console.error(key, 'overriding parent', childAcc.__accessibleParent, ' with ', parent);
+    const handler = {
+      set(obj: any, prop: symbol|string, value: any, thisProxy: any) {
+        if(Array.isArray(obj) && !isNaN(prop as any)){
+        if(value && value.__accessibleName!==undefined){
+          if(obj && obj===value.__accessibleParent){
+            if((obj as any).__accessibleMembers &&
+              Object.keys((obj as any).__accessibleMembers).includes(value.__accessibleName)){
+              // delete obj[value.__accessibleName]
 
-      }
-      Reflect.defineProperty(childAcc, '__accessibleParent', {
-        value: parent,
-        enumerable: false,
-        configurable: false,
-        writable: true,
-      });
-
-      Reflect.defineProperty(childAcc, '__accessibleName', {
-        value: key,
-        enumerable: false,
-        configurable: false,
-        writable: true,
-      });
-      if (key === 'parentGroup') {
-
-        debugger;
-      }
-      defineObjTable(childAcc, '__accessibleMembers'); //
-
-      const types = defineObjTable(parent, '__accessibleTypes');
-      if (types[key] && types[key] !== Reflect.getPrototypeOf(childAcc).constructor) {
-        console.error('changing type of accessible');
-        debugger;
-      }
-      types[key] = Reflect.getPrototypeOf(childAcc).constructor;
-
-      const handler = {
-        set(obj: any, prop: symbol|string, value: any, thisProxy: any) {
-          // if(prop===setContextSymbol){ // TODO precreate proxys
-            //   if(value.parent){parent=value.parent};
-            //   if(value.key){parent=value.key};
-            //   return
-            // }
-
-
-            const res = Reflect.set(obj, prop, value, thisProxy);
-
-
-            // const res = true;
-            if (prop === accessibleNameSymbol ) {
-              // TODO notify nameChange
-
-            }
-            const isHiddenMember = prop.toString()[0] === '_' || !obj.propertyIsEnumerable(prop);
-
-
-            const newAcc = obj[prop];
-
-            if (!blockRecursion && typeof(newAcc) === 'object' && !isHiddenMember) {
-              if (typeof(prop) === 'string') {
-                if (!Object.keys(obj.__accessibleMembers).includes(prop)) {
-                  console.log(`auto add child Accessible ${prop.toString()} on `, buildAddressFromObj(obj)); // newAcc, Object.keys(obj.__accessibleMembers));
-                  setChildAccessible(obj, prop, {immediate: false, defaultValue: value});
-                }
-              }
-            }
-
-            return res;
+          }else{
+            console.error('incomplete parent')
+            debugger
           }
-          ,
-          get: (target: any, k: symbol|string, thisProxy: any) => {
-            if (k === isProxySymbol) {
-              if (target[isProxySymbol]) {
-                console.error('proxy nesting !!!!');
-                debugger;
-              }
-              return target;
-            } else if (k === accessibleAddressSymbol) {
-              return buildAddressFromObj(target);
-            } else if ((target instanceof Map  || target instanceof Set) && typeof((target as any)[k]) === 'function') {
-              return (target as any)[k].bind(target);
-            }
+        }
+        else{
+          console.error('unknown parent')
+          debugger
+        }
+        // value.__accessibleName = prop
+      }
+      
 
-            return Reflect.get(target, k, thisProxy);
+        console.log('setting prop', prop,value)
+      }
+
+
+      const res = Reflect.set(obj, prop, value, thisProxy);
+
+
+      // const res = true;
+      if (prop === accessibleNameSymbol ) {
+        // TODO notify nameChange
+
+      }
+      const isHiddenMember = prop.toString()[0] === '_' || !obj.propertyIsEnumerable(prop);
+
+
+      const newAcc = obj[prop];
+
+      if (!blockRecursion && typeof(newAcc) === 'object' && !isHiddenMember) {
+        if (typeof(prop) === 'string') {
+          if (!Object.keys(obj.__accessibleMembers).includes(prop)) {
+            console.log(`auto add child Accessible ${prop.toString()} on `, buildAddressFromObj(obj)); // newAcc, Object.keys(obj.__accessibleMembers));
+            setChildAccessible(obj, prop, {immediate: false, defaultValue: value});
           }
-          , deleteProperty(target: any, k: symbol|string) {
+        }
+      }
 
-            if (k in target) { // TODO lockCallbacks? for deleted objects?
-              treeEvents.emit('rm', target, k);
-              if (target.__accessibleMembers) {delete target.__accessibleMembers[k]; }
-              if (target.__accessibleTypes) {delete target.__accessibleTypes[k]; }
+      return res;
+    }
+    ,
+    get: (target: any, k: symbol|string, thisProxy: any) => {
+      // if(Array.isArray(target)){
+        // console.log('getting prop', k)
+        // }
+        if (k === isProxySymbol) {
+          if (target[isProxySymbol]) {
+            console.error('proxy nesting !!!!');
+            debugger;
+          }
+          return target;
+        } else if (k === accessibleAddressSymbol) {
+          return buildAddressFromObj(target);
+        } else if ((target instanceof Map  || target instanceof Set) && typeof((target as any)[k]) === 'function') {
+          return (target as any)[k].bind(target);
+        }
 
-              deleteProp(target, k);
-              delete target[k];
-              console.log(`property removed: ${k.toString()} on `, buildAddressFromObj(target));
-              return true;
-            } else {
-              return false;
-            }
-          },
+        return Reflect.get(target, k, thisProxy);
+      }
+      , deleteProperty(target: any, k: symbol|string) {
+        if(Array.isArray(target)){
+          console.log('removing prop', k)
+        }
+        if (k in target) { // TODO lockCallbacks? for deleted objects?
+          treeEvents.emit('rm', target, k);
+          if (target.__accessibleMembers) {delete target.__accessibleMembers[k]; }
+          if (target.__accessibleTypes) {delete target.__accessibleTypes[k]; }
+
+          deleteProp(target, k);
+          delete target[k];
+          console.log(`property removed: ${k.toString()} on `, buildAddressFromObj(target));
+          return true;
+        } else {
+          return false;
+        }
+      },
       /*
        apply:(target, thisArg, argumentsList)=>{
          console.log(`applying method child Accessible ${target}`)
@@ -838,7 +860,7 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
       }
       */
     };
-      if (childAcc[isProxyfiable]) {
+    if (childAcc[isProxyfiable]) {
       childAcc.sourceHandler = handler;
       for (const [k, v] of Object.entries(childAcc)) {
         // @ts-ignore
@@ -866,11 +888,11 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
     // const hadProp = parent.hasOwnProperty(key);
 
 
-      reentrancyLock = true;
+    reentrancyLock = true;
 
 
     // hack for vue to generate reactive data
-      addProp(new Proxy(parent, {
+    addProp(new Proxy(parent, {
       has(target: any, k: string|symbol) {
         if (k === 'externalController') {
           debugger;
@@ -878,10 +900,10 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
         if (reentrancyLock && k === key) {return false; }
         return  Reflect.has(target, key);
       }}), key, childAcc);
-      reentrancyLock = false;
-      const desc = Reflect.getOwnPropertyDescriptor(parent, key) || {value: childAcc, configurable: false};
+    reentrancyLock = false;
+    const desc = Reflect.getOwnPropertyDescriptor(parent, key) || {value: childAcc, configurable: false};
 
-      if (desc.set) {
+    if (desc.set) {
       if (readonly) {
         const oldSetter = desc.set;
         desc.set = (v) => {
@@ -893,8 +915,8 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
     } else {
       desc.writable = !readonly;
     }
-      Reflect.defineProperty(parent, key, desc);
-      if (!isChildOfRoot(parent)) {
+    Reflect.defineProperty(parent, key, desc);
+    if (!isChildOfRoot(parent)) {
       console.log('avoiding notifying tree change unattached child ', key);
     } else if (key.toString().startsWith('_')) {
       console.log('avoiding notifying tree change of private child ', key);
@@ -915,15 +937,19 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
   }
 
 
-    defineObjTable(parent, '__accessibleMembers')[key] = childAcc;
+  defineObjTable(parent, '__accessibleMembers')[key] = childAcc;
   // parent.__accessibleMembers[k] = parent[k] || parent.__accessibleMembers[k];
-    if (immediate) {
+  if (immediate) {
     rebuildAccessibles();
   } else {
     rebuildAccessiblesDebounced(); // debounced
   }
 
-    return parent[key];
+  return parent[key];
+}
+
+function moveAccessibleChild(parent:any,k:string|symbol){
+
 }
 
 // const limboRoot = {};
@@ -934,7 +960,7 @@ export function setChildAccessible(parent: any, key: string|symbol, opts?: {imme
     //     }
     // }
 
-const allAccessibles = new WeakSet<any>();
+    const allAccessibles = new WeakSet<any>();
 
     // type Constructable = new (...args: any[]) => any;
 
@@ -963,25 +989,25 @@ const allAccessibles = new WeakSet<any>();
                 //     });
                 //   };
                 // }
-export function AccessibleClass() {
+                export function AccessibleClass() {
                   return (constructor: any) => {};
 
                 }
 
 
-export function doSharedFunction(cb: () => void) {
+                export function doSharedFunction(cb: () => void) {
                   lockCallbacks += 1;
                   cb();
                   lockCallbacks -= 1;
                 }
-export function fetchRemote(o: any, k: string, cb?: (...args: any[]) => any) {
+                export function fetchRemote(o: any, k: string, cb?: (...args: any[]) => any) {
                   if (o.__remoteValues !== undefined && o.__remoteValues[k]) {
                     o.__remoteValues[k](cb);
                   }
                 }
 
 
-export function resolveAccessible(parent: any , addr: string[]) {
+                export function resolveAccessible(parent: any , addr: string[]) {
                   const oriAddr = addr.slice();
                   addr = addr.slice(); // copy
                   let inspA = addr.shift();
@@ -1003,11 +1029,11 @@ export function resolveAccessible(parent: any , addr: string[]) {
                          // debugger
                        }
                      }
-                      return {accessible: insp, parent: accessibleParent, key: inspA};
+                     return {accessible: insp, parent: accessibleParent, key: inspA};
                    }
 
                  }
-                  debugger;
-                  console.error('can\'t find accessible for ', oriAddr, 'stopped at ', addr);
-                  return {accessible: undefined, parent: undefined};
+                 debugger;
+                 console.error("can't find accessible for ", oriAddr, 'stopped at ', addr);
+                 return {accessible: undefined, parent: undefined};
                }

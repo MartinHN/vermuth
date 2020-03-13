@@ -2,7 +2,7 @@ import {EventEmitter} from 'events';
 import {RemoteValue, RemoteFunction, doSharedFunction, nonEnumerable} from './ServerSync';
 
 const timers: {[key: string]: {timeout: any, endCB?: () => void}} = {};
-
+const CONSTANT_TIME_INC = true
 export function  doTimer(name: string, length: number, resolution: number, oninstance: (steps: number, count: number) => void, oncomplete?: () => void ) {
   const steps = length / resolution;
   const speed = resolution;
@@ -17,7 +17,7 @@ export function  doTimer(name: string, length: number, resolution: number, onins
     } else {
       oninstance(steps, count);
 
-      const diff = (new Date().getTime() - start) - (count * speed);
+      const diff =CONSTANT_TIME_INC?0:(new Date().getTime() - start) - (count * speed);
       timers[name].timeout  =  setTimeout(instance, Math.max(0, speed - diff));
     }
   };
