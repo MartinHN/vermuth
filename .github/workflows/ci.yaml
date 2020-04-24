@@ -18,13 +18,13 @@ jobs:
           name: build_linux
           path: ./server/build_linux
       - name: Package OSX
-        run: cd server && PLATFORM_TARGET=linux DEPLOY_FOLDER=build_osx node pkg.js
+        run: cd server && PLATFORM_TARGET=osx DEPLOY_FOLDER=build_osx node pkg.js
       - uses: actions/upload-artifact@v1
         with:
           name: build_osx
           path: ./server/build_osx
       - name: Package Win
-        run: cd server && PLATFORM_TARGET=linux DEPLOY_FOLDER=build_windows node pkg.js
+        run: cd server && PLATFORM_TARGET=windows DEPLOY_FOLDER=build_windows node pkg.js
       - uses: actions/upload-artifact@v1
         with:
           name: build_windows
