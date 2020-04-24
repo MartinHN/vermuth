@@ -100,9 +100,9 @@ downloadOrGetWv(destOS, "0.4", async (err, webviewCompress) => {
         console.log('Successfully renamed - AKA moved!')
       })
 
-    var zipOut = new AdmZip();
-    zipOut.addLocalFolder(deployFolder,'/')
-    zipOut.writeZip(path.join(deployFolder,'out.zip'))
+    // var zipOut = new AdmZip();
+    // zipOut.addLocalFolder(deployFolder,'/')
+    // zipOut.writeZip(path.join(deployFolder,'out.zip'))
 
 })
 

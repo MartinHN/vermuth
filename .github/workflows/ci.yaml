@@ -17,8 +17,8 @@ jobs:
 
       - uses: actions/upload-artifact@v1
         with:
-          name: build_linux.zip
-          path: ./server/build_linux/out.zip
+          name: build_linux
+          path: ./server/build_linux
 
 
 
@@ -29,7 +29,8 @@ jobs:
      
       - uses: actions/download-artifact@v1
         with:
-          name: build_linux.zip
+          name: build_linux
+      - run: cd build_linux && zip -r ../build_linux.zip .
 
 
       - name: Create Release
