@@ -80,6 +80,9 @@ const genAllDebounced = _.debounce(generate,10)
 // Main
 
 generate();
+if(process.env.GEN_ONCE){
+return;
+}
 fs.watch(srcPath,{recursive:true,persistent:true},(evt,fn)=>{
   console.log("watchEvent",evt,fn);
   if(evt==="change"){

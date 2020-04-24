@@ -94,7 +94,11 @@ downloadOrGetWv(destOS, "0.4", async (err, webviewCompress) => {
     // reading archives
     var zip = new AdmZip(webviewCompress);
     zip.extractAllTo(path.join(deployFolder, "viewer"), /*overwrite*/true);
-    fs.copyFileSync('vermuth-server',path.join(deployFolder,'vermuth-server'))
+    const fileName= fs.readdirSync('.').find(e=>e.startsWith("vermuth-server"))
+    fs.rename(fileName,path.join(deployFolder,fileName),function (err) {
+        if (err) throw err
+        console.log('Successfully renamed - AKA moved!')
+      })
 
     var zipOut = new AdmZip();
     zipOut.addLocalFolder(deployFolder,'/')
