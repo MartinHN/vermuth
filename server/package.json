@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "light show control server",
   "main": "server.ts",
+  "bin": "app.js",
   "scripts": {
     "start": "node --inspect=0.0.0.0:9222 -r tsconfig-paths/register -r ts-node/register ./src/server.ts",
     "start:watch": "nodemon",
@@ -28,7 +29,6 @@
     "json-diff": "^0.5.4",
     "module-alias": "^2.2.2",
     "osc": "^2.4.0",
-    "pigpio": "^3",
     "serialport": "^8.0.7",
     "serve-index": "^1.9.1",
     "socket.io": "^2.3.0"
@@ -60,8 +60,10 @@
     "@vue/cli-service": "^4.2.3",
     "eslint": "^6.8.0",
     "eslint-plugin-import": "^2.20.1",
+    "follow-redirects": "^1.11.0",
     "fork-ts-checker-webpack-plugin": "^4.1.0",
     "nodemon": "^2",
+    "pkg": "^4.4.7",
     "reflect-metadata": "^0.1.13",
     "ts-node": "^8.6.2",
     "tsconfig-paths": "^3.9.0",
@@ -77,5 +79,11 @@
   "_moduleAliases": {
     "@": "dist/server/src",
     "@API": "dist/API/gen/server"
+  },
+  "pkg": {
+    "assets": [
+      "dist/server/**/*",
+      "distPacked/viewer"
+    ]
   }
 }

@@ -2,14 +2,17 @@ const DMX = require ('dmx');
 const SerialPort = require('serialport');
 const OSCDriver = require('./dmxOSCDriver');
 const needCustomPiLibs = process.env.CUSTOM_PI_DRIVERS;
-const GPIODriver = require('./dmxGPIODriver');
-const SolenoidDriver = require('./dmxSolenoidDriver');
+const isPi = require('detect-rpi')();
+
+// const GPIODriver = require('./dmxGPIODriver');
+// const SolenoidDriver = require('./dmxSolenoidDriver');
+
 const LoggerDriver = require('./dmxLoggerDriver');
 const _ = require( 'lodash');
 
 const io = require('socket.io');
 import log from './remoteLogger';
-const isPi = require('detect-rpi')();
+
 import { Universe } from '@API/Universe';
 import {UniverseListener} from '@API/Channel';
 import rootState from '@API/RootState';

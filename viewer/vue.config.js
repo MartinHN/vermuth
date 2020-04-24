@@ -2,6 +2,7 @@ const path = require("path")
 
 module.exports = {
   runtimeCompiler: true,
+  productionSourceMap: false,
   outputDir: "../server/dist/server/public",
   devServer: {
     disableHostCheck: true

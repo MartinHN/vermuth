@@ -31,9 +31,16 @@ const os = require('os');
 const backupDir = fs.mkdtempSync(path.join(os.tmpdir(), 'vermuth-'));
 console.log('backup dir is at ', backupDir);
 
-const publicDir = debug ? path.resolve(__dirname, '..', 'dist', 'server', 'public') : path.resolve(__dirname, '..', 'public');
+const publicDir =  path.join(__dirname, '../dist/server/public');
+// const publicDir = debug ? path.join(__dirname, '../dist/server/public') : path.join(__dirname, '../public');
 console.log('served Folder  :' + publicDir, __dirname);
+// console.log('served files',fs.readdirSync(publicDir))
+console.log(fs.readdirSync(__dirname))
+if (!fs.existsSync(publicDir+"/index.html")) {
+  console.error("can't find public directory to serve", publicDir)
+  console.log(fs.readdirSync(__dirname))
 
+}
 const app = express();
 const serveIndex = require('serve-index');
 app.use('/backups', express.static(backupDir), serveIndex(backupDir));
@@ -41,7 +48,7 @@ app.use(history());
 const httpServer = new http.Server(app);
 
 
-const localStateFile = path.resolve(__dirname, '..', 'appSettings.json');
+const localStateFile = path.join(process.cwd(), 'appSettings.json');
 
 const ioServer = io({
   serveClient: false,
