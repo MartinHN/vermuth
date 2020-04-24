@@ -451,7 +451,7 @@ export class StateList {
     const fl = this.getCurrentFullFixtureList();
     if (!s.resolveState) {
       s = this.getStateNamed(s.name);
-      if (!s) {debugger; }
+      if (!s) {debugger; console.error("invalid state");return;}
     }
     const rs = s.resolveState(fl, this.states, dimMaster);
     this.applyResolvedState(rs);

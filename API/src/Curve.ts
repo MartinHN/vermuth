@@ -363,6 +363,7 @@ public getKeyFramesForPosition(position: number): {start: KeyFrame<T>|undefined,
 }
 
 type CurveBaseType = CurveBaseI;
+// @ts-ignore
 @AccessibleClass()
 export class CurveStoreClass  {
   static get i(): CurveStoreClass {

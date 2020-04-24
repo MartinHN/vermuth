@@ -1,5 +1,5 @@
 import {EventEmitter} from 'events';
-import {RemoteValue, RemoteFunction, doSharedFunction, nonEnumerable} from './ServerSync';
+import {RemoteValue, RemoteFunction, doSharedFunction, nonEnumerable, AccessibleClass} from './ServerSync';
 
 const timers: {[key: string]: {timeout: any, endCB?: () => void}} = {};
 const CONSTANT_TIME_INC = true
@@ -42,6 +42,8 @@ function getMs() {
     return  new Date().getTime();
   }
 
+  // @ts-ignore
+@AccessibleClass()
 export class GlobalTransportClass extends EventEmitter {
     static get i(): GlobalTransportClass {
      if (!GlobalTransportClass._instance) {GlobalTransportClass._instance = new GlobalTransportClass(); }
@@ -84,7 +86,7 @@ export class GlobalTransportClass extends EventEmitter {
     doSharedFunction(() => parent.emit('isPlaying', v));
   })
    private _isPlaying = false;
-    private constructor() {
+    protected constructor() {
       super();
       this.start();
     }

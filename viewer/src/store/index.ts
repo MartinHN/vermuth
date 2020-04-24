@@ -264,7 +264,11 @@ rootState.treeEvents.on('v', (parent: any, key: string) => {
   if (autoSaveAllowed(myVueStore.state)) {
     autoSaveDebounced();
   }
-
+});
+rootState.treeEvents.on('move', (parent: any, key: string, toKey: string) => {
+  if (autoSaveAllowed(myVueStore.state)) {
+    autoSaveDebounced();
+  }
 });
 rootState.treeEvents.on('add', (parent: any, key: string) => {
   if (autoSaveAllowed(myVueStore.state)) {

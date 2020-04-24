@@ -257,7 +257,7 @@ export class CurveLink extends Proxyfiable implements Refable {
 
 export const CurveLinkStore = new Factory<CurveLink>(CurveLink.createFromObj);
 
-
+// @ts-ignore
 @AccessibleClass()
 export class CurvePlayerClass extends TimeListener {
   static get i(): CurvePlayerClass {

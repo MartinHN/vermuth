@@ -3,10 +3,10 @@
   <div>
     <v-row no-gutters >
       <v-col cols=6 >
-        <v-list dense class="overflow-y-auto" style=max-height:200px >
+        <v-list dense class="overflow-y-auto" style="max-height:200px" >
           <!-- <v-subheader>Presets</v-subheader> -->
           <v-list-item-group v-model="selectedStateIdx" > <!-- v-model="item" color="primary"> -->
-            <v-list-item v-for="(s,i) in stateNames" :key=s.id>
+            <v-list-item v-for="(s,i) in stateNames" :key="s.id">
               <v-list-item-content >
                 <v-list-item-title v-html="s" ></v-list-item-title>
               </v-list-item-content>
@@ -20,7 +20,7 @@
           <Button v-if="selectedState && !selectedState.name.startsWith('__')"  class="edit" @click="editState" text="edit"></Button>
           <Button class="rename" @click="renameStatePrompt" text="rename"></Button>
           <Button class="remove" @click="removeStatePrompt" text="-" color='red'></Button>
-          <v-select label=linkedStates multiple  v-model="linkedStateNames" style="width:100%" :items=linkableStateNames>
+          <v-select label=linkedStates multiple  v-model="linkedStateNames" style="width:100%" :items="linkableStateNames">
             <template v-slot:item="{item:item}">
               {{item}}
             </template>
@@ -31,9 +31,9 @@
 
     </v-row>
 
-    <Modal v-if=showStateEditor @close="showStateEditor=false">
-      <h3  slot="header" >StateEditor : {{editedState?editedState.name:"no state"}}</h3>
-      <StateEditor  slot="body" :state=editedState></StateEditor>
+    <Modal v-if="showStateEditor" @close="showStateEditor=false">
+      <h3  slot="header" > StateEditor : {{editedState?editedState.name:"no state"}} </h3>
+      <StateEditor  slot="body" :state="editedState" /></StateEditor>
     </Modal>
     <!-- </v-container> -->
   </div>
@@ -66,8 +66,11 @@ export default class StateComponent extends Vue {
 
   set selectedStateIdx(i: number) {
     if (this.selectedState && i === undefined) {this.stateList.recallState(this.selectedState, 0); }
-    this.selectedState = this.stateList.getStateNamed(this.stateNames[i]);
-    if (this.selectedState) {this.stateList.recallState(this.selectedState, 1); }
+
+    // if (this.selectedState) {
+    if ( i >= 0 && i < this.stateNames.length) {
+      this.stateList.recallStateNamed(this.stateNames[i], 1);
+      }
   }
   get selectedStateIdx() {
     return this.stateNames.indexOf(this.selectedState ? this.selectedState.name : '');
@@ -102,7 +105,9 @@ export default class StateComponent extends Vue {
     return this.linkedStateNames.map((e) => new LinkedState(e, 1));
   }
 
-  public selectedState: State | null = null;
+  get selectedState() {
+    return this.stateList.getStateNamed( this.stateList.loadedStateName);
+  }
 
   @statesModule.Mutation('saveCurrentState') public saveCurrentState!: StateMethods['saveCurrentState'];
   @statesModule.Mutation('removeState') public removeState!: StateMethods['removeState'];
@@ -146,7 +151,7 @@ export default class StateComponent extends Vue {
     }
   }
   public editState() {
-    if (this.selectedState == null ) {
+    if (this.selectedState === null ) {
 
     } else {
       this.showStateEditor = true;
@@ -157,7 +162,7 @@ export default class StateComponent extends Vue {
     const name = prompt('save new state', this.selectedState ? this.selectedState.name : '');
     if (name === null || name === '') {} else {
       this.stateList.saveCurrentState(name, this.linkedStateList);
-      this.selectedState = this.stateList.getStateNamed(name);
+     // this.selectedState = this.stateList.getStateNamed(name);
     }
   }
   public removeStatePrompt() {

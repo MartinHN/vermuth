@@ -6,7 +6,7 @@ import { RemoteFunction, doSharedFunction, RemoteValue, nonEnumerable, Accessibl
 import { Proxyfiable } from './MemoryUtils'
 
 
-
+@AccessibleClass()
 export class Sequence extends Proxyfiable {
 
 
@@ -94,10 +94,10 @@ export class SequenceList {
 
   public insertAt(s: Sequence, i: number) {
     if (i >= 0 || i <= this.list.length) {
-      const ii = this.list.findIndex((ss) => ss.name === s.name);
-      if (ii !== -1) {
+        while(this.list.findIndex((ss) => ss.name === s.name)!=-1){
         s.name = s.name + '.';
-      }
+        }
+      
       if (i === this.list.length) {
         this.list.push(s);
       } else {
@@ -130,7 +130,7 @@ export class SequenceList {
       this.list.splice (i, 1);
     }
   }
-
+  @RemoteFunction({sharedFunction:true})
   public setSeqIdx(s: Sequence, i: number) {
     const ii = this.list.indexOf(s);
     if (ii >= 0) {
@@ -139,7 +139,7 @@ export class SequenceList {
       this.insertAt(s, i);
     }
   }
-
+  @RemoteFunction({sharedFunction:true})
   public swap(a: Sequence, b: Sequence) {
     const ia = this.list.indexOf(a);
     const ib = this.list.indexOf(b);
@@ -172,7 +172,7 @@ interface RootProvider {
   sequenceList: SequenceList;
 }
 
-
+// @ts-ignore private constructor shit
 @AccessibleClass()
 export class SequencePlayerClass {
   static get i(): SequencePlayerClass {

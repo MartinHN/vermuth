@@ -3,7 +3,7 @@ const logClientMessages = process.env.LOG_MSG;
 if (!debug) {require('module-alias/register'); } // form module resolution
 
 const clientLogger = logClientMessages ? require('@API/Logger').default : undefined;
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT?parseInt(process.env.PORT) : 3000;
 
 import express from 'express';
 import http from  'http';
@@ -228,7 +228,7 @@ ioServer.on('connection', (socket) => {
    });
 
     socket.on('GET_STATE', (key, cb) => {
-      const msg = states;
+      const msg = rootState.toJSONObj();
       if (cb) {
         cb(msg || {});
       } else {
@@ -251,3 +251,23 @@ dmxController.register(ioServer, rootState.universe);
 httpServer.listen(PORT, () => {
    console.log(`Server is running in http://localhost:${PORT}`);
  });
+// import localtunnel from 'localtunnel';
+/*
+ (async () => {
+   const tunnel = await localtunnel(PORT,
+    {host:process.env.LOCALTUNNELHOST,
+    allow_invalid_cert:true,
+   });
+   tunnel.on('close', () => {
+    // tunnels are closed
+  });
+ 
+   // the assigned public url for your tunnel
+   // i.e. https://abcdefgjhij.localtunnel.me
+   console.log(`accessible on web at ${tunnel.url}`);
+ 
+   tunnel.on('close', () => {
+     // tunnels are closed
+   });
+ })();
+ */

@@ -1,6 +1,6 @@
 import { FixtureBase } from './Fixture';
 import { ChannelBase } from './Channel';
-import { RemoteFunction, fetchRemote, RemoteValue, SetAccessible, isClientInstance, AccessibleClass, setChildAccessible, nonEnumerable } from './ServerSync';
+import { RemoteFunction, fetchRemote,PAccessibleClass, RemoteValue, SetAccessible, isClientInstance, AccessibleClass, setChildAccessible, nonEnumerable } from './ServerSync';
 
 
 export class FixtureDef {
@@ -69,7 +69,7 @@ export class FixtureDef {
 
 
 }
-
+// @ts-ignore
 @AccessibleClass()
 export class FixtureFactoryClass  {
   static get i(): FixtureFactoryClass {
@@ -108,13 +108,14 @@ export class FixtureFactoryClass  {
     }
   })
   private __fixtureDefs: {[id: string]: {[id: string]: FixtureDef}}  = {};
-  private constructor() {}
+  protected constructor() {}
 
 
   public async init(paths: string[] = []) {
 
     if (isClientInstance()) {
       this.fetchData();
+      this.__factoryInited = true;
     } else {
       if (!this.__factoryInited) {
         this.__factoryInited = true;
