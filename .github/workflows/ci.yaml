@@ -17,7 +17,7 @@ jobs:
         with:
           name: build_linux
           path: ./server/build_linux
-          
+
   build-osx:
     runs-on: macos-latest
     steps: 
@@ -42,7 +42,7 @@ jobs:
       - name: Build
         run: ./build.sh
       - name: Package Win
-        run: cd server && PLATFORM_TARGET=windows DEPLOY_FOLDER=build_windows node pkg.js
+        run: cd server; set PLATFORM_TARGET=windows; set DEPLOY_FOLDER=build_windows; node pkg.js
       - uses: actions/upload-artifact@v1
         with:
           name: build_windows
