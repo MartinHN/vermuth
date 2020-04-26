@@ -10,7 +10,7 @@ const viewerFolder = path.join(process.cwd(),'viewer')
 var findViewer = ()=>{
     if(fs.existsSync(viewerFolder)){
         const l = fs.readdirSync(viewerFolder);
-        const exePath =  l.find(e=>e.startsWith("webview"))
+        const exePath =  l.find(e=>["webview.exe","webview"].includes(e))
         if(exePath){
             return path.join(viewerFolder,exePath)
         }

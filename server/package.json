@@ -82,8 +82,7 @@
   },
   "pkg": {
     "assets": [
-      "dist/server/**/*",
-      "distPacked/viewer"
+      "dist/server/**/*"
     ]
   }
 }

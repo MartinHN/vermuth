@@ -28,7 +28,7 @@ const downloadOrGetWv = (target, version, cb) => {
     if (fs.existsSync(destFolder)) {
         const destFile = fs.readdirSync(destFolder).find(e => e.includes("webview"))
         if (destFile) {
-            cb(undefined, path.join(destFolder,destFile));
+            cb(undefined, path.join(destFolder, destFile));
             return;
         }
     }
@@ -49,7 +49,7 @@ const downloadOrGetWv = (target, version, cb) => {
         });
     };
     download(`https://github.com/MartinHN/webview/releases/download/v${version}/${buildName}.zip`,
-        path.join(destFolder,buildName+'.zip'),
+        path.join(destFolder, buildName + '.zip'),
         cb
     )
 
@@ -69,6 +69,16 @@ const deleteFolderRecursive = function (p) {
         fs.rmdirSync(p);
     }
 };
+
+function copyNativeLibs() {
+    const nativeLibs = [
+        "node_modules/serialport/node_modules/@serialport/bindings/build/Release/bindings.node",
+    ]
+    for (const l of nativeLibs) {
+        fs.copyFileSync(l, path.join(deployFolder,path.basename(l)))
+    }
+}
+
 downloadOrGetWv(destOS, "0.4", async (err, webviewCompress) => {
     if (err) {
         console.error(err)
@@ -79,6 +89,7 @@ downloadOrGetWv(destOS, "0.4", async (err, webviewCompress) => {
         windows: 'win',
         osx: 'osx'
     }
+
     console.log('starting pkg')
     const args = ['.', '--public', '-t', 'node12-' + supportedTargets[destOS] + '-x64']
     const res = await pkg(args);
@@ -87,18 +98,19 @@ downloadOrGetWv(destOS, "0.4", async (err, webviewCompress) => {
         deleteFolderRecursive(deployFolder)
     }
     fs.mkdirSync(deployFolder, { recursive: true })
-
+    
+    copyNativeLibs()
     console.log('res', webviewCompress)
     var AdmZip = require('adm-zip');
 
     // reading archives
     var zip = new AdmZip(webviewCompress);
     zip.extractAllTo(path.join(deployFolder, "viewer"), /*overwrite*/true);
-    const fileName= fs.readdirSync('.').find(e=>e.startsWith("vermuth-server"))
-    fs.rename(fileName,path.join(deployFolder,fileName),function (err) {
+    const fileName = fs.readdirSync('.').find(e => e.startsWith("vermuth-server"))
+    fs.rename(fileName, path.join(deployFolder, fileName), function (err) {
         if (err) throw err
         console.log('Successfully renamed - AKA moved!')
-      })
+    })
 
     // var zipOut = new AdmZip();
     // zipOut.addLocalFolder(deployFolder,'/')
