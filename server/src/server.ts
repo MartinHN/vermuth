@@ -28,7 +28,7 @@ const history = require('connect-history-api-fallback');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const backupDir = fs.mkdtempSync(path.join(os.tmpdir(), 'vermuth-'));
+const backupDir = path.resolve(process.cwd(),"backups");//fs.mkdtempSync(path.join(os.tmpdir(), 'vermuth-'));
 console.log('backup dir is at ', backupDir);
 
 const publicDir =  path.join(__dirname, '../dist/server/public');
