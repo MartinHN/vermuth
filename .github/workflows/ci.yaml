@@ -39,10 +39,13 @@ jobs:
       - uses: actions/checkout@v1
       - name: install
         run: ./install.sh
+        shell: bash
       - name: Build
         run: ./build.sh
+        shell: bash
       - name: Package Win
-        run: cd server; set PLATFORM_TARGET=windows; set DEPLOY_FOLDER=build_windows; node pkg.js
+        run: cd server && PLATFORM_TARGET=windows DEPLOY_FOLDER=build_windows node pkg.js
+        shell: bash
       - uses: actions/upload-artifact@v1
         with:
           name: build_windows
