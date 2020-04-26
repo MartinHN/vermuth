@@ -74,10 +74,10 @@ class DMXController implements DMXControllerI {
     this.dmx = new DMX();
     this.dmx.registerDriver('QLC', OSCDriver);
     this.dmx.registerDriver('Logger', LoggerDriver);
-    if (needCustomPiLibs) {
-      this.dmx.registerDriver('GPIO', GPIODriver);
-      this.dmx.registerDriver('Solenoid', SolenoidDriver);
-    }
+    // if (needCustomPiLibs) {
+    //   this.dmx.registerDriver('GPIO', GPIODriver);
+    //   this.dmx.registerDriver('Solenoid', SolenoidDriver);
+    // }
     delete this.dmx.drivers.bbdmx;
     delete this.dmx.drivers.null;
     this.watchSerialPorts();

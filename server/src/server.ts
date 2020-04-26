@@ -28,7 +28,7 @@ const history = require('connect-history-api-fallback');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const backupDir = path.resolve(process.cwd(),"backups");//fs.mkdtempSync(path.join(os.tmpdir(), 'vermuth-'));
+const backupDir = fs.mkdtempSync(path.join(os.tmpdir(), 'vermuth-'));
 console.log('backup dir is at ', backupDir);
 
 const publicDir = process.env.PUBLIC_FOLDER || path.resolve(__dirname, '../dist/server/public');
@@ -95,7 +95,7 @@ function backupFiles() {
   if (!fs.existsSync(bDir)) {
     fs.mkdirSync(bDir);
   }
-  const dName = '' + new Date();
+  const dName = ('' + new Date()).replace(/:/g,'_',);
   fs.copyFileSync(localStateFile, path.join(bDir, dName));
   fs.readdir(bDir, (err, files) => {
 
@@ -105,7 +105,7 @@ function backupFiles() {
     const shortBkTime = 5 * 1000 ; // 60 * 60  * 1000
     const longBkTime = 20 * 1000;
     const now = Date.now();
-    const filesWithDate = files.map((e) => ({path: path.join(bDir, e), date: new Date(e)})).sort((a, b) => b.date - a.date);
+    const filesWithDate = files.map((e) => ({path: path.join(bDir, e), date: new Date(e.replace(/_/g,':'))})).sort((a, b) => b.date - a.date);
     console.log('backups : ', filesWithDate);
     let lastHourBackup: any;
     const filesToRm = new Array<string>();
