@@ -31,7 +31,7 @@ const os = require('os');
 const backupDir = path.resolve(process.cwd(),"backups");//fs.mkdtempSync(path.join(os.tmpdir(), 'vermuth-'));
 console.log('backup dir is at ', backupDir);
 
-const publicDir =  path.join(__dirname, '../dist/server/public');
+const publicDir = process.env.PUBLIC_FOLDER || path.resolve(__dirname, '../dist/server/public');
 // const publicDir = debug ? path.join(__dirname, '../dist/server/public') : path.join(__dirname, '../public');
 console.log('served Folder  :' + publicDir, __dirname);
 // console.log('served files',fs.readdirSync(publicDir))

@@ -2,7 +2,7 @@
   "name": "vermuth-server",
   "version": "1.0.0",
   "description": "light show control server",
-  "main": "server.ts",
+  "main": "app.js",
   "bin": "app.js",
   "scripts": {
     "start": "node --inspect=0.0.0.0:9222 -r tsconfig-paths/register -r ts-node/register ./src/server.ts",
@@ -10,7 +10,8 @@
     "build": "webpack src/server.ts",
     "buildNrun": "NODE_ENV=production ts-node src/server.ts -P . --files",
     "run": "NODE_ENV=production node dist/server/src/server.js",
-    "lint": "tslint --project . --fix"
+    "lint": "tslint --project . --fix",
+    "buildApp": "node pkg.js"
   },
   "keywords": [
     "light",
@@ -21,6 +22,7 @@
   "dependencies": {
     "adm-zip": "^0.4.14",
     "bezier-easing": "^2.1.0",
+    "chrome-launcher": "^0.13.1",
     "connect-history-api-fallback": "^1.6.0",
     "detect-rpi": "^1.4.0",
     "dmx": "github:martinHN/dmx#master",
@@ -28,6 +30,7 @@
     "http-proxy": "^1.18.0",
     "json-diff": "^0.5.4",
     "module-alias": "^2.2.2",
+    "open": "^7.0.3",
     "osc": "^2.4.0",
     "serialport": "^8.0.7",
     "serve-index": "^1.9.1",
@@ -74,7 +77,7 @@
     "webpack-node-externals": "^1.7.2"
   },
   "engines": {
-    "node": ">=0.12"
+    "node": "^12"
   },
   "_moduleAliases": {
     "@": "dist/server/src",
