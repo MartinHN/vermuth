@@ -2,4 +2,5 @@ public/
 dist/
 deploy/
 old/
+backups/
 appSettings.json

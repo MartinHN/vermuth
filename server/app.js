@@ -32,21 +32,18 @@ const ChromeLauncher = require('chrome-launcher');
 const serverAddress = "http://localhost:3000"
 
 
-try {
-    ChromeLauncher.launch({
-        startingUrl: serverAddress,
-        chromeFlags: ['--disable-gpu','--app='+serverAddress]
-    }).then(chrome => {
-        console.log(`Chrome debugging port running on ${chrome.port}`);
-        chrome.process.on('exit', () => {
-            console.log("viewer quitted")
-            process.exit(0)
-        });
-    });
-}
-catch {
 
-    console.error('no chrome candidate found trying system navigator')
+ChromeLauncher.launch({
+    startingUrl: serverAddress,
+    chromeFlags: ['--disable-gpu', '--app=' + serverAddress]
+}).then(chrome => {
+    console.log(`Chrome debugging port running on ${chrome.port}`);
+    chrome.process.on('exit', () => {
+        console.log("viewer quitted")
+        process.exit(0)
+    });
+}).catch((e) => {
+    console.error('no chrome candidate found trying system navigator', e)
 
     open(serverAddress, { wait: true }).then((childProcess) => {
         console.log("viewer opened")
@@ -55,10 +52,9 @@ catch {
             process.exit(0)
         });
     })
+});
 
 
-
-}
 
 
 
