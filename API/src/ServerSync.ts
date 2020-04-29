@@ -141,7 +141,7 @@ const getFunctionParams = (func: (...args: any[]) => any) => {
 
 
 
-const rebuildAccessibles = (fromParent?:any) => {
+const rebuildChildAccessibles = (fromParent?:any) => {
   const valSymbol = Symbol('values');
   const funSymbol = Symbol('functions');
 
@@ -190,7 +190,7 @@ const rebuildAccessibles = (fromParent?:any) => {
   // console.log('listen to messages' , accessibleTree); // Array.from(allListeners.keys()));
 };
 
-const rebuildAccessiblesDebounced = _.debounce(rebuildAccessibles,
+const rebuildChildAccessiblesDebounced = _.debounce(rebuildChildAccessibles,
   200,
   { trailing: true },
 );
@@ -616,6 +616,8 @@ export function RemoteFunction(options?: { skipClientApply?: boolean, sharedFunc
                   const c = Object.assign({}, e);
                   delete c.__ob__;
                   return c;
+                }else{
+                  return e
                 }
               } else {
                 return e;
@@ -776,11 +778,15 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
   const { defaultValue, immediate, readonly, blockRecursion } = opts || {};
   let childAcc = defaultValue !== undefined ? defaultValue : parent[key];
   // debugger
+  if(parent.__remoteValues && parent.__remoteValues[key]){
+    console.warn('ignoring remote value as child accessible')
+    return
+  }
 
-  if (parent.__accessibleMembers && parent.__accessibleMembers[key]) {
-    debugger;
-    console.error('re register child accessible');
-    return; // avoid reregistering
+  if (parent.__accessibleMembers && parent.__accessibleMembers[key ] ) {
+    //debugger;
+    console.error('re register child accessible',key);
+   // return; // avoid reregistering
   }
 
   if (typeof (childAcc) === 'object' && childAcc !== null) {
@@ -824,8 +830,13 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
               if ((obj as any).__accessibleMembers &&
                 Object.keys((obj as any).__accessibleMembers).includes(value.__accessibleName)) {
                   // rename
+                  const siblings = (obj as any).__accessibleMembers
+                  if(siblings &&siblings[prop] &&  siblings[prop].__accessibleName){
+                    siblings[prop].__accessibleName = undefined 
+                    delete siblings[prop]
+                  }
                   value.__accessibleName=prop
-                  
+                  needRebuild = true
                   treeEvents.emit('move', obj,value.__accessibleName, prop);
                 // delete obj[value.__accessibleName]
 
@@ -842,14 +853,14 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
           }
 
 
-          console.log('setting prop', prop, value)
+          console.log('setting array prop', prop, value)
         }
 
-
+        const wasChildAccessible = obj.__accessibleMembers[prop]!==undefined
         const res = Reflect.set(obj, prop, value, thisProxy);
 
-        if(needRebuild){
-          rebuildAccessibles(value);
+        if(needRebuild  ){
+          rebuildChildAccessibles(value);
         }
         // const res = true;
         if (prop === accessibleNameSymbol) {
@@ -857,15 +868,18 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
 
         }
         const isHiddenMember = prop.toString()[0] === '_' || !obj.propertyIsEnumerable(prop);
-
+        const isNotARemoteValue = !obj.__remoteValues || !Object.keys(obj.__remoteValues).includes(prop as string) 
 
         const newAcc = obj[prop];
 
         if (!blockRecursion && typeof (newAcc) === 'object' && !isHiddenMember) {
           if (typeof (prop) === 'string') {
-            if (!Object.keys(obj.__accessibleMembers).includes(prop)) {
+            if (isNotARemoteValue 
+              // && !wasChildAccessible
+              //   (obj.__accessibleMembers[prop] !== newAcc || obj.__accessibleMembers[prop].__accessibleName === undefined) )
+              ){
               console.log(`auto add child Accessible ${prop.toString()} on `, buildAddressFromObj(obj)); // newAcc, Object.keys(obj.__accessibleMembers));
-              setChildAccessible(obj, prop, { immediate: true, defaultValue: value });
+              setChildAccessible(obj, prop, { immediate: true, defaultValue: newAcc });
             }
           }
         }
@@ -919,7 +933,7 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
       childAcc.sourceHandler = handler;
       for (const [k, v] of Object.entries(childAcc)) {
         // @ts-ignore
-        if (typeof (v) === 'object' && (v === null || !v[isProxySymbol])) {
+        if (typeof (v) === 'object' && (v === null || !v[isProxySymbol]) && (!childAcc.__remoteValues || childAcc.__remoteValues[k]===undefined)) {
           handler.set(childAcc, k, v, undefined);
         }
       }
@@ -927,7 +941,7 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
       // recurse on initial values
       for (const [k, v] of Object.entries(childAcc)) {
         // @ts-ignore
-        if (typeof (v) === 'object' && (v === null || !v[isProxySymbol])) {
+        if (typeof (v) === 'object' && (v === null || !v[isProxySymbol])&& (!childAcc.__remoteValues || childAcc.__remoteValues[k]===undefined)) {
           handler.set(childAcc, k, v, undefined);
         }
       }
@@ -996,9 +1010,9 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
   defineObjTable(parent, '__accessibleMembers')[key] = childAcc;
   // parent.__accessibleMembers[k] = parent[k] || parent.__accessibleMembers[k];
   if (immediate) {
-    rebuildAccessibles();
+    rebuildChildAccessibles();
   } else {
-    rebuildAccessiblesDebounced(); // debounced
+    rebuildChildAccessiblesDebounced(); // debounced
   }
 
   return parent[key];

@@ -207,8 +207,9 @@ export class SequencePlayerClass {
   private static _instance: SequencePlayerClass|undefined;
 
 
-
+  @nonEnumerable()
   public curSeq: Sequence = blackSeq;
+  @nonEnumerable()
   public nextSeq: Sequence = blackSeq;
 
   public pctDone = 0;

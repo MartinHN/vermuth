@@ -135,8 +135,8 @@ function backupFiles() {
 
 function setStateFromObject(msg: any, socket: any) {
   console.log('setting state from: ' + socket);
-
-  const dif = diff(states, msg);
+  const curState =  rootState.toJSONObj()
+  const dif = diff(curState, msg);
 
   if (dif !== undefined || !rootState.isConfigured) {
     console.log('diff', dif);

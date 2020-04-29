@@ -287,7 +287,7 @@ export class State {
     return this;
   }
 
-  public resolveState(context: FixtureBase[], sl: {[id: string]: State}, dimMaster: number): ResolvedFixtureState[] {
+  public resolveState(context: FixtureBase[], sl: {[id: string]: State}, dimMaster: number,forbiddenStateNames?:string[]): ResolvedFixtureState[] {
 
     const res: ResolvedFixtureState[] = [];
 
@@ -298,9 +298,14 @@ export class State {
       }
     }
     let otherRs: ResolvedFixtureState[] = [];
+    if(!forbiddenStateNames){
+      forbiddenStateNames = []
+    }
+    forbiddenStateNames.push(this.name);
     this.linkedStates.map((s) => {
+      if(forbiddenStateNames && forbiddenStateNames.includes(s.name)){console.warn('prevent circular state ref');return;}
       const os = sl[s.name];
-      if (os) { otherRs = otherRs.concat(os.resolveState(context, sl, s.dimMaster)); } else {console.error('fuck states'); }});
+      if (os) { otherRs = otherRs.concat(os.resolveState(context, sl, s.dimMaster,forbiddenStateNames)); } else {console.error('fuck states'); }});
 
     StateList.mergeResolvedFixtureList(otherRs, res); // this state should override linked
 

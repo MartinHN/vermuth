@@ -159,9 +159,12 @@ export class Universe implements UniverseI {
       f.setMaster(this._master);
     }
   }
-
+  @RemoteFunction()
   public addFixture(f: FixtureBase) {
-
+    if(f && !(f instanceof FixtureBase)){
+      f = new FixtureBase((f as any).name,[],(f as any).ftype);
+      f.configureFromObj(f)
+    }
     f.name = getNextUniqueName(this.fixtureList.map((ff) => ff.name), f.name);
 
     setChildAccessible(this.fixtures, f.name,  {defaultValue: f});
