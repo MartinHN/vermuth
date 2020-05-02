@@ -3,7 +3,7 @@
     
     <div style="display:flex;width:100%;padding:5px">
       <slider style="flex:1 0 75%" class="displayedMaster" @input="displayedMaster=$event" :value="displayedMaster" name="displayedMaster"  showName="1" showValue="1" ></slider>
-      <input type="color" @input="setAllColorHex($event.target.value)"></input>
+      <input type="color" @input="setAllColorHex($event.target.value)" />
     </div>
     <div style="display:flex;flex-direction:row;width:100%">
       <div>
@@ -31,7 +31,7 @@
           </v-col>
           
         </v-row>
-      </v-row>
+     
       
 <!--       <FixtureGroupWidget v-for="gN in displayedGroupNames" style="margin:10px 0 0 0;width:100%;background-color:#FFF5" :key="gN.id" :fixtureProps="fixturesForGroup(gN)" :groupName="gN" :showProps="showProps" :showName="showNames" ></FixtureGroupWidget>
  -->
@@ -173,7 +173,7 @@ export default class ChannelRack extends Vue {
     return true;
   }
 
-  public disableAllPreseted() {
+  public disableAllPresetable() {
     this.stateList.setPresetableNames([]);
   }
 
@@ -194,7 +194,7 @@ export default class ChannelRack extends Vue {
   public needDisplay(f: FixtureBase) {
     let needDisplay = true;
     if (this.showPresetable) {
-      needDisplay = needDisplay && (this.stateList.presetableNames.includes(f.name) || f.channels.some((c) => this.stateList.presetableNames.includes(c.name)));
+      needDisplay = needDisplay && (this.stateList.presetableNames.includes(f.name) || f.channels.some((c) => this.stateList.presetableNames.includes(c.getUID())));
     }
     if (this.showActive) {
       needDisplay = needDisplay && f.hasActiveChannels();

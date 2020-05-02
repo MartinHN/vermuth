@@ -1,24 +1,25 @@
-import { ChannelBase ,ChannelGroup} from './Channel';
+import { ChannelBase, ChannelGroup } from './Channel';
 import { FixtureBase, FixtureGroup } from './Fixture';
 import { Universe } from './Universe';
 import { sequencePlayer } from './Sequence';
-import { nonEnumerable, RemoteFunction, AccessibleClass, setChildAccessible } from './ServerSync';
-import {addProp, deleteProp} from './MemoryUtils';
+import { nonEnumerable, RemoteFunction, AccessibleClass, setChildAccessible, RemoteValue, doSharedFunction } from './ServerSync';
+import { addProp, deleteProp, Proxyfiable } from './MemoryUtils';
 
-import {CurvePlayer, CurveLink, CurveLinkStore} from './CurvePlayer';
+import { CurvePlayer, CurveLink, CurveLinkStore } from './CurvePlayer';
+import { SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION } from 'constants';
 
-interface ChannelsValuesDicTypes {[id: string]: number; }
-interface ChannelsCurveLinkDicTypes {[id: string]: {uid: string}; }
+interface ChannelsValuesDicTypes { [id: string]: number; }
+interface ChannelsCurveLinkDicTypes { [id: string]: { uid: string }; }
 
 
-type SavedValueType = number|CurveLink;
+type SavedValueType = number | CurveLink;
 export class FixtureState {
 
   get channelValues(): ChannelsValuesDicTypes {
-    return Object.assign({}, this.pChannelValues) ;
+    return Object.assign({}, this.pChannelValues);
   }
   get channelCurveLinks(): ChannelsCurveLinkDicTypes {
-    return Object.assign({}, this.pChannelCurveLinks) ;
+    return Object.assign({}, this.pChannelCurveLinks);
   }
 
   public static createFromObj(o: any) {
@@ -29,8 +30,8 @@ export class FixtureState {
   public name = '';
   private pChannelValues: ChannelsValuesDicTypes = {};
   private pChannelCurveLinks: ChannelsCurveLinkDicTypes = {};
-  constructor(fixture?: FixtureBase , options?: {overrideValue?: number, channelFilter?: (c: ChannelBase) => boolean, full?: boolean, channelNames?: string[]}) {
-    if (fixture === undefined) {return; }
+  constructor(fixture?: FixtureBase, options?: { overrideValue?: number, channelFilter?: (c: ChannelBase) => boolean, full?: boolean, channelNames?: string[] }) {
+    if (fixture === undefined) { return; }
     this.name = fixture.name;
     let validChs: ChannelBase[];
     const channels = fixture.channels;
@@ -52,20 +53,20 @@ export class FixtureState {
       addProp(curveLink ? this.pChannelCurveLinks : this.pChannelValues,
         c.name,
         (options && options.overrideValue !== undefined) ?
-        options.overrideValue :
-        (curveLink && {uid: curveLink.uid}) ||
-        c.floatValue,
-        );
+          options.overrideValue :
+          (curveLink && { uid: curveLink.uid }) ||
+          c.floatValue,
+      );
     });
   }
 
   public configureFromObj(o: any) {
     this.name = o.name;
-    this.pChannelValues = o.pChannelValues ; // .map( (oo: any) => res.pChannelValues[oo.channelName]= oo.value)) );
+    this.pChannelValues = o.pChannelValues; // .map( (oo: any) => res.pChannelValues[oo.channelName]= oo.value)) );
     this.pChannelCurveLinks = o.pChannelCurveLinks;
   }
   public isEmpty() {
-    return (Object.keys(this.pChannelCurveLinks).length == 0 ) &&  Object.keys(this.pChannelValues).length == 0;
+    return (Object.keys(this.pChannelCurveLinks).length == 0) && Object.keys(this.pChannelValues).length == 0;
   }
 
   public setAllValues(v: number) {
@@ -74,18 +75,18 @@ export class FixtureState {
 }
 
 export class ResolvedFixtureState {
-  public channels: { [id: string]: {channel: ChannelBase, value: SavedValueType}} = {};
+  public channels: { [id: string]: { channel: ChannelBase, value: SavedValueType } } = {};
 
-  constructor(public state: FixtureState, public fixture: FixtureBase, public dimMaster= 1) {
+  constructor(public state: FixtureState, public fixture: FixtureBase, public dimMaster = 1) {
     Object.entries(this.state.channelValues).forEach(([k, cv]) => {
       const c = this.fixture.getChannelForName(k);
-      if (c) {this.channels[c.name] = {channel: c, value: cv * dimMaster}; }
+      if (c) { this.channels[c.name] = { channel: c, value: cv * dimMaster }; }
     });
     Object.entries(this.state.channelCurveLinks).forEach(([k, cv]) => {
       const c = this.fixture.getChannelForName(k);
       const curveLink = CurveLinkStore.getForUID(cv.uid);
       if (c && curveLink) {
-        this.channels[c.name] = {channel: c, value: curveLink};
+        this.channels[c.name] = { channel: c, value: curveLink };
       }
     });
   }
@@ -115,7 +116,7 @@ export class ResolvedFixtureState {
     Object.values(this.channels).map((cv) => {
       CurvePlayer.removeChannel(cv.channel);
 
-      if (typeof(cv.value) === 'number') {
+      if (typeof (cv.value) === 'number') {
         cv.channel.setValue(cv.value, true);
       } else {
         const curveLink = cv.value as CurveLink;
@@ -124,14 +125,14 @@ export class ResolvedFixtureState {
     });
   }
   public applyFunction(cb: (channel: ChannelBase, value: SavedValueType) => void) {
-    Object.values(this.channels).map((cv) => {cb(cv.channel, cv.value); });
+    Object.values(this.channels).map((cv) => { cb(cv.channel, cv.value); });
   }
 }
 
 
 class MergedChannel {
   constructor(public channel: ChannelBase, public sourcev: SavedValueType, public targetv: SavedValueType) {
-    const sourceCurveLink  = this.sourceCurveLink();
+    const sourceCurveLink = this.sourceCurveLink();
     if (sourceCurveLink) {
       sourceCurveLink.autoSetChannelValue = false;
       this.sourceGetter = () => {
@@ -140,7 +141,7 @@ class MergedChannel {
       };
 
     }
-    const targetCurveLink  = this.targetCurveLink();
+    const targetCurveLink = this.targetCurveLink();
     if (targetCurveLink) {
       targetCurveLink.autoSetChannelValue = false;
       this.targetGetter = () => {
@@ -153,10 +154,10 @@ class MergedChannel {
 
   }
   public sourceCurveLink() {
-    return typeof(this.sourcev) !== 'number' ? this.sourcev as CurveLink : undefined;
+    return typeof (this.sourcev) !== 'number' ? this.sourcev as CurveLink : undefined;
   }
   public targetCurveLink() {
-    return typeof(this.targetv) !== 'number' ? this.targetv as CurveLink : undefined;
+    return typeof (this.targetv) !== 'number' ? this.targetv as CurveLink : undefined;
   }
   public sourceGetter(): number { // overriden for complex types as curves
     return this.sourcev as number;
@@ -167,7 +168,7 @@ class MergedChannel {
   public applyCrossfade(pct: number) {
     const sourcev = this.sourceGetter();
     const targetv = this.targetGetter();
-    if ( sourcev !== targetv) {
+    if (sourcev !== targetv) {
       const diff = targetv - sourcev;
       const v = sourcev + pct * diff;
       this.channel.setValue(v, true);
@@ -220,14 +221,24 @@ export class MergedState {
 
 }
 
-export class LinkedState {
-  constructor(public name: string, public dimMaster: number) {}
+
+class LinkedState extends Proxyfiable {
+  constructor(private __owner: State, public name: string, _dimMaster: number) { super();this.dimMaster = _dimMaster }
+
+  @RemoteValue((parent, value) => {
+    if (parent.__owner) {
+      doSharedFunction(()=>{
+      parent.__owner.linkedStateChanged(parent)
+      })
+    }
+  })
+  public dimMaster: number;
 }
 
 export class State {
 
-  public static createFromObj(o: any): State {
-    const res = new State(o.name, [], []);
+  public static createFromObj(o: any, sl: StateList) {
+    const res = new State(sl, o.name, [], []);
     res.configureFromObj(o);
     return res;
   }
@@ -235,7 +246,7 @@ export class State {
   public fixtureStates: FixtureState[] = [];
   public linkedStates: LinkedState[] = [];
 
-  constructor(public name: string, public __validChNames: string[], fixtures: FixtureBase[], public full?: boolean) {
+  constructor(private __stateList: StateList | undefined, public name: string, public __validChNames: string[], fixtures: FixtureBase[], public full?: boolean) {
     // if(__validChNames.length===0 && !name.startsWith('__') && !name.startsWith('current')){debugger;}
     this.updateFromFixtures(fixtures);
     this.full = full ? true : false;
@@ -244,27 +255,80 @@ export class State {
   public configureFromObj(o: any) {
     this.name = o.name;
     this.fixtureStates = [];
-    o.fixtureStates.map( (oo: any) => {
+    o.fixtureStates.map((oo: any) => {
       const fs = FixtureState.createFromObj(oo);
       if (fs) {
         this.fixtureStates.push(fs);
       }
     });
-    this.linkedStates = [];
-    if (o.linkedStates) {
-      o.linkedStates.map((oo: any) => {
-        this.linkedStates.push(new LinkedState(oo.name, oo.dimmerMod));
-      });
-    }
+
+    this.setLinkedStates(o.linkedStates)
     this.full = o.full;
   }
   public get hasLinked() {
     return this.linkedStates.length > 0;
   }
+  @RemoteFunction({ sharedFunction: true })
+  public addLinkedState(n: string, dimMaster: number) {
+    if(dimMaster==0){
+      return;
+    }
+    if (!this.linkedStates.find(ls => n == ls.name)) {
+      this.linkedStates.push(new LinkedState(this, n, dimMaster));
+      this.linkedStateChanged(this.linkedStates[this.linkedStates.length - 1])
+    }
+    else {
+      console.error('duplicate linked state')
+    }
+  }
 
-  public updateFromFixtures( fixtures: FixtureBase[]) {
+  @RemoteFunction({ sharedFunction: true })
+  public removeLinkedStateNamed(name: string) {
+    const i = this.linkedStates.findIndex(e => e.name === name)
+    if (i >= 0) {
+      this.linkedStates.splice(i, 1)
+    }
+  }
+  setLinkedStates(v: { name: string, dimMaster?: number }[]) {
+
+    for (let i = this.linkedStates.length - 1; i >= 0; i--) {
+      const e = this.linkedStates[i]
+      if (!v.some(s => s.name === e.name)) {
+        this.removeLinkedStateNamed(e.name)
+      }
+    }
+
+    for (const e of v) {
+      const dM = e.dimMaster === undefined ? 1 : e.dimMaster
+      const existing = this.linkedStates.find(ee => ee.name === e.name)
+      if (existing) {
+        if(dM>0){
+        existing.dimMaster = dM
+        }
+        else{
+          this.removeLinkedStateNamed(existing.name)
+        }
+      }
+      else if(dM>0){
+        this.addLinkedState(e.name, dM)
+      }
+
+    }
+
+  }
+
+
+  public linkedStateChanged(ls: LinkedState) {
+    if (this.__stateList) {
+      if (this.__stateList.loadedStateName === this.name) {
+        this.__stateList.recallState(this, 1)
+      }
+    }
+
+  }
+  public updateFromFixtures(fixtures: FixtureBase[]) {
     this.fixtureStates = [];
-    const opts: {full: boolean, channelNames?: string[]} = {full: !!this.full};
+    const opts: { full: boolean, channelNames?: string[] } = { full: !!this.full };
     if (this.__validChNames) {
       opts.channelNames = this.__validChNames;
     }
@@ -287,7 +351,7 @@ export class State {
     return this;
   }
 
-  public resolveState(context: FixtureBase[], sl: {[id: string]: State}, dimMaster: number,forbiddenStateNames?:string[]): ResolvedFixtureState[] {
+  public resolveState(context: FixtureBase[], sl: { [id: string]: State }, dimMaster: number, forbiddenStateNames?: string[]): ResolvedFixtureState[] {
 
     const res: ResolvedFixtureState[] = [];
 
@@ -298,14 +362,15 @@ export class State {
       }
     }
     let otherRs: ResolvedFixtureState[] = [];
-    if(!forbiddenStateNames){
+    if (!forbiddenStateNames) {
       forbiddenStateNames = []
     }
     forbiddenStateNames.push(this.name);
     this.linkedStates.map((s) => {
-      if(forbiddenStateNames && forbiddenStateNames.includes(s.name)){console.warn('prevent circular state ref');return;}
+      if (forbiddenStateNames && forbiddenStateNames.includes(s.name)) { console.warn('prevent circular state ref'); return; }
       const os = sl[s.name];
-      if (os) { otherRs = otherRs.concat(os.resolveState(context, sl, s.dimMaster,forbiddenStateNames)); } else {console.error('fuck states'); }});
+      if (os) { otherRs = otherRs.concat(os.resolveState(context, sl, s.dimMaster, forbiddenStateNames)); } else { console.error('fuck states'); }
+    });
 
     StateList.mergeResolvedFixtureList(otherRs, res); // this state should override linked
 
@@ -315,10 +380,10 @@ export class State {
   }
 
   public getSavedFixtureList(context: FixtureBase[]) {
-    if (!context) {console.error('nofixtureL'); debugger; return; }
+    if (!context) { console.error('nofixtureL'); debugger; return; }
     const res = this.fixtureStates.map((fs) => context.find((e) => e.name === fs.name));
-    const defined = res.filter(e=>!!e);
-    if(defined.length!==res.length){
+    const defined = res.filter(e => !!e);
+    if (defined.length !== res.length) {
       console.error('some saved fixture are deleted')
       debugger;
     }
@@ -326,14 +391,14 @@ export class State {
   }
   public getSavedChannels(context: FixtureBase[]) {
     const res = new Array<ChannelBase>();
-    for ( const fs of this.fixtureStates) {
+    for (const fs of this.fixtureStates) {
       const f = context.find((e) => e.name === fs.name);
       if (f) {
         let allChannelNames = Object.keys(fs.channelValues);
         allChannelNames = allChannelNames.concat(Object.keys(fs.channelCurveLinks));
-        for (const  name of allChannelNames) {
-          const c =  f.getChannelForName(name);
-          if (c) {res.push(c); }
+        for (const name of allChannelNames) {
+          const c = f.getChannelForName(name);
+          if (c) { res.push(c); }
         }
       }
 
@@ -355,16 +420,16 @@ export class StateList {
     return this.__universe;
   }
 
-  public static  mergeStateList(sl: State[], context: FixtureBase[], otherStates: {[id: string]: State}, dimMasters?: number[]) {
+  public static mergeStateList(sl: State[], context: FixtureBase[], otherStates: { [id: string]: State }, dimMasters?: number[]) {
     const rsl = new Array<ResolvedFixtureState>();
     if (!dimMasters) {
       dimMasters = [];
     }
-    for (let i = 0 ; i < sl.length ; i++) {
+    for (let i = 0; i < sl.length; i++) {
       dimMasters.push(1);
     }
     let resolved = new Array<ResolvedFixtureState>();
-    for (let i = 0 ; i < sl.length ; i++) {
+    for (let i = 0; i < sl.length; i++) {
       const st = sl[i];
       const dimMaster = dimMasters[i];
       resolved = resolved.concat(st.resolveState(context, otherStates, dimMaster));
@@ -376,7 +441,7 @@ export class StateList {
 
   public static mergeResolvedFixtureList(rsl: ResolvedFixtureState[], newRsl: ResolvedFixtureState[]) {
 
-    for (let i = 0 ; i < newRsl.length ; i++) {
+    for (let i = 0; i < newRsl.length; i++) {
       const rs = newRsl[i];
       const stateForFix = rsl.find((e) => e.fixture === rs.fixture);
       if (stateForFix) {
@@ -389,9 +454,9 @@ export class StateList {
     }
     return rsl;
   }
-  public states: {[key: string]: State} = {};
+  public states: { [key: string]: State } = {};
   public presetableNames: string[] = [];
-  public currentState = new State('current', [], [], true);
+  public currentState = new State(this, 'current', [], [], true);
   public loadedStateName = '';
   @nonEnumerable()
   private __universe: Universe;
@@ -404,10 +469,10 @@ export class StateList {
   }
 
   public configureFromObj(ob: any) {
-    Object.keys(this.states).filter((e) => !e.startsWith('__')).map((name) => this.removeStateNamed( name) );
+    Object.keys(this.states).filter((e) => !e.startsWith('__')).map((name) => this.removeStateNamed(name));
     if (ob) {
       if (ob.states) {
-        Object.keys(ob.states).map((name) => this.addState(State.createFromObj(ob.states[name])));
+        Object.keys(ob.states).map((name) => this.addState(State.createFromObj(ob.states[name], this)));
       }
       if (ob.currentState) {
         ob.currentState.name = this.currentState.name;
@@ -418,11 +483,11 @@ export class StateList {
 
   }
 
-  get stateNames(){
+  get stateNames() {
     return Array.from(Object.keys(this.states))
   }
 
-  @RemoteFunction({sharedFunction: true})
+  @RemoteFunction({ sharedFunction: true })
   public removeStateNamed(name: string) {
     if (this.states[name]) {
       if (!(this.states[name] === blackState || this.states[name] === fullState)) {
@@ -436,8 +501,8 @@ export class StateList {
     // addProp(this.states, s.name,  s);
   }
 
-  @RemoteFunction({sharedFunction: true})
-  public recallStateNamed(n: string, dimMaster= 1) {
+  @RemoteFunction({ sharedFunction: true })
+  public recallStateNamed(n: string, dimMaster = 1) {
     if (n === this.currentState.name) {
       return this.recallState(this.currentState, dimMaster);
     } else {
@@ -446,7 +511,7 @@ export class StateList {
   }
 
 
-  @RemoteFunction({sharedFunction: true})
+  @RemoteFunction({ sharedFunction: true })
   public recallState(s: State, dimMaster: number) {
     if (!s) {
       console.error('calling null state');
@@ -456,7 +521,7 @@ export class StateList {
     const fl = this.getCurrentFullFixtureList();
     if (!s.resolveState) {
       s = this.getStateNamed(s.name);
-      if (!s) {debugger; console.error("invalid state");return;}
+      if (!s) { debugger; console.error("invalid state"); return; }
     }
     const rs = s.resolveState(fl, this.states, dimMaster);
     this.applyResolvedState(rs);
@@ -464,18 +529,22 @@ export class StateList {
 
     this.setLoadedStateName(s.name);
     this.setPresetableNames(channelList.map((c) => c.getUID()));
-    return  channelList;
+    return channelList;
   }
 
-  public getResolvedStateNamed(n: string, dimMaster= 1) {
+  public getResolvedStateNamed(n: string, dimMaster = 1) {
     const s = this.states[n];
-    return  s.resolveState(this.getCurrentFullFixtureList(), this.states, dimMaster);
+    return s.resolveState(this.getCurrentFullFixtureList(), this.states, dimMaster);
 
   }
 
   public setPresetableNames(l: string[]) {
+    if(l.length!==this.presetableNames.length || l.some(e=>!this.presetableNames.includes(e))){
     this.presetableNames = l;
-    this.checkPresetableIntegrity("");
+   
+  }
+
+  this.checkPresetableIntegrity("");
   }
 
   public setNamePresetable(name: string, v: boolean) {
@@ -492,41 +561,41 @@ export class StateList {
     }
   }
 
-  private checkPresetableIntegrity(fromPresetableName:string){
+  private checkPresetableIntegrity(fromPresetableName: string) {
     const toRm = new Set<string>()
-    const removeGroup = !!this.universe.fixtureList.find(g=>g.channels.find(c=>c.getUID()===fromPresetableName))
-    
-    this.universe.groupList.map((g:FixtureGroup)=>{
-      g.channels.map((cg:ChannelGroup)=>{
+    const removeGroup = !!this.universe.fixtureList.find(g => g.channels.find(c => c.getUID() === fromPresetableName))
+
+    this.universe.groupList.map((g: FixtureGroup) => {
+      g.channels.map((cg: ChannelGroup) => {
         const gName = cg.getUID();
-        if(this.presetableNames.includes(gName)){
-          cg.channels.map(c=>{
+        if (this.presetableNames.includes(gName)) {
+          cg.channels.map(c => {
             const pName = c.getUID()
-            if(this.presetableNames.indexOf(pName)>=0){
-              toRm.add(removeGroup?gName:pName)
+            if (this.presetableNames.indexOf(pName) >= 0) {
+              toRm.add(removeGroup ? gName : pName)
             }
           })
         }
       })
     })
-    
-    
-    Array.from(toRm).map(n=>this.setNamePresetable(n,false))
+
+
+    Array.from(toRm).map(n => this.setNamePresetable(n, false))
   }
 
   public getCurrentFullFixtureList() {
-    return (this.universe.groupList as Array<FixtureGroup|FixtureBase>).concat(this.universe.fixtureList);
+    return (this.universe.groupList as Array<FixtureGroup | FixtureBase>).concat(this.universe.fixtureList);
   }
 
-  @RemoteFunction({sharedFunction: true})
+  @RemoteFunction({ sharedFunction: true })
   public saveCurrentState(name: string, linkedStates?: LinkedState[]) {
 
 
 
     if (name !== this.currentState.name) {
       const fl = this.getCurrentFullFixtureList();
-      const st = new State(name, this.presetableNames, fl);
-      if (linkedStates) {st.linkedStates = linkedStates; }
+      const st = new State(this, name, this.presetableNames, fl);
+      if (linkedStates) { st.linkedStates = linkedStates; }
       this.addState(st);
       this.setLoadedStateName(st.name);
 
@@ -570,8 +639,8 @@ export class StateList {
       (channel, value) => {
         CurvePlayer.removeChannel(channel);
 
-        if (typeof(value) === 'number') {
-          channel.setValue( value, true);
+        if (typeof (value) === 'number') {
+          channel.setValue(value, true);
         } else {
           const cl = value as CurveLink;
           if (!CurvePlayer.hasCurveLink(cl)) {
@@ -592,14 +661,14 @@ export class StateList {
 
 class WholeState extends State {
   constructor(name: string, public value: number) {
-    super(name, [], []);
+    super(undefined, name, [], []);
   }
-  public resolveState(context: FixtureBase[], sl: {[id: string]: State}, dimMaster= 1): ResolvedFixtureState[] {
+  public resolveState(context: FixtureBase[], sl: { [id: string]: State }, dimMaster = 1): ResolvedFixtureState[] {
     const res: ResolvedFixtureState[] = [];
     const opt = {};
     for (const f of context) {
-      f.channels.map((c) => {if (c.reactToMaster) {CurvePlayer.removeChannel(c); }});
-      const fs = new FixtureState(f, {overrideValue: this.value, channelFilter: (c: ChannelBase) => c.reactToMaster});
+      f.channels.map((c) => { if (c.reactToMaster) { CurvePlayer.removeChannel(c); } });
+      const fs = new FixtureState(f, { overrideValue: this.value, channelFilter: (c: ChannelBase) => c.reactToMaster });
       res.push(new ResolvedFixtureState(fs, f, dimMaster));
     }
     return res;

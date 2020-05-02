@@ -46,7 +46,7 @@ import Button from '@/components/Inputs/Button.vue';
 import Toggle from '@/components/Inputs/Toggle.vue';
 import Modal from '@/components/Utils/Modal.vue';
 import StateEditor from '@/components/Editors/StateEditor.vue';
-import {LinkedState, State} from '@API/State';
+import { State} from '@API/State';
 import rootState from '@API/RootState';
 
 import StateMethods from '../store/states';
@@ -95,14 +95,13 @@ export default class StateComponent extends Vue {
 
   public set linkedStateNames(v: string[]) {
     if (this.selectedState) {
-      const res = v.map((e) => new LinkedState(e, 1));
-      this.selectedState.linkedStates = res;
+      this.selectedState.setLinkedStates(v.map(e=>{return {name:e}}))
       // this.stateList.recallState(this.selectedState,1)
     }
   }
 
   get linkedStateList() {
-    return this.linkedStateNames.map((e) => new LinkedState(e, 1));
+    return this.selectedState.linkedStates
   }
 
   get selectedState() {

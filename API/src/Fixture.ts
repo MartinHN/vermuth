@@ -323,6 +323,9 @@ export class FixtureBase implements FixtureBaseI {
     if (c === undefined || c===null) {
       c = new ChannelBase('channel', 0, this.span);
     }
+    else if(!( c instanceof ChannelBase )){
+      debugger
+    }
     c.setParentFixture (this);
     this.channels.push(c);
     // setChildAccessible(this.channels, '' + (this.channels.length - 1));

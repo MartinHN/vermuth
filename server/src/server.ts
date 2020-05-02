@@ -1,7 +1,8 @@
-const debug =  process.env.NODE_ENV !== 'production';
+const debugMode =  process.env.NODE_ENV !== 'production';
 const logClientMessages = process.env.LOG_MSG;
-if (!debug) {require('module-alias/register'); } // form module resolution
-
+if (!debugMode) {require('module-alias/register'); } // form module resolution
+const debugFile = require('debug')('FILE')
+const debugState = require('debug')('STATE')
 const clientLogger = logClientMessages ? require('@API/Logger').default : undefined;
 const PORT = process.env.PORT?parseInt(process.env.PORT) : 3000;
 
@@ -29,16 +30,16 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const backupDir = fs.mkdtempSync(path.join(os.tmpdir(), 'vermuth-'));
-console.log('backup dir is at ', backupDir);
+debugFile('backup dir is at ', backupDir);
 
 const publicDir = process.env.PUBLIC_FOLDER || path.resolve(__dirname, '../dist/server/public');
-// const publicDir = debug ? path.join(__dirname, '../dist/server/public') : path.join(__dirname, '../public');
-console.log('served Folder  :' + publicDir, __dirname);
-// console.log('served files',fs.readdirSync(publicDir))
-console.log(fs.readdirSync(__dirname))
+// const publicDir = debugMode ? path.join(__dirname, '../dist/server/public') : path.join(__dirname, '../public');
+debugFile('served Folder  :' + publicDir, __dirname);
+debugFile('served files',fs.readdirSync(publicDir))
+debugFile(fs.readdirSync(__dirname))
 if (!fs.existsSync(publicDir+"/index.html")) {
   console.error("can't find public directory to serve", publicDir)
-  console.log(fs.readdirSync(__dirname))
+  debugFile(fs.readdirSync(__dirname))
 
 }
 const app = express();
@@ -56,11 +57,11 @@ const ioServer = io({
 import {bindClientSocket} from '@API/ServerSync';
 bindClientSocket(ioServer);
 ioServer.attach(httpServer, {
-  pingInterval: debug ? 60000 : 10000,
-  pingTimeout: debug ? 30000 : 5000,
+  pingInterval: debugMode ? 60000 : 10000,
+  pingTimeout: debugMode ? 30000 : 5000,
   cookie: false,
 });
-if (debug) {
+if (debugMode) {
   console.log(`run viewer on port ${PORT}`);
 }
 
@@ -71,10 +72,10 @@ let states: any = {};
 // write empty if non existent
 fs.writeFile(localStateFile, JSON.stringify({}), { flag: 'wx', encoding: 'utf-8' }, (ferr: any) => {
   if (ferr) {
-    console.log('fileExists', localStateFile);
+    debugFile('fileExists', localStateFile);
     fs.readFile(localStateFile, 'utf8', (err: any, data: any) => {
       if (err) {
-        return console.log(err);
+        return console.error(err);
       }
       if (data === '') {data = '{}'; }
       if (data ) {
@@ -106,7 +107,7 @@ function backupFiles() {
     const longBkTime = 20 * 1000;
     const now = Date.now();
     const filesWithDate = files.map((e) => ({path: path.join(bDir, e), date: new Date(e.replace(/_/g,':'))})).sort((a, b) => b.date - a.date);
-    console.log('backups : ', filesWithDate);
+    debugFile('backups : ', filesWithDate);
     let lastHourBackup: any;
     const filesToRm = new Array<string>();
     for (const e of filesWithDate) {
@@ -123,10 +124,10 @@ function backupFiles() {
       }
     }
 
-    console.log('backups to rm: ', filesToRm);
+    debugFile('backups to rm: ', filesToRm);
     filesToRm.map((f) => fs.unlink(f, (err) => {
       if (err) { throw err; }
-      console.log(f, ' was deleted');
+      debugFile(f, ' was deleted');
     }));
   });
 
@@ -134,18 +135,18 @@ function backupFiles() {
 
 
 function setStateFromObject(msg: any, socket: any) {
-  console.log('setting state from: ' + socket);
+  debugState('setting state from: ' + socket);
   const curState =  rootState.toJSONObj()
   const dif = diff(curState, msg);
 
   if (dif !== undefined || !rootState.isConfigured) {
-    console.log('diff', dif);
+    debugState('diff', dif);
     states = {};
     states = msg;
 
 
     if (socket) {
-      console.log('broadcasting state: ' + msg);
+      debugState('broadcasting state: ' + msg);
       socket.broadcast.emit('SET_STATE', msg);
       //  blockSocket(socket)
     }
@@ -153,7 +154,7 @@ function setStateFromObject(msg: any, socket: any) {
     doSharedFunction(() => {
         rootState.configureFromObj(msg);
       });
-    console.log('end configure');
+    debugState('end configure');
     // if(socket){
       //   nextTick(()=>unblockSocket(socket))
       // }
@@ -166,25 +167,25 @@ function setStateFromObject(msg: any, socket: any) {
         'utf8',
         (v: any) => {
           if (v) {
-            console.log('file write error : ', v);
+            console.error('file write error : ', v);
           }
         },
         );
 
     } else {
-      console.log('no mod from state');
+      console.warn('no mod from state');
     }
-    // debugger
+    // debugModeger
 
 
   }
 
-if (debug && process.env.LOG_SOCKET_FILE) {
+if (debugMode && process.env.LOG_SOCKET_FILE) {
     const logFile =  process.env.LOG_SOCKET_FILE;
     fs.unlinkSync(logFile);
   }
 ioServer.on('connection', (socket) => {
-    console.log('a user connected', socket.id, debug, Object.keys(ioServer.clients().connected));
+    console.log('a user connected', socket.id, debugMode, Object.keys(ioServer.clients().connected));
 
     log.bindToSocket(socket);
     const emitF = socket.emit;

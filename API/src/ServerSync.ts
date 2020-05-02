@@ -1,4 +1,8 @@
 export const isClient = process.env.VUE_APP_ISCLIENT;
+const debug = require('debug')('serverSync')
+const debugTree= require('debug')('TREE')
+const debugMsg = require('debug')('MSG')
+const debugStruct = require('debug')('STRUCT')
 const logServerMessages = process.env.LOG_MSG;
 const logTreeMessages = process.env.LOG_TREE;
 let clientSocket: any = null;
@@ -31,20 +35,20 @@ export const treeEvents = new TreeEventClass();
 if(logTreeMessages){
 
   treeEvents.on('v', (parent: any, key: string) => {
-    console.log('>>> v',key)
+    debugTree('>>> v',key)
   });
   treeEvents.on('move', (parent: any, key: string, toKey: string) => {
-    console.log('>>> move',key)
+    debugTree('>>> move',key)
   });
   treeEvents.on('add', (parent: any, key: string) => {
-    console.log('>>> add',key)
+    debugTree('>>> add',key)
   });
   treeEvents.on('rm', (parent: any, key: string) => {
-    console.log('>>> rm',key)
+    debugTree('>>> rm',key)
   });
   
   treeEvents.on('call', (parent: any, options: any, ctx: any) => {
-    // console.log('>>> call',parent)
+    // debugTree('>>> call',parent)
   });
 }
 
@@ -63,12 +67,11 @@ export function bindClientSocket(s: any) {
     // if (!isClient) {
     // #if !IS_CLIENT
     const emitF = boundSocket.emit;
-    const log = require('./Logger').default;
-    console.log('highjacking server socket');
+    debug('highjacking server socket');
     const nF = (e: string, a: any, l: any) => {
       if (logServerMessages) {
         if (e === 'SET_STATE') { a = ''; }
-        log.log('server >> all clients : ' + e + ' : ' + a + '\n');
+        debugMsg('server >> all clients : ' + e + ' : ' + a + '\n');
       }
       emitF.apply(boundSocket, [e, a, l]);
     };
@@ -83,7 +86,7 @@ export function bindClientSocket(s: any) {
       if(!e){
         debugger;
       }
-      console.log('client >> server : ' + e + ' : ' + a + '\n');
+      debugMsg('client >> server : ' + e + ' : ' + a + '\n');
       oriEmitF.apply(boundSocket, [e, a, l]);
     }
     if (!boundSocket.__eventOverriden) {
@@ -187,7 +190,7 @@ const rebuildChildAccessibles = (fromParent?:any) => {
   let curNode = accessibleTree;
   const rS = fromParent || getRoot();
   recurseAccessible(rS);
-  // console.log('listen to messages' , accessibleTree); // Array.from(allListeners.keys()));
+  // debug('listen to messages' , accessibleTree); // Array.from(allListeners.keys()));
 };
 
 const rebuildChildAccessiblesDebounced = _.debounce(rebuildChildAccessibles,
@@ -347,7 +350,7 @@ function broadcastMessageFromServer(addr: string, args: any, sid?: string) {
           sock.emit(addr, args);
 
         } else {
-          //console.log('avoid feedback on', addr);
+          //debug('avoid feedback on', addr);
         }
       }
     }
@@ -522,7 +525,7 @@ export function RemoteValue(cb?: (parent: any, value: any) => void) {
             const isSetByServer = AccessibleSettedByServer !== null && registeredAddr === AccessibleSettedByServer;
 
             //updateAccessibleAddress(true, (hasChanged && lockCallbacks === 0 && !isSetByServer) ? doNotify : undefined);
-          if(hasChanged && lockCallbacks === 0 && !isSetByServer &&
+          if(hasChanged && lockCallbacks === 0 && (!isClient || !isSetByServer) &&
             parent && ((parent as any).__isConstructed!==false)){
               if(!registeredAddr){
                 updateAccessibleAddress(false)
@@ -611,7 +614,7 @@ export function RemoteFunction(options?: { skipClientApply?: boolean, sharedFunc
                 return e.map(pruneArg);
               } else if (typeof (e) === 'object' && e !== null) {
                 const addr = buildAddressFromObj(e, false);
-                if (addr) { console.log('setting addr as arg'); return '/?' + addr; }
+                if (addr) { debug('setting addr as arg'); return '/?' + addr; }
                 if (e.__ob__) {
                   const c = Object.assign({}, e);
                   delete c.__ob__;
@@ -667,7 +670,7 @@ export function RemoteFunction(options?: { skipClientApply?: boolean, sharedFunc
               const { accessible, parent, key: acc_key } = resolveAccessible(rootAccessible, addr);
               if (accessible === undefined) {
                 debugger;
-                console.log('failed to resolve addr', addr);
+                debug('failed to resolve addr', addr);
                 return e;
               }
               return accessible;
@@ -853,7 +856,7 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
           }
 
 
-          console.log('setting array prop', prop, value)
+          debug('setting array prop', prop, value)
         }
 
         const wasChildAccessible = obj.__accessibleMembers[prop]!==undefined
@@ -878,7 +881,7 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
               // && !wasChildAccessible
               //   (obj.__accessibleMembers[prop] !== newAcc || obj.__accessibleMembers[prop].__accessibleName === undefined) )
               ){
-              console.log(`auto add child Accessible ${prop.toString()} on `, buildAddressFromObj(obj)); // newAcc, Object.keys(obj.__accessibleMembers));
+              debug(`auto add child Accessible ${prop.toString()} on `, buildAddressFromObj(obj)); // newAcc, Object.keys(obj.__accessibleMembers));
               setChildAccessible(obj, prop, { immediate: true, defaultValue: newAcc });
             }
           }
@@ -889,7 +892,7 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
       ,
       get: (target: any, k: symbol | string, thisProxy: any) => {
         // if(Array.isArray(target)){
-        // console.log('getting prop', k)
+        // debug('getting prop', k)
         // }
         if (k === isProxySymbol) {
           if (target[isProxySymbol]) {
@@ -907,7 +910,7 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
       }
       , deleteProperty(target: any, k: symbol | string) {
         if (Array.isArray(target)) {
-          console.log('removing prop', k)
+          debug('removing prop', k)
         }
         if (k in target) { // TODO lockCallbacks? for deleted objects?
           treeEvents.emit('rm', target, k);
@@ -916,7 +919,7 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
 
           deleteProp(target, k);
           delete target[k];
-          console.log(`property removed: ${k.toString()} on `, buildAddressFromObj(target));
+          debug(`property removed: ${k.toString()} on `, buildAddressFromObj(target));
           return true;
         } else {
           return false;
@@ -924,7 +927,7 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
       },
       /*
        apply:(target, thisArg, argumentsList)=>{
-         console.log(`applying method child Accessible ${target}`)
+         debug(`applying method child Accessible ${target}`)
          return Reflect.apply(target, thisArg, argumentsList);
       }
       */
@@ -987,9 +990,9 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
     }
     Reflect.defineProperty(parent, key, desc);
     if (!isChildOfRoot(parent)) {
-      console.log('avoiding notifying tree change unattached child ', key);
+      debug('avoiding notifying tree change unattached child ', key);
     } else if (key.toString().startsWith('_')) {
-      console.log('avoiding notifying tree change of private child ', key);
+      debug('avoiding notifying tree change of private child ', key);
     } else {
 
       treeEvents.emit('add', parent, key);

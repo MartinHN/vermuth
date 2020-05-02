@@ -193,27 +193,33 @@ export default class App extends Vue {
   left: 0;
   top: 0;
   width: 100vw;
-  height:50px
+  height:40px
 
 }
 #navContent{
   padding:50px 0 0 0;
 }
 #nav {
-  padding: 10px;
+  padding: 0px;
+  height: 100%;
   display:flex;
+
 
   justify-content: space-around;
 }
+
 
 #nav a {
   font-weight: bold;
   color: #2c3e50;
   flex:1 1 0;
+  height:100%;
+  text-align: center;
 }
 
 #nav a.router-link-exact-active {
   color: #42b983;
+  background: grey;
 }
 #savedStatus{
   flex: 0 0 30px;

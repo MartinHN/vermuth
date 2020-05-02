@@ -24,6 +24,7 @@
     "bezier-easing": "^2.1.0",
     "chrome-launcher": "^0.13.1",
     "connect-history-api-fallback": "^1.6.0",
+    "debug": "^4.1.1",
     "detect-rpi": "^1.4.0",
     "dmx": "github:martinHN/dmx#master",
     "express": "^4.17.1",

@@ -1,6 +1,6 @@
 <template>
   <div :class='["sliderPH",{inactive:!enabled}]'>
-    <input :class='["slider",{inactive:!enabled}]' type="range" :value="value" @input="$emit('input',$event.target.valueAsNumber)" :min=min :max=max :step="Math.pow(10,-precision)">
+    <input :class='["slider",{inactive:!enabled}]' type="range" :value="parseFloat(value)" @input="$emit('input',$event.target.valueAsNumber)" :min=min :max=max :step="Math.pow(10,-precision)">
     
     <div ref="Name" class="Name" v-if="showName">{{name}}</div>
     <div ref="Value" class="Value" v-if="showValue">{{valToString}}</div>
@@ -29,7 +29,6 @@ export default class Slider extends Vue {
   @Prop({default: 0}) public min!: number;
   @Prop({default: 1}) public max!: number;
   public mounted() {
-
   }
 
   get valToString(): string {

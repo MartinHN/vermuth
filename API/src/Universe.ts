@@ -162,8 +162,9 @@ export class Universe implements UniverseI {
   @RemoteFunction()
   public addFixture(f: FixtureBase) {
     if(f && !(f instanceof FixtureBase)){
-      f = new FixtureBase((f as any).name,[],(f as any).ftype);
-      f.configureFromObj(f)
+      const ob = f as any
+      f = new FixtureBase(ob.name,[],(f as any).ftype);
+      f.configureFromObj(ob)
     }
     f.name = getNextUniqueName(this.fixtureList.map((ff) => ff.name), f.name);
 

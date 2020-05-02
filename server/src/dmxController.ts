@@ -1,5 +1,6 @@
 const DMX = require ('dmx');
 const SerialPort = require('serialport');
+const debug= require('debug')('DMX')
 const OSCDriver = require('./dmxOSCDriver');
 const needCustomPiLibs = process.env.CUSTOM_PI_DRIVERS;
 const isPi = require('detect-rpi')();
@@ -82,7 +83,7 @@ class DMXController implements DMXControllerI {
     delete this.dmx.drivers.null;
     this.watchSerialPorts();
     this.__driverNameList = Object.keys(this.dmx.drivers);
-    console.log('drivers : ', this.__driverNameList);
+    //debug('drivers : ', this.__driverNameList);
     UniverseListener.on('channelChanged', (c: any, v: any) => {this.setCircs([{c, v}], null); });
 
   }
@@ -100,7 +101,7 @@ class DMXController implements DMXControllerI {
         this.__portNameList = l.map((c: any) => c.comName);
 
         resolve(l);
-        // console.log(this.__portNameList);
+        // debug(this.__portNameList);
       }).
       catch((e: any) => {
         console.error(e);
@@ -176,7 +177,7 @@ class DMXController implements DMXControllerI {
 
     if (fromSocket) {
       fromSocket.broadcast.emit('DMX/SET_CIRC', msg);
-      console.log('form_', fromSocket.id);
+      debug('form_', fromSocket.id);
     } else {
       // if(this.__ioServer)this.__ioServer.emit("DMX/SET_CIRC",msg)
     }
@@ -197,7 +198,7 @@ class DMXController implements DMXControllerI {
       }
       res[e.c] = e.v * mult;
     }
-    // console.log(res)
+    // debug(res)
     return res;
   }
 
@@ -212,12 +213,12 @@ class DMXController implements DMXControllerI {
     const successCB = () => {
       this.stopWatchSerialPorts();
       this.__connected = true;
-      console.log('successfully connected to ' + uri);
+      debug('successfully connected to ' + uri);
       this.dmx.update(this.universeName, this.arrayToObj(this.activeChannels.map((c) => ({c: c.trueCirc, v: c.intValue}))));
     };
     const closeCB = () => {
       this.watchSerialPorts();
-      console.log('connection closed ' + uri);
+      debug('connection closed ' + uri);
       this.__connected = false;
     };
 
@@ -276,7 +277,7 @@ class DMXController implements DMXControllerI {
       this.__connected = false;
       return;
     }
-    console.log('trying to connect to ' + uri);
+    debug('trying to connect to ' + uri);
 
 
     // this.selectedDriverName = ""
