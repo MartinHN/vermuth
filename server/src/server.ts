@@ -1,10 +1,12 @@
 const debugMode =  process.env.NODE_ENV !== 'production';
-const logClientMessages = process.env.LOG_MSG;
+
 if (!debugMode) {require('module-alias/register'); } // form module resolution
 const debugFile = require('debug')('FILE')
+const debugMsg = require('debug')('MSG')
 const debugState = require('debug')('STATE')
-const clientLogger = logClientMessages ? require('@API/Logger').default : undefined;
+
 const PORT = process.env.PORT?parseInt(process.env.PORT) : 3000;
+
 
 import express from 'express';
 import http from  'http';
@@ -191,23 +193,23 @@ ioServer.on('connection', (socket) => {
     const emitF = socket.emit;
     socket.emit  = (event: string | symbol, ...args: any[]) => {
 
-      if (clientLogger) {
+      // if (require('debug').enabled('MSG')) {
         // @ts-ignore
         const isBroadCasting = socket.flags.broadcast;
         const evt = typeof(event) === 'string' ? event : JSON.stringify(event);
         if (!evt || !evt.endsWith('/_time')) {
           let a = JSON.stringify(args);
           if (evt === 'SET_STATE') {a = ''; }
-          clientLogger.log('server >> ' + (isBroadCasting ? ' to any but ' : '') + socket.id + evt + a + '\n');
+          debugMsg('server >> ' + (isBroadCasting ? ' to any but ' : '') + socket.id + evt + a + '\n');
         }
-      }
+      // }
 
       return emitF.apply(socket, [event, ...args]);
     };
     socket.use((packet, next) => {
-      if (clientLogger) {
-        clientLogger.log(socket.id + ' >> server ' + JSON.stringify(packet) + '\n');
-      }
+      // if (clientLogger) {
+        debugMsg(socket.id + ' >> server ' + JSON.stringify(packet) + '\n');
+      // }
       next();
     });
 
@@ -259,23 +261,3 @@ dmxController.register(ioServer, rootState.universe);
 httpServer.listen(PORT, () => {
    console.log(`Server is running in http://localhost:${PORT}`);
  });
-// import localtunnel from 'localtunnel';
-/*
- (async () => {
-   const tunnel = await localtunnel(PORT,
-    {host:process.env.LOCALTUNNELHOST,
-    allow_invalid_cert:true,
-   });
-   tunnel.on('close', () => {
-    // tunnels are closed
-  });
- 
-   // the assigned public url for your tunnel
-   // i.e. https://abcdefgjhij.localtunnel.me
-   console.log(`accessible on web at ${tunnel.url}`);
- 
-   tunnel.on('close', () => {
-     // tunnels are closed
-   });
- })();
- */

@@ -155,12 +155,12 @@ class DMXController implements DMXControllerI {
     });
   }
 
-  public setAllColor(color: {r: number, g: number, b: number}, setWhiteToZero: boolean) {
+  public setAllColor(color: {r: number; g: number; b: number}, setWhiteToZero: boolean) {
     if (this.__universe) {
       this.__universe.setAllColor(color, setWhiteToZero);
     }
   }
-  public setCircs(msg: Array<{c: number, v: number}>, fromSocket) {
+  public setCircs(msg: Array<{c: number; v: number}>, fromSocket) {
 
 
     // const allC = this.__universe.allChannels;
@@ -189,7 +189,7 @@ class DMXController implements DMXControllerI {
 
 
 
-  public arrayToObj(a: Array<{c: number, v: number}>, mult: number= 1) {
+  public arrayToObj(a: Array<{c: number; v: number}>, mult= 1) {
     const res = {};
     for (const e of a ) {
       if (isNaN(e.c) || isNaN(e.v)) {

@@ -38,7 +38,7 @@ export default class Sequences extends VuexModule {
   }
 
 
-    
+
     @Mutation
     public setSequenceName(pl: {sequence: Sequence, value: string} ) {
       pl.sequence.name = pl.value;

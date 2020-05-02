@@ -6,7 +6,7 @@ import { nonEnumerable, RemoteFunction, AccessibleClass, setChildAccessible, Rem
 import { addProp, deleteProp, Proxyfiable } from './MemoryUtils';
 
 import { CurvePlayer, CurveLink, CurveLinkStore } from './CurvePlayer';
-import { SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION } from 'constants';
+
 
 interface ChannelsValuesDicTypes { [id: string]: number; }
 interface ChannelsCurveLinkDicTypes { [id: string]: { uid: string }; }
@@ -223,7 +223,13 @@ export class MergedState {
 
 
 class LinkedState extends Proxyfiable {
-  constructor(private __owner: State, public name: string, _dimMaster: number) { super();this.dimMaster = _dimMaster }
+  constructor(private __owner: State, public name: string, _dimMaster: number) { super();
+    this.dimMaster = _dimMaster;
+    if(!name){
+      console.error('empty linked state name')
+      debugger
+    }
+  }
 
   @RemoteValue((parent, value) => {
     if (parent.__owner) {
@@ -290,7 +296,9 @@ export class State {
     }
   }
   setLinkedStates(v: { name: string, dimMaster?: number }[]) {
-
+    if(!Array.isArray(v)){
+      console.error("trying to set bad linked states",v)
+    }
     for (let i = this.linkedStates.length - 1; i >= 0; i--) {
       const e = this.linkedStates[i]
       if (!v.some(s => s.name === e.name)) {
@@ -300,12 +308,16 @@ export class State {
 
     for (const e of v) {
       const dM = e.dimMaster === undefined ? 1 : e.dimMaster
+      if(!e.name){
+        console.error('empty linked state name')
+        debugger;
+        continue;
+      }
       const existing = this.linkedStates.find(ee => ee.name === e.name)
       if (existing) {
-        if(dM>0){
         existing.dimMaster = dM
-        }
-        else{
+        
+        if(!existing || dM===0){
           this.removeLinkedStateNamed(existing.name)
         }
       }
@@ -527,7 +539,7 @@ export class StateList {
     this.applyResolvedState(rs);
     const channelList = s.getSavedChannels(fl);
 
-    this.setLoadedStateName(s.name);
+    this.setLoadedStateName(dimMaster>0?s.name:"");
     this.setPresetableNames(channelList.map((c) => c.getUID()));
     return channelList;
   }

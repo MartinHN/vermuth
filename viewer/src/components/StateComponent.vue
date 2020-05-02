@@ -1,85 +1,93 @@
 <template>
-  
   <div>
-    <v-row no-gutters >
-      <v-col cols=6 >
-        <v-list dense class="overflow-y-auto" style="max-height:200px" >
+    <v-row no-gutters>
+      <v-col cols="6">
+        <v-list dense class="overflow-y-auto" style="max-height:200px">
           <!-- <v-subheader>Presets</v-subheader> -->
-          <v-list-item-group v-model="selectedStateIdx" > <!-- v-model="item" color="primary"> -->
+          <v-list-item-group v-model="selectedStateIdx">
+            <!-- v-model="item" color="primary"> -->
             <v-list-item v-for="(s,i) in stateNames" :key="s.id">
-              <v-list-item-content >
-                <v-list-item-title v-html="s" ></v-list-item-title>
+              <v-list-item-content>
+                <v-list-item-title v-html="s"></v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list-item-group>
         </v-list>
       </v-col>
-      <v-col >
+      <v-col>
         <div id="stateActions">
           <Button class="add" @click="saveNewState" text="save"></Button>
-          <Button v-if="selectedState && !selectedState.name.startsWith('__')"  class="edit" @click="editState" text="edit"></Button>
+          <Button
+            v-if="selectedState && !selectedState.name.startsWith('__')"
+            class="edit"
+            @click="editState"
+            text="edit"
+          ></Button>
           <Button class="rename" @click="renameStatePrompt" text="rename"></Button>
-          <Button class="remove" @click="removeStatePrompt" text="-" color='red'></Button>
-          <v-select label=linkedStates multiple  v-model="linkedStateNames" style="width:100%" :items="linkableStateNames">
-            <template v-slot:item="{item:item}">
-              {{item}}
+          <Button class="remove" @click="removeStatePrompt" text="-" color="red"></Button>
+          <v-menu v-if=selectedState>
+            <template v-slot:activator="{ on }">
+              <v-btn color="primary" dark v-on="on">linkedStates</v-btn>
             </template>
-          </v-select>
-
+            <MultiStateChooser style="width:100%" :state="selectedState" />
+          </v-menu>
         </div>
       </v-col>
-
     </v-row>
 
     <Modal v-if="showStateEditor" @close="showStateEditor=false">
-      <h3  slot="header" > StateEditor : {{editedState?editedState.name:"no state"}} </h3>
-      <StateEditor  slot="body" :state="editedState" /></StateEditor>
+      <h3 slot="header">StateEditor : {{editedState?editedState.name:"no state"}}</h3>
+      <StateEditor slot="body" :state="editedState" />
     </Modal>
     <!-- </v-container> -->
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import {  Action, Getter , Mutation , namespace} from 'vuex-class';
-import Button from '@/components/Inputs/Button.vue';
-import Toggle from '@/components/Inputs/Toggle.vue';
-import Modal from '@/components/Utils/Modal.vue';
-import StateEditor from '@/components/Editors/StateEditor.vue';
-import { State} from '@API/State';
-import rootState from '@API/RootState';
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { Action, Getter, Mutation, namespace } from "vuex-class";
+import Button from "@/components/Inputs/Button.vue";
+import Toggle from "@/components/Inputs/Toggle.vue";
+import Modal from "@/components/Utils/Modal.vue";
+import StateEditor from "@/components/Editors/StateEditor.vue";
+import MultiStateChooser from "@/components/MultiStateChooser.vue";
+import { State } from "@API/State";
+import rootState from "@API/RootState";
 
-import StateMethods from '../store/states';
+import StateMethods from "../store/states";
 
-
-const statesModule = namespace('states');
+const statesModule = namespace("states");
 type ValueOf<T> = T[keyof T];
 // type State = ValueOf<StateMethods['states']>;
 @Component({
-  components: {Button, Toggle, Modal, StateEditor},
+  components: { MultiStateChooser, Button, Toggle, Modal, StateEditor }
 })
 export default class StateComponent extends Vue {
-
   get editedState() {
     return this.selectedState;
   }
 
   set selectedStateIdx(i: number) {
-    if (this.selectedState && i === undefined) {this.stateList.recallState(this.selectedState, 0); }
+    if (this.selectedState && i === undefined) {
+      this.stateList.recallState(this.selectedState, 0);
+    }
 
     // if (this.selectedState) {
-    if ( i >= 0 && i < this.stateNames.length) {
+    if (i >= 0 && i < this.stateNames.length) {
       this.stateList.recallStateNamed(this.stateNames[i], 1);
-      }
+    }
   }
   get selectedStateIdx() {
-    return this.stateNames.indexOf(this.selectedState ? this.selectedState.name : '');
-
+    return this.stateNames.indexOf(
+      this.selectedState ? this.selectedState.name : ""
+    );
   }
 
+
+
   get linkableStateNames() {
-    const n = this.selectedState ? this.selectedState.name : '';
-    return this.stateNames.filter((e) => e !== n);
+    const n = this.selectedState ? this.selectedState.name : "";
+    return this.stateNames.filter(e => e !== n);
   }
 
   public get linkedStateNames() {
@@ -92,96 +100,103 @@ export default class StateComponent extends Vue {
     return res;
   }
 
-
   public set linkedStateNames(v: string[]) {
-    if (this.selectedState) {
-      this.selectedState.setLinkedStates(v.map(e=>{return {name:e}}))
-      // this.stateList.recallState(this.selectedState,1)
-    }
+    const stateNames = (this.selectedState.linkedStates || []).map(e => ({ name: e.name }));
+    this.selectedState.setLinkedStates(stateNames);
   }
 
   get linkedStateList() {
-    return this.selectedState.linkedStates
+    return this.selectedState.linkedStates;
   }
 
   get selectedState() {
-    return this.stateList.getStateNamed( this.stateList.loadedStateName);
+    return this.stateList.getStateNamed(this.stateList.loadedStateName);
   }
 
-  @statesModule.Mutation('saveCurrentState') public saveCurrentState!: StateMethods['saveCurrentState'];
-  @statesModule.Mutation('removeState') public removeState!: StateMethods['removeState'];
-  @statesModule.Mutation('renameState') public renameState!: StateMethods['renameState'];
+  @statesModule.Mutation("saveCurrentState")
+  public saveCurrentState!: StateMethods["saveCurrentState"];
+  @statesModule.Mutation("removeState")
+  public removeState!: StateMethods["removeState"];
+  @statesModule.Mutation("renameState")
+  public renameState!: StateMethods["renameState"];
 
-  @statesModule.Mutation('recallState') public recallState!: StateMethods['recallState'];
-
+  @statesModule.Mutation("recallState")
+  public recallState!: StateMethods["recallState"];
 
   // @Prop({default:false})
   public showStateEditor = false; // !:boolean
 
-  @statesModule.Getter('channels') private channels!: StateMethods['channels'];
-  @statesModule.Getter('stateNames') private stateNames!: StateMethods['stateNames'];
-  @statesModule.Getter('loadedStateName') private ploadedStateName!: StateMethods['loadedStateName'];
-
-
+  @statesModule.Getter("channels") private channels!: StateMethods["channels"];
+  @statesModule.Getter("stateNames")
+  private stateNames!: StateMethods["stateNames"];
+  @statesModule.Getter("loadedStateName")
+  private ploadedStateName!: StateMethods["loadedStateName"];
 
   private stateList = rootState.stateList;
 
   public mounted() {
-       window.addEventListener('keydown', this.processKey);
-
+    window.addEventListener("keydown", this.processKey);
   }
   public destroyed() {
-    window.removeEventListener('keydown', this.processKey);
+    window.removeEventListener("keydown", this.processKey);
   }
   public processKey(event: KeyboardEvent) {
     if (event.ctrlKey || event.metaKey) {
       const letter = String.fromCharCode(event.which).toLowerCase();
-      if (letter === 'e') {
-
-      } else if (event.key === 'ArrowDown') {
+      if (letter === "e") {
+      } else if (event.key === "ArrowDown") {
         event.preventDefault();
-        if (this.selectedStateIdx < this.stateNames.length - 1) {this.selectedStateIdx++; }
-      } else if (event.key === 'ArrowUp') {
+        if (this.selectedStateIdx < this.stateNames.length - 1) {
+          this.selectedStateIdx++;
+        }
+      } else if (event.key === "ArrowUp") {
         event.preventDefault();
-        if (this.selectedStateIdx > 0) {this.selectedStateIdx--; }
+        if (this.selectedStateIdx > 0) {
+          this.selectedStateIdx--;
+        }
       }
       // const letter  =String.fromCharCode(event.which).toLowerCase();
-
     }
   }
   public editState() {
-    if (this.selectedState === null ) {
-
+    if (this.selectedState === null) {
     } else {
       this.showStateEditor = true;
     }
   }
 
   public saveNewState() {
-    const name = prompt('save new state', this.selectedState ? this.selectedState.name : '');
-    if (name === null || name === '') {} else {
+    const name = prompt(
+      "save new state",
+      this.selectedState ? this.selectedState.name : ""
+    );
+    if (name === null || name === "") {
+    } else {
       this.stateList.saveCurrentState(name, this.linkedStateList);
-     // this.selectedState = this.stateList.getStateNamed(name);
+      // this.selectedState = this.stateList.getStateNamed(name);
     }
   }
   public removeStatePrompt() {
-    const name = prompt('remove state', this.selectedState ? this.selectedState.name : '');
-    if (name === null || name === '') {} else {
-      this.removeState({name});
+    const name = prompt(
+      "remove state",
+      this.selectedState ? this.selectedState.name : ""
+    );
+    if (name === null || name === "") {
+    } else {
+      this.removeState({ name });
     }
   }
 
   public renameStatePrompt() {
-    const oldName = this.selectedState ? this.selectedState.name : '';
+    const oldName = this.selectedState ? this.selectedState.name : "";
     if (oldName) {
-      const name = prompt('rename state ' + oldName, oldName );
-      if (name === null || name === '') {} else {
-        this.renameState({oldName, newName: name});
+      const name = prompt("rename state " + oldName, oldName);
+      if (name === null || name === "") {
+      } else {
+        this.renameState({ oldName, newName: name });
       }
     }
   }
-
-
 }
 </script>
 
@@ -194,16 +209,16 @@ export default class StateComponent extends Vue {
   justify-content: space-between;
 }
 */
-div{
-  width:100%;
+div {
+  width: 100%;
 }
-select{
-  height:100%;
-  width:100%;
+select {
+  height: 100%;
+  width: 100%;
   min-width: 20px;
 }
 
-.remove{
+.remove {
   background-color: red;
 }
 </style>

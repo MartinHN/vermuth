@@ -1,7 +1,7 @@
 import { FixtureBase, FixtureGroup } from './Fixture';
 import { ChannelBase, UniverseListener } from './Channel';
 import { getNextUniqueName , compareValues} from './Utils';
-import { SetAccessible, setChildAccessible, AccessibleClass , RemoteFunction} from './ServerSync';
+import { SetAccessible, setChildAccessible, AccessibleClass , RemoteFunction, nonEnumerable} from './ServerSync';
 import {addProp, deleteProp} from './MemoryUtils';
 
 export interface UniverseI {
@@ -11,6 +11,7 @@ export interface UniverseI {
 @AccessibleClass()
 export class Universe implements UniverseI {
 
+  @nonEnumerable()
   public readonly testedChannel = new ChannelBase('tested', 0, -1);
   @SetAccessible({readonly: true})
   public  testedFixture = new FixtureBase('testedFixture', [this.testedChannel]);
@@ -159,10 +160,11 @@ export class Universe implements UniverseI {
       f.setMaster(this._master);
     }
   }
-  @RemoteFunction()
+  @RemoteFunction({sharedFunction:true})
   public addFixture(f: FixtureBase) {
     if(f && !(f instanceof FixtureBase)){
       const ob = f as any
+      ob.name = getNextUniqueName(this.fixtureList.map((ff) => ff.name), ob.name);
       f = new FixtureBase(ob.name,[],(f as any).ftype);
       f.configureFromObj(ob)
     }
@@ -225,12 +227,12 @@ export class Universe implements UniverseI {
   }
 
   @RemoteFunction({sharedFunction: true})
-  public setAllColor(color: {r: number, g: number, b: number}, setWhiteToZero: boolean) {
+  public setAllColor(color: {r: number; g: number; b: number}, setWhiteToZero: boolean) {
     this.fixtureList.map((f) => f.setColor(color, setWhiteToZero));
   }
 
   @RemoteFunction({sharedFunction: true})
-  public setGroupColor(gName: string, color: {r: number, g: number, b: number}, setWhiteToZero: boolean) {
+  public setGroupColor(gName: string, color: {r: number; g: number; b: number}, setWhiteToZero: boolean) {
     this.getFixturesInGroupNamed(gName).map((f) => f.setColor(color, setWhiteToZero));
   }
   @RemoteFunction({sharedFunction: true})

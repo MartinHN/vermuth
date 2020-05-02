@@ -202,9 +202,7 @@ private showGroupExplorer = false;
   window.removeEventListener('keydown', this.processKey);
 }
 public cloneFixture(f: FixtureBase) {
-  const c = f.clone();
-  c.baseCirc++;
-  this.universe.addFixture(c);
+  const c = f.clone(1);
 }
 public addAndQuitFExplorer(e: FixtureBase) {
   this.showFixtureExplorer = false;
@@ -212,12 +210,14 @@ public addAndQuitFExplorer(e: FixtureBase) {
     const numFixture = parseInt(prompt('how much do you want to add', '1') || '0', 10);
     const baseAddr  = parseInt(prompt('starting dimmer number', '1') || '1', 10);
     const name  = prompt('name of the fixture?', e.fixtureType);
+
     if (name) {
-      for (let i = 0 ; i < numFixture ; i++) {
-        e.name = name;
-        e.baseCirc = baseAddr + e.span * i;
+      if(numFixture>0){
+        e.name=name
         this.universe.addFixture(e);
-        e = e.clone();
+        }
+      for (let i = 1 ; i < numFixture ; i++) {
+        e= e.clone(e.span);
       }
     }
   }

@@ -19,13 +19,13 @@ export class Sequence extends Proxyfiable {
     // return res;
   }
   @RemoteValue()
-  public timeIn: number = 0;
+  public timeIn = 0;
   @RemoteValue()
-  public hold: number = 0;
+  public hold = 0;
   @RemoteValue()
-  public timeOut: number = 0;
+  public timeOut = 0;
   @RemoteValue()
-  public stateName: string = 'none';
+  public stateName = 'none';
   @RemoteValue()
   public name: string;
 
@@ -188,7 +188,7 @@ export class SequencePlayerClass {
   }
   get sequenceList() {
     if (this._rootProvider === undefined) {console.error('stateListNotInited'); debugger; }
-    return this._rootProvider ? this._rootProvider.sequenceList : new SequenceList();
+    return this._rootProvider ? this._rootProvider.sequenceList: new SequenceList();
   }
 
   public get isPlaying() {
@@ -215,7 +215,7 @@ export class SequencePlayerClass {
   public pctDone = 0;
 
   @RemoteValue()
-  public playState: string = 'stopped';
+  public playState = 'stopped';
   @RemoteValue()
   private pcurPlayedIdx = -1;
 
@@ -225,7 +225,7 @@ export class SequencePlayerClass {
   @nonEnumerable()
   private _rootProvider?: RootProvider = undefined;
 
-  private constructor() {}
+  // private constructor() {}
 
   @RemoteFunction({sharedFunction: true})
   public goToStateNamed(name: string, timeIn: number, opts?: {dimMaster?: number}, cb?: () => void): void {

@@ -1,49 +1,65 @@
 <template>
   <div>
-    <v-list label="linkedStates" style="width:100%">
-      <v-list-item v-for="(item, i) of valueDic" :key="i">
-        
-        <Slider :min="0" :max="1" :showName="true" :name="i" :value="valueDic[i]" @input="(e)=>changed(i,e) "></Slider>
-      </v-list-item>
-    </v-list>
+    <MultiSlider v-model="linkableStateDims" />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import { Action, Getter, Mutation, namespace } from "vuex-class";
-import Button from "@/components/Inputs/Button.vue";
-import Slider from "@/components/Inputs/Slider.vue";
-import Toggle from "@/components/Inputs/Toggle.vue";
-import Modal from "@/components/Utils/Modal.vue";
-import StateEditor from "@/components/Editors/StateEditor.vue";
-import {  State } from "@API/State";
-import rootState from "@API/RootState";
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Action, Getter, Mutation, namespace } from 'vuex-class';
+import Button from '@/components/Inputs/Button.vue';
+import MultiSlider from '@/components/Inputs/MultiSlider.vue';
+import Toggle from '@/components/Inputs/Toggle.vue';
+import Modal from '@/components/Utils/Modal.vue';
+import StateEditor from '@/components/Editors/StateEditor.vue';
+import {  State } from '@API/State';
+import rootState from '@API/RootState';
 
-import StateMethods from "../store/states";
+import StateMethods from '../store/states';
 
-const statesModule = namespace("states");
+const statesModule = namespace('states');
 type ValueOf<T> = T[keyof T];
 // type State = ValueOf<StateMethods['states']>;
 @Component({
-  components: { Button, Slider, Toggle, StateEditor },
-    model: {
-    prop: "valueDic",
-    event: "change"
-  }
+  components: { Button, MultiSlider, Toggle, StateEditor }
 
 })
 export default class MultiStateChooser extends Vue {
   @Prop()
-  private valueDic!: { [id: string]: number };
+  private state!: State;
 
   public mounted() {
-    console.log("vdic", this.valueDic);
   }
-  private changed(n:string,ev:number) {
-    this.valueDic[n] = ev;
-    this.$emit("change", this.valueDic);
+
+
+    get linkableStateDims() {
+    const r: { [id: string]: number } = {};
+
+    if (!this.state || this.state === null) {
+      return r;
+    }
+    const state = this.state as State;
+    rootState.stateList.stateNames
+      .filter((e) => e !== state.name)
+      .map((n) => {
+        const lsObj = state.linkedStates.find((e) => e.name === n);
+        r[n] =
+          lsObj !== undefined ? (lsObj.dimMaster ? lsObj.dimMaster : 0) : 0;
+      });
+    // console.log(r);
+    return r;
   }
+
+  set linkableStateDims(vd: { [id: string]: number }) {
+    if (!this.state) {
+      return;
+    }
+    const l = Object.entries(vd).map(([k, v]) => {
+      return { name: k, dimMaster: v };
+    });
+    this.state.setLinkedStates(l);
+  }
+
 }
 </script>
 

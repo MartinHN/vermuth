@@ -1,3 +1,5 @@
+import { isProxySymbol } from "./ServerSync";
+
 // #if IS_CLIENT
 const isClient = true;
 // #else
@@ -7,11 +9,11 @@ const isClient = process.env.VUE_APP_ISCLIENT;
 // import {isProxySymbol,isProxyfiable,Proxyfiable} from './ServerSync'
 function getVue() {
 
-  if (!isClient) {return false; }
+  if (!isClient) { return false; }
 
   try {
     // #if IS_CLIENT
-    return require( 'vue').default;
+    return require('vue').default;
     // #endif
   } catch (e) {
     throw new Error('can\'t require Vue');
@@ -19,10 +21,25 @@ function getVue() {
   return false;
 }
 
+let deletedProp = { o: (undefined as any), p: ("" as any) }
+export function deleteProp(o: any, p: string | symbol) {
+  if (deletedProp.o === o && deletedProp.p === p) { // prevent "safety" feedbacks
+    return;
+  }
+  if (o[isProxySymbol]) { // prevent if called manually , proxy will take care..
+    Reflect.deleteProperty(o, p);
+    return
+  }
 
-export function deleteProp(o: any, p: string|symbol) {
+  deletedProp = { o, p }
+
   if (o[p] && o[p].__dispose) {
+    const wasConstructible = o[p] && o[p].__isConstructed
     o[p].__dispose();
+    if(wasConstructible && o[p].__isConstructed){
+      console.error("not properly disposed")
+      debugger;
+    }
   }
   // #if IS_CLIENT
   const Vue = getVue();
@@ -36,7 +53,7 @@ export function deleteProp(o: any, p: string|symbol) {
 }
 
 
-export function addProp(o: any, p: string|symbol, v: any) {
+export function addProp(o: any, p: string | symbol, v: any) {
   // #if IS_CLIENT
   const Vue = getVue();
   if (Vue && !Array.isArray(o)) {
@@ -58,7 +75,7 @@ export function nextTick(cb: any) {
   }
   // #endif
 
-    // @ts-ignore
+  // @ts-ignore
   process.nextTick(cb);
 
 
@@ -66,7 +83,7 @@ export function nextTick(cb: any) {
 
 
 
-export const isProxyfiable =  Symbol('isProxyfiable');
+export const isProxyfiable = Symbol('isProxyfiable');
 const sourceHandlerSymbol = Symbol('sourceHandler');
 export class Proxyfiable {
   private [sourceHandlerSymbol]: any;
@@ -75,22 +92,22 @@ export class Proxyfiable {
   }
   constructor(sourceHandler?: any) {
     return new Proxy(this, {
-       set(obj: any, prop: symbol|string, value: any, thisProxy: any) {
-        if (sourceHandler && sourceHandler.set) {return sourceHandler.set(obj, prop, value, thisProxy); }
+      set(obj: any, prop: symbol | string, value: any, thisProxy: any) {
+        if (sourceHandler && sourceHandler.set) { return sourceHandler.set(obj, prop, value, thisProxy); }
         return Reflect.set(obj, prop, value, thisProxy);
       },
-      get: (target: any, k: symbol|string, thisProxy: any) => {
-        if (k === isProxyfiable) {return true; }
-        if (sourceHandler && sourceHandler.get) {return sourceHandler.get(target, k, thisProxy); }
+      get: (target: any, k: symbol | string, thisProxy: any) => {
+        if (k === isProxyfiable) { return true; }
+        if (sourceHandler && sourceHandler.get) { return sourceHandler.get(target, k, thisProxy); }
         return Reflect.get(target, k, thisProxy);
       },
-      deleteProperty(target: any, k: symbol|string) {
-        if (sourceHandler && sourceHandler.deleteProperty) {return sourceHandler.deleteProperty(target, k); }
+      deleteProperty(target: any, k: symbol | string) {
+        if (sourceHandler && sourceHandler.deleteProperty) { return sourceHandler.deleteProperty(target, k); }
         return Reflect.deleteProperty(target, k);
       },
       apply: (target, thisArg, argumentsList) => {
-         if (sourceHandler && sourceHandler.apply) {return sourceHandler.apply(target, thisArg, argumentsList); }
-         return Reflect.apply(target, thisArg, argumentsList);
+        if (sourceHandler && sourceHandler.apply) { return sourceHandler.apply(target, thisArg, argumentsList); }
+        return Reflect.apply(target, thisArg, argumentsList);
       },
     });
   }
@@ -118,11 +135,11 @@ export interface Configurable {
 
 
 type IConstructor<T> = new (...args: any[]) => T;
-type FElemType =  WithUID & Disposable;
+type FElemType = WithUID & Disposable;
 
-export class Factory <T extends  FElemType> {
-  public factory: {[id: string]: T} = {};
-  constructor(private createFromObj: (a: any) => T|undefined) {
+export class Factory<T extends FElemType> {
+  public factory: { [id: string]: T } = {};
+  constructor(private createFromObj: (a: any) => T | undefined) {
 
   }
   public clear() {
@@ -137,8 +154,8 @@ export class Factory <T extends  FElemType> {
       for (const [k, v] of Object.entries(o.factory)) {
         const t = this.createFromObj(v); // new this.TConstructor()
         if (t) {
-        this.add(t);
-      } else {console.error('no created'); debugger; }
+          this.add(t);
+        } else { console.error('no created'); debugger; }
       }
     }
   }
@@ -152,8 +169,9 @@ export class Factory <T extends  FElemType> {
     if (cl) {
       let df: any;
       if (!doDispose) {
-       df = cl.__dispose;
-       cl.__dispose = () => {}; }
+        df = cl.__dispose;
+        cl.__dispose = () => { };
+      }
 
       delete this.factory[o.uid];
       if (!doDispose) {
@@ -165,7 +183,7 @@ export class Factory <T extends  FElemType> {
   public getForUID(u: string): T {
     return this.factory[u];
   }
-  public getUIDs() {return Object.keys(this.factory); }
+  public getUIDs() { return Object.keys(this.factory); }
 
 
 }
@@ -173,15 +191,15 @@ export class Factory <T extends  FElemType> {
 const refDisposedSymbol = Symbol('refDisposed');
 
 export function generateFromUIDList<T extends FElemType>(uids: string[], f: Factory<T>) {
-    return uids.map((u) => f.getForUID(u));
+  return uids.map((u) => f.getForUID(u));
 }
 
 export function getUnusedRefs<T extends Refable>(l: T[]) {
-    return l.filter((e) => e.__references.length === 0);
+  return l.filter((e) => e.__references.length === 0);
 }
 
 
-export class Ref <T extends Refable> extends Proxyfiable {
+export class Ref<T extends Refable> extends Proxyfiable {
   private [refDisposedSymbol] = false;
   constructor(private __r: T) {
     super();
@@ -191,7 +209,7 @@ export class Ref <T extends Refable> extends Proxyfiable {
   public toJSON() {
     return this.__r.uid;
   }
-  public getPointed() {return this.__r; }
+  public getPointed() { return this.__r; }
   public __dispose() {
     if (this[refDisposedSymbol]) {
       console.error('double dispose');
@@ -200,7 +218,7 @@ export class Ref <T extends Refable> extends Proxyfiable {
     this[refDisposedSymbol] = true;
     const i = this.__r.__references.indexOf(this);
 
-    if (i < 0) {console.error('unreferenced'); return; }
+    if (i < 0) { console.error('unreferenced'); return; }
     this.__r.__references.splice(i, 1);
 
 

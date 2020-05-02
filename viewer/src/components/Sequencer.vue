@@ -77,13 +77,6 @@ const statesModule = namespace('states');
 })
 export default class Sequencer extends Vue {
 
-
-  selectedIdx = 0
-  
-  seqClicked(i:number){
-    this.selectedIdx=i
-  }
-
   get isPlayingSeq() {
     return this.seqPlayer.isPlaying;
   }
@@ -124,6 +117,9 @@ export default class Sequencer extends Vue {
   }
 
 
+  public selectedIdx = 0;
+
+
   @sequenceModule.State('sequenceList') public sequenceList!: SequenceMethods['sequenceList'];
   @sequenceModule.State('globalTransport') public globalTransport!: SequenceMethods['globalTransport'];
 
@@ -131,8 +127,12 @@ export default class Sequencer extends Vue {
 
   public editOrder = false;
 
-  addSequence(n:string){
-    this.sequenceList.insertNewSequence(n,n,this.selectedIdx)
+  public seqClicked(i: number) {
+    this.selectedIdx = i;
+  }
+
+  public addSequence(n: string) {
+    this.sequenceList.insertNewSequence(n, n, this.selectedIdx);
   }
   public mounted() {
     window.addEventListener('keydown', this.processKey);
@@ -169,9 +169,9 @@ export default class Sequencer extends Vue {
 
   }
 
-  
 
-  
+
+
 }
 </script> 
 

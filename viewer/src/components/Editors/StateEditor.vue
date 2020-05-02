@@ -35,36 +35,36 @@
     <v-row>
       <v-col>
         <ChannelRack
-          :displayableFixtureList="state.getSavedFixtureList(universe.fixtureAndGroupList)"
+          :displayableFixtureList="state && state.getSavedFixtureList(universe.fixtureAndGroupList)"
         />
       </v-col>
       <v-col cols="5">
-        <MultiStateChooser v-model="linkableStateDims" style="height:100px;with:100px"></MultiStateChooser>
+        <MultiStateChooser :state="state" style="height:100px;with:100px"></MultiStateChooser>
       </v-col>
     </v-row>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import { Action, Getter, Mutation, namespace } from "vuex-class";
-import Button from "@/components/Inputs/Button.vue";
-import Numbox from "@/components/Inputs/Numbox.vue";
-import Toggle from "@/components/Inputs/Toggle.vue";
-import TextInput from "@/components/Inputs/TextInput.vue";
-import ChannelRack from "@/components/ChannelRack.vue";
-import FixtureWidget from "@/components/Widgets/FixtureWidget.vue";
-import Modal from "@/components/Utils/Modal.vue";
-import MultiStateChooser from "@/components/MultiStateChooser.vue";
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Action, Getter, Mutation, namespace } from 'vuex-class';
+import Button from '@/components/Inputs/Button.vue';
+import Numbox from '@/components/Inputs/Numbox.vue';
+import Toggle from '@/components/Inputs/Toggle.vue';
+import TextInput from '@/components/Inputs/TextInput.vue';
+import ChannelRack from '@/components/ChannelRack.vue';
+import FixtureWidget from '@/components/Widgets/FixtureWidget.vue';
+import Modal from '@/components/Utils/Modal.vue';
+import MultiStateChooser from '@/components/MultiStateChooser.vue';
 
-import UniversesMethods from "../../store/universes";
-import { FixtureBase } from "@API/Fixture";
-import { State, StateList } from "@API/State";
-import rootState from "@API/RootState";
-import { FixtureFactory } from "@API/FixtureFactory";
-import { ChannelRoles } from "@API/Channel";
+import UniversesMethods from '../../store/universes';
+import { FixtureBase } from '@API/Fixture';
+import { State, StateList } from '@API/State';
+import rootState from '@API/RootState';
+import { FixtureFactory } from '@API/FixtureFactory';
+import { ChannelRoles } from '@API/Channel';
 
-const universesModule = namespace("universes");
+const universesModule = namespace('universes');
 
 @Component({
   components: {
@@ -74,8 +74,8 @@ const universesModule = namespace("universes");
     Toggle,
     TextInput,
     FixtureWidget,
-    ChannelRack
-  }
+    ChannelRack,
+  },
 })
 export default class StateEditor extends Vue {
   @Prop({ default: null, required: true })
@@ -90,43 +90,16 @@ export default class StateEditor extends Vue {
   public showValues = false;
   public showNames = false;
 
-  @universesModule.State("universe")
-  private universe!: UniversesMethods["universe"];
+  @universesModule.State('universe')
+  private universe!: UniversesMethods['universe'];
 
   private pselectedFixtureNames: string[] = [];
-  private pselectedGroupNames: string[] = ["all"];
-  private pselectedChannelFilterNames: string[] = ["all"];
+  private pselectedGroupNames: string[] = ['all'];
+  private pselectedChannelFilterNames: string[] = ['all'];
   private extendedTypeFilter = false;
 
   private isLive = true;
 
-  get linkableStateDims() {
-    const r: { [id: string]: number } = {};
-
-    if (!this.state || this.state === null) {
-      return r;
-    }
-    const state = this.state as State;
-    rootState.stateList.stateNames
-      .filter(e => e !== state.name)
-      .map(n => {
-        const lsObj = state.linkedStates.find(e => e.name === n);
-        r[n] =
-          lsObj !== undefined ? (lsObj.dimMaster ? lsObj.dimMaster : 0) : 0;
-      });
-    // console.log(r);
-    return r;
-  }
-
-  set linkableStateDims(vd: { [id: string]: number }) {
-    if (!this.state) {
-      return;
-    }
-    const l = Object.entries(vd).map(([k, v]) => {
-      return { name: k, dimMaster: v };
-    });
-    this.state.setLinkedStates(l);
-  }
 
   get selectedFixtures() {
     return this.universe.getFixtureListFromNames(this.selectedFixtureNames);
@@ -134,19 +107,19 @@ export default class StateEditor extends Vue {
 
   get selectedFixtureNames() {
     return this.selectedFixtureIdxs.map(
-      i => this.selectableFixtureListNames[i]
+      (i) => this.selectableFixtureListNames[i],
     );
     // return this.selectedFixtures.map(e=>e.name);
   }
   get selectableFixtureListNames() {
-    return this.selectableFixtures.map(e => e.name);
+    return this.selectableFixtures.map((e) => e.name);
   }
 
   get selectableFixtures() {
     return this.universe.sortedFixtureList;
   }
   get selectableGroupList() {
-    return ["all"].concat(this.universe.groupNames);
+    return ['all'].concat(this.universe.groupNames);
   }
   public get selectedGroupNames() {
     return this.pselectedGroupNames;
@@ -165,20 +138,20 @@ export default class StateEditor extends Vue {
   }
   get displayedFixtures() {
     return this.universe.sortedFixtureList.filter(
-      f =>
+      (f) =>
         this.needDisplay(f) &&
-        f.hasChannelMatchingFilters(this.selectedChannelFilterNames)
+        f.hasChannelMatchingFilters(this.selectedChannelFilterNames),
     );
   }
 
   get selectableChannelFilterList() {
-    const res: string[] = ["all"];
+    const res: string[] = ['all'];
 
     for (const fam of Object.keys(ChannelRoles)) {
       res.push(fam);
       if (this.extendedTypeFilter) {
         for (const type of Object.keys(ChannelRoles[fam])) {
-          res.push(fam + ":" + type);
+          res.push(fam + ':' + type);
         }
       }
     }
@@ -189,7 +162,7 @@ export default class StateEditor extends Vue {
     if (this.selectedGroupNames.length === 0) {
       return;
     }
-    if (this.selectedGroupNames.find(e => e === "all")) {
+    if (this.selectedGroupNames.find((e) => e === 'all')) {
       this.pselectedFixtureNames = this.selectableFixtureListNames;
       return;
     }
@@ -208,7 +181,7 @@ export default class StateEditor extends Vue {
 
   public selectAll() {
     let i = -1;
-    this.selectedFixtureIdxs = this.selectableFixtures.map(e => {
+    this.selectedFixtureIdxs = this.selectableFixtures.map((e) => {
       i++;
       return i;
     });
@@ -218,12 +191,12 @@ export default class StateEditor extends Vue {
     if (this.selectedFixtureNames && this.selectedFixtureNames.length === 0) {
       return true;
     } else {
-      return this.selectedFixtureNames.find(fn => fn === f.name);
+      return this.selectedFixtureNames.find((fn) => fn === f.name);
     }
   }
 
   public get firstGroupSelected() {
-    return this.selectedGroupNames.length > 0 ? this.selectedGroupNames[0] : "";
+    return this.selectedGroupNames.length > 0 ? this.selectedGroupNames[0] : '';
   }
 
   public mounted() {
@@ -231,7 +204,7 @@ export default class StateEditor extends Vue {
       const resolvedFixtures = this.state.resolveState(
         this.universe.fixtureList,
         rootState.stateList.states,
-        1
+        1,
       );
       for (const rf of Object.values(resolvedFixtures)) {
         const i = this.selectableFixtures.indexOf(rf.fixture);
