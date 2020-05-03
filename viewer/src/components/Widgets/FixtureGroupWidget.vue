@@ -9,30 +9,8 @@
       </div>
     </div>
     <div v-else style="display:flex;width:100%">
-      <FixtureWidget  :fixtureProp=fixtureProp  />
-<!-- 
-      <div style="display:flex;width:100%" v-if="hasDimmerChannels" >
-        <Toggle text="presetable" v-model=dimmerPresetable />
-        <Slider  v-model="dimmerValue" :text="groupName" style="width:100%" :enabled=masterInSync ></Slider>
-      </div>
+      <FixtureWidget  :fixtureProp="fixtureProp"  />
 
-
-      <div style="display:flex;width:100%" v-if='hasColorChannels' >
-        <Toggle text="presetable" v-model=colorPresetable />
-        <input type="color" style="flex:1 1 30%" v-if='!showProps' v-model=hexColorValue></input>
-
-      </div>
-
-      <div style="display:flex;width:100%" v-if='hasPositionChannels' >
-        <Toggle text="presetable" v-model=posPresetable />
-        <Button text="setPos" @click="showPosModal=true"/>
-        <modal v-if="showPosModal" @close="showPosModal = false">
-
-          <h3 slot="header">{{groupName}} pos</h3>
-          <Point2DEditor slot="body" :value="position" @input="position = ($event?$event[0]:[])"></Point2DEditor>
-        </modal>
-
-      </div> -->
     </div>
 
 

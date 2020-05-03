@@ -1,29 +1,31 @@
 <template>
   <div class="main">
-
-
     <v-container class="FixturePatch" fluid>
       <v-row no-gutter>
-        <v-col cols=4 >
-          <Button class="button" @click="showFixtureExplorer=true" text="add Fixture"/>
+        <v-col cols="4">
+          <Button class="button" @click="showFixtureExplorer=true" text="add Fixture" />
           <Modal v-if="showFixtureExplorer" @close="showFixtureExplorer=false">
-
             <!-- <h3 slot="header">fixture Explorer</h3> -->
-            <FixtureExplorer  slot="body" @change="addAndQuitFExplorer($event) "></FixtureExplorer>
-
+            <FixtureExplorer slot="body" @change="addAndQuitFExplorer($event) "></FixtureExplorer>
           </Modal>
         </v-col>
-        <v-col cols=4> 
+        <v-col cols="4">
           <!-- <Button text="Manage Groups" @click="showGroupExplorer=true"/> -->
           <Button text="addGroup" @click="addGroup()" color="green"></Button>
           <Button text="removeGroup" @click="removeGroup()" color="red"></Button>
           <!-- <Modal v-if="showGroupExplorer" @close="showGroupExplorer=false">
             <GroupExplorer  slot="body" ></GroupExplorer>
-          </Modal> -->
+          </Modal>-->
         </v-col>
 
-        <v-col cols=2 >
-          <Numbox  class="testNum" text="testChannel" showName="1" @input="!!$event && testDimmerNum($event)" :value="testDimmerNumVal" />
+        <v-col cols="2">
+          <Numbox
+            class="testNum"
+            text="testChannel"
+            showName="1"
+            @input="!!$event && testDimmerNum($event)"
+            :value="testDimmerNumVal"
+          />
         </v-col>
       </v-row>
       <!-- <v-row  v-for="f in universe.sortedFixtureList" :key="f.name" style="background-color:#FFF5;margin:5px" no-gutters>
@@ -31,257 +33,298 @@
     </v-container>
     <v-card>
       <v-text-field
-      v-model="searchFixtureText"
-      ref=searchBar
-      append-icon="search"
-      label="Search"
-      single-line
-      hide-details
+        v-model="searchFixtureText"
+        ref="searchBar"
+        append-icon="search"
+        label="Search"
+        single-line
+        hide-details
       ></v-text-field>
 
-      <v-data-table 
-      :items=universe.sortedFixtureList  
-      :headers=fixtureHeaders  
-      :search="searchFixtureText"
-      hide-default-footer
-      disable-pagination
-      >
-      <!-- <template v-slot:header="{props:headers}">
-        <tr>
-          <th
-          v-for="header in headers.headers"
-          :key="header.text"
-          >
-          {{ header.text }}
-        </th>
-      </tr>
-    </template> -->
-    <template v-slot:item="{item:f}">
-      <tr>
-        <td>
-          <input :style="{'background-color':'#0003','width':'100%'}" :value="f.name" @change="setFixtureName({fixture:f,value:$event.target.value})"/>
-        </td>
-        <td>
-          <Numbox :errMsg="fixtureErrorMsgs[f.name]" class="baseCirc pa-0 ma-0" :value="f.baseCirc" :min="0" :max="512" @input="$event && setFixtureBaseCirc({fixture: f, circ:$event})"></Numbox>
-          <span>({{f.span}} ch)</span>
-        </td>
-        <td>
-          <v-select label=groups multiple  style="width:100%" :value="assignedGroupsOnFixture(f)" :items="universe.groupNames" @change="assignToGroups(f,$event)">
-            <template v-slot:item="{item:item}">
-              {{item}}
-            </template>
-          </v-select>
-        </td>
+      <v-data-table
+        :items="universe.sortedFixtureList"
+        item-key="name"
+        :headers="fixtureHeaders"
+        :search="searchFixtureText"
+        hide-default-footer
+        :hide-default-header="false"
+        disable-pagination
+        :show-select="true"
+        :mobile-breakpoint="0"
         
-        <td>
-          <Button class=" removeFixture " color='red' @click="askToRmFixture(f)" tabIndex="-1" text="-"/>
-        </td>
-        <td>
-          <Button text="edit" class="button pa-0 ma-0" @click='editedFixture = f'/>
-        </td>
-        <td>
-          <Button text="clone" class="button pa-0 ma-0" @click='cloneFixture(f)'/>
-        </td>
-        <td>
-          <Toggle v-if='f.dimmerChannels && f.dimmerChannels.length ' text="test" :value="universe.testedChannel.circ===f.dimmerChannels[0].trueCirc" @input=testDimmerNum($event?f.dimmerChannels[0].trueCirc:-1) > T </Toggle>
-        </td>
-      </tr>
-    </v-row>
-  </template>
-</v-data-table>
-<!-- 
-</v-row>-->
-</v-card>
+        dark
+        dense
+      >
+        <template v-slot:item.name="{item:f}">
+          <input
+            :style="{'background-color':'#0003','width':'100%'}"
+            :value="f.name"
+            @change="setFixtureName({fixture:f,value:$event.target.value})"
+          />
+        </template>
 
-<Modal v-if="editedFixture!==null" @close="editedFixture=null">
+     <template v-slot:item.baseCirc="{item:f}">
+          <Numbox
+            :errMsg="fixtureErrorMsgs[f.name]"
+            class="baseCirc pa-0 ma-0"
+            :value="f.baseCirc"
+            :min="0"
+            :max="512"
+            @input="$event && setFixtureBaseCirc({fixture: f, circ:$event})"
+            :postFix="`(${f.span} ch)`"
+          ></Numbox>
+        </template>
 
-  <h3 slot="header">fixture Editor</h3>
-  <FixtureEditor  slot="body" :fixture=editedFixture></FixtureEditor>
+  
+        <template v-slot:item.groupNames="{item:f}">
+        <v-lazy>
+          <v-select
+            label="groups"
+            multiple
+            style="width:100%"
+            :value="assignedGroupsOnFixture(f)"
+            :items="universe.groupNames"
+            @change="assignToGroups(f,$event)"
+            class="pa-0"
+          >
+            <template v-slot:item="{item:item}">{{item}}</template>
+          </v-select>
+        </v-lazy>
+        </template>
 
-</Modal>
-</div>
+        <template v-slot:item.actions="{item:f}">
+          <tr class="pa-0">
+            <td>
+              <Button
+                class="removeFixture"
+                color="red"
+                @click="askToRmFixture(f)"
+                tabindex="-1"
+                text="-"
+              />
+            </td>
+            <td>
+              <Button text="edit" class="button pa-0 ma-0" @click="editedFixture = f" />
+            </td>
+            <td>
+              <Button text="clone" class="button pa-0 ma-0" @click="cloneFixture(f)" />
+            </td>
+            <td>
+              <Toggle
+                v-if="f.dimmerChannels && f.dimmerChannels.length "
+                text="test"
+                :value="universe.testedChannel.circ===f.dimmerChannels[0].trueCirc"
+                @input="testDimmerNum($event?f.dimmerChannels[0].trueCirc:-1)"
+              >T</Toggle>
+            </td>
+          </tr>
+        </template>
+
+        
+      </v-data-table>
+    </v-card>
+
+    <Modal v-if="editedFixture!==null" @close="editedFixture=null">
+      <h3 slot="header">fixture Editor</h3>
+      <FixtureEditor slot="body" :fixture="editedFixture"></FixtureEditor>
+    </Modal>
+  </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from "vue-property-decorator";
 
+import { State, Action, Getter, Mutation, namespace } from "vuex-class";
+import Button from "@/components/Inputs/Button.vue";
+import Numbox from "@/components/Inputs/Numbox.vue";
+import Toggle from "@/components/Inputs/Toggle.vue";
+import Modal from "@/components/Utils/Modal.vue";
+import FixtureEditor from "@/components/Editors/FixtureEditor.vue";
+import FixtureExplorer from "@/components/Editors/FixtureExplorer.vue";
+import GroupExplorer from "@/components/Editors/GroupExplorer.vue";
+import { DirectFixture, FixtureBase } from "@API/Fixture";
+import { FixtureFactory } from "@API/FixtureFactory";
+import UniversesMethods from "../store/universes";
 
-import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
-import Button from '@/components/Inputs/Button.vue';
-import Numbox from '@/components/Inputs/Numbox.vue';
-import Toggle from '@/components/Inputs/Toggle.vue';
-import Modal from '@/components/Utils/Modal.vue';
-import FixtureEditor from '@/components/Editors/FixtureEditor.vue';
-import FixtureExplorer  from '@/components/Editors/FixtureExplorer.vue';
-import GroupExplorer  from '@/components/Editors/GroupExplorer.vue';
-import { DirectFixture, FixtureBase } from '@API/Fixture';
-import { FixtureFactory } from '@API/FixtureFactory';
-import UniversesMethods from '../store/universes';
-
-
-const universesModule = namespace('universes');
+const universesModule = namespace("universes");
 
 @Component({
-  components: {Button, Numbox, Toggle, Modal, FixtureEditor, FixtureExplorer, GroupExplorer},
+  components: {
+    Button,
+    Numbox,
+    Toggle,
+    Modal,
+    FixtureEditor,
+    FixtureExplorer,
+    GroupExplorer
+  }
 })
 export default class FixturePatch extends Vue {
-
-
-public get fixtureErrorMsgs() {
-  // const dum = this.usedChannels
-  const errs: {[id: string]: string} = {};
-  for (const f of Object.values(this.universe.fixtures)) {
-    const overlap  = [];
-    for (const ff of Object.values(this.universe.fixtures)) {
-      if (f !== ff) {
-        const o = (f.baseCirc >= ff.baseCirc && f.baseCirc <= ff.endCirc ) ||
-        (f.endCirc >= ff.baseCirc && f.endCirc <= ff.endCirc );
-        if (o) {
-          overlap.push(ff.name);
+  public get fixtureErrorMsgs() {
+    // const dum = this.usedChannels
+    const errs: { [id: string]: string } = {};
+    for (const f of Object.values(this.universe.fixtures)) {
+      const overlap = [];
+      for (const ff of Object.values(this.universe.fixtures)) {
+        if (f !== ff) {
+          const o =
+            (f.baseCirc >= ff.baseCirc && f.baseCirc <= ff.endCirc) ||
+            (f.endCirc >= ff.baseCirc && f.endCirc <= ff.endCirc);
+          if (o) {
+            overlap.push(ff.name);
+          }
         }
       }
+      if (overlap.length) {
+        errs[f.name] = "overlap with " + overlap.join(",");
+      }
     }
-    if (overlap.length) {
-      errs[f.name] = 'overlap with ' + overlap.join(',');
+    return errs;
+  }
+
+  get fixtureColors() {
+    const cols: { [id: string]: string } = {};
+    for (const f of Object.values(this.universe.fixtures)) {
+      cols[f.name] = this.fixtureErrorMsgs[f.name] ? "red" : "inherit";
     }
+    return cols;
   }
-  return errs;
-}
 
-get fixtureColors() {
-  const cols: {[id: string]: string} = {};
-  for (const f of Object.values(this.universe.fixtures)) {
-    cols[f.name] = this.fixtureErrorMsgs[f.name] ? 'red' : 'inherit';
+  get fixtureHeaders() {
+    return [
+      { text: "Name", value: "name" },
+      { text: "Dimmer", value: "baseCirc" },
+      { text: "Group", value: "groupNames", filterable: true },
+      { text: "Actions", value:"actions",sortable: false, filterable: false }
+      // ,{text:"edit",sortable:false},{text:"test",sortable:false}
+    ];
   }
-  return cols;
-}
 
-get fixtureHeaders() {
-  return [{text: 'Name', value: 'name'},
-  {text: 'Dimmer', value: 'baseCirc'},
-  {text: 'Group', value: 'groupNames', filterable: true},
-  {text: 'Actions', sortable: false, filterable: false},
-  // ,{text:"edit",sortable:false},{text:"test",sortable:false}
-  ];
-}
+  public editedFixture = null;
+  @universesModule.Mutation("addFixture")
+  public addFixture!: UniversesMethods["addFixture"];
+  @universesModule.Mutation("duplicateFixture")
+  public duplicateFixture!: UniversesMethods["duplicateFixture"];
 
-public editedFixture = null;
-@universesModule.Mutation('addFixture') public addFixture!: UniversesMethods['addFixture'];
-@universesModule.Mutation('duplicateFixture') public duplicateFixture!: UniversesMethods['duplicateFixture'];
+  @universesModule.Mutation("setFixtureBaseCirc")
+  public setFixtureBaseCirc!: UniversesMethods["setFixtureBaseCirc"];
 
-@universesModule.Mutation('setFixtureBaseCirc') public setFixtureBaseCirc!: UniversesMethods['setFixtureBaseCirc'];
+  @universesModule.Mutation("linkChannelToCirc")
+  public linkChannelToCirc!: UniversesMethods["linkChannelToCirc"];
+  @universesModule.Mutation("setChannelName")
+  public setChannelName!: UniversesMethods["setChannelName"];
+  @universesModule.Mutation("removeChannel")
+  public removeChannel!: UniversesMethods["removeChannel"];
 
+  @universesModule.Mutation("removeFixture")
+  public removeFixture!: UniversesMethods["removeFixture"];
+  @universesModule.Mutation("setFixtureName")
+  public setFixtureName!: UniversesMethods["setFixtureName"];
 
+  @universesModule.Getter("testDimmerNumVal")
+  public testDimmerNumVal!: UniversesMethods["testDimmerNumVal"];
+  @universesModule.Mutation("testDimmerNum")
+  public testDimmerNum!: UniversesMethods["testDimmerNum"];
 
+  @universesModule.State("universe")
+  private universe!: UniversesMethods["universe"];
 
-@universesModule.Mutation('linkChannelToCirc') public linkChannelToCirc!: UniversesMethods['linkChannelToCirc'];
-@universesModule.Mutation('setChannelName') public setChannelName!: UniversesMethods['setChannelName'];
-@universesModule.Mutation('removeChannel') public removeChannel!: UniversesMethods['removeChannel'];
+  @universesModule.Getter("usedChannels")
+  private usedChannels!: UniversesMethods["usedChannels"];
 
-@universesModule.Mutation('removeFixture') public removeFixture!: UniversesMethods['removeFixture'];
-@universesModule.Mutation('setFixtureName') public setFixtureName!: UniversesMethods['setFixtureName'];
+  private searchFixtureText = "";
+  private showFixtureExplorer = false;
 
-@universesModule.Getter('testDimmerNumVal') public testDimmerNumVal!: UniversesMethods['testDimmerNumVal'];
-@universesModule.Mutation('testDimmerNum') public testDimmerNum!: UniversesMethods['testDimmerNum'];
-
-@universesModule.State('universe') private universe!: UniversesMethods['universe'];
-
-
-
-
-@universesModule.Getter('usedChannels') private usedChannels!: UniversesMethods['usedChannels'];
-
-private searchFixtureText = '';
-private showFixtureExplorer = false;
-
-private showGroupExplorer = false;
+  private showGroupExplorer = false;
   public mounted() {
-   window.addEventListener('keydown', this.processKey);
- }
- public destroyed() {
-  window.removeEventListener('keydown', this.processKey);
-}
-public cloneFixture(f: FixtureBase) {
-  const c = f.clone(1);
-}
-public addAndQuitFExplorer(e: FixtureBase) {
-  this.showFixtureExplorer = false;
-  if (e) {
-    const numFixture = parseInt(prompt('how much do you want to add', '1') || '0', 10);
-    const baseAddr  = parseInt(prompt('starting dimmer number', '1') || '1', 10);
-    const name  = prompt('name of the fixture?', e.fixtureType);
+    window.addEventListener("keydown", this.processKey);
+  }
+  public destroyed() {
+    window.removeEventListener("keydown", this.processKey);
+  }
+  public cloneFixture(f: FixtureBase) {
+    const c = f.clone(1);
+  }
+  public addAndQuitFExplorer(e: FixtureBase) {
+    this.showFixtureExplorer = false;
+    if (e) {
+      const numFixture = parseInt(
+        prompt("how much do you want to add", "1") || "0",
+        10
+      );
+      const baseAddr = parseInt(
+        prompt("starting dimmer number", "1") || "1",
+        10
+      );
+      const name = prompt("name of the fixture?", e.fixtureType);
 
-    if (name) {
-      if(numFixture>0){
-        e.name=name
-        this.universe.addFixture(e);
+      if (name) {
+        if (numFixture > 0) {
+          e.name = name;
+          this.universe.addFixture(e);
         }
-      for (let i = 1 ; i < numFixture ; i++) {
-        e= e.clone(e.span);
+        for (let i = 1; i < numFixture; i++) {
+          e = e.clone(e.span);
+        }
       }
     }
   }
-}
 
-public open() {
-  // debugger
-}
-public close() {
-  debugger;
-}
-
-
-public assignToGroups(f: FixtureBase, event: string[]) {
-  this.universe.setGroupNamesForFixture(f, event);
-}
-
-public assignedGroupsOnFixture(f: FixtureBase): string[] {
-  // debugger
-  return  this.universe.getGroupNamesForFixture(f);
-}
-public addGroup() {
-  const gname = prompt('save new group', 'group');
-  if (gname) {
-    this.universe.addGroup(gname);
+  public open() {
+    // debugger
   }
-}
-public removeGroup() {
-  const gname = prompt('remove group', '');
-  if (gname && gname !== 'all') {
-    this.universe.removeGroupNamed(gname);
+  public close() {
+    debugger;
   }
-}
 
-private askToRmFixture(f: FixtureBase) {
-  if (window.confirm (`areYouSure to DELETE fixture ${f.name}`)) {
-    this.removeFixture({fixture: f});
+  public assignToGroups(f: FixtureBase, event: string[]) {
+    this.universe.setGroupNamesForFixture(f, event);
   }
-}
 
+  public assignedGroupsOnFixture(f: FixtureBase): string[] {
+    // debugger
+    return this.universe.getGroupNamesForFixture(f);
+  }
+  public addGroup() {
+    const gname = prompt("save new group", "group");
+    if (gname) {
+      this.universe.addGroup(gname);
+    }
+  }
+  public removeGroup() {
+    const gname = prompt("remove group", "");
+    if (gname && gname !== "all") {
+      this.universe.removeGroupNamed(gname);
+    }
+  }
 
-private processKey(event: KeyboardEvent) {
+  private askToRmFixture(f: FixtureBase) {
+    if (window.confirm(`areYouSure to DELETE fixture ${f.name}`)) {
+      this.removeFixture({ fixture: f });
+    }
+  }
 
+  private processKey(event: KeyboardEvent) {
     if (event.ctrlKey || event.metaKey) {
       switch (String.fromCharCode(event.which).toLowerCase()) {
-        case 'f':
-        event.preventDefault();
-        (this.$refs.searchBar as HTMLElement).focus();
+        case "f":
+          event.preventDefault();
+          (this.$refs.searchBar as HTMLElement).focus();
 
-        break;
-        case 'o':
-        event.preventDefault();
-        (this.$refs.fakeFileInput as HTMLElement).click();
-        // event.preventDefault();
-        // alert('ctrl-f');
-        break;
-        case 'g':
-        // event.preventDefault();
-        // alert('ctrl-g');
-        break;
+          break;
+        case "o":
+          event.preventDefault();
+          (this.$refs.fakeFileInput as HTMLElement).click();
+          // event.preventDefault();
+          // alert('ctrl-f');
+          break;
+        case "g":
+          // event.preventDefault();
+          // alert('ctrl-g');
+          break;
       }
     }
-
-}
+  }
 }
 </script>
 

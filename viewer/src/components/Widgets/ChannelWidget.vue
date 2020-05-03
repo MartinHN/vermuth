@@ -19,7 +19,7 @@
           <Toggle v-model="enabledV" text="preset"/>
         </v-col>
         <v-col>
-      <slider class="slider" @input="setChannelValue({channel:channelProp,value:$event})" :value="channelProp.floatValue" :name="displayedName"  :showName="true" :showValue="true" :enabled="enabledV && !isControlledExternally"></slider>
+      <slider class="slider" @input="enabledV=true;setChannelValue({channel:channelProp,value:$event})" :value="channelProp.floatValue" :name="displayedName"  :showName="true" :showValue="true" :enabled="enabledV && !isControlledExternally"></slider>
 </v-col>
 </v-row>
       

@@ -25,7 +25,7 @@
           ></Button>
           <Button class="rename" @click="renameStatePrompt" text="rename"></Button>
           <Button class="remove" @click="removeStatePrompt" text="-" color="red"></Button>
-          <v-menu v-if=selectedState>
+          <v-menu v-if="selectedState && !selectedState.name.startsWith('__')">
             <template v-slot:activator="{ on }">
               <v-btn color="primary" dark v-on="on">linked States</v-btn>
             </template>
