@@ -1,10 +1,8 @@
 export const isClient = process.env.VUE_APP_ISCLIENT;
-const debug = require('debug')('serverSync')
-const debugTree = require('debug')('TREE')
-console.log('DEBUG :: ', process.env["DEBUG"])
-const debugMsg = require('debug')('MSG')
-require('debug').log = console.log.bind(console); // TODO its a global settting Move it in a general place?
-const debugStruct = require('debug')('STRUCT')
+import debug from './dbg'
+const debugTree = debug('TREE')
+const debugMsg = debug('MSG')
+const debugStruct = debug('STRUCT')
 const logServerMessages = process.env.LOG_MSG;
 const logTreeMessages = process.env.LOG_TREE;
 let clientSocket: any = null;

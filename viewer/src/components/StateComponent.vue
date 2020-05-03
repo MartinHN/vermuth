@@ -27,7 +27,7 @@
           <Button class="remove" @click="removeStatePrompt" text="-" color="red"></Button>
           <v-menu v-if=selectedState>
             <template v-slot:activator="{ on }">
-              <v-btn color="primary" dark v-on="on">linkedStates</v-btn>
+              <v-btn color="primary" dark v-on="on">linked States</v-btn>
             </template>
             <MultiStateChooser style="width:100%" :state="selectedState" />
           </v-menu>

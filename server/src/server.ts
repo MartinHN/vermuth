@@ -1,9 +1,12 @@
 const debugMode =  process.env.NODE_ENV !== 'production';
 
 if (!debugMode) {require('module-alias/register'); } // form module resolution
-const debugFile = require('debug')('FILE')
-const debugMsg = require('debug')('MSG')
-const debugState = require('debug')('STATE')
+
+
+import debugM from  '@API/dbg';
+const debugFile = debugM('FILE')
+const debugMsg = debugM('MSG')
+const debugState = debugM('STATE')
 
 const PORT = process.env.PORT?parseInt(process.env.PORT) : 3000;
 
@@ -200,7 +203,7 @@ ioServer.on('connection', (socket) => {
         if (!evt || !evt.endsWith('/_time')) {
           let a = JSON.stringify(args);
           if (evt === 'SET_STATE') {a = ''; }
-          debugMsg('server >> ' + (isBroadCasting ? ' to any but ' : '') + socket.id + evt + a + '\n');
+          debugMsg('server >> ' + (isBroadCasting ? ' to any but ' : '') + socket.id +" "+ evt + a + '\n');
         }
       // }
 
