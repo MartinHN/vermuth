@@ -1,7 +1,7 @@
+// simplify formatting of debug module to be readable for both chrome and terminals
 const debugM = require('debug')
 
-// simplify formatting of debug module to be readable for both chrome and terminals
-
+// const debugMode =  process.env.NODE_ENV !== 'production';
 const colorLut = [
     32, 34, 35, // normal
     92, 94, // pastel

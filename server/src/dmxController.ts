@@ -1,6 +1,7 @@
 const DMX = require ('dmx');
 const SerialPort = require('serialport');
-const debug= require('debug')('DMX')
+import debugM from '@API/dbg'
+const debug = debugM('DMX')
 const OSCDriver = require('./dmxOSCDriver');
 const needCustomPiLibs = process.env.CUSTOM_PI_DRIVERS;
 const isPi = require('detect-rpi')();
