@@ -22,8 +22,9 @@ import RootStateI from './RootState';
 
 import { EventEmitter } from 'events';
 import { access } from 'fs';
+import { Z_FULL_FLUSH } from 'zlib';
 
-function assert(v:boolean, ...msg:any[]) {
+function assert(v: boolean, ...msg: any[]) {
   if (!v) {
     console.error(msg);
     debugger
@@ -124,18 +125,139 @@ export function bindClientSocket(s: any) {
 }
 
 
-let msgToSocketQueue: any = {};
+// let msgToSocketQueue: { [id: string]: any[] } = {};
 
-const updateMsgToSocketQueue = _.debounce(() => {
+// const updateMsgToSocketQueue = _.debounce(() => {
 
-  for (const addr of Object.keys(msgToSocketQueue)) {
-    const q = msgToSocketQueue[addr];
-    clientSocket.emit(addr, q.msg);
+//   for (const addr of Object.keys(msgToSocketQueue)) {
+//     const q = msgToSocketQueue[addr];
+//     q.map(qe => clientSocket.emit(addr, qe.msg))
+//   }
+//   msgToSocketQueue = {};
+// }, 10, { trailing: true, maxWait: 30 });
+
+// const sendToSocketDebounced = (addr: string, args: any) => {
+//   const params = { msg: args, sid: AccessibleNotifierId };
+//   const existing = msgToSocketQueue[addr]
+//   if (existing && _.isEqual(params, existing)) {
+//     msgToSocketQueue[addr].push(params)
+//   }
+//   else {
+//     msgToSocketQueue[addr] = [{ msg: args, sid: AccessibleNotifierId }];
+//   }
+//   updateMsgToSocketQueue();
+// };
+
+
+
+class MessageQueue<T>{
+  public notifyFlush: () => void;
+  constructor(private cb: (addr: string, msg: T, id?: string) => void,
+    public canCollapse: boolean,
+    time: number,
+    maxWait?: number) {
+
+    this.notifyFlush = _.debounce(this.flush.bind(this)
+      , time//50
+      , { trailing: true, maxWait: maxWait === undefined ? 50 : maxWait })
+
   }
-  msgToSocketQueue = {};
-}, 10, { trailing: true, maxWait: 30 });
 
-const sendToSocketDebounced = (addr: string, args: any) => { msgToSocketQueue[addr] = { msg: args, sid: AccessibleNotifierId }; updateMsgToSocketQueue(); };
+  public queue: { [id: string]: { msg: T; notifierId: string | null }[] } = {};
+
+  public push(addr: string, args: T, collapse?: boolean) {
+    const canCollapse = collapse === undefined ? this.canCollapse : collapse;
+    const params = { msg: args, notifierId: AccessibleNotifierId };
+    const hadMessages = this.queue[addr] //&& this.queue[addr].length
+    if (!canCollapse && hadMessages) {
+      this.queue[addr].push(params)
+    }
+    else {
+      if(hadMessages){
+        if (!addr.endsWith('_time')) {
+          debugMsg(`overriding msg ${addr} from ${this.queue[addr][0].msg} to ${params.msg}`)
+        }
+      }
+      this.queue[addr] = [params]
+      
+    }
+    
+    // else {
+    //   const existingIdx = this.queue[addr].findIndex(m => _.isEqual(m.msg, params.msg))
+    //   if (existingIdx < 0) {
+    //     this.queue[addr].push(params)
+    //   }
+    //   else {
+    //     if (!addr.endsWith('_time')) debugMsg(`overriding msg ${addr} from ${this.queue[addr][existingIdx].msg} to ${params.msg}`)
+    //     this.queue[addr][existingIdx] = params
+    //   }
+    // }
+    this.notifyFlush();
+    // this.flush()
+  }
+
+
+  public flush() {
+
+    const old = { AccessibleSettedByServer, AccessibleNotifierId }
+    AccessibleSettedByServer = undefined;
+    AccessibleNotifierId = null;
+    // if (AccessibleSettedByServer || AccessibleNotifierId) {
+    //   assert(false,'weiiiiiird', AccessibleSettedByServer, AccessibleNotifierId)
+
+    // }
+    for (const addr of Object.keys(this.queue)) {
+      const msgL = this.queue[addr];
+      msgL.map(m => {
+        AccessibleNotifierId = m.notifierId
+        this.cb(addr, m.msg, m.notifierId !== null ? m.notifierId : undefined)
+      })
+      //broadcastMessageFromServer(addr, msg.args, msg.sid);
+    }
+    // debugMsg("flushed")
+    AccessibleSettedByServer = old.AccessibleSettedByServer;
+    AccessibleNotifierId = old.AccessibleNotifierId;
+    this.queue = {};
+
+  }
+}
+
+const clientToServerQueue = new MessageQueue((addr, args, sid) => {
+  if (clientSocket) {
+    clientSocket.compress(false).binary(false).emit(addr, args)
+  }
+}, false, 10, 10)
+
+
+function broadcastMessageFromServer(addr: string, args: any, sid?: string) {
+  // let log;
+  if (!addr) {
+    debugger;
+  } else {
+    // if (logServerMessages) {log = require('./Logger').default; }
+    if (!isClient && clientSocket && clientSocket.sockets) {
+      // broadcast to other clients if we are server
+      for (const s of Object.values(clientSocket.sockets.sockets)) {
+        const sock = (s as Socket);
+        if (sock.id !== blockedSocketId &&
+          ((addr !== AccessibleSettedByServer)
+            && (sock.id !== (sid || AccessibleNotifierId)))
+        ) {
+
+          sock.emit(addr, args);
+
+        } else {
+          //debugMsg('avoid feedback on', addr);
+        }
+      }
+    }
+
+    // console.warn("avoid feedback");
+  }
+}
+
+const serverToClientsQueue = new MessageQueue(broadcastMessageFromServer, false, 30, 30); // 50 ,100
+
 
 
 
@@ -316,57 +438,6 @@ function buildAddressFromObj(o: any, errorIfEmpty = true) {
 }
 
 
-let msgQueue: any = {};
-
-const updateQueue = _.debounce(() => {
-  const old = { AccessibleSettedByServer, AccessibleNotifierId }
-  AccessibleSettedByServer = undefined;
-  AccessibleNotifierId = null;
-  // if (AccessibleSettedByServer || AccessibleNotifierId) {
-  //   assert(false,'weiiiiiird', AccessibleSettedByServer, AccessibleNotifierId)
-
-  // }
-  for (const addr of Object.keys(msgQueue)) {
-    const msg = msgQueue[addr];
-    broadcastMessageFromServer(addr, msg.args, msg.sid);
-
-  }
-  AccessibleSettedByServer = old.AccessibleSettedByServer;
-  AccessibleNotifierId = old.AccessibleNotifierId;
-  msgQueue = {};
-}, 50, { trailing: true, maxWait: 100 });
-const broadcastMessageFromServerDebounced = (addr: string, args: any) => { msgQueue[addr] = { args, sid: AccessibleNotifierId }; updateQueue(); };
-
-function broadcastMessageFromServer(addr: string, args: any, sid?: string) {
-  // let log;
-  if (!addr) {
-    debugger;
-  } else {
-    // if (logServerMessages) {log = require('./Logger').default; }
-    if (!isClient && clientSocket && clientSocket.sockets) {
-      // broadcast to other clients if we are server
-      for (const s of Object.values(clientSocket.sockets.sockets)) {
-        const sock = (s as Socket);
-        if (sock.id !== blockedSocketId &&
-          ((addr !== AccessibleSettedByServer)
-            || (sock.id !== (sid || AccessibleNotifierId)))
-        ) {
-
-          sock.emit(addr, args);
-
-        } else {
-          //debugMsg('avoid feedback on', addr);
-        }
-      }
-    }
-
-    // console.warn("avoid feedback");
-  }
-}
-
-
-
-
 function defineObjTable(obj: any, tableName: string) {
   if (!obj[tableName]) {
     Reflect.defineProperty(obj, tableName, {
@@ -521,11 +592,11 @@ export function RemoteValue(cb?: (parent: any, value: any) => void) {
               }
               if (isClient) {
                 if (clientSocket) {
-                  clientSocket.emit(registeredAddr, v);
+                  clientToServerQueue.push(registeredAddr, v, true);
                 }
               } else {
-
-                broadcastMessageFromServerDebounced(registeredAddr, v);
+                serverToClientsQueue.push(registeredAddr, v, true)
+                //broadcastMessageFromServerDebounced(registeredAddr, v);
 
               }
 
@@ -640,10 +711,12 @@ export function RemoteFunction(options?: { skipClientApply?: boolean; sharedFunc
             if (isClient) {
 
               if (AccessibleSettedByServer !== registeredAddr) {
-                res = sendToSocketDebounced(registeredAddr, prunedArgs);
+                // res = sendToSocketDebounced(registeredAddr, prunedArgs);
+                clientToServerQueue.push(registeredAddr, prunedArgs, true)
               }
             } else {
-              broadcastMessageFromServer(registeredAddr, prunedArgs);
+              serverToClientsQueue.push(registeredAddr, prunedArgs, true)
+              // broadcastMessageFromServer(registeredAddr, prunedArgs);
             }
           };
 
@@ -1030,17 +1103,7 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
   return parent[key];
 }
 
-function moveAccessibleChild(parent: any, k: string | symbol) {
 
-}
-
-// const limboRoot = {};
-// export function getFutureAccessible(obj){
-//   if(obj[isProxySymbol]){return obj}
-//     else{
-//       return setChildAccessible(limboRoot)
-//     }
-// }
 
 const allAccessibles = new WeakSet<any>();
 
@@ -1095,13 +1158,13 @@ export function AccessibleClass() {
       __dispose() {
         console.log("dispose", this)
         if ((Bconstructor as any).__dispose) { (Bconstructor as any).__dispose.call(this); }
-        if( (this as any).__isConstructed) {
+        if ((this as any).__isConstructed) {
           Object.defineProperty(this, '__isConstructed', {
             get: () => false,
             enumerable: false
           })
         }
-        else{
+        else {
           console.warn('accessible removed twice')
         }
       }

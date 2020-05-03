@@ -24,7 +24,18 @@ class Server {
   public connect(store: any, serverIP: string) {
     this.__serverIP = serverIP;
     this.__store = store;
-    const socket = io(`http://${serverIP}:${IOPort}`);
+    const socket = io(`http://${serverIP}:${IOPort}`,{transports: ['websocket']});
+  const originFunc = socket.io.engine.transport.write
+  // hack : bypass useless socketio timeOut to ensure fast WS sends < 10ms  ;)
+   const newFunc = function(packets){
+    originFunc.call(this,packets)
+    socket.io.engine.prevBufferLen = packets.length ;
+    this.emit('drain');
+    this.writable = true;
+    // this.emit('flush')
+   
+   }
+   console.log( socket.io.engine.transport.write =newFunc)
     if (this.__socket && (this.__socket === socket)) {
       console.error('reassigning to same socket');
       return false;

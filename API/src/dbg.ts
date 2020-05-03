@@ -20,7 +20,8 @@ function formatArgs(this: any, args: any[]) {
     args[0] = prefix + args[0].trim();
 
 }
-
+//@ts-ignore
+if( typeof window === "undefined"){
 debugM.formatArgs = formatArgs
 debugM.log = console.log.bind(console)
 
@@ -33,5 +34,6 @@ const testF = () => {
     }
 }
 
-// testF()
+testF()
+}
 export default debugM

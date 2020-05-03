@@ -51,7 +51,7 @@
         disable-pagination
         :show-select="true"
         :mobile-breakpoint="0"
-        
+        v-model="selectedFixtures"
         dark
         dense
       >
@@ -63,7 +63,7 @@
           />
         </template>
 
-     <template v-slot:item.baseCirc="{item:f}">
+        <template v-slot:item.baseCirc="{item:f}">
           <Numbox
             :errMsg="fixtureErrorMsgs[f.name]"
             class="baseCirc pa-0 ma-0"
@@ -71,25 +71,24 @@
             :min="0"
             :max="512"
             @input="$event && setFixtureBaseCirc({fixture: f, circ:$event})"
-            :postFix="`(${f.span} ch)`"
+            :postFix="`(${f.span})`"
           ></Numbox>
         </template>
 
-  
         <template v-slot:item.groupNames="{item:f}">
-        <v-lazy>
-          <v-select
-            label="groups"
-            multiple
-            style="width:100%"
-            :value="assignedGroupsOnFixture(f)"
-            :items="universe.groupNames"
-            @change="assignToGroups(f,$event)"
-            class="pa-0"
-          >
-            <template v-slot:item="{item:item}">{{item}}</template>
-          </v-select>
-        </v-lazy>
+          <v-lazy>
+            <v-select
+              label="groups"
+              multiple
+              style="width:100%"
+              :value="assignedGroupsOnFixture(f)"
+              :items="universe.groupNames"
+              @change="assignToGroups(f,$event)"
+              class="pa-0"
+            >
+              <template v-slot:item="{item:item}">{{item}}</template>
+            </v-select>
+          </v-lazy>
         </template>
 
         <template v-slot:item.actions="{item:f}">
@@ -119,8 +118,6 @@
             </td>
           </tr>
         </template>
-
-        
       </v-data-table>
     </v-card>
 
@@ -190,12 +187,14 @@ export default class FixturePatch extends Vue {
     return cols;
   }
 
+  public selectedFixtures = new Array<FixtureBase>();
+
   get fixtureHeaders() {
     return [
       { text: "Name", value: "name" },
       { text: "Dimmer", value: "baseCirc" },
       { text: "Group", value: "groupNames", filterable: true },
-      { text: "Actions", value:"actions",sortable: false, filterable: false }
+      { text: "Actions", value: "actions", sortable: false, filterable: false }
       // ,{text:"edit",sortable:false},{text:"test",sortable:false}
     ];
   }
@@ -278,7 +277,13 @@ export default class FixturePatch extends Vue {
   }
 
   public assignToGroups(f: FixtureBase, event: string[]) {
-    this.universe.setGroupNamesForFixture(f, event);
+    const fixtureList = this.selectedFixtures.includes(f)
+      ? this.selectedFixtures
+      : [f];
+    fixtureList.map(ff => {
+      this.universe.setGroupNamesForFixture(ff, event);
+      debugger
+    });
   }
 
   public assignedGroupsOnFixture(f: FixtureBase): string[] {

@@ -88,7 +88,7 @@ export class GlobalTransportClass extends EventEmitter {
    private _isPlaying = false;
     protected constructor() {
       super();
-      this.start();
+      // this.start();
     }
 
    @RemoteFunction({skipClientApply: true})

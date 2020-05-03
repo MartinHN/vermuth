@@ -58,6 +58,7 @@ const localStateFile = path.join(process.cwd(), 'appSettings.json');
 
 const ioServer = io({
   serveClient: false,
+  transports: ['websocket']
 });
 import {bindClientSocket} from '@API/ServerSync';
 bindClientSocket(ioServer);
@@ -70,6 +71,8 @@ if (debugMode) {
   console.log(`run viewer on port ${PORT}`);
 }
 
+const expressStaticGzip = require('express-static-gzip');
+app.use(expressStaticGzip(publicDir));
 app.use(express.static(publicDir));
 
 let states: any = {};
