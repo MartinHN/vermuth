@@ -6,7 +6,7 @@
           <!-- <v-subheader>Presets</v-subheader> -->
           <v-list-item-group v-model="selectedStateIdx">
             <!-- v-model="item" color="primary"> -->
-            <v-list-item v-for="(s,i) in stateNames" :key="s.id">
+            <v-list-item v-for="(s) in stateNames" :key="s.id">
               <v-list-item-content>
                 <v-list-item-title v-html="s"></v-list-item-title>
               </v-list-item-content>
@@ -83,8 +83,6 @@ export default class StateComponent extends Vue {
     );
   }
 
-
-
   get linkableStateNames() {
     const n = this.selectedState ? this.selectedState.name : "";
     return this.stateNames.filter(e => e !== n);
@@ -101,15 +99,19 @@ export default class StateComponent extends Vue {
   }
 
   public set linkedStateNames(v: string[]) {
-    const stateNames = (this.selectedState.linkedStates || []).map(e => ({ name: e.name }));
-    this.selectedState.setLinkedStates(stateNames);
+    if (this.selectedState) {
+      const stateNames = this.selectedState.linkedStates.map(e => ({
+        name: e.name
+      }));
+      this.selectedState.setLinkedStates(stateNames);
+    }
   }
 
   get linkedStateList() {
-    return this.selectedState.linkedStates;
+    return this.selectedState ? this.selectedState.linkedStates : [];
   }
 
-  get selectedState() {
+  get selectedState(): State | undefined {
     return this.stateList.getStateNamed(this.stateList.loadedStateName);
   }
 

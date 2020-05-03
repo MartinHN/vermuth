@@ -2,7 +2,7 @@ import io from 'socket.io-client';
 import dmxClient from './DMXClient';
 import { bindClientSocket, nonEnumerable, doSharedFunction } from '@API/ServerSync';
 import rootState from '@API/RootState';
-import {getCircular} from '@API/SerializeUtils';
+import { getCircular } from '@API/SerializeUtils';
 
 
 let hasRemoteState = false;
@@ -24,18 +24,25 @@ class Server {
   public connect(store: any, serverIP: string) {
     this.__serverIP = serverIP;
     this.__store = store;
-    const socket = io(`http://${serverIP}:${IOPort}`,{transports: ['websocket']});
-  const originFunc = socket.io.engine.transport.write
-  // hack : bypass useless socketio timeOut to ensure fast WS sends < 10ms  ;)
-   const newFunc = function(packets){
-    originFunc.call(this,packets)
-    socket.io.engine.prevBufferLen = packets.length ;
-    this.emit('drain');
-    this.writable = true;
-    // this.emit('flush')
-   
-   }
-   console.log( socket.io.engine.transport.write =newFunc)
+    const socket = io(`http://${serverIP}:${IOPort}`, { transports: ['websocket'] });
+    //@ts-ignore
+    const originFunc = socket.io.engine.transport.write
+    // hack : bypass useless socketio timeOut to ensure fast WS re-sends < 10ms  instead of 200ms ;)
+    //@ts-ignore
+    const newFunc = function (packets) {
+      //@ts-ignore
+      const self = this as any
+      //@ts-ignore
+      originFunc.call(this, packets)
+      //@ts-ignore
+      socket.io.engine.prevBufferLen = packets.length;
+
+      self.emit('drain');
+      self.writable = true;
+
+    }
+    //@ts-ignore
+    console.log(socket.io.engine.transport.write = newFunc)
     if (this.__socket && (this.__socket === socket)) {
       console.error('reassigning to same socket');
       return false;
@@ -54,7 +61,7 @@ class Server {
     });
 
 
-    socket.on('DBG', (msg: any) => {console.error(msg); });
+    socket.on('DBG', (msg: any) => { console.error(msg); });
 
 
     socket.on('SET_ID', (msg: number) => {
@@ -64,26 +71,26 @@ class Server {
 
     socket.on('SET_STATE', (msg: any) => {
       doSharedFunction(() => {
-      store.dispatch('SET_SESSION_STATE', msg).then(() => {
-        hasRemoteState = true;
-      },
-      );
-    });
+        store.dispatch('SET_SESSION_STATE', msg).then(() => {
+          hasRemoteState = true;
+        },
+        );
+      });
     });
     socket.on('UPDATE_STATE', (msg: any) => {
       doSharedFunction(() => {
-      store.dispatch('UPDATE_SESSION_STATE', msg);
-    });
+        store.dispatch('UPDATE_SESSION_STATE', msg);
+      });
     });
     socket.on('disconnect', () => {
       // unsubscribe();
       store.dispatch('SET_CONNECTED_STATE', 'disconnected');
     });
 
-        // socket.once('connect', initF);
+    // socket.once('connect', initF);
     // const initF = () => {
     bindClientSocket(socket);
-      // socket.emit('GET_ID');
+    // socket.emit('GET_ID');
     dmxClient.subscribe(socket, store);
 
     // };
@@ -93,7 +100,7 @@ class Server {
   }
 
   public changeServerIP(serverIP: string) {
-    if (!this.__store ) {
+    if (!this.__store) {
       console.error('store not registered');
       return false;
     } else {
