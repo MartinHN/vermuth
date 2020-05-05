@@ -1,5 +1,6 @@
 const path = require("path")
 const CompressionPlugin = require('compression-webpack-plugin');
+const packageApp =!!process.env["PKG_APP"]
 module.exports = {
   runtimeCompiler: true,
   productionSourceMap: false,
@@ -16,8 +17,7 @@ module.exports = {
     config.resolve
     .plugin("tsconfig-paths")
     .use(require("tsconfig-paths-webpack-plugin"))
-
-    config.plugin('CompressionPlugin').use(CompressionPlugin);
+    config.plugin('CompressionPlugin').use(CompressionPlugin,[{deleteOriginalAssets:!!packageApp}]);
 
     // // disable splitting of type checking in type script to anable preprocessing files
     // const allM = config.module.rules.store

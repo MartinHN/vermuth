@@ -1,4 +1,7 @@
-// simplify formatting of debug module to be readable for both chrome and terminals
+// simplify formatting of debug module to be readable and colored in both chrome debugger and terminals when run in non browser, e.g node process debugged with chrome dev tools
+// but use default mode if run in browser
+
+
 const debugM = require('debug')
 
 // const debugMode =  process.env.NODE_ENV !== 'production';
@@ -20,10 +23,14 @@ function formatArgs(this: any, args: any[]) {
     args[0] = prefix + args[0].trim();
 
 }
+
 //@ts-ignore
 if( typeof window === "undefined"){
+
 debugM.formatArgs = formatArgs
+// use console log to be visible in chrome dev tools (not only stdout)
 debugM.log = console.log.bind(console)
+}
 
 const testF = () => {
     const test = debugM("test")
@@ -34,6 +41,6 @@ const testF = () => {
     }
 }
 
-testF()
-}
+//testF()
+
 export default debugM

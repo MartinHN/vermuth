@@ -3,7 +3,7 @@ import { Module, VuexModule, Mutation, Action, MutationAction } from 'vuex-modul
 import Server from '../../api/Server';
 import DMXClient from '../../api/DMXClient';
 import { fetchRemote } from '@API/ServerSync';
-// const _ = require('lodash')
+
 import { Settable } from '../util';
 
 

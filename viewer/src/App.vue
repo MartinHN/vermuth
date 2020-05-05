@@ -31,6 +31,10 @@
       </v-navigation-drawer>
     </div>
     <div id="navContent">
+    <Modal v-if="loadingSession">
+        <v-progress-circular
+        indeterminate />
+    </Modal>
     <keep-alive> <!-- don't care about caching page mem, it's fast-->
       <router-view />
     </keep-alive>
@@ -47,17 +51,22 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation, namespace } from "vuex-class";
+import rootState from "@API/RootState";
 import Server from "./api/Server";
 import dmxClient from './api/DMXClient';
 import ServerState from "./components/ServerState.vue";
 
+
+
+import Modal from "@/components/Utils/Modal.vue";
 import Store from "./store";
+
 
 let originalFaviconNode: any;
 let redFaviconNode: any;
 
 @Component({
-  components: { ServerState }
+  components: { ServerState ,Modal}
 })
 export default class App extends Vue {
   get routePathList() {
@@ -69,6 +78,7 @@ export default class App extends Vue {
   }
 
   // @Mutation('addFixture') public addFixture!: FixtureMethods['addFixture'];
+  public metaFromRoot:any=rootState.meta // assign value to local vue reactive data
   @State("savedStatus") public savedStatus!: string;
 
   @Getter("isConnected") public isConnected!: string;
@@ -79,6 +89,8 @@ export default class App extends Vue {
 
   public showDrawer = false;
   public mounted() {
+    
+    rootState.meta = this.metaFromRoot // inject reactiveness in rootState
     Server.connect(this.$store, window.location.hostname);
     this.removeOldIco();
     originalFaviconNode = this.loadIconNode("favicon.ico");
@@ -106,6 +118,12 @@ export default class App extends Vue {
   }
   public get dmxIsConnected(){
     return dmxClient.__connected
+  }
+
+
+  public get loadingSession(){
+
+    return !!this.metaFromRoot.loadingJSONName
   }
   public loadLocally(files: FileList) {
     if (files && files.length === 1) {

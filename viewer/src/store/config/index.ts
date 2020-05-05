@@ -1,7 +1,7 @@
 import { Module, VuexModule, Mutation, Action, MutationAction } from 'vuex-module-decorators';
 
 
-// const _ = require('lodash')
+
 import { Settable } from '../util';
 
 @Module({namespaced: true})

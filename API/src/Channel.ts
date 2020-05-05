@@ -106,14 +106,14 @@ export class ChannelBase implements ChannelI {
   public externalController: any = null;
 
   @nonEnumerable()
-  private __parentFixture: any;
+  private __parentFixture: FixtureBase|null = null;
 
   private __value: ChannelValueType = 0;
 
   private __isDisposed = false;
 
   @RemoteValue()
-  public name:string
+  public name: string
   constructor( _name: string, __value: ChannelValueType  , private _circ: number= 0) {
     this.name = _name
     if (!__value) {__value = 0; } // ensure numeric
@@ -194,14 +194,22 @@ export class ChannelBase implements ChannelI {
   }
 
   public isSameAs(c: ChannelBase) {
-    return c === this || ( (this.name === c.name) && (this.__parentFixture.name === c.__parentFixture.name));
+    if(c===this){
+      return true;
+    }
+    const sameName = (this.name === c.name)
+    if (this.__parentFixture && c.__parentFixture ){
+      return sameName && (this.__parentFixture.name === c.__parentFixture.name)
+    }
+    debugger;
+    return sameName
   }
   @RemoteFunction()
   public setCirc(n: number) {
     UniverseListener.notify(this.trueCirc, 0);
     this._circ = n;
     UniverseListener.notify(this.trueCirc, this.__value);
-    if (this.__parentFixture && this.__parentFixture.universe ) {this.__parentFixture.universe.checkDuplicatedCirc(); }
+    if (this.__parentFixture && this.__parentFixture.universe ) {this.__parentFixture.universe.checkDuplicatedCircDebounced(); }
   }
 
   public setName( n: string ) {
@@ -218,7 +226,7 @@ export class ChannelBase implements ChannelI {
 
   public setValueInternal(v: ChannelValueType) {return true; }
 
-  public setParentFixture(f: FixtureBaseI|null) {
+  public setParentFixture(f: FixtureBase|null) {
     if (f && this.__parentFixture) {
       if (f.name !== this.__parentFixture.name) {
        // debugger;
@@ -226,7 +234,7 @@ export class ChannelBase implements ChannelI {
    }
     this.__parentFixture = f;
     this.checkNameDuplicate();
-    if (this.__parentFixture && this.__parentFixture.universe) {this.__parentFixture.universe.checkDuplicatedCirc(); }
+    if (this.__parentFixture && this.__parentFixture.universe) {this.__parentFixture.universe.checkDuplicatedCircDebounced(); }
  }
  public getState() {
   return {trueCirc: this.trueCirc, value: this.floatValue, name: this.name};
@@ -253,14 +261,14 @@ export class ChannelGroup extends ChannelBase {
   // updateChannelsInternal(){
   //   this.channels = this.parentFixtures.map(f=>{return f.getChannelForName(name)})
   // }
-  static isChannelGroup(c:ChannelBase):c is ChannelGroup{
+  static isChannelGroup(c: ChannelBase): c is ChannelGroup{
     return (c as ChannelGroup).isGroup
   }
   get channels(): ChannelBase[] {
     return this.parentFixtures.map((f) => f.getChannelForName(this.name)).filter((c) => c !== undefined) as ChannelBase[];
   }
   get universe() {
-    return this.parentFixtures.length ? this.parentFixture[0].universe : null;
+    return this.parentFixtures.length ? this.parentFixtures[0].universe : null;
   }
 
   get parentFixtures() {

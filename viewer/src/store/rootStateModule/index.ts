@@ -13,12 +13,15 @@ export default class RootStateModule extends VuexModule {
   public hasBeenConfigured = false;
 
   public FixtureFactory = rootState.fixtureFactory;
+  public loadingJSONName = ""
+
   @Action
   public configureFromObj(js: any) {
     this.context.commit('configureFromObjMut', js);
   }
   @Mutation
   public configureFromObjMut(js: any) {
+    
     rootState.configureFromObj(js);
     // getCircular(this.root)
     this.hasBeenConfigured = true;

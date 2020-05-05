@@ -468,6 +468,7 @@ export class StateList {
   }
   public states: { [key: string]: State } = {};
   public presetableNames: string[] = [];
+  @RemoteValue()
   public currentState = new State(this, 'current', [], [], true);
   public loadedStateName = '';
   @nonEnumerable()

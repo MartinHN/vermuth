@@ -35,7 +35,7 @@ import UniversesMethods from '@/store/universes';
 import {rgbToHex, hexToRgb} from '@API/ColorUtils';
 
 
-import _ from 'lodash';
+import {isEqual,debounce} from 'lodash';
 
 const universesModule = namespace('universes');
 
@@ -126,7 +126,7 @@ export default class FixtureGroupWidget extends Vue {
   public positionPresetable = false;
   private showPosModal = false;
 
-  private debouncedColorSetter = _.debounce((c: string) => {
+  private debouncedColorSetter = debounce((c: string) => {
     const color: any = hexToRgb(c, true);
     this.setColor( color, true);
 

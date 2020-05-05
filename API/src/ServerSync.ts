@@ -14,15 +14,13 @@ let AccessibleSettedByServer: any = null;
 let AccessibleNotifierId: string | null = null;
 let lockCallbacks = 0;
 let lockSkipClient = 0;
-import * as _ from 'lodash';
+import { isEqual, debounce } from 'lodash';
 import { Socket } from 'socket.io';
 import 'reflect-metadata';
 
 import RootStateI from './RootState';
 
 import { EventEmitter } from 'events';
-import { access } from 'fs';
-import { Z_FULL_FLUSH } from 'zlib';
 
 function assert(v: boolean, ...msg: any[]) {
   if (!v) {
@@ -127,7 +125,7 @@ export function bindClientSocket(s: any) {
 
 // let msgToSocketQueue: { [id: string]: any[] } = {};
 
-// const updateMsgToSocketQueue = _.debounce(() => {
+// const updateMsgToSocketQueue = debounce(() => {
 
 //   for (const addr of Object.keys(msgToSocketQueue)) {
 //     const q = msgToSocketQueue[addr];
@@ -139,7 +137,7 @@ export function bindClientSocket(s: any) {
 // const sendToSocketDebounced = (addr: string, args: any) => {
 //   const params = { msg: args, sid: AccessibleNotifierId };
 //   const existing = msgToSocketQueue[addr]
-//   if (existing && _.isEqual(params, existing)) {
+//   if (existing && isEqual(params, existing)) {
 //     msgToSocketQueue[addr].push(params)
 //   }
 //   else {
@@ -157,7 +155,7 @@ class MessageQueue<T>{
     time: number,
     maxWait?: number) {
 
-    this.notifyFlush = _.debounce(this.flush.bind(this)
+    this.notifyFlush = debounce(this.flush.bind(this)
       , time//50
       , { trailing: true, maxWait: maxWait === undefined ? 50 : maxWait })
 
@@ -173,17 +171,17 @@ class MessageQueue<T>{
       this.queue[addr].push(params)
     }
     else {
-      if(hadMessages){
+      if (hadMessages) {
         if (!addr.endsWith('_time')) {
           debugMsg(`overriding msg ${addr} from ${this.queue[addr][0].msg} to ${params.msg}`)
         }
       }
       this.queue[addr] = [params]
-      
+
     }
-    
+
     // else {
-    //   const existingIdx = this.queue[addr].findIndex(m => _.isEqual(m.msg, params.msg))
+    //   const existingIdx = this.queue[addr].findIndex(m => isEqual(m.msg, params.msg))
     //   if (existingIdx < 0) {
     //     this.queue[addr].push(params)
     //   }
@@ -275,7 +273,7 @@ const getFunctionParams = (func: (...args: any[]) => any) => {
 
 
 
-const rebuildChildAccessibles = (fromParent?: any) => {
+const rebuildChildAccessibles = (fromParent?: any, buildTypeTree = true) => {
   const valSymbol = Symbol('values');
   const funSymbol = Symbol('functions');
 
@@ -298,29 +296,36 @@ const rebuildChildAccessibles = (fromParent?: any) => {
       }
     }
     // debugger
-    curNode.__ob = o;
+    if (buildTypeTree) {curNode.__ob = o;}
     if (o && o.__registerRemoteValuesAddr) {
-      curNode[valSymbol] = [];
+      if (buildTypeTree) {
+        curNode[valSymbol] = [];
+        for (const l of Object.keys(o.__registerRemoteValuesAddr)) {
+          curNode[valSymbol].push({ v: l, type: o.__accessibleTypes[l].name });
+        }
+      }
       for (const l of Object.keys(o.__registerRemoteValuesAddr)) {
-        curNode[valSymbol].push({ v: l, type: o.__accessibleTypes[l].name });
         o.__registerRemoteValuesAddr[l]();
       }
     }
     if (o && o.__registerFunctionAddr) {
-      curNode[funSymbol] = [];
-      for (const l of Object.keys(o.__registerFunctionAddr)) {
-        const f = o.__remoteFunctions[l];
-        curNode[funSymbol].push({ v: l, f, params: getFunctionParams(f), type: o.__accessibleTypes[l].name });
+      if (buildTypeTree) {
+        curNode[funSymbol] = [];
+        for (const [l, f] of Object.entries(o.__registerFunctionAddr)) {
+          curNode[funSymbol].push({ v: l, f, params: getFunctionParams(f as (...args: any[]) => any), type: o.__accessibleTypes[l].name });
+        }
+      }
+      for (const [l, f] of Object.entries(o.__registerFunctionAddr)) {
         o.__registerFunctionAddr[l](o);
       }
     }
 
   };
   recurseAccessible(rS);
-  // debugMsg('listen to messages' , accessibleTree); // Array.from(allListeners.keys()));
+  debugStruct('updated addr',rS.__isRoot?"root": rS?.__accessibleName  , accessibleTree); // Array.from(allListeners.keys()));
 };
 
-const rebuildChildAccessiblesDebounced = _.debounce(rebuildChildAccessibles,
+const rebuildChildAccessiblesDebounced = debounce(rebuildChildAccessibles,
   200,
   { trailing: true },
 );
@@ -407,6 +412,7 @@ function buildAddressFromObj(o: any, errorIfEmpty = true) {
       addr.push('' + idx);
       found = true;
     } else if (insp.__accessibleParent) {
+      console.warn('manual looking in parent')
       const pair = Object.entries(insp.__accessibleParent).find(([k, v]) => v === insp);
       if (pair) {
         addr.push(pair[0]);
@@ -576,7 +582,7 @@ export function RemoteValue(cb?: (parent: any, value: any) => void) {
         Reflect.defineProperty(parent, k, {
           get: () => storedValue,
           set: (v: any) => {
-            const hasChanged = !_.isEqual(v, storedValue); // for array
+            const hasChanged = !isEqual(v, storedValue); // for array
 
             if (hasChanged) {
               storedValue = v;
@@ -810,12 +816,16 @@ export function nonEnumerable(opts?: { default?: any }) {
 // }
 
 
-let rootAccessible: any;
+let rootAccessible: any = require('./RootState'); // importing here means we need to take care at importing it first in other modules
 function getRoot(hint?: any) {
-  // circlar Refs forces dynamic import
-  if (rootAccessible === undefined) {
-    import('./RootState').then((e: any) => { rootAccessible = e.default; debugStruct('loadedRoot', e); });
-    rootAccessible = null;
+  // circlar Refs forces dynamic import, (legacy)
+  // if (rootAccessible === undefined) {
+  //   import('./RootState').then((e: any) => { rootAccessible = e.default; debugStruct('loadedRoot', e); });
+
+  //   rootAccessible = null;
+  // } else
+  if (rootAccessible && rootAccessible.__esModule){ // once require loop ended rootAccessible is the default export
+    rootAccessible = rootAccessible.default
   }
 
   return rootAccessible;
@@ -871,6 +881,10 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
   if (parent.__accessibleMembers && parent.__accessibleMembers[key]) {
     //debugger;
     console.warn('re register child accessible', key);
+    if (parent.__accessibleMembers[key].__accessibleName) { // remove old value
+      parent.__accessibleMembers[key].__accessibleName = undefined
+    }
+    delete parent.__accessibleMembers[key]
     // return; // avoid reregistering
   }
 
@@ -914,16 +928,22 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
             if (obj && obj === value.__accessibleParent) {
               if ((obj as any).__accessibleMembers &&
                 Object.keys((obj as any).__accessibleMembers).includes(value.__accessibleName)) {
-                // rename
-                const siblings = (obj as any).__accessibleMembers
-                if (siblings && siblings[prop] && siblings[prop].__accessibleName) {
-                  siblings[prop].__accessibleName = undefined
-                  delete siblings[prop]
+                if ((obj as any).__accessibleMembers[prop] === value) {
+                  console.warn('double array assign');
+                  debugger;
                 }
-                value.__accessibleName = prop
-                needRebuild = true
-                treeEvents.emit('move', obj, value.__accessibleName, prop);
-                // delete obj[value.__accessibleName]
+                else {
+                  // rename
+                  const siblings = (obj as any).__accessibleMembers
+                  if (siblings && siblings[prop] && siblings[prop].__accessibleName) {
+                    siblings[prop].__accessibleName = undefined
+                    delete siblings[prop]
+                  }
+                  value.__accessibleName = prop
+                  needRebuild = true
+                  treeEvents.emit('move', obj, value.__accessibleName, prop);
+                  // delete obj[value.__accessibleName]
+                }
 
               } else {
                 console.error('incomplete parent')
@@ -960,6 +980,7 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
         if (!blockRecursion && typeof (newAcc) === 'object' && !isHiddenMember) {
           if (typeof (prop) === 'string') {
             if (isNotARemoteValue
+              
               // && !wasChildAccessible
               //   (obj.__accessibleMembers[prop] !== newAcc || obj.__accessibleMembers[prop].__accessibleName === undefined) )
             ) {
@@ -1095,7 +1116,7 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
   defineObjTable(parent, '__accessibleMembers')[key] = childAcc;
   // parent.__accessibleMembers[k] = parent[k] || parent.__accessibleMembers[k];
   if (immediate) {
-    rebuildChildAccessibles();
+    rebuildChildAccessibles(childAcc);
   } else {
     rebuildChildAccessiblesDebounced(); // debounced
   }
@@ -1156,7 +1177,7 @@ export function AccessibleClass() {
 
       }
       __dispose() {
-        console.log("dispose", this)
+        debugStruct("dispose", this)
         if ((Bconstructor as any).__dispose) { (Bconstructor as any).__dispose.call(this); }
         if ((this as any).__isConstructed) {
           Object.defineProperty(this, '__isConstructed', {

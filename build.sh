@@ -9,7 +9,7 @@ GEN_ONCE=1 node gen.js
 
 cd ../viewer
 
-npm run build
+PKG_APP=1 npm run build
 
 
 cd ../server

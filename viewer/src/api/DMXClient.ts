@@ -4,7 +4,7 @@
 import { DMXControllerI } from '@API/DMXControllerI';
 import {AccessibleClass, nonEnumerable, RemoteValue, RemoteFunction, fetchRemote} from '@API/ServerSync';
 import { getCircular} from '@API/SerializeUtils';
-import _ from 'lodash';
+import {isEqual,debounce} from 'lodash';
 import { addProp } from '@API/MemoryUtils';
 // @AccessibleClass()
 // class FakeDMXClient implements DMXControllerI {
@@ -49,7 +49,7 @@ class DMXClient implements DMXControllerI {
   private boundCB: any;
 
 
-  private debouncedSaving = _.debounce(() => {
+  private debouncedSaving = debounce(() => {
       this.__store.commit('states/saveCurrentState', {name: 'current' });
     },
     1000);

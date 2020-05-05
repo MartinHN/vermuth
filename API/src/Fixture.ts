@@ -375,7 +375,7 @@ export class FixtureBase implements FixtureBaseI {
 
     if (this.universe && changedDiff !== 0) {
 
-      this.universe.checkDuplicatedCirc();
+      this.universe.checkDuplicatedCircDebounced();
       this.universe.updateChannelsValues();
     }
   }

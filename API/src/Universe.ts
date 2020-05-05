@@ -3,6 +3,7 @@ import { ChannelBase, UniverseListener } from './Channel';
 import { getNextUniqueName , compareValues} from './Utils';
 import { SetAccessible, setChildAccessible, AccessibleClass , RemoteFunction, nonEnumerable} from './ServerSync';
 import {addProp, deleteProp} from './MemoryUtils';
+import {debounce} from 'lodash'
 
 export interface UniverseI {
 
@@ -29,6 +30,7 @@ export class Universe implements UniverseI {
   private _master = 1.0;
   constructor() {
     this.testedChannel.setValue( 1.0, true);
+    this.checkDuplicatedCircDebounced = debounce(this.checkDuplicatedCirc.bind(this),100,{trailing:true})
     // this.testedChannel.setParentFixture({baseCirc:0})
   }
 
@@ -127,8 +129,9 @@ export class Universe implements UniverseI {
 
 
   }
+  public checkDuplicatedCircDebounced:()=>void;
 
-  public checkDuplicatedCirc() {
+  private checkDuplicatedCirc() {
 
     const allChs = this.allChannels;
     for ( const c of allChs) {

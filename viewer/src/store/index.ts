@@ -10,7 +10,7 @@ import DMXConfig from './DMXConfig';
 import { doSharedFunction } from '@API/ServerSync';
 import { buildEscapedJSON, buildEscapedObject } from '@API/SerializeUtils';
 import { downloadObjectAsJSON } from './util';
-import _ from 'lodash';
+import {isEqual,debounce} from 'lodash';
 // import {diff} from 'json-diff'
 // import createLogger from '../../../src/plugins/logger'
 import {FullVueState, RootVueState} from './types';
@@ -43,7 +43,7 @@ const localFS = {
     });
   },
 
-  save: _.debounce((content, key: string, callback: () => void) => {
+  save: debounce((content, key: string, callback: () => void) => {
 
     window.localStorage.setItem(key, buildEscapedJSON(content));
     callback();
@@ -66,7 +66,7 @@ const serverFS = () => {
 
       });
     },
-    save: _.debounce((content, key: string, callback?: () => void ) => {
+    save: debounce((content, key: string, callback?: () => void ) => {
       if (socket) {
         socket.emit('SET_STATE', key, buildEscapedObject(content), () => {
           if (callback) {callback(); }
@@ -141,7 +141,7 @@ const store: StoreOptions<RootVueState> = {
     connectedId: -1,
     loadingState: false,
     syncingFromServer: false,
-
+    
 
   },
   mutations: {
@@ -253,7 +253,7 @@ const store: StoreOptions<RootVueState> = {
 
 const myVueStore = new Vuex.Store<RootVueState>(store);
 
-const autoSaveDebounced = _.debounce(() => {
+const autoSaveDebounced = debounce(() => {
   console.log('autosaving from tree');
   dispatchSave(myVueStore);
 

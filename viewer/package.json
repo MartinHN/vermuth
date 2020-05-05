@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --port 8081",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --modern",
     "lint": "vue-cli-service lint",
     "deploy": "npm run build && rsync -r -e ssh -avz --delete-after  ../server/public pi@lampignon1.local:vermuth/server/",
     "debug": "vue-cli-service build --mode=debug --watch",
