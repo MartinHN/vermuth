@@ -4,7 +4,7 @@ import { FixtureFactory } from './FixtureFactory';
 import { Sequence, sequencePlayer, SequencePlayerClass, SequenceList } from './Sequence';
 import { StateList } from './State';
 import { DMXControllerI } from './DMXControllerI';
-import { bindClientSocket, RemoteFunction, SetAccessible, setChildAccessible, AccessibleClass, resolveAccessible, RemoteValue , treeEvents} from './ServerSync';
+import { bindClientSocket, RemoteFunction, SetAccessible, setChildAccessible, AccessibleClass, rebuildChildAccessibles,resolveAccessible, RemoteValue , treeEvents} from './ServerSync';
 import { buildEscapedJSON, buildEscapedObject } from './SerializeUtils';
 import {GlobalTransport} from './Time';
 import {CurvePlayer} from './CurvePlayer';
@@ -72,6 +72,10 @@ export class RootStateType {
 
   get treeEvents() {
     return treeEvents;
+  }
+
+  public logTree(){
+    console.log("rootTree",rebuildChildAccessibles(this,true,false))
   }
   public configureFromObj(ob: any) {
     const validObj = ob !== undefined;

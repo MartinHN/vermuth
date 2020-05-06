@@ -243,6 +243,7 @@ export class FixtureBase implements FixtureBaseI {
     }
     return cch;
   }
+  
   public getUniqueChannelsOfRole(n: string): { [id: string]: ChannelBase } {
     // @ts-ignore
     // if(this.isGroup){debugger}

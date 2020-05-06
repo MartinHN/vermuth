@@ -8,6 +8,7 @@
   <Button text="panic (all to 0)" color="red"  @click="panic"/>
   <Button text="try other ip than default" @click="alertTryIP"/>
   <Button text="go to Backups" @click="goToBackups"/>
+  <Button text="log Accessible Tree" @click="logTree"/>
   </div>
 </template>
 
@@ -20,6 +21,8 @@ import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 import Toggle from '@/components/Inputs/Toggle.vue';
 import Button from '@/components/Inputs/Button.vue';
 import Slider from '@/components/Inputs/Slider.vue';
+import rootState from "@API/RootState"
+
 
 const configModule = namespace('config');
 import configFunctions from '../store/config';
@@ -52,6 +55,10 @@ export default class Config extends Vue {
 
     }
 
+  }
+
+  public logTree(){
+    rootState.logTree();
   }
 
   public clearSession() {

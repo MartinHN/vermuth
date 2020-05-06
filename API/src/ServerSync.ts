@@ -4,7 +4,7 @@ const dbgTree = dbg('TREE')
 const dbgMsg = dbg('MSG')
 const dbgStruct = dbg('STRUCT')
 const logServerMessages = process.env.LOG_MSG;
-const logTreeMessages = process.env.LOG_TREE;
+
 let clientSocket: any = null;
 // let ioServer: any = null;
 const listenedNodes: { [id: string]: any } = {};
@@ -41,7 +41,7 @@ class TreeEventClass extends EventEmitter {
 }
 export const treeEvents = new TreeEventClass();
 
-if (logTreeMessages) {
+if (dbgTree.enabled) {
 
   treeEvents.on('v', (parent: any, key: string) => {
     dbgTree('>>> v', key)
@@ -274,7 +274,7 @@ const getFunctionParams = (func: (...args: any[]) => any) => {
 
 
 
-const rebuildChildAccessibles = (fromParent?: any, buildTypeTree = true) => {
+export const rebuildChildAccessibles = (fromParent?: any, buildTypeTree = true,rebuild = true) => {
   const valSymbol = Symbol('values');
   const funSymbol = Symbol('functions');
 
@@ -305,9 +305,11 @@ const rebuildChildAccessibles = (fromParent?: any, buildTypeTree = true) => {
           curNode[valSymbol].push({ v: l, type: o.__accessibleTypes[l].name });
         }
       }
+      if(rebuild){
       for (const l of Object.keys(o.__registerRemoteValuesAddr)) {
         o.__registerRemoteValuesAddr[l]();
       }
+    }
     }
     if (o && o.__registerFunctionAddr) {
       if (buildTypeTree) {
@@ -316,14 +318,19 @@ const rebuildChildAccessibles = (fromParent?: any, buildTypeTree = true) => {
           curNode[funSymbol].push({ v: l, f, params: getFunctionParams(f as (...args: any[]) => any), type: o.__accessibleTypes[l].name });
         }
       }
+      if(rebuild){
       for (const [l, f] of Object.entries(o.__registerFunctionAddr)) {
         o.__registerFunctionAddr[l](o);
       }
+    }
     }
 
   };
   recurseAccessible(rS);
   dbgStruct('updated addr', rS.__isRoot ? "root" : rS?.__accessibleName, accessibleTree); // Array.from(allListeners.keys()));
+  if(buildTypeTree){
+    return accessibleTree
+  }
 };
 
 const rebuildChildAccessiblesDebounced = debounce(rebuildChildAccessibles,
@@ -819,12 +826,12 @@ export function ClientOnly() {
         let v = defaultValue;
         Reflect.defineProperty(ob, key, {
           get: () => {
-            dbg.warn('getting server instance of client only :', key);
+            dbg.warn('getting server instance of client only :', key,v);
             return v;
           }
           , set: (nv) => {
             dbg.warn('setting server instance of client only :', key)
-            v = nv;
+            // v = nv;
           },
           enumerable: false,
           configurable: false,
@@ -944,11 +951,16 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
     defineObjTable(childAcc, '__accessibleMembers'); //
 
     const types = defineObjTable(parent, '__accessibleTypes');
-    if (types[key] && types[key] !== Reflect.getPrototypeOf(childAcc).constructor) {
+
+    let curType = Reflect.getPrototypeOf(childAcc)
+    if(curType?.constructor?.name==="AClass"){ // ignore Accessible Class
+      curType = Reflect.getPrototypeOf(curType)
+    }
+    if (types[key] && types[key] !== curType.constructor) {
       console.error('changing type of accessible');
       debugger;
     }
-    types[key] = Reflect.getPrototypeOf(childAcc).constructor;
+    types[key] = curType.constructor;
 
     const handler = {
       set(obj: any, prop: symbol | string, value: any, thisProxy: any) {
