@@ -3,10 +3,10 @@ const debugMode =  process.env.NODE_ENV !== 'production';
 if (!debugMode) {require('module-alias/register'); } // form module resolution
 
 
-import debugM from  '@API/dbg';
-const debugFile = debugM('FILE')
-const debugMsg = debugM('MSG')
-const debugState = debugM('STATE')
+import dbg from  '@API/dbg';
+const debugFile = dbg('FILE')
+const debugMsg = dbg('MSG')
+const debugState = dbg('STATE')
 
 const PORT = process.env.PORT?parseInt(process.env.PORT) : 3000;
 

@@ -1,7 +1,7 @@
 <template>
   <div class="home">    
     <StateComponent />
-    <ChannelRack v-if=allFixture :displayableFixtureList=allFixture />
+    <ChannelRack v-if="allFixture" :displayableFixtureList="allFixture" />
 
   </div>
 </template>

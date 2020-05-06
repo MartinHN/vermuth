@@ -36,7 +36,7 @@
         v-model="searchFixtureText"
         ref="searchBar"
         append-icon="search"
-        label="Search"
+        label="Search (Ctrl+f)"
         single-line
         hide-details
       ></v-text-field>
@@ -52,7 +52,7 @@
         :show-select="true"
         :mobile-breakpoint="0"
         v-model="selectedFixtures"
-        dark
+        
         dense
       >
         <template v-slot:item.name="{item:f}">
@@ -97,7 +97,7 @@
               <Button
                 class="removeFixture"
                 color="red"
-                @click="askToRmFixture(f)"
+                @click="askToRmFixtures(f)"
                 tabindex="-1"
                 text="-"
               />
@@ -142,6 +142,7 @@ import GroupExplorer from "@/components/Editors/GroupExplorer.vue";
 import { DirectFixture, FixtureBase } from "@API/Fixture";
 import { FixtureFactory } from "@API/FixtureFactory";
 import UniversesMethods from "../store/universes";
+import {Universe} from '@API/Universe'
 
 const universesModule = namespace("universes");
 
@@ -160,9 +161,12 @@ export default class FixturePatch extends Vue {
   public get fixtureErrorMsgs() {
     // const dum = this.usedChannels
     const errs: { [id: string]: string } = {};
-    for (const f of Object.values(this.universe.fixtures)) {
+    const fl = this.universe.fixtureList
+     for (let i= 0 ; i < fl.length ; i++) {
+     const f = fl[i]
       const overlap = [];
-      for (const ff of Object.values(this.universe.fixtures)) {
+      for (let j = i+1 ; j < fl.length ; j++) {
+        const ff = fl[j]
         if (f !== ff) {
           const o =
             (f.baseCirc >= ff.baseCirc && f.baseCirc <= ff.endCirc) ||
@@ -226,7 +230,7 @@ export default class FixturePatch extends Vue {
   public testDimmerNum!: UniversesMethods["testDimmerNum"];
 
   @universesModule.State("universe")
-  private universe!: UniversesMethods["universe"];
+  private universe!: Universe;
 
   @universesModule.Getter("usedChannels")
   private usedChannels!: UniversesMethods["usedChannels"];
@@ -237,6 +241,13 @@ export default class FixturePatch extends Vue {
   private showGroupExplorer = false;
   public mounted() {
     window.addEventListener("keydown", this.processKey);
+  }
+  public activated() {
+    window.addEventListener("keydown", this.processKey);
+  }
+  
+  public deactivated() {
+    window.removeEventListener("keydown", this.processKey);
   }
   public destroyed() {
     window.removeEventListener("keydown", this.processKey);
@@ -303,26 +314,26 @@ export default class FixturePatch extends Vue {
     }
   }
 
-  private askToRmFixture(f: FixtureBase) {
-    if (window.confirm(`areYouSure to DELETE fixture ${f.name}`)) {
-      this.removeFixture({ fixture: f });
+  private askToRmFixtures(fBase: FixtureBase) {
+        const fl = this.selectedFixtures.includes(fBase)
+      ? this.selectedFixtures
+      : [fBase];
+    if (window.confirm(`areYouSure to DELETE fixture ${fl.map(f=>f?.name)}`)) {
+      fl.map(f=>this.removeFixture({ fixture: f }));
     }
   }
 
   private processKey(event: KeyboardEvent) {
     if (event.ctrlKey || event.metaKey) {
-      switch (String.fromCharCode(event.which).toLowerCase()) {
+      const key = event.key.toLowerCase();
+
+      switch (key) {
         case "f":
           event.preventDefault();
           (this.$refs.searchBar as HTMLElement).focus();
 
           break;
-        case "o":
-          event.preventDefault();
-          (this.$refs.fakeFileInput as HTMLElement).click();
-          // event.preventDefault();
-          // alert('ctrl-f');
-          break;
+
         case "g":
           // event.preventDefault();
           // alert('ctrl-g');

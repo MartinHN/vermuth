@@ -2,89 +2,88 @@
   <div class="main">
     <div class="Sequencer">
       <v-container fluid>
-        <v-row no-gutters >
-          <v-col cols=3>
-            <div> {{Number.parseFloat(globalTransport.beat).toFixed(2)}}</div>
+        <v-row no-gutters>
+          <v-col cols="3">
+            <div>{{Number.parseFloat(globalTransport.beat).toFixed(2)}}</div>
           </v-col>
-          <v-col cols=3>
-            <Toggle v-model=togglePlay style="height:40px" :text=playState> </Toggle>
+          <v-col cols="3">
+            <Toggle v-model="togglePlay" style="height:40px" :text="playState"></Toggle>
           </v-col>
           <v-col>
-            <Numbox text="idx" :value=playedIdx @change="playedIdx=$event" ></Numbox>
+            <Numbox text="idx" :value="playedIdx" @change="playedIdx=$event"></Numbox>
             <div style="display:flex">
-            <Button @click="prev" text="prev" />
-            <Button @click="next" text="next" />
-          </div>
+              <Button @click="prev" text="prev" />
+              <Button @click="next" text="next" />
+            </div>
           </v-col>
         </v-row>
-        <v-row no-gutters >
-          <v-col cols=6>
-            <Toggle v-model=editOrder text="Edit"/>
+        <v-row no-gutters>
+          <v-col cols="6">
+            <Toggle v-model="editOrder" text="Edit" />
           </v-col>
-          <v-col cols=3>
-            
-    <v-menu offset-y class="text-center">
-      <template v-slot:activator="{ on }">
-        <v-btn
-          color="primary"
-          dark
-          v-on="on"
-        >
-          Add Sequence
-        </v-btn>
-      </template>
-      <v-list>
-        <v-list-item
-          v-for="(item, index) in stateList.stateNames"
-          :key="index"
-          @click="addSequence(item)"
-        >
-          <v-list-item-title>{{ item}}</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
-  
+          <v-col cols="3">
+            <v-menu offset-y class="text-center">
+              <template v-slot:activator="{ on }">
+                <v-btn color="primary" dark v-on="on">Add Sequence</v-btn>
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for="(item, index) in stateList.stateNames"
+                  :key="index"
+                  @click="addSequence(item)"
+                >
+                  <v-list-item-title>{{ item}}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </v-col>
-          
         </v-row>
         <div :style="{width:'100%', height:'5px'}">
-            <div :style='{width:pctDone,height:"100%",background:"red"}'></div>
+          <div :style="{width:pctDone,height:'100%',background:'red'}"></div>
         </div>
       </v-container>
-      <SequenceComponent v-for="(s,i) in seqList" :editMode=editOrder :key='s.id' :seqNumber=i :sequence="s" :style="{background:getHighlightedColor(i)}" @click="seqClicked(i)" :selected="selectedIdx===i"/>
-
+      <SequenceComponent
+        v-for="(s,i) in seqList"
+        :editMode="editOrder"
+        :key="s.id"
+        :seqNumber="i"
+        :sequence="s"
+        :style="{background:getHighlightedColor(i)}"
+        @click="seqClicked(i)"
+        :selected="selectedIdx===i"
+      />
     </div>
   </div>
-
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
-import Button from '@/components/Inputs/Button.vue';
-import Toggle from '@/components/Inputs/Toggle.vue';
-import Numbox from '@/components/Inputs/Numbox.vue';
-import SequenceComponent from './SequenceComponent.vue';
-import { Sequence } from '@API/Sequence';
-import SequenceMethods from '../store/sequence';
-import StatesMethods from '../store/states';
-import rootState from '@API/RootState';
-const sequenceModule = namespace('sequence');
-const statesModule = namespace('states');
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { State, Action, Getter, Mutation, namespace } from "vuex-class";
+import Button from "@/components/Inputs/Button.vue";
+import Toggle from "@/components/Inputs/Toggle.vue";
+import Numbox from "@/components/Inputs/Numbox.vue";
+import SequenceComponent from "./SequenceComponent.vue";
+import { Sequence } from "@API/Sequence";
+import SequenceMethods from "../store/sequence";
+import StatesMethods from "../store/states";
+import rootState from "@API/RootState";
+const sequenceModule = namespace("sequence");
+const statesModule = namespace("states");
 
 @Component({
-  components: {Button, Numbox, SequenceComponent, Toggle},
+  components: { Button, Numbox, SequenceComponent, Toggle }
 })
 export default class Sequencer extends Vue {
-
   get isPlayingSeq() {
     return this.seqPlayer.isPlaying;
   }
   get pctDone() {
-    return this.seqPlayer.pctDone < 1 ? this.seqPlayer.pctDone * 100 + '%' : '0%';
+    return this.seqPlayer.pctDone < 1
+      ? this.seqPlayer.pctDone * 100 + "%"
+      : "0%";
   }
   get playState() {
-    return this.globalTransport.isPlaying ? 'stop' : 'play';
+    return this.globalTransport.isPlaying ? "stop" : "play";
   }
   get playedIdx() {
     return this.seqPlayer.curPlayedIdx;
@@ -92,7 +91,6 @@ export default class Sequencer extends Vue {
   set playedIdx(n: number) {
     this.seqPlayer.curPlayedIdx = n;
   }
-
 
   get seqList() {
     return this.sequenceList.listGetter;
@@ -113,17 +111,18 @@ export default class Sequencer extends Vue {
     }
   }
   get playText() {
-    return this.togglePlay ? 'stop' : 'play';
+    return this.togglePlay ? "stop" : "play";
   }
-
 
   public selectedIdx = 0;
 
+  @sequenceModule.State("sequenceList")
+  public sequenceList!: SequenceMethods["sequenceList"];
+  @sequenceModule.State("globalTransport")
+  public globalTransport!: SequenceMethods["globalTransport"];
 
-  @sequenceModule.State('sequenceList') public sequenceList!: SequenceMethods['sequenceList'];
-  @sequenceModule.State('globalTransport') public globalTransport!: SequenceMethods['globalTransport'];
-
-  @statesModule.State('stateList') public stateList!: StatesMethods['stateList'];
+  @statesModule.State("stateList")
+  public stateList!: StatesMethods["stateList"];
 
   public editOrder = false;
 
@@ -135,43 +134,57 @@ export default class Sequencer extends Vue {
     this.sequenceList.insertNewSequence(n, n, this.selectedIdx);
   }
   public mounted() {
-    window.addEventListener('keydown', this.processKey);
+    window.addEventListener("keydown", this.processKey);
+  }
+  public activated() {
+    window.addEventListener("keydown", this.processKey);
+  }
+  
+  public deactivated() {
+    window.removeEventListener("keydown", this.processKey);
   }
   public destroyed() {
-    window.removeEventListener('keydown', this.processKey);
+    window.removeEventListener("keydown", this.processKey);
   }
 
   public getHighlightedColor(i: number) {
-    return this.playedIdx === i ? (this.isPlayingSeq ? 'green' : 'lightgreen') : '';
+    return this.playedIdx === i
+      ? this.isPlayingSeq
+        ? "green"
+        : "lightgreen"
+      : "";
   }
 
   public next() {
-    this.playedIdx = Math.max(0, Math.min(this.seqList.length - 1, this.playedIdx + 1));
+    this.playedIdx = Math.max(
+      0,
+      Math.min(this.seqList.length - 1, this.playedIdx + 1)
+    );
   }
   public prev() {
-    this.playedIdx = Math.max(0, Math.min(this.seqList.length - 1, this.playedIdx - 1));
+    this.playedIdx = Math.max(
+      0,
+      Math.min(this.seqList.length - 1, this.playedIdx - 1)
+    );
   }
   private processKey(event: KeyboardEvent) {
     // console.log(event)
     if (event.ctrlKey || event.metaKey) {
-      const letter = String.fromCharCode(event.which).toLowerCase();
-      if (letter === 'e') {
+           const key = event.key.toLowerCase();
+      if (key === "e") {
+        event.preventDefault();
+        
         this.editOrder = !this.editOrder;
-      } else if (event.key === 'ArrowDown') {
+      } else if (event.key === "ArrowDown") {
+        event.preventDefault();
         this.next();
-      } else if (event.key === 'ArrowUp') {
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
         this.prev();
       }
       // const letter  =String.fromCharCode(event.which).toLowerCase();
-
     }
-
-
   }
-
-
-
-
 }
 </script> 
 
@@ -184,31 +197,29 @@ export default class Sequencer extends Vue {
   align-items: center;
   background-color: gray;
 }
-.seqLine{
+.seqLine {
   width: 100%;
-  margin:20px;
+  margin: 20px;
   /*height:100px;*/
   display: flex;
   justify-content: space-between;
   align-items: center;
-  
 }
 
-
-.circNum{
+.circNum {
   /*width: 30px;*/
   font-size: x-large;
 }
 
-.channelName{
+.channelName {
   left: 0;
-  flex:0 0 30%;
+  flex: 0 0 30%;
   font-size: x-large;
   /*display: None;*/
 }
 
-.circCell{
-  flex:1 1 10%;
+.circCell {
+  flex: 1 1 10%;
   display: -webkit-inline-box;
   /*flex-direction:row;*/
   justify-content: space-around;
@@ -216,8 +227,7 @@ export default class Sequencer extends Vue {
   align-items: center;
 }
 
-.removeChannel{
+.removeChannel {
   background-color: red;
 }
-
 </style>

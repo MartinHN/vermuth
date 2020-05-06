@@ -17,7 +17,7 @@ type ChannelType = ChannelBase;
 @Module({namespaced: true})
 export default class Universes extends VuexModule {
 
-  public universe = RootState.universe;
+  public universe:Universe = RootState.universe;
 
   @Action
   public configureFromObj(js: any) {

@@ -2,14 +2,14 @@ import { ChannelBase, ChannelGroup } from './Channel';
 import { FixtureBase, FixtureGroup } from './Fixture';
 import { Universe } from './Universe';
 import { sequencePlayer } from './Sequence';
-import { nonEnumerable, RemoteFunction, AccessibleClass, setChildAccessible, RemoteValue, doSharedFunction } from './ServerSync';
+import { nonEnumerable, RemoteFunction, AccessibleClass, setChildAccessible, RemoteValue, ClientOnly, doSharedFunction } from './ServerSync';
 import { addProp, deleteProp, Proxyfiable } from './MemoryUtils';
 
 import { CurvePlayer, CurveLink, CurveLinkStore } from './CurvePlayer';
 
 
-interface ChannelsValuesDicTypes { [id: string]: number; }
-interface ChannelsCurveLinkDicTypes { [id: string]: { uid: string }; }
+interface ChannelsValuesDicTypes { [id: string]: number }
+interface ChannelsCurveLinkDicTypes { [id: string]: { uid: string } }
 
 
 type SavedValueType = number | CurveLink;
@@ -30,7 +30,7 @@ export class FixtureState {
   public name = '';
   private pChannelValues: ChannelsValuesDicTypes = {};
   private pChannelCurveLinks: ChannelsCurveLinkDicTypes = {};
-  constructor(fixture?: FixtureBase, options?: { overrideValue?: number, channelFilter?: (c: ChannelBase) => boolean, full?: boolean, channelNames?: string[] }) {
+  constructor(fixture?: FixtureBase, options?: { overrideValue?: number; channelFilter?: (c: ChannelBase) => boolean; full?: boolean; channelNames?: string[] }) {
     if (fixture === undefined) { return; }
     this.name = fixture.name;
     let validChs: ChannelBase[];
@@ -75,7 +75,7 @@ export class FixtureState {
 }
 
 export class ResolvedFixtureState {
-  public channels: { [id: string]: { channel: ChannelBase, value: SavedValueType } } = {};
+  public channels: { [id: string]: { channel: ChannelBase; value: SavedValueType } } = {};
 
   constructor(public state: FixtureState, public fixture: FixtureBase, public dimMaster = 1) {
     Object.entries(this.state.channelValues).forEach(([k, cv]) => {
@@ -295,7 +295,7 @@ export class State {
       this.linkedStates.splice(i, 1)
     }
   }
-  setLinkedStates(v: { name: string, dimMaster?: number }[]) {
+  setLinkedStates(v: { name: string; dimMaster?: number }[]) {
     if(!Array.isArray(v)){
       console.error("trying to set bad linked states",v)
     }
@@ -340,7 +340,7 @@ export class State {
   }
   public updateFromFixtures(fixtures: FixtureBase[]) {
     this.fixtureStates = [];
-    const opts: { full: boolean, channelNames?: string[] } = { full: !!this.full };
+    const opts: { full: boolean; channelNames?: string[] } = { full: !!this.full };
     if (this.__validChNames) {
       opts.channelNames = this.__validChNames;
     }
@@ -418,7 +418,14 @@ export class State {
     return res;
   }
 
-
+  public findZombies(){
+    const availableFixtureNames = this.__stateList?.getCurrentFullFixtureList().map(f=>f.name) || []
+    const zombieFixtures = this.fixtureStates.filter(f=>!availableFixtureNames.includes(f.name))
+    if(zombieFixtures.length){
+    return {fixtures:zombieFixtures}
+    }
+    return {}
+  }
 
 
 
@@ -467,7 +474,9 @@ export class StateList {
     return rsl;
   }
   public states: { [key: string]: State } = {};
-  public presetableNames: string[] = [];
+
+  @ClientOnly()
+  private presetableNames: string[] = [];
   @RemoteValue()
   public currentState = new State(this, 'current', [], [], true);
   public loadedStateName = '';
@@ -551,6 +560,7 @@ export class StateList {
 
   }
 
+
   public setPresetableNames(l: string[]) {
     if(l.length!==this.presetableNames.length || l.some(e=>!this.presetableNames.includes(e))){
     this.presetableNames = l;
@@ -559,6 +569,7 @@ export class StateList {
 
   this.checkPresetableIntegrity("");
   }
+
 
   public setNamePresetable(name: string, v: boolean) {
     if (v) {
@@ -572,6 +583,30 @@ export class StateList {
         this.presetableNames.splice(idx, 1);
       }
     }
+  }
+
+  public get presetableObjects(){
+    const res: any[] = []
+    this.universe.fixtureList.map(f => {
+      const df = f.channels.filter(c => this.presetableNames.includes(c.getUID()))
+      if(df && df.length){
+      res.push(df)
+      }
+    })
+    this.universe.groupList.map((g: FixtureGroup)=>{
+        const df = g.channels.filter(c => this.presetableNames.includes(c.getUID()))
+        if(df && df.length){
+        res.push(df)
+        }
+    })
+    return res
+  }
+  public isPreseted(o: any){
+    if(o && o.getUID){
+      return this.presetableNames.includes(o.getUID())
+    }
+    debugger
+    return false
   }
 
   private checkPresetableIntegrity(fromPresetableName: string) {
@@ -600,22 +635,25 @@ export class StateList {
     return (this.universe.groupList as Array<FixtureGroup | FixtureBase>).concat(this.universe.fixtureList);
   }
 
-  @RemoteFunction({ sharedFunction: true })
+
   public saveCurrentState(name: string, linkedStates?: LinkedState[]) {
 
-
-
     if (name !== this.currentState.name) {
-      const fl = this.getCurrentFullFixtureList();
-      const st = new State(this, name, this.presetableNames, fl);
-      if (linkedStates) { st.linkedStates = linkedStates; }
-      this.addState(st);
-      this.setLoadedStateName(st.name);
+      this.saveFromPresetableNames(name,this.presetableNames,linkedStates);
 
     } else {
       this.updateCurrentState();
 
     }
+  }
+  @RemoteFunction({ sharedFunction: true })
+  public saveFromPresetableNames(name: string, presetableNames: string[],linkedStates?: LinkedState[]){
+
+    const fl = this.getCurrentFullFixtureList();
+    const st = new State(this, name, presetableNames||this.presetableNames, fl);
+    if (linkedStates) { st.linkedStates = linkedStates; }
+    this.addState(st);
+    this.setLoadedStateName(st.name);
   }
 
   public setLoadedStateName(n: string) {

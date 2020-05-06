@@ -157,12 +157,14 @@ export class FixtureBase implements FixtureBaseI {
 
   @RemoteValue()
   private _baseCirc = 0;
+  @RemoteValue()
+  public name: string
 
   @nonEnumerable()
   private __universe: Universe | null = null;
 
-  constructor(public name: string, channels: ChannelBase[], protected ftype = 'base') {
-
+  constructor(_name: string, channels: ChannelBase[], protected ftype = 'base') {
+    this.name = _name;
     if (channels && channels.length) {
       channels.map((c) => this.addChannel(c));
     } else {

@@ -1,6 +1,8 @@
 import { getNextUniqueName } from './Utils';
 import { FixtureBase, FixtureGroup , FixtureBaseI} from './Fixture';
 import { RemoteFunction, RemoteValue, nonEnumerable, AccessibleClass } from './ServerSync';
+import dbg from './dbg'
+const dbgStruct = dbg('STRUCT')
 type ChannelValueType = number; // |number[];
 
 import {EventEmitter} from 'events'; // for universe listener class
@@ -127,7 +129,7 @@ export class ChannelBase implements ChannelI {
   }
 
   public __dispose() {
-    if (!this.__isDisposed) {console.log('disposing channel ', this.getUID()); }
+    if (!this.__isDisposed) {dbgStruct('disposing channel ', this.getUID()); }
     this.__isDisposed = true;
   }
 
@@ -313,7 +315,7 @@ export class ChannelGroup extends ChannelBase {
   @RemoteFunction({sharedFunction: true})
   public setValue(v: number, doNotify: boolean) {
     this.channels.map((c) => c.setValue(v, doNotify))
-    return super.setValue(v,doNotify)
+    return super.setValue(v,false)// don't notify as we only want to update saved value but not ChannelGroup DMX
   }
 }
 

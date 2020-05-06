@@ -22,14 +22,15 @@ function formatArgs(this: any, args: any[]) {
     const prefix = `${colorCode}${name}${endCode} `;
     args[0] = prefix + args[0].trim();
 
+
 }
 
 //@ts-ignore
-if( typeof window === "undefined"){
+if (typeof window === "undefined") {
 
-debugM.formatArgs = formatArgs
-// use console log to be visible in chrome dev tools (not only stdout)
-debugM.log = console.log.bind(console)
+    debugM.formatArgs = formatArgs
+    // use console log to be visible in chrome dev tools (not only stdout)
+    debugM.log = console.log.bind(console)
 }
 
 const testF = () => {
@@ -40,7 +41,35 @@ const testF = () => {
         test("test " + colorLut[i])
     }
 }
+const warnLogger = debugM('warn')
+warnLogger.enabled = true
+const errorLogger = debugM('error')
+errorLogger.enabled = true
 
-//testF()
+//@ts-ignore
+if (typeof window === "undefined") {
+    debugM.error = function (...args: any[]) {
+        debugger
+        args.unshift("\u001B[31m")
+        args.push("\u001B[0m ")
+        console.error(...args)
+    }
+    debugM.warn = function (...args: any[]) {
+        args.unshift("\u001B[33m")
+        args.push("\u001B[0m ")
+        console.warn(...args)
+    }
+
+} else {
+    debugM.error = console.error.bind(console)
+    debugM.warn = console.warn.bind(console)
+}
+
+debugM.assert = function(v: boolean,...args: any[]){
+    if(!v){
+        this.error(args)
+    }
+}
+testF()
 
 export default debugM

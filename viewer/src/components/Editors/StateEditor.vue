@@ -35,8 +35,11 @@
     <v-row>
       <v-col>
         <ChannelRack
-          :displayableFixtureList="state && state.getSavedFixtureList(universe.fixtureAndGroupList)"
+          :displayableFixtureList="state?state.getSavedFixtureList(universe.fixtureAndGroupList):[]"
         />
+        <div v-for="z of zombies">
+        {{z}}
+        </div>
       </v-col>
       <v-col cols="5">
         <MultiStateChooser :state="state" style="height:100px;with:100px"></MultiStateChooser>
@@ -213,6 +216,17 @@ export default class StateEditor extends Vue {
         }
       }
     }
+  }
+
+  get zombies(){
+    if(this.state){
+      const zObj =  this.state.findZombies()
+      if(zObj && Object.keys(zObj).length){
+        console.log( Object.keys(zObj))
+        return zObj
+      }
+    }
+    return ["no zombies found"]
   }
 }
 </script>

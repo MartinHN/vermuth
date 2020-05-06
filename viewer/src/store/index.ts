@@ -82,7 +82,8 @@ const serverFS = () => {
 
 let isAutoSaving = false;
 function autoSaveAllowed(state: any) {
-  return !isAutoSaving && !state.loadingState && (state.savedStatus === 'Saved' || state.savedStatus === '' ) && state.config.autoSave;
+  return false; // legacy function
+  // return !isAutoSaving && !state.loadingState && (state.savedStatus === 'Saved' || state.savedStatus === '' ) && state.config.autoSave;
 }
 
 function dispatchSave(_store: any) {

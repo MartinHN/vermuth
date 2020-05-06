@@ -42,7 +42,7 @@ class Server {
 
     }
     //@ts-ignore
-    console.log(socket.io.engine.transport.write = newFunc)
+    socket.io.engine.transport.write = newFunc
     if (this.__socket && (this.__socket === socket)) {
       console.error('reassigning to same socket');
       return false;

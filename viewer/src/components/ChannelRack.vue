@@ -116,7 +116,7 @@ export default class ChannelRack extends Vue {
     return this.pselectedFixtureNames;
   }
   get displayableFixtureNames() {
-    return this.displayableFixtureList.map(e => e.name);
+    return (this.displayableFixtureList || []).map(e => e.name);
   }
   get selectableGroupList() {
     return ["all"].concat(this.universe.groupNames);
@@ -136,7 +136,7 @@ export default class ChannelRack extends Vue {
   }
 
   get displayedFixtures() {
-    return this.displayableFixtureList.filter(
+    return (this.displayableFixtureList || []).filter(
       f =>
         this.needDisplay(f) &&
         f.hasChannelMatchingFilters(this.selectedChannelFilterNames)
@@ -230,9 +230,9 @@ export default class ChannelRack extends Vue {
     if (this.showPresetable) {
       needDisplay =
         needDisplay &&
-        (this.stateList.presetableNames.includes(f.name) ||
+        (this.stateList.isPreseted(f) ||
           f.channels.some(c =>
-            this.stateList.presetableNames.includes(c.getUID())
+            this.stateList.isPreseted(c)
           ));
     }
     if (this.showActive) {

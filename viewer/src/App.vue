@@ -2,7 +2,15 @@
   <v-app id="app">
     <div id="fixHead">
       <div id="nav" ref="navBar">
-        <v-btn depressed small fab dark :color=serverStatusColor class="mx-2" @click="showDrawer=!showDrawer">+</v-btn>
+        <v-btn
+          depressed
+          small
+          fab
+          dark
+          :color="serverStatusColor"
+          class="mx-2"
+          @click="showDrawer=!showDrawer"
+        >+</v-btn>
         <router-link to="/Sequencer">Sequencer</router-link>
         <router-link to="/">Dashboard</router-link>
 
@@ -31,16 +39,16 @@
       </v-navigation-drawer>
     </div>
     <div id="navContent">
-    <Modal v-if="loadingSession">
-        <v-progress-circular
-        indeterminate />
-    </Modal>
-    <keep-alive> <!-- don't care about caching page mem, it's fast-->
-      <router-view />
-    </keep-alive>
+      <Modal v-if="loadingSession">
+        <v-progress-circular indeterminate />
+      </Modal>
+      <keep-alive>
+        <!-- don't care about caching page mem, it's fast-->
+        <router-view />
+      </keep-alive>
     </div>
     <input
-      ref="fakeFileInput"
+      ref="fakeSessionFileInput"
       type="file"
       name="name"
       style="display: none;"
@@ -53,32 +61,29 @@ import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { State, Action, Getter, Mutation, namespace } from "vuex-class";
 import rootState from "@API/RootState";
 import Server from "./api/Server";
-import dmxClient from './api/DMXClient';
+import dmxClient from "./api/DMXClient";
 import ServerState from "./components/ServerState.vue";
-
-
 
 import Modal from "@/components/Utils/Modal.vue";
 import Store from "./store";
-
 
 let originalFaviconNode: any;
 let redFaviconNode: any;
 
 @Component({
-  components: { ServerState ,Modal}
+  components: { ServerState, Modal }
 })
 export default class App extends Vue {
   get routePathList() {
-    const routePaths = Array.from(
-      (this.$refs.navBar as HTMLElement).childNodes
-    ).map((e: any) => e.pathname).filter(e=>!!e);
+    const routePaths = Array.from((this.$refs.navBar as HTMLElement).childNodes)
+      .map((e: any) => e.pathname)
+      .filter(e => !!e);
     console.log(routePaths);
     return routePaths;
   }
 
   // @Mutation('addFixture') public addFixture!: FixtureMethods['addFixture'];
-  public metaFromRoot:any=rootState.meta // assign value to local vue reactive data
+  public metaFromRoot: any = rootState.meta; // assign value to local vue reactive data
   @State("savedStatus") public savedStatus!: string;
 
   @Getter("isConnected") public isConnected!: string;
@@ -89,8 +94,7 @@ export default class App extends Vue {
 
   public showDrawer = false;
   public mounted() {
-    
-    rootState.meta = this.metaFromRoot // inject reactiveness in rootState
+    rootState.meta = this.metaFromRoot; // inject reactiveness in rootState
     Server.connect(this.$store, window.location.hostname);
     this.removeOldIco();
     originalFaviconNode = this.loadIconNode("favicon.ico");
@@ -113,17 +117,19 @@ export default class App extends Vue {
     head.appendChild(newLink);
   }
 
-  public get serverStatusColor(){
-    return this.isConnected ? this.dmxIsConnected?'green':'orange':'red';
+  public get serverStatusColor() {
+    return this.isConnected
+      ? this.dmxIsConnected
+        ? "green"
+        : "orange"
+      : "red";
   }
-  public get dmxIsConnected(){
-    return dmxClient.__connected
+  public get dmxIsConnected() {
+    return dmxClient.__connected;
   }
 
-
-  public get loadingSession(){
-
-    return !!this.metaFromRoot.loadingJSONName
+  public get loadingSession() {
+    return !!this.metaFromRoot.loadingJSONName;
   }
   public loadLocally(files: FileList) {
     if (files && files.length === 1) {
@@ -186,7 +192,9 @@ export default class App extends Vue {
         this.nav(true);
         return;
       }
-      switch (String.fromCharCode(event.which).toLowerCase()) {
+      const key = event.key.toLowerCase();
+
+      switch (key) {
         case "s":
           event.preventDefault();
           if (event.shiftKey) {
@@ -199,15 +207,20 @@ export default class App extends Vue {
           break;
         case "o":
           event.preventDefault();
-          (this.$refs.fakeFileInput as HTMLElement).click();
+          (this.$refs.fakeSessionFileInput as HTMLElement).click();
           // event.preventDefault();
           // alert('ctrl-f');
+          break;
+        case ",":
+          event.preventDefault();
+          this.$router.push("/Config");
           break;
         case "g":
           // event.preventDefault();
           // alert('ctrl-g');
           break;
       }
+
     }
   }
 }

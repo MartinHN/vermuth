@@ -33,7 +33,8 @@ import {FixtureBase, DirectFixture, FixtureGroup } from '@API/Fixture';
 import { ChannelBase } from '@API/Channel';
 import UniversesMethods from '@/store/universes';
 import {rgbToHex, hexToRgb} from '@API/ColorUtils';
-
+import dbg from '@API/dbg';
+import rootState from '@API/RootState';
 
 import {isEqual,debounce} from 'lodash';
 
@@ -48,6 +49,42 @@ function isNonEmpty(o: any) {
 })
 export default class FixtureGroupWidget extends Vue {
 
+  get hasIndividualPreseted(){
+    const channels: ChannelBase[] = []
+    const subProps = this.fixtureProps?.map(f=>f.channels.map(c=>channels.push(c)));
+    if(channels.length){
+      return channels.some( c => rootState.stateList.isPreseted(c));
+    }
+    return false
+  }
+
+  get hasMainPreseted(){
+      return this.fixtureProp?.channels.some(c=>rootState.stateList.isPreseted(c));
+  }
+
+  @Watch('hasIndividualPreseted')
+  expandIfSub(){ // if we load a preset modifying inner values, we force expand
+    this.expandIfNeeded()
+  }
+    @Watch('hasMainPreseted')
+  expandIfMain(){ // if we load a preset modifying inner values, we force expand
+    this.expandIfNeeded()
+  }
+
+  expandIfNeeded(){
+    if(!this.hasMainPreseted && this.hasIndividualPreseted){
+      this.expanded = true
+    }
+    else if(this.hasMainPreseted && !this.hasIndividualPreseted){
+      this.expanded = false
+    }
+    else if(!this.hasMainPreseted && !this.hasIndividualPreseted){ // default to collapsed
+      this.expanded=  false
+    }
+    else{
+    dbg.error("invalid preset state")
+    }
+  }
   get masterInSync() {
     if (FixtureGroup.isFixtureGroup(this.fixtureProp)) {
       return this.fixtureProp.dimmerInSync;

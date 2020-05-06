@@ -28,7 +28,7 @@
     
     <modal v-if=showCurveEditor @close="showCurveEditor=0">
       <div style="position:relative;width:100%;height:100%" slot=body>
-        <FullCurveEditor :curveLink="curveLink" :channel=channelProp />
+        <FullCurveEditor :curveLink="curveLink" :channel="channelProp" />
         
       </div>
     </modal>
@@ -70,7 +70,7 @@ export default class ChannelWidget extends Vue {
   get presetableName() {
     return this.channelProp.getUID();
   }
-  get enabledV(): boolean {return this.stateList.presetableNames.includes(this.presetableName); }
+  get enabledV(): boolean { return this.stateList.isPreseted(this.channelProp); }
   set enabledV(v: boolean) {this.stateList.setNamePresetable(this.presetableName, v); }
   get sliderColor(): string {
     return this.enabledV ? 'inherit' : 'dark';

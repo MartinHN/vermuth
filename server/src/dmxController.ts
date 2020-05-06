@@ -1,7 +1,7 @@
 const DMX = require ('dmx');
 const SerialPort = require('serialport');
-import debugM from '@API/dbg'
-const debug = debugM('DMX')
+import dbg from '@API/dbg'
+const debug = dbg('DMX')
 const OSCDriver = require('./dmxOSCDriver');
 const needCustomPiLibs = process.env.CUSTOM_PI_DRIVERS;
 const isPi = require('detect-rpi')();
@@ -99,7 +99,7 @@ class DMXController implements DMXControllerI {
           // broadcast(this.__portNameList)
           // debugger
         }
-        this.__portNameList = l.map((c: any) => c.comName);
+        this.__portNameList = l.map((c: any) => c.path);
 
         resolve(l);
         // debug(this.__portNameList);

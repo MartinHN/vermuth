@@ -16,9 +16,9 @@
       </v-col>
       <v-col>
         <div id="stateActions">
-          <Button class="add" @click="saveNewState" text="save"></Button>
+          <Button class="add" v-if="hasOneStatePreseted" @click="saveNewState" text="save"></Button>
           <Button
-            v-if="selectedState && !selectedState.name.startsWith('__')"
+            v-if="selectedState"
             class="edit"
             @click="editState"
             text="edit"
@@ -64,7 +64,10 @@ type ValueOf<T> = T[keyof T];
 })
 export default class StateComponent extends Vue {
   get editedState() {
-    return this.selectedState;
+    if (this.selectedState && !this.selectedState.name.startsWith("__")) {
+      return this.selectedState;
+    }
+    return undefined;
   }
 
   set selectedStateIdx(i: number) {
@@ -139,13 +142,23 @@ export default class StateComponent extends Vue {
   public mounted() {
     window.addEventListener("keydown", this.processKey);
   }
+  public activated() {
+    window.addEventListener("keydown", this.processKey);
+  }
+
+  public deactivated() {
+    window.removeEventListener("keydown", this.processKey);
+  }
   public destroyed() {
     window.removeEventListener("keydown", this.processKey);
   }
   public processKey(event: KeyboardEvent) {
     if (event.ctrlKey || event.metaKey) {
-      const letter = String.fromCharCode(event.which).toLowerCase();
-      if (letter === "e") {
+      const key = event.key.toLowerCase();
+
+      if (key === "e" && this.editedState) {
+        event.preventDefault();
+        this.showStateEditor = !this.showStateEditor;
       } else if (event.key === "ArrowDown") {
         event.preventDefault();
         if (this.selectedStateIdx < this.stateNames.length - 1) {
@@ -161,10 +174,13 @@ export default class StateComponent extends Vue {
     }
   }
   public editState() {
-    if (this.selectedState === null) {
-    } else {
+    if (this.selectedState !== null) {
       this.showStateEditor = true;
     }
+  }
+
+  get hasOneStatePreseted(){
+    return this.stateList.presetableObjects.length>0
   }
 
   public saveNewState() {
@@ -172,8 +188,7 @@ export default class StateComponent extends Vue {
       "save new state",
       this.selectedState ? this.selectedState.name : ""
     );
-    if (name === null || name === "") {
-    } else {
+    if (name !== null && name !== "") {
       this.stateList.saveCurrentState(name, this.linkedStateList);
       // this.selectedState = this.stateList.getStateNamed(name);
     }
@@ -183,8 +198,7 @@ export default class StateComponent extends Vue {
       "remove state",
       this.selectedState ? this.selectedState.name : ""
     );
-    if (name === null || name === "") {
-    } else {
+    if (name !== null && name !== "") {
       this.removeState({ name });
     }
   }
@@ -193,8 +207,7 @@ export default class StateComponent extends Vue {
     const oldName = this.selectedState ? this.selectedState.name : "";
     if (oldName) {
       const name = prompt("rename state " + oldName, oldName);
-      if (name === null || name === "") {
-      } else {
+      if (name !== null && name !== "") {
         this.renameState({ oldName, newName: name });
       }
     }

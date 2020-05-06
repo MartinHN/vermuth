@@ -10,9 +10,9 @@ import {GlobalTransport} from './Time';
 import {CurvePlayer} from './CurvePlayer';
 import {CurveStore} from './Curve';
 import { addProp } from './MemoryUtils';
-import debugM from './dbg'
-const debugStruct = debugM('STRUCT')
-const debugTime = debugM('TIME')
+import dbg from './dbg'
+const debugStruct = dbg('STRUCT')
+const debugTime = dbg('TIME')
 
 
 @AccessibleClass()

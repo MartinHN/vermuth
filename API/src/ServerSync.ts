@@ -1,8 +1,8 @@
 export const isClient = process.env.VUE_APP_ISCLIENT;
-import debug from './dbg'
-const debugTree = debug('TREE')
-const debugMsg = debug('MSG')
-const debugStruct = debug('STRUCT')
+import dbg from './dbg'
+const dbgTree = dbg('TREE')
+const dbgMsg = dbg('MSG')
+const dbgStruct = dbg('STRUCT')
 const logServerMessages = process.env.LOG_MSG;
 const logTreeMessages = process.env.LOG_TREE;
 let clientSocket: any = null;
@@ -21,6 +21,7 @@ import 'reflect-metadata';
 import RootStateI from './RootState';
 
 import { EventEmitter } from 'events';
+
 
 function assert(v: boolean, ...msg: any[]) {
   if (!v) {
@@ -43,20 +44,20 @@ export const treeEvents = new TreeEventClass();
 if (logTreeMessages) {
 
   treeEvents.on('v', (parent: any, key: string) => {
-    debugTree('>>> v', key)
+    dbgTree('>>> v', key)
   });
   treeEvents.on('move', (parent: any, key: string, toKey: string) => {
-    debugTree('>>> move', key)
+    dbgTree('>>> move', key)
   });
   treeEvents.on('add', (parent: any, key: string) => {
-    debugTree('>>> add', key)
+    dbgTree('>>> add', key)
   });
   treeEvents.on('rm', (parent: any, key: string) => {
-    debugTree('>>> rm', key)
+    dbgTree('>>> rm', key)
   });
 
   treeEvents.on('call', (parent: any, options: any, ctx: any) => {
-    // debugTree('>>> call',parent)
+    // dbgTree('>>> call',parent)
   });
 }
 
@@ -75,11 +76,11 @@ export function bindClientSocket(s: any) {
     // if (!isClient) {
     // #if !IS_CLIENT
     const emitF = boundSocket.emit;
-    debugMsg('highjacking server socket');
+    dbgMsg('highjacking server socket');
     const nF = (e: string, a: any, l: any) => {
       if (logServerMessages) {
         if (e === 'SET_STATE') { a = ''; }
-        debugMsg('server >> all clients : ' + e + ' : ' + a + '\n');
+        dbgMsg('server >> all clients : ' + e + ' : ' + a + '\n');
       }
       emitF.apply(boundSocket, [e, a, l]);
     };
@@ -94,7 +95,7 @@ export function bindClientSocket(s: any) {
       if (!e) {
         debugger;
       }
-      debugMsg('client >> server : ' + e + ' : ' + a + '\n');
+      dbgMsg('client >> server : ' + e + ' : ' + a + '\n');
       oriEmitF.apply(boundSocket, [e, a, l]);
     }
     if (!boundSocket.__eventOverriden) {
@@ -173,7 +174,7 @@ class MessageQueue<T>{
     else {
       if (hadMessages) {
         if (!addr.endsWith('_time')) {
-          debugMsg(`overriding msg ${addr} from ${this.queue[addr][0].msg} to ${params.msg}`)
+          dbgMsg(`overriding msg ${addr} from ${this.queue[addr][0].msg} to ${params.msg}`)
         }
       }
       this.queue[addr] = [params]
@@ -186,7 +187,7 @@ class MessageQueue<T>{
     //     this.queue[addr].push(params)
     //   }
     //   else {
-    //     if (!addr.endsWith('_time')) debugMsg(`overriding msg ${addr} from ${this.queue[addr][existingIdx].msg} to ${params.msg}`)
+    //     if (!addr.endsWith('_time')) dbgMsg(`overriding msg ${addr} from ${this.queue[addr][existingIdx].msg} to ${params.msg}`)
     //     this.queue[addr][existingIdx] = params
     //   }
     // }
@@ -212,7 +213,7 @@ class MessageQueue<T>{
       })
       //broadcastMessageFromServer(addr, msg.args, msg.sid);
     }
-    // debugMsg("flushed")
+    // dbgMsg("flushed")
     AccessibleSettedByServer = old.AccessibleSettedByServer;
     AccessibleNotifierId = old.AccessibleNotifierId;
     this.queue = {};
@@ -245,7 +246,7 @@ function broadcastMessageFromServer(addr: string, args: any, sid?: string) {
           sock.emit(addr, args);
 
         } else {
-          //debugMsg('avoid feedback on', addr);
+          //dbgMsg('avoid feedback on', addr);
         }
       }
     }
@@ -296,7 +297,7 @@ const rebuildChildAccessibles = (fromParent?: any, buildTypeTree = true) => {
       }
     }
     // debugger
-    if (buildTypeTree) {curNode.__ob = o;}
+    if (buildTypeTree) { curNode.__ob = o; }
     if (o && o.__registerRemoteValuesAddr) {
       if (buildTypeTree) {
         curNode[valSymbol] = [];
@@ -322,7 +323,7 @@ const rebuildChildAccessibles = (fromParent?: any, buildTypeTree = true) => {
 
   };
   recurseAccessible(rS);
-  debugStruct('updated addr',rS.__isRoot?"root": rS?.__accessibleName  , accessibleTree); // Array.from(allListeners.keys()));
+  dbgStruct('updated addr', rS.__isRoot ? "root" : rS?.__accessibleName, accessibleTree); // Array.from(allListeners.keys()));
 };
 
 const rebuildChildAccessiblesDebounced = debounce(rebuildChildAccessibles,
@@ -700,7 +701,7 @@ export function RemoteFunction(options?: { skipClientApply?: boolean; sharedFunc
                 return e.map(pruneArg);
               } else if (typeof (e) === 'object' && e !== null) {
                 const addr = buildAddressFromObj(e, false);
-                if (addr) { debugMsg('setting addr as arg'); return '/?' + addr; }
+                if (addr) { dbgMsg('setting addr as arg'); return '/?' + addr; }
                 if (e.__ob__) {
                   const c = Object.assign({}, e);
                   delete c.__ob__;
@@ -758,7 +759,7 @@ export function RemoteFunction(options?: { skipClientApply?: boolean; sharedFunc
               const { accessible, parent, key: acc_key } = resolveAccessible(rootAccessible, addr);
               if (accessible === undefined) {
                 debugger;
-                debugStruct('failed to resolve addr', addr);
+                dbgStruct('failed to resolve addr', addr);
                 return e;
               }
               return accessible;
@@ -807,6 +808,35 @@ export function nonEnumerable(opts?: { default?: any }) {
   };
 }
 
+
+export function ClientOnly() {
+  
+  if (!isClient) {
+    return (target: any, key: string | symbol) => {
+      defineOnInstance(target, key, (ob, defaultValue) => {
+        const t = defineObjTable(ob, '__nonEnumerables');
+        t[key] = true;
+        let v = defaultValue;
+        Reflect.defineProperty(ob, key, {
+          get: () => {
+            dbg.warn('getting server instance of client only :', key);
+            return v;
+          }
+          , set: (nv) => {
+            dbg.warn('setting server instance of client only :', key)
+            v = nv;
+          },
+          enumerable: false,
+          configurable: false,
+        });
+        return v;
+      });
+    };
+  }else{
+    return ()=>{}
+  }
+}
+
 // function initAccessibles(parent: any) {
 //   if (parent.__accessibleMembers) {
 //     for (const k of Object.keys(parent.__accessibleMembers)) {
@@ -820,11 +850,11 @@ let rootAccessible: any = require('./RootState'); // importing here means we nee
 function getRoot(hint?: any) {
   // circlar Refs forces dynamic import, (legacy)
   // if (rootAccessible === undefined) {
-  //   import('./RootState').then((e: any) => { rootAccessible = e.default; debugStruct('loadedRoot', e); });
+  //   import('./RootState').then((e: any) => { rootAccessible = e.default; dbgStruct('loadedRoot', e); });
 
   //   rootAccessible = null;
   // } else
-  if (rootAccessible && rootAccessible.__esModule){ // once require loop ended rootAccessible is the default export
+  if (rootAccessible && rootAccessible.__esModule) { // once require loop ended rootAccessible is the default export
     rootAccessible = rootAccessible.default
   }
 
@@ -958,7 +988,7 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
           }
 
 
-          debugStruct('setting array prop', prop, value)
+          dbgStruct('setting array prop', prop, value)
         }
 
         const wasChildAccessible = obj.__accessibleMembers[prop] !== undefined
@@ -980,11 +1010,11 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
         if (!blockRecursion && typeof (newAcc) === 'object' && !isHiddenMember) {
           if (typeof (prop) === 'string') {
             if (isNotARemoteValue
-              
+
               // && !wasChildAccessible
               //   (obj.__accessibleMembers[prop] !== newAcc || obj.__accessibleMembers[prop].__accessibleName === undefined) )
             ) {
-              debugStruct(`auto add child Accessible ${prop.toString()} on `, buildAddressFromObj(obj)); // newAcc, Object.keys(obj.__accessibleMembers));
+              dbgStruct(`auto add child Accessible ${prop.toString()} on `, buildAddressFromObj(obj)); // newAcc, Object.keys(obj.__accessibleMembers));
               setChildAccessible(obj, prop, { immediate: true, defaultValue: newAcc });
             }
           }
@@ -995,7 +1025,7 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
       ,
       get: (target: any, k: symbol | string, thisProxy: any) => {
         // if(Array.isArray(target)){
-        // debugStruct('getting prop', k)
+        // dbgStruct('getting prop', k)
         // }
         if (k === isProxySymbol) {
           if (target[isProxySymbol]) {
@@ -1013,7 +1043,7 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
       }
       , deleteProperty(target: any, k: symbol | string) {
         if (Array.isArray(target)) {
-          debugStruct('removing prop', k)
+          dbgStruct('removing prop', k)
         }
         if (k in target) { // TODO lockCallbacks? for deleted objects?
           treeEvents.emit('rm', target, k);
@@ -1022,7 +1052,7 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
 
           deleteProp(target, k);
           delete target[k];
-          debugStruct(`property removed: ${k.toString()} on `, buildAddressFromObj(target));
+          dbgStruct(`property removed: ${k.toString()} on `, buildAddressFromObj(target));
           return true;
         } else {
           return false;
@@ -1030,7 +1060,7 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
       },
       /*
        apply:(target, thisArg, argumentsList)=>{
-         debugStruct(`applying method child Accessible ${target}`)
+         dbgStruct(`applying method child Accessible ${target}`)
          return Reflect.apply(target, thisArg, argumentsList);
       }
       */
@@ -1093,9 +1123,9 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: { i
     }
     Reflect.defineProperty(parent, key, desc);
     if (!isChildOfRoot(parent)) {
-      debugStruct('avoiding notifying tree change unattached child ', key);
+      dbgStruct('avoiding notifying tree change unattached child ', key);
     } else if (key.toString().startsWith('_')) {
-      debugStruct('avoiding notifying tree change of private child ', key);
+      dbgStruct('avoiding notifying tree change of private child ', key);
     } else {
 
       treeEvents.emit('add', parent, key);
@@ -1177,7 +1207,7 @@ export function AccessibleClass() {
 
       }
       __dispose() {
-        debugStruct("dispose", this)
+        dbgStruct("dispose", this)
         if ((Bconstructor as any).__dispose) { (Bconstructor as any).__dispose.call(this); }
         if ((this as any).__isConstructed) {
           Object.defineProperty(this, '__isConstructed', {

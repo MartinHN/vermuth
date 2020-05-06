@@ -1,9 +1,8 @@
 <template>
   <div class="config">
 
-  <Toggle text="autoSave" :value ="autoSave" @change="set__autoSave($event)"/>
   <Button text="save locally"  @click="SAVE_LOCALLY"/>
-  <label for="file">Load Locally</label>
+  <label for="file">Load Locally (Ctrl+O)</label>
   <input type="file" id="file" accept="application/json" text="load locally" @change="loadLocally($event.target.files)"/>
   <Button text="clear session" color="red"  @click="clearSession"/>
   <Button text="panic (all to 0)" color="red"  @click="panic"/>
@@ -33,12 +32,11 @@ import DMXConfigMethods from '../store/DMXConfig';
 export default class Config extends Vue {
 
 
-  @configModule.Mutation('set__autoSave') public set__autoSave!: any;
   @Action('SAVE_LOCALLY') public SAVE_LOCALLY: any;
   @Action('SET_SESSION_STATE') public SET_SESSION_STATE: any;
   @Action('SAVE_REMOTELY') public SAVE_REMOTELY: any;
 
-  @configModule.State('autoSave') private autoSave!: boolean;
+
 
   @DMXConfigModule.Mutation('tryIP') private tryIP!: DMXConfigMethods['tryIP'];
 
@@ -95,5 +93,9 @@ export default class Config extends Vue {
 <style scoped>
   .config{
     min-height:100%;
+  }
+  .config *{
+    padding: 20px;
+    margin: 5px;
   }
 </style>
