@@ -7,13 +7,19 @@
             <div>{{Number.parseFloat(globalTransport.beat).toFixed(2)}}</div>
           </v-col>
           <v-col cols="3">
-            <Toggle v-model="togglePlay" style="height:40px" :text="playState" iconOn="stop" iconOff="play" ></Toggle>
+            <Toggle
+              v-model="togglePlay"
+              style="height:40px"
+              :text="playState"
+              iconOn="stop"
+              iconOff="play"
+            ></Toggle>
           </v-col>
           <v-col>
             <Numbox text="idx" :value="playedIdx" @change="playedIdx=$event"></Numbox>
             <div style="display:flex">
               <Button @click="prev" text="prev" icon="skip-previous" />
-              <Button @click="next" text="next"  icon="skip-next" />
+              <Button @click="next" text="next" icon="skip-next" />
             </div>
           </v-col>
         </v-row>
@@ -24,8 +30,9 @@
           <v-col cols="3">
             <v-menu offset-y class="text-center">
               <template v-slot:activator="{ on }">
-              
-                <v-btn color="primary" dark v-on="on"><v-icon>mdi-plus </v-icon>Add Sequence</v-btn>
+                <v-btn color="primary" dark v-on="on">
+                  <v-icon>mdi-plus</v-icon>Add Sequence
+                </v-btn>
               </template>
               <v-list>
                 <v-list-item
@@ -43,18 +50,23 @@
           <div :style="{width:pctDone,height:'100%',background:'red'}"></div>
         </div>
       </v-container>
-  <draggable v-model="seqList" group="people" @start="drag=true" @end="drag=false" style="width:100%" >
-
-      <SequenceComponent
-        v-for="(s,i) in seqList"
-        :editMode="editOrder"
-        :key="s.id"
-        :seqNumber="i"
-        :sequence="s"
-        :style="{background:getHighlightedColor(i)}"
-        @click="seqClicked(i)"
-        :selected="selectedIdx===i"
-      />
+      <draggable
+        v-model="seqList"
+        group="people"
+        @start="drag=true"
+        @end="drag=false"
+        style="width:100%"
+      >
+        <SequenceComponent
+          v-for="(s,i) in seqList"
+          :editMode="editOrder"
+          :key="s.id"
+          :seqNumber="i"
+          :sequence="s"
+          :style="{background:getHighlightedColor(i)}"
+          @click.native="seqClicked(i)"
+          :selected="selectedIdx===i"
+        />
       </draggable>
     </div>
   </div>
@@ -73,11 +85,11 @@ import StatesMethods from "../store/states";
 import rootState from "@API/RootState";
 const sequenceModule = namespace("sequence");
 const statesModule = namespace("states");
- import draggable from 'vuedraggable'
- import dbg from '@API/dbg'
+import draggable from "vuedraggable";
+import dbg from "@API/dbg";
 
 @Component({
-  components: { Button, Numbox, SequenceComponent, Toggle,draggable }
+  components: { Button, Numbox, SequenceComponent, Toggle, draggable }
 })
 export default class Sequencer extends Vue {
   get isPlayingSeq() {
@@ -101,24 +113,24 @@ export default class Sequencer extends Vue {
   get seqList() {
     return this.sequenceList.listGetter;
   }
-    set seqList(newL:any[]) {
-      const orig = this.seqList;
-      const swapped: any[] = []
-      newL.map((e,ni)=>{
-        if(swapped.indexOf(e)>=0){
-          return
-        }
-        const i = orig.indexOf(e);
-        if(i<0 || orig[ni]===undefined){
-          dbg.error('element deleted while reordering')
-          return
-        }
-        if(ni!==i){
-          this.sequenceList.swap(e,orig[ni])
-          swapped.push(e)
-          swapped.push(orig[ni])
-        }
-      })
+  set seqList(newL: any[]) {
+    const orig = this.seqList;
+    const swapped: any[] = [];
+    newL.map((e, ni) => {
+      if (swapped.indexOf(e) >= 0) {
+        return;
+      }
+      const i = orig.indexOf(e);
+      if (i < 0 || orig[ni] === undefined) {
+        dbg.error("element deleted while reordering");
+        return;
+      }
+      if (ni !== i) {
+        this.sequenceList.swap(e, orig[ni]);
+        swapped.push(e);
+        swapped.push(orig[ni]);
+      }
+    });
   }
 
   get seqPlayer() {
@@ -164,7 +176,7 @@ export default class Sequencer extends Vue {
   public activated() {
     window.addEventListener("keydown", this.processKey);
   }
-  
+
   public deactivated() {
     window.removeEventListener("keydown", this.processKey);
   }
@@ -192,23 +204,41 @@ export default class Sequencer extends Vue {
       Math.min(this.seqList.length - 1, this.playedIdx - 1)
     );
   }
+  public goOnSelected() {
+    if (this.selectedIdx >= 0) {
+      this.seqPlayer.curPlayedIdx = this.selectedIdx;
+    } else {
+      console.error("no seq selected");
+      debugger;
+    }
+  }
   private processKey(event: KeyboardEvent) {
     // console.log(event)
     if (event.ctrlKey || event.metaKey) {
-           const key = event.key.toLowerCase();
+      const key = event.key.toLowerCase();
       if (key === "e") {
         event.preventDefault();
-        
+
         this.editOrder = !this.editOrder;
-      } else if (event.key === "ArrowDown") {
+      } else if (event.key === "ArrowRight") {
         event.preventDefault();
         this.next();
-      } else if (event.key === "ArrowUp") {
+      } else if (event.key === "ArrowLeft") {
         event.preventDefault();
         this.prev();
       }
       // const letter  =String.fromCharCode(event.which).toLowerCase();
+    } else if (event.key === " ") {
+      event.preventDefault();
+      this.goOnSelected();
+    } else if (event.key === "ArrowDown") {
+      event.preventDefault();
+      this.selectedIdx = (this.selectedIdx+1)%this.sequenceList.length
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+       this.selectedIdx = (this.selectedIdx + this.sequenceList.length -1)%this.sequenceList.length
     }
+    console.log(event);
   }
 }
 </script> 
