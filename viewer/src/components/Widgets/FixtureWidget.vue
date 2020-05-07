@@ -5,31 +5,31 @@
 
       <div style="display:flex;width:100%;background-color:transparent" >
 
-        <ChannelWidget v-for='d in matchedDimmerChannels' :key='d.id' :channelProp=d :overrideName="matchedDimmerChannels.length==1?fixtureProp.name:d.name" style="width:100%" :showProps=showProps ></ChannelWidget>
+        <ChannelWidget v-for='d in matchedDimmerChannels' :key='d.id' :channelProp=d :overrideName="matchedDimmerChannels.length==1?fixtureProp.name:d.name" style="width:100%" :showProps="showProps"  :showPresetableState="showPresetableState" ></ChannelWidget>
 
       </div>
 
       <div style="display:flex;width:100%" v-if='(fixtureProp.hasChannelsOfRole("color") && hasFilterType("color"))' >
 
-        <input type="color" style="flex:1 1 30%" v-if='!showProps && fixtureProp.hasChannelsOfRole("color") && hasFilterType("color")' v-model=hexColorValue></input>
-        <ChannelWidget v-for="c of colorChannels" :key='c.id' :channelProp="c" v-if='c.matchFilterList(filterList)' :showProps=showProps />
+        <input type="color" style="flex:1 1 30%" v-if='!showProps && fixtureProp.hasChannelsOfRole("color") && hasFilterType("color")' v-model="hexColorValue" />
+        <ChannelWidget v-for="c of colorChannels" :key='c.id' :channelProp="c" v-if='c.matchFilterList(filterList)' :showProps="showProps"  :showPresetableState="showPresetableState" />
 
       </div>
 
       <div style="display:flex;width:100%" v-if='(fixtureProp.hasChannelsOfRole("position") && hasFilterType("position"))' >
-        <Button text="setPos" @click="showPosModal=true"/>
+        <Button text="setPos" @click="showPosModal=true" />
         <modal v-if="showPosModal" @close="showPosModal = false">
 
           <h3 slot="header">fixtur pos</h3>
-          <Point2DEditor slot="body" :value="fixturePositionList" @input="setFixturePosition($event)"></Point2DEditor>
+          <Point2DEditor slot="body" :value="fixturePositionList" @input="setFixturePosition($event)" ></Point2DEditor>
         </modal>
 
-        <ChannelWidget v-for='c of fixtureProp.positionChannels' :key='c.id' :channelProp="c" v-if='c.matchFilterList(filterList)' :showProps=showProps />
+        <ChannelWidget v-for='c of fixtureProp.positionChannels' :key='c.id' :channelProp="c" v-if='c.matchFilterList(filterList)' :showProps="showProps" :showPresetableState="showPresetableState" />
 
       </div>
       <div style="width:100%">
 
-        <ChannelWidget style="width:100%" v-for="c of otherChannels" v-if='c && c.matchFilterList(filterList)' :key='c.id' :channelProp="c" :showProps=showProps />
+        <ChannelWidget style="width:100%" v-for="c of otherChannels" v-if='c && c.matchFilterList(filterList)' :key='c.id' :channelProp="c" :showProps="showProps" :showPresetableState="showPresetableState" />
 
       </div>
 
@@ -60,6 +60,10 @@ const universesModule = namespace('universes');
   components: {Slider, Button, Toggle, ChannelWidget, Modal, Point2DEditor},
 })
 export default class FixtureWidget extends Vue {
+
+
+  @Prop({default:false})
+  private showPresetableState!:boolean;
 
 
   get colorChannels() {

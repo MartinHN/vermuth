@@ -15,7 +15,7 @@
     </div>
     <div v-else style="width:100%">
       <v-row no-gutters>
-      <v-col cols=2 >
+      <v-col cols=2 v-if="showPresetableState">
           <Toggle v-model="enabledV" text="preset"/>
         </v-col>
         <v-col>
@@ -63,6 +63,9 @@ const statesModule = namespace('states');
   components: {Slider, Button, Numbox, Toggle, Modal, FullCurveEditor},
 })
 export default class ChannelWidget extends Vue {
+
+  @Prop({default:false})
+  private showPresetableState!:boolean;
 
   get displayedName() {
     if ( this.overrideName) {return this.overrideName; } else {return this.channelProp.name; }

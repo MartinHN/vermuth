@@ -1,7 +1,13 @@
 <template>
   <label :style="{ 'background-color':color }"  :for="_uid" class="buttonPH unselectable" :tabindex="focusable?-1:''">
     <!-- <label :for="_uid"> -->
+    <v-icon v-if="icon" >
+      mdi-{{icon}}
+    </v-icon>
+  <div v-else >
       {{text}}
+      
+      </div>
       <!-- </label> -->
       <input :id="_uid" type="button" class="button"  @click="$emit('click')" :tabindex="focusable?-1:''"/>
       
@@ -19,6 +25,8 @@
     public focusable?: boolean;
     @Prop({default: 'transparent'})
     public color?: string;
+    @Prop()
+    icon?:string
 
   }
 </script>

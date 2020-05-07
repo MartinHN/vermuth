@@ -1,9 +1,9 @@
 <template>
-  <div class="NumboxPH tooltip pa-0 ma-0" style="display:flex">
+  <div class="NumboxPH tooltip " style="display:flex">
     <span v-if="errMsg" class="tooltiptext">{{errMsg}}</span>
     <v-text-field
       v-if="editable"
-      class="pa-0 ma-0"
+      class=""
       type="number"
       :value="value"
       @input="emitEv('input',$event)"
@@ -14,6 +14,7 @@
       hide-details
       dense
       :label="text||undefined"
+      style="align-items: center;"
     />
 
     <div v-else>{{value}}</div>

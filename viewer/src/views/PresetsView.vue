@@ -1,13 +1,8 @@
 <template>
   <div class="home">    
-  <v-row>
-  <v-col cols=6>
-    <StateComponent  />
-  </v-col>
-  <v-col>
-    <ChannelRack v-if="allFixture" :displayableFixtureList="allFixture" />
-  </v-col>
-  </v-row>
+    <StateComponent canEditStates=1 style="max-height:200px;over" />
+    <ChannelRack v-if="allFixture" :displayableFixtureList="allFixture" :showPresetableState="true" />
+
   </div>
 </template>
 

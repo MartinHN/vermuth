@@ -1,15 +1,15 @@
 <template>
   <div class="fixtureGroupWidget" :style="{backgroundColor:getFixtureColor(fixtureProp)}">
 
-    <Toggle v-if=isGroup :text="(expanded?'collapse':'expand')+' '+groupName" v-model=expanded />
+    <Toggle v-if=isGroup :text="(expanded?'collapse':'expand')+' '+groupName" v-model="expanded" iconOn="chevron-down" iconOff="chevron-right" />
     <div v-if="expanded && isGroup" style="width:100%;background-color:inherit">
       <div style="background-color:inherit" v-for="ff of fixtureProp.fixtures" :key="ff.id">
-        <FixtureWidget  :fixtureProp="ff"  :style="{backgroundColor:getFixtureColor(ff)}" />
+        <FixtureWidget  :fixtureProp="ff"  :style="{backgroundColor:getFixtureColor(ff)}" :showPresetableState="showPresetableState" />
         <div class=spacer />
       </div>
     </div>
     <div v-else style="display:flex;width:100%">
-      <FixtureWidget  :fixtureProp="fixtureProp"  />
+      <FixtureWidget  :fixtureProp="fixtureProp" :showPresetableState="showPresetableState" />
 
     </div>
 
@@ -48,6 +48,10 @@ function isNonEmpty(o: any) {
   components: {Slider, Button, Toggle, Modal, Point2DEditor, FixtureWidget},
 })
 export default class FixtureGroupWidget extends Vue {
+
+
+  @Prop({default:false})
+  private showPresetableState!:boolean;
 
   get hasIndividualPreseted(){
     const channels: ChannelBase[] = []

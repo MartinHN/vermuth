@@ -831,7 +831,7 @@ export function ClientOnly() {
           }
           , set: (nv) => {
             dbg.warn('setting server instance of client only :', key)
-            // v = nv;
+            // v = nv; // ensure value is not changed on server...
           },
           enumerable: false,
           configurable: false,

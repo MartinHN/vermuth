@@ -39,8 +39,12 @@ export default class Slider extends Vue {
       debugger;
       return '0';
     }
-    return this.value.toFixed(this.displayPrecision);
+    let st =  this.value.toFixed(this.displayPrecision);
+  if(st.startsWith('0.')){
+    st = st.substring(1)
+  }
 
+return st
 
   }
 }
@@ -63,6 +67,7 @@ export default class Slider extends Vue {
 }
 
 .Value{
+  color:black;
   position: absolute;
   height:100%;
   top:3px;
@@ -74,6 +79,7 @@ export default class Slider extends Vue {
   cursor: inherit;
 }
 .Name{
+  color:black;
   position: absolute;
   /*height:100%;*/
   bottom:0px;

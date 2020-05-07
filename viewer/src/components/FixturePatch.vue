@@ -1,9 +1,11 @@
 <template>
   <div class="main">
-    <v-container class="FixturePatch" fluid>
-      <v-row no-gutter>
-        <v-col cols="4">
-          <Button class="button" @click="showFixtureExplorer=true" text="add Fixture" />
+    <v-container class="FixturePatch pa-0" fluid >
+      <v-row no-gutters>
+        <v-col cols="4" class="pa-0">
+          <div>Fixtures</div>
+          <Button class="button" @click="showFixtureExplorer=true" color="green" text="add Fixture" icon="plus" />
+          <Button class="removeFixture" color="red" @click="askToRmFixtures()"  icon="delete" />
           <Modal v-if="showFixtureExplorer" @close="showFixtureExplorer=false">
             <!-- <h3 slot="header">fixture Explorer</h3> -->
             <FixtureExplorer slot="body" @change="addAndQuitFExplorer($event) "></FixtureExplorer>
@@ -11,14 +13,15 @@
         </v-col>
         <v-col cols="4">
           <!-- <Button text="Manage Groups" @click="showGroupExplorer=true"/> -->
-          <Button text="addGroup" @click="addGroup()" color="green"></Button>
-          <Button text="removeGroup" @click="removeGroup()" color="red"></Button>
+          <div>Groups</div>
+          <Button text="addGroup" @click="addGroup()" color="green" icon="plus"></Button>
+          <Button text="removeGroup" @click="removeGroup()" color="red" icon="delete"></Button>
           <!-- <Modal v-if="showGroupExplorer" @close="showGroupExplorer=false">
             <GroupExplorer  slot="body" ></GroupExplorer>
           </Modal>-->
         </v-col>
 
-        <v-col cols="2">
+        <v-col cols="2" style="display:flex">
           <Numbox
             class="testNum"
             text="testChannel"
@@ -52,8 +55,8 @@
         :show-select="true"
         :mobile-breakpoint="0"
         v-model="selectedFixtures"
-        
         dense
+        @click.native="tableClicked"
       >
         <template v-slot:item.name="{item:f}">
           <input
@@ -78,7 +81,7 @@
         <template v-slot:item.groupNames="{item:f}">
           <v-lazy>
             <v-select
-              label="groups"
+              hide-details
               multiple
               style="width:100%"
               :value="assignedGroupsOnFixture(f)"
@@ -93,15 +96,6 @@
 
         <template v-slot:item.actions="{item:f}">
           <tr class="pa-0">
-            <td>
-              <Button
-                class="removeFixture"
-                color="red"
-                @click="askToRmFixtures(f)"
-                tabindex="-1"
-                text="-"
-              />
-            </td>
             <td>
               <Button text="edit" class="button pa-0 ma-0" @click="editedFixture = f" />
             </td>
@@ -142,7 +136,7 @@ import GroupExplorer from "@/components/Editors/GroupExplorer.vue";
 import { DirectFixture, FixtureBase } from "@API/Fixture";
 import { FixtureFactory } from "@API/FixtureFactory";
 import UniversesMethods from "../store/universes";
-import {Universe} from '@API/Universe'
+import { Universe } from "@API/Universe";
 
 const universesModule = namespace("universes");
 
@@ -161,12 +155,12 @@ export default class FixturePatch extends Vue {
   public get fixtureErrorMsgs() {
     // const dum = this.usedChannels
     const errs: { [id: string]: string } = {};
-    const fl = this.universe.fixtureList
-     for (let i= 0 ; i < fl.length ; i++) {
-     const f = fl[i]
+    const fl = this.universe.fixtureList;
+    for (let i = 0; i < fl.length; i++) {
+      const f = fl[i];
       const overlap = [];
-      for (let j = i+1 ; j < fl.length ; j++) {
-        const ff = fl[j]
+      for (let j = i + 1; j < fl.length; j++) {
+        const ff = fl[j];
         if (f !== ff) {
           const o =
             (f.baseCirc >= ff.baseCirc && f.baseCirc <= ff.endCirc) ||
@@ -183,6 +177,9 @@ export default class FixturePatch extends Vue {
     return errs;
   }
 
+private tableClicked(ev: MouseEvent){
+console.log(ev)
+}
   get fixtureColors() {
     const cols: { [id: string]: string } = {};
     for (const f of Object.values(this.universe.fixtures)) {
@@ -245,7 +242,7 @@ export default class FixturePatch extends Vue {
   public activated() {
     window.addEventListener("keydown", this.processKey);
   }
-  
+
   public deactivated() {
     window.removeEventListener("keydown", this.processKey);
   }
@@ -293,7 +290,7 @@ export default class FixturePatch extends Vue {
       : [f];
     fixtureList.map(ff => {
       this.universe.setGroupNamesForFixture(ff, event);
-      debugger
+      debugger;
     });
   }
 
@@ -315,11 +312,13 @@ export default class FixturePatch extends Vue {
   }
 
   private askToRmFixtures(fBase: FixtureBase) {
-        const fl = this.selectedFixtures.includes(fBase)
+    const fl = this.selectedFixtures.includes(fBase)
       ? this.selectedFixtures
       : [fBase];
-    if (window.confirm(`areYouSure to DELETE fixture ${fl.map(f=>f?.name)}`)) {
-      fl.map(f=>this.removeFixture({ fixture: f }));
+    if (
+      window.confirm(`areYouSure to DELETE fixture ${fl.map(f => f?.name)}`)
+    ) {
+      fl.map(f => this.removeFixture({ fixture: f }));
     }
   }
 

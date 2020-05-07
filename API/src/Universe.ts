@@ -182,6 +182,7 @@ export class Universe implements UniverseI {
     });
     f.universe = this;
   }
+  @RemoteFunction({sharedFunction:true})
   public removeFixture(f: FixtureBase) {
     deleteProp(this.fixtures, f.name);
   }

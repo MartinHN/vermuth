@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import DashBoard from './views/DashBoard.vue';
+import PresetsView from './views/PresetsView.vue';
 import PatchView from './views/PatchView.vue';
 import GroupView from './views/GroupView.vue';
 import Config from './views/Config.vue';
@@ -26,6 +27,11 @@ export default new Router({
     path: '/Sequencer',
     name: 'Sequencer',
     component: SequencerView,
+  },
+  {
+    path:'/Presets',
+    name: 'Presets',
+    component: PresetsView,
   },
 
   {

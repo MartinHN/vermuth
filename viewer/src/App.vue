@@ -11,8 +11,10 @@
           class="mx-2"
           @click="showDrawer=!showDrawer"
         >+</v-btn>
-        <router-link to="/Sequencer">Sequencer</router-link>
         <router-link to="/">Dashboard</router-link>
+
+        <router-link to="/Sequencer">Sequencer</router-link>
+        <router-link to="/Presets">Presets</router-link>
 
         <router-link to="/Patch">Patch</router-link>
       </div>
@@ -220,7 +222,6 @@ export default class App extends Vue {
           // alert('ctrl-g');
           break;
       }
-
     }
   }
 }

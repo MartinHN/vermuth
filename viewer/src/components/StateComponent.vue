@@ -1,8 +1,8 @@
 <template>
   <div>
     <v-row no-gutters>
-      <v-col cols="6">
-        <v-list dense class="overflow-y-auto" style="max-height:200px">
+      <v-col :style="{maxHeight:maxHeight || 'none'}" >
+        <v-list dense class="overflow-y-auto" >
           <!-- <v-subheader>Presets</v-subheader> -->
           <v-list-item-group v-model="selectedStateIdx">
             <!-- v-model="item" color="primary"> -->
@@ -14,17 +14,17 @@
           </v-list-item-group>
         </v-list>
       </v-col>
-      <v-col>
+      <v-col cols=3 v-if="canEditStates" >
         <div id="stateActions">
-          <Button class="add" v-if="hasOneStatePreseted" @click="saveNewState" text="save"></Button>
+          <Button class="add" v-if="hasOneStatePreseted" @click="saveNewState" text="save" icon="content-save" ></Button>
           <Button
             v-if="selectedState"
             class="edit"
             @click="editState"
             text="edit"
+            icon="pencil"
           ></Button>
-          <Button class="rename" @click="renameStatePrompt" text="rename"></Button>
-          <Button class="remove" @click="removeStatePrompt" text="-" color="red"></Button>
+          <Button class="remove" @click="removeStatePrompt" text="-" color="red" icon="delete" ></Button>
           <v-menu v-if="selectedState && !selectedState.name.startsWith('__')">
             <template v-slot:activator="{ on }">
               <v-btn color="primary" dark v-on="on">linked States</v-btn>
@@ -63,6 +63,11 @@ type ValueOf<T> = T[keyof T];
   components: { MultiStateChooser, Button, Toggle, Modal, StateEditor }
 })
 export default class StateComponent extends Vue {
+
+  @Prop({default:false})
+  private canEditStates?:boolean
+  @Prop()
+  private maxHeight?:number;
   get editedState() {
     if (this.selectedState && !this.selectedState.name.startsWith("__")) {
       return this.selectedState;

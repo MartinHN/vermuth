@@ -9,14 +9,14 @@
           <text-input :editable=editMode :value="seqName" @change="setSequenceName({sequence:sequence,value:$event.value})"/>
         </v-col>
         <v-col v-if=editMode cols=1>
-          <Button  text="-" color="red" @click="seqList.remove(sequence)"  />
+          <Button  text="-" color="red" @click="seqList.remove(sequence)"  icon="delete" />
         </v-col>
         <v-col v-if=editMode cols=2>
-          <Button  text="up"  @click="seqList.up(sequence)"  />
-          <Button  text="down"  @click="seqList.down(sequence)" />
+          <Button  text="up"  @click="seqList.up(sequence)"  icon="chevron-up"/>
+          <Button  text="down"  @click="seqList.down(sequence)" icon="chevron-down" />
         </v-col>
           <v-col cols=2 v-if=!editMode style="display:block">
-          <Button  text="Go" @mousedown.native="seqPlayer.curPlayedIdx=seqNumber"/>
+          <Button  text="Go" @mousedown.native="seqPlayer.curPlayedIdx=seqNumber" icon="play" />
           <div :style="{width:'100%', height:'5px'}">
             <div :style='{width:progess,height:"100%",background:"red"}'></div>
         </div>

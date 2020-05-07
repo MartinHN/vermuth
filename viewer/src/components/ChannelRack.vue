@@ -78,6 +78,7 @@
       :showValue="showValues"
       :filterList="selectedChannelFilterNames"
       :showProps="showProps"
+      :showPresetableState="showPresetableState"
     ></FixtureGroupWidget>
   </div>
 </template>
@@ -181,6 +182,9 @@ export default class ChannelRack extends Vue {
 
   @Prop({ required: true })
   public displayableFixtureList!: FixtureBase[];
+
+  @Prop()
+  public showPresetableState?: boolean;
 
   public showNames = false;
   public showValues = true;

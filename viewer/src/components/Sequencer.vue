@@ -7,24 +7,25 @@
             <div>{{Number.parseFloat(globalTransport.beat).toFixed(2)}}</div>
           </v-col>
           <v-col cols="3">
-            <Toggle v-model="togglePlay" style="height:40px" :text="playState"></Toggle>
+            <Toggle v-model="togglePlay" style="height:40px" :text="playState" iconOn="stop" iconOff="play" ></Toggle>
           </v-col>
           <v-col>
             <Numbox text="idx" :value="playedIdx" @change="playedIdx=$event"></Numbox>
             <div style="display:flex">
-              <Button @click="prev" text="prev" />
-              <Button @click="next" text="next" />
+              <Button @click="prev" text="prev" icon="skip-previous" />
+              <Button @click="next" text="next"  icon="skip-next" />
             </div>
           </v-col>
         </v-row>
         <v-row no-gutters>
           <v-col cols="6">
-            <Toggle v-model="editOrder" text="Edit" />
+            <Toggle v-model="editOrder" text="Edit" icon="pencil" />
           </v-col>
           <v-col cols="3">
             <v-menu offset-y class="text-center">
               <template v-slot:activator="{ on }">
-                <v-btn color="primary" dark v-on="on">Add Sequence</v-btn>
+              
+                <v-btn color="primary" dark v-on="on"><v-icon>mdi-plus </v-icon>Add Sequence</v-btn>
               </template>
               <v-list>
                 <v-list-item
@@ -42,6 +43,8 @@
           <div :style="{width:pctDone,height:'100%',background:'red'}"></div>
         </div>
       </v-container>
+  <draggable v-model="seqList" group="people" @start="drag=true" @end="drag=false" style="width:100%" >
+
       <SequenceComponent
         v-for="(s,i) in seqList"
         :editMode="editOrder"
@@ -52,6 +55,7 @@
         @click="seqClicked(i)"
         :selected="selectedIdx===i"
       />
+      </draggable>
     </div>
   </div>
 </template>
@@ -69,9 +73,11 @@ import StatesMethods from "../store/states";
 import rootState from "@API/RootState";
 const sequenceModule = namespace("sequence");
 const statesModule = namespace("states");
+ import draggable from 'vuedraggable'
+ import dbg from '@API/dbg'
 
 @Component({
-  components: { Button, Numbox, SequenceComponent, Toggle }
+  components: { Button, Numbox, SequenceComponent, Toggle,draggable }
 })
 export default class Sequencer extends Vue {
   get isPlayingSeq() {
@@ -94,6 +100,25 @@ export default class Sequencer extends Vue {
 
   get seqList() {
     return this.sequenceList.listGetter;
+  }
+    set seqList(newL:any[]) {
+      const orig = this.seqList;
+      const swapped: any[] = []
+      newL.map((e,ni)=>{
+        if(swapped.indexOf(e)>=0){
+          return
+        }
+        const i = orig.indexOf(e);
+        if(i<0 || orig[ni]===undefined){
+          dbg.error('element deleted while reordering')
+          return
+        }
+        if(ni!==i){
+          this.sequenceList.swap(e,orig[ni])
+          swapped.push(e)
+          swapped.push(orig[ni])
+        }
+      })
   }
 
   get seqPlayer() {
