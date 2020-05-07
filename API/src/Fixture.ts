@@ -180,7 +180,6 @@ export class FixtureBase implements FixtureBaseI {
   public clone(circInc: number) {
     const ob = buildEscapedObject(this)
     if (this.__universe) {
-      debugger
       ob.name = getNextUniqueName(this.__universe.fixtureList.map(f => f.name), ob.name)
       ob._baseCirc+=circInc;
     }

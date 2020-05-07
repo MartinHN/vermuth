@@ -1,11 +1,17 @@
 <template>
   <div class="main">
-    <v-container class="FixturePatch pa-0" fluid >
+    <v-container class="FixturePatch pa-0" fluid>
       <v-row no-gutters>
         <v-col cols="4" class="pa-0">
           <div>Fixtures</div>
-          <Button class="button" @click="showFixtureExplorer=true" color="green" text="add Fixture" icon="plus" />
-          <Button class="removeFixture" color="red" @click="askToRmFixtures()"  icon="delete" />
+          <Button
+            class="button"
+            @click="showFixtureExplorer=true"
+            color="green"
+            text="add Fixture"
+            icon="plus"
+          />
+          <Button class="removeFixture" color="red" @click="askToRmFixtures()" icon="delete" />
           <Modal v-if="showFixtureExplorer" @close="showFixtureExplorer=false">
             <!-- <h3 slot="header">fixture Explorer</h3> -->
             <FixtureExplorer slot="body" @change="addAndQuitFExplorer($event) "></FixtureExplorer>
@@ -97,7 +103,12 @@
         <template v-slot:item.actions="{item:f}">
           <tr class="pa-0">
             <td>
-              <Button text="edit" class="button pa-0 ma-0" @click="editedFixture = f" />
+              <Button
+                text="edit"
+                class="button pa-0 ma-0"
+                @click="editedFixture = f"
+                icon="pencil"
+              />
             </td>
             <td>
               <Button text="clone" class="button pa-0 ma-0" @click="cloneFixture(f)" />
@@ -177,9 +188,22 @@ export default class FixturePatch extends Vue {
     return errs;
   }
 
-private tableClicked(ev: MouseEvent){
-console.log(ev)
-}
+  private tableClicked(ev: MouseEvent) {
+    //@ts-ignore
+    const el = ev.target as HTMLElement;
+    const clickOnRow = el.className === "text-start"; //("text-start");
+    console.log(clickOnRow, ev);
+    if (clickOnRow) {
+      const rowEl = el.parentElement;
+      const listEl = rowEl.parentElement;
+      const idx = Array.from(listEl.childNodes).indexOf(rowEl);
+      if (idx >= 0 && idx < this.universe.sortedFixtureList.length) {
+        this.selectedFixtures = [this.universe.sortedFixtureList[idx]];
+      } else {
+        console.warn("wrong list selection",idx);
+      }
+    }
+  }
   get fixtureColors() {
     const cols: { [id: string]: string } = {};
     for (const f of Object.values(this.universe.fixtures)) {
