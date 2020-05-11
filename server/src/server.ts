@@ -2,7 +2,9 @@ const debugMode =  process.env.NODE_ENV !== 'production';
 
 if (!debugMode) {require('module-alias/register'); } // form module resolution
 
-
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
 import dbg from  '@API/dbg';
 const debugFile = dbg('FILE')
 const debugMsg = dbg('MSG')
@@ -22,7 +24,8 @@ import dmxController from './dmxController';
 import rootState from '@API/RootState';
 import { callAnyAccessibleFromRemote, doSharedFunction, blockSocket, unblockSocket } from '@API/ServerSync';
 rootState.registerDMXController(dmxController);
-rootState.init();
+const ressourceDir = process.env.RESSOURCE_FOLDER || path.resolve(__dirname, '../../ressources');
+rootState.init({ressourceDir});
 
 import log from './remoteLogger';
 
@@ -31,9 +34,7 @@ import { nextTick} from '@API/MemoryUtils';
 
 const history = require('connect-history-api-fallback');
 
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
+
 const backupDir = fs.mkdtempSync(path.join(os.tmpdir(), 'vermuth-'));
 debugFile('backup dir is at ', backupDir);
 
@@ -47,6 +48,8 @@ if (!fs.existsSync(publicDir+"/index.html")) {
   debugFile(fs.readdirSync(__dirname))
 
 }
+
+
 const app = express();
 const serveIndex = require('serve-index');
 app.use('/backups', express.static(backupDir), serveIndex(backupDir));

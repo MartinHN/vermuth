@@ -111,7 +111,7 @@ export class FixtureFactoryClass  {
   protected constructor() {}
 
 
-  public async init(paths: string[] = []) {
+  public async init(ressourceDir?: string) {
 
     if (isClientInstance()) {
       this.fetchData();
@@ -123,7 +123,7 @@ export class FixtureFactoryClass  {
         const basic =  await import('./Importers/BasicImporter');
         this.__fixtureDefs.basic =  await basic.initFactory();
         const ofl  = await import('./Importers/OFLImporter');
-        this.__fixtureDefs.ofl = await ofl.initFactory();
+        this.__fixtureDefs.ofl = await ofl.initFactory(ressourceDir);
         // #endif
       }
       Object.freeze(this.__fixtureDefs);

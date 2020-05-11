@@ -399,7 +399,7 @@ function safeBindSocket(s: any) {
 
 }
 
-function buildAddressFromObj(o: any, errorIfEmpty = true) {
+export function buildAddressFromObj(o: any, errorIfEmpty = true) {
   let insp = o;
   let addr = new Array<string>();
   let found;
@@ -646,6 +646,8 @@ export function RemoteValue(cb?: (parent: any, value: any) => void) {
 
   };
 }
+
+
 
 export function RemoteFunction(options?: { skipClientApply?: boolean; sharedFunction?: boolean }) {
   return (target: any, key: string | symbol, descriptor: PropertyDescriptor) => {

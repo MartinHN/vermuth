@@ -1,80 +1,79 @@
 
 <template>
-
-  <div class="main"  style="width:100%;height:100%;text-align: left;" >
-
+  <div class="main" style="width:100%;height:100%;text-align: left;">
     <!-- <div v-if='fixture!==null'> -->
-      <v-row no-gutters>
-
-        <v-col cols=2>
-          <v-select
+    <v-row no-gutters style='height:10%;'>
+    
+        <v-select
           label="manufacturer"
-          v-model=selectedFixtureManufacturer
-          :items=fixtureManufacturers
+          v-model="selectedFixtureManufacturer"
+          :items="fixtureManufacturers"
           dense
+          dark
           filled
-          >
-        </v-select>
+        ></v-select>
 
         <v-select
-        label="category"
-        v-model=selectedFixtureCategory
-        :items=fixtureCategoriesByManufacture
-        dense
-        filled
-        >
-      </v-select>
+          label="category"
+          v-model="selectedFixtureCategory"
+          :items="fixtureCategoriesByManufacture"
+          dense
+          filled
+        ></v-select>
+   
+    </v-row>
+<v-row style='height:100%;'>
+      <v-col cols="4" style='height:100%;'>
+        <v-list style="max-height:100%" class="overflow-y-auto" dense>
+          <v-list-item-group v-model="selectedFixtureDefIdx" mandatory>
+            <v-list-item v-for="(fN, i) in filteredFixtureNames" :key="i" dense>{{fN}}</v-list-item>
+          </v-list-item-group>
+        </v-list>
+      </v-col>
 
-    </v-col>
+      <v-col cols="8" v-if="selectedFixtureDef" style="height:100%;overflow-y:auto">
+        <v-select
+          :disabled="Object.keys(selectedFixtureDef.modes).length<=1"
+          label="DMX mode"
+          class="selectclass"
+          v-model="selectedMode"
+          style="width:50%;display:inline-block"
+          :items="Object.keys(selectedFixtureDef.modes)"
+          dense
+          filled
+        ></v-select>
+        <Button
+          @click="$emit('change',selectedFixtureInstance)"
+          text="add"
+          color="green"
+          style="width:50%;display:inline-block"
+        ></Button>
 
-    
-    <v-col cols=4>
-      <v-list style="max-height: 400px" class="overflow-y-auto" dense >
-        <v-list-item-group  v-model="selectedFixtureDefIdx" mandatory>
-          <v-list-item v-for="(fN, i) in filteredFixtureNames" :key="i" dense >
-            {{fN}}
-          </v-list-item>
-        </v-list-item-group>    
-      </v-list>
-    </v-col>
+        <FixtureEditor :readonly="true" :fixture="selectedFixtureInstance"></FixtureEditor>
+      </v-col>
+    </v-row>
 
-    <v-col cols=undefined v-if=selectedFixtureDef>
-      <v-select :disabled="Object.keys(selectedFixtureDef.modes).length<=1" label="DMX mode" class="selectclass"  v-model="selectedMode" style="width:50%;display:inline-block" :items='Object.keys(selectedFixtureDef.modes)' dense filled>
-      </v-select>
-      <Button @click="$emit('change',selectedFixtureInstance)" text="add" color="green" style="width:50%;display:inline-block"></Button>
-      
-      <FixtureEditor :readonly=true :fixture=selectedFixtureInstance></FixtureEditor>
-    </v-col>
-
-  </v-row>
-
-
-  <!-- </div> -->
-
-
-</div>
+    <!-- </div> -->
+  </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue , Watch} from 'vue-property-decorator';
-import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
-import Button from '@/components/Inputs/Button.vue';
-import Numbox from '@/components/Inputs/Numbox.vue';
-import Toggle from '@/components/Inputs/Toggle.vue';
-import Modal from '@/components/Utils/Modal.vue';
-import FixtureEditor from '@/components/Editors/FixtureEditor.vue';
-import UniversesMethods from '../../store/universes';
-import {FixtureBase} from '@API/Fixture';
-import { FixtureFactory, FixtureDef } from '@API/FixtureFactory';
-const universesModule = namespace('universes');
-
-
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { State, Action, Getter, Mutation, namespace } from "vuex-class";
+import Button from "@/components/Inputs/Button.vue";
+import Numbox from "@/components/Inputs/Numbox.vue";
+import Toggle from "@/components/Inputs/Toggle.vue";
+import Modal from "@/components/Utils/Modal.vue";
+import FixtureEditor from "@/components/Editors/FixtureEditor.vue";
+import UniversesMethods from "../../store/universes";
+import { FixtureBase } from "@API/Fixture";
+import { FixtureFactory, FixtureDef } from "@API/FixtureFactory";
+const universesModule = namespace("universes");
 
 @Component({
-  components: {Button, Numbox, Toggle, FixtureEditor},
+  components: { Button, Numbox, Toggle, FixtureEditor }
 })
 export default class FixtureExplorer extends Vue {
-
   get selectedMode() {
     const aM = Object.keys(this.selectedFixtureDef.modes);
     if (aM.indexOf(this.pselectedMode) >= 0) {
@@ -87,64 +86,76 @@ export default class FixtureExplorer extends Vue {
   }
 
   get fixtureManufacturers() {
-    return ['All'].concat(Object.keys(FixtureFactory.allFixturesByManufacturers));
+    return ["All"].concat(
+      Object.keys(FixtureFactory.allFixturesByManufacturers)
+    );
   }
 
   get filteredByManufacturer() {
     let filtered = FixtureFactory.allFixtureDefsFlatList;
     const manuFilter = this.selectedFixtureManufacturer;
-    if (manuFilter !== 'All') {
-      filtered = filtered.filter((e) => e.manufacturer === manuFilter);
+    if (manuFilter !== "All") {
+      filtered = filtered.filter(e => e.manufacturer === manuFilter);
     }
     return filtered;
   }
 
   get fixtureCategoriesByManufacture() {
     const res = new Set<string>();
-    this.filteredByManufacturer.map((f) => {
-      f.categories.map((c) => res.add(c));
+    this.filteredByManufacturer.map(f => {
+      f.categories.map(c => res.add(c));
     });
 
-    return  ['All'].concat(Array.from(res));
+    return ["All"].concat(Array.from(res));
     // return FixtureFactory.getAllFixtureDefsCategories()
   }
 
   get filteredFixtureDefs() {
-
     let filtered = this.filteredByManufacturer;
-    if (this.selectedFixtureCategory !== 'All') {
+    if (this.selectedFixtureCategory !== "All") {
       const cl = [this.selectedFixtureCategory];
-      filtered = filtered.filter((e) => cl.every((elem) => e.categories.indexOf(elem) > -1));
+      filtered = filtered.filter(e =>
+        cl.every(elem => e.categories.indexOf(elem) > -1)
+      );
     }
     filtered.sort((a, b) => {
       const keyA = a.name;
       const keyB = b.name;
       // Compare the 2 dates
-      if (keyA < keyB) { return -1; }
-      if (keyA > keyB) { return 1; }
-      return 0; });
+      if (keyA < keyB) {
+        return -1;
+      }
+      if (keyA > keyB) {
+        return 1;
+      }
+      return 0;
+    });
     return filtered;
   }
 
   get filteredFixtureNames() {
-    return this.filteredFixtureDefs.map((e) => e.name).sort();
+    return this.filteredFixtureDefs.map(e => e.name).sort();
   }
   get selectedFixtureDef() {
-    const fd  = this.filteredFixtureDefs[this.selectedFixtureDefIdx];
+    const fd = this.filteredFixtureDefs[this.selectedFixtureDefIdx];
     return fd;
   }
 
   get selectedFixtureInstance() {
     const fd = this.selectedFixtureDef;
-    if (fd ) {
-     if (fd !== this._lastSelectedFixtureDef ||
-      (this._lastSelectedMode !== this.pselectedMode)) {
-      this._lastSelectedFixtureDef = fd;
-      this._lastSelectedMode = this.pselectedMode;
-      this._lastGeneratedFixtureDef =  fd.generateFixture('test', this.pselectedMode);
-    }
-     return this._lastGeneratedFixtureDef;
-
+    if (fd) {
+      if (
+        fd !== this._lastSelectedFixtureDef ||
+        this._lastSelectedMode !== this.pselectedMode
+      ) {
+        this._lastSelectedFixtureDef = fd;
+        this._lastSelectedMode = this.pselectedMode;
+        this._lastGeneratedFixtureDef = fd.generateFixture(
+          "test",
+          this.pselectedMode
+        );
+      }
+      return this._lastGeneratedFixtureDef;
     }
     return null;
   }
@@ -153,25 +164,20 @@ export default class FixtureExplorer extends Vue {
     return FixtureFactory.getAllFixtureDefsTypeNames();
   }
 
-
   // categoryFilter = new Array<string>()
   public selectedFixtureDefIdx = 0;
 
-  public selectedFixtureCategory = 'All';
-  public selectedFixtureManufacturer = 'All';
-  public pselectedMode = 'default';
+  public selectedFixtureCategory = "All";
+  public selectedFixtureManufacturer = "unknown";
+  public pselectedMode = "default";
 
-  @Prop({default: null})
+  @Prop({ default: null })
   public value: any;
 
   private _lastSelectedFixtureDef: any;
   private _lastSelectedMode: any;
   private _lastGeneratedFixtureDef: any;
-  public mounted() {
-
-  }
-
-
+  public mounted() {}
 }
 </script>
 

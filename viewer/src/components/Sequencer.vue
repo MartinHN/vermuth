@@ -56,17 +56,31 @@
         @start="drag=true"
         @end="drag=false"
         style="width:100%"
+        handle=".handle"
       >
-        <SequenceComponent
-          v-for="(s,i) in seqList"
-          :editMode="editOrder"
-          :key="s.id"
-          :seqNumber="i"
-          :sequence="s"
-          :style="{background:getHighlightedColor(i)}"
-          @click.native="seqClicked(i)"
-          :selected="selectedIdx===i"
-        />
+        <v-row v-for="(s,i) in seqList" :key="s.id" no-gutters>
+          <v-col
+            cols="1"
+            :style="{backgroundColor:(selectedIdx===i?'red':'transparent')}"
+            class="handle ma-0"
+          >
+            <div @click="seqClicked(i)" class="pa-0 ma-0">
+              <v-icon style="width:10%">mdi-drag</v-icon>
+              {{i}}
+            </div>
+          </v-col>
+          <v-col>
+            <SequenceComponent
+              style="width=90%"
+              :editMode="editOrder"
+              :seqNumber="i"
+              :sequence="s"
+              :style="{background:getHighlightedColor(i)}"
+              @click.native="seqClicked(i)"
+              :selected="selectedIdx===i"
+            />
+          </v-col>
+        </v-row>
       </draggable>
     </div>
   </div>
@@ -220,23 +234,28 @@ export default class Sequencer extends Vue {
         event.preventDefault();
 
         this.editOrder = !this.editOrder;
-      } else if (event.key === "ArrowRight") {
+      }
+      // const letter  =String.fromCharCode(event.which).toLowerCase();
+    } else if (event.key === " ") {
+      event.preventDefault();
+      this.goOnSelected();
+    } else if (event.shiftKey) {
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        this.selectedIdx = (this.selectedIdx + 1) % this.sequenceList.length;
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        this.selectedIdx =
+          (this.selectedIdx + this.sequenceList.length - 1) %
+          this.sequenceList.length;
+      }
+       else if (event.key === "ArrowRight") {
         event.preventDefault();
         this.next();
       } else if (event.key === "ArrowLeft") {
         event.preventDefault();
         this.prev();
       }
-      // const letter  =String.fromCharCode(event.which).toLowerCase();
-    } else if (event.key === " ") {
-      event.preventDefault();
-      this.goOnSelected();
-    } else if (event.key === "ArrowDown") {
-      event.preventDefault();
-      this.selectedIdx = (this.selectedIdx+1)%this.sequenceList.length
-    } else if (event.key === "ArrowUp") {
-      event.preventDefault();
-       this.selectedIdx = (this.selectedIdx + this.sequenceList.length -1)%this.sequenceList.length
     }
     console.log(event);
   }

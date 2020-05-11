@@ -23,6 +23,10 @@ module.exports = {
         
         "no-debugger":"off",
         "no-empty":"off",
+        "prefer-const":"warn",
+        "no-prototype-builtins":"warn",
+        "no-debugger":"warn",
+        "no-useless-escape":"warn",
         "@typescript-eslint/no-explicit-any":"off",
         "@typescript-eslint/no-unused-vars":"off",
         "@typescript-eslint/explicit-function-return-type":"off",
@@ -32,6 +36,8 @@ module.exports = {
         "@typescript-eslint/ban-ts-ignore":"off",
         "@typescript-eslint/type-annotation-spacing":"warn",
         
+        "@typescript-eslint/no-empty-function":"warn",
+       
     }
     
 };

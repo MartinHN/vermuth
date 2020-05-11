@@ -6,10 +6,8 @@ import store from './store';
 
 // import './registerServiceWorker';
 
-import * as VueMenu from '@hscmap/vue-menu';
-
 import vuetify from './plugins/vuetify';
-Vue.use(VueMenu);
+
 
 Vue.config.productionTip = false;
 

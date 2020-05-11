@@ -29,10 +29,12 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests/**/*.tsx",
+    "../API/gen/client/**/*"
   ],
   "exclude": [
     "node_modules",
-    "../API/node_modules"
+    "../API/node_modules",
+    "../API/src"
   ]
 }

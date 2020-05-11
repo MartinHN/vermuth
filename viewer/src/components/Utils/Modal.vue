@@ -74,7 +74,7 @@ export default class Modal extends Vue {
   overflow-y: scroll;
   margin: 0px auto;
   padding: 10px 10px;
-  background-color: #ddd;
+  background-color: #404040;
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
   transition: all .3s ease;

@@ -21,6 +21,7 @@ function getVue() {
   return false;
 }
 
+
 let deletedProp = { o: (undefined as any), p: ("" as any) }
 export function deleteProp(o: any, p: string | symbol) {
   if (deletedProp.o === o && deletedProp.p === p) { // prevent "safety" feedbacks

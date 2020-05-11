@@ -25,19 +25,10 @@ function transform(filePath,destPath,defines){
   
 }
 
-
-function generate(fileList){
-  console.log("generating for",fileList);
-  generateOne(true,fileList);
-  generateOne(false,fileList);
-  console.log("end generating for",fileList);
-}
-
-
 function generateOne(is_client,fileList){
   const shouldRebuildAll = !fileList
   const destPath = path.resolve(srcPath+'/../gen/'+(is_client?'client':'server')+'/')
-  
+  console.log(destPath)
   if(shouldRebuildAll){
     console.log('cleaning folder ',destPath)
     if(destPath.length>4 && !dryRun){
@@ -63,6 +54,16 @@ function generateOne(is_client,fileList){
 
 }
 
+function generate(fileList){
+  console.log("generating for",fileList);
+  generateOne(true,fileList);
+  generateOne(false,fileList);
+  console.log("end generating for",fileList);
+}
+
+
+
+
 
 
 
@@ -83,9 +84,10 @@ generate();
 if(process.env.GEN_ONCE){
 return;
 }
-fs.watch(srcPath,{recursive:true,persistent:true},(evt,fn)=>{
+const watch = require('node-watch');
+watch(srcPath,{recursive:true,persistent:true},(evt,fn)=>{
   console.log("watchEvent",evt,fn);
-  if(evt==="change"){
+  if(evt==="change" || evt==="update"){
 
     // const fnn = srcDir+'/'+fn
     
@@ -93,6 +95,11 @@ fs.watch(srcPath,{recursive:true,persistent:true},(evt,fn)=>{
 
       // }
       if(extToInclude.includes(path.extname(fn))){
+        if(path.isAbsolute(fn)){
+          console.warn("absolute path",fn)
+          fn = fn.split("API/src/")[1]
+          console.warn("relative path",fn)
+        }
         toGen.push(fn)
         genDebounced()
       }
@@ -118,7 +125,7 @@ function walk(dir, callback) {
   fs.readdir(dir, function(err, files) {
     if (err) throw err;
     files.forEach(function(file) {
-      var filepath = path.join(dir, file);
+      const filepath = path.join(dir, file);
       fs.stat(filepath, function(err,stats) {
         if (stats.isDirectory()) {
           walk(filepath, callback);

@@ -17,7 +17,7 @@ function getValidChannels(o: any) {
 }
 
 function getConfigurations(o: any) {
-  const res = {};
+  const res: {[id: string]: any} = {};
   for ( const m of Object.values(o.modes) as any[]) {
     const hasTemplate = m.channels.some((e: any) => (e) && typeof(e) !== 'string');
     if (!hasTemplate  ) { // ignore template for now
@@ -27,7 +27,7 @@ function getConfigurations(o: any) {
   return res;
 
 }
-function createVermuthFixtureDef(o): FixtureDef|undefined {
+function createVermuthFixtureDef(o: any): FixtureDef|undefined {
 
   try {
     const fixType = o.name;
@@ -45,13 +45,13 @@ function createVermuthFixtureDef(o): FixtureDef|undefined {
 
 }
 
-function getAllFilePaths(dirPath, arrayOfFiles) {
+function getAllFilePaths(dirPath: string, arrayOfFiles: string[]) {
 
   const  files = fs.readdirSync(dirPath);
 
   arrayOfFiles = arrayOfFiles || [];
 
-  files.forEach((file) => {
+  files.forEach((file: string) => {
     if (fs.statSync(dirPath + '/' + file).isDirectory()) {
       arrayOfFiles = getAllFilePaths(dirPath + '/' + file, arrayOfFiles);
     } else {
@@ -64,12 +64,17 @@ function getAllFilePaths(dirPath, arrayOfFiles) {
   return arrayOfFiles;
 }
 
+
+
 let OFLfactory: {[id: string]: FixtureDef} = {};
 let _inited = false;
-export async function initFactory(location= '') {
-  if (!location) {
-    location = path.join(__dirname, '../../ressources/ofl_export_ofl.zip');
+export async function initFactory(ressourceDir= '') {
+  debugger
+
+  if (!ressourceDir) {
+    ressourceDir = path.join(__dirname, '../../ressources');
   }
+  const location = path.join(ressourceDir,'ofl_export_ofl.zip')
   try {
     const folder = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'oflImport'));
     const zip = new AdmZip(location);

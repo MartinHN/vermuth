@@ -66,8 +66,8 @@ export class RootStateType {
     bindClientSocket('auto');
   }
 
-  public async init() {
-    await this.fixtureFactory.init();
+  public async init(ob?:any) {
+    await this.fixtureFactory.init(ob?.ressourceDir);
   }
 
   get treeEvents() {
@@ -119,6 +119,8 @@ export class RootStateType {
     const timeToLoad = (new Date().getTime() - startLoadTime);
     debugTime('loaded RootState in ',timeToLoad/1000,'s')
     this.meta.loadingJSONName = ""
+
+    // setTimeout(testActions,5000)
   }
   public clear() {
     this.universe.configureFromObj({});
@@ -137,7 +139,21 @@ export class RootStateType {
 }
 
 
-
 const rootState = new RootStateType();
+
+import {ActionFactory} from "./Actions"
+function testActions(){
+
+  const fkAction = ActionFactory.generateActionFromObj({ atype: "setDimmer" ,input:0.5})
+  debugger
+  if(fkAction){
+  const validT = fkAction?.filterTarget(rootState.universe.fixtureList);
+  console.log("valid +++++ ",validT)
+  fkAction.targets = validT || [];
+  fkAction.apply();
+  }
+}
+
+
 
 export default rootState;

@@ -1,36 +1,18 @@
 <template>
-  <label
-    :style="{ 'background-color':color }"
-    :for="_uid"
-    class="buttonPH unselectable"
-    :tabindex="focusable?-1:''"
-    @click="$emit('click')"
-    @mousedown="$emit('mousedown')"
-    @mouseenter="showTT=true"
-    @mouseleave="showTT=false"
-    id="b"
-    ref="b"
-  >
-    <v-icon v-for="i of iconList" :key="i.id">mdi-{{i}}</v-icon>
-    <div v-if="iconList.length===0">{{text}}</div>
-    <input
-      :id="_uid"
-      type="button"
-      class="button"
-      @click="$emit('click')"
-      @mousedown="$emit('mousedown')"
-      :tabindex="focusable?-1:''"
-    />
+  <div :style="{ 'background-color':color }">
+    <!-- <label :for="_uid"> -->
+    <input type="color" style="height:40px;display:inherit;left:inherit;position:inherit" v-if="mini" @change="sendEv('change',$event)" @input="sendEv('input',$event)" />
 
-    <v-tooltip  v-model="showTT" :attach="$refs.b" :absolute="false" >{{tooltip}}</v-tooltip>
-  </label>
+    <v-color-picker v-else @change="sendEv('change',$event)" @input="sendEv('input',$event)" />
+
+  </div>
 </template>
 
-<script lang="ts">
-import {Watch, Component, Prop, Vue } from "vue-property-decorator";
-
+  <script lang="ts">
+import { Component, Prop, Vue } from "vue-property-decorator";
+import {hexToRgb} from "@API/ColorUtils"
 @Component({})
-export default class Button extends Vue {
+export default class ColorPicker extends Vue {
   @Prop()
   public text?: string;
   @Prop({ default: false })
@@ -38,28 +20,25 @@ export default class Button extends Vue {
   @Prop({ default: "transparent" })
   public color?: string;
   @Prop()
-  icon?: string | string[];
+  icon?: string;
 
-  public showTT = false;
+  @Prop({default:true})
+  mini!:boolean
+  @Prop({ default: { r: 0, g: 0, b: 0 } })
+  public value!: { r: number; g: number; b: number };
 
-@Watch('showTT')
-ll(){
-  console.log(this.showTT)
-}
-  get iconList() {
-    if (Array.isArray(this.icon)) {
-      return this.icon;
-    } else if (typeof this.icon === "string") {
-      if (this.icon.includes(" ")) {
-        return this.icon.split(" ");
-      }
-      return [this.icon];
+  private sendEv(type: string, ev: any) {
+  
+    const h = ev.target.value;
+    const v = hexToRgb(h, true);
+    debugger
+    if (type !== "input") {
+      this.$emit(type,v);
+      this.$emit("input", v);
     }
-    return [];
-  }
-
-  get tooltip() {
-    return this.text; //this.icon ? this.text : "";
+    else{
+       this.$emit("input", v);
+    }
   }
 }
 </script>

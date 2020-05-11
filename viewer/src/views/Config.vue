@@ -3,8 +3,8 @@
 
   <Button text="save locally"  @click="SAVE_LOCALLY"/>
   <label for="file">Load Locally (Ctrl+O)</label>
-  <input type="file" id="file" accept="application/json" text="load locally" @change="loadLocally($event.target.files)"/>
-  <Button text="clear session" color="red"  @click="clearSession"/>
+  <input class="configElement"  type="file" id="file" accept="application/json" text="load locally" @change="loadLocally($event.target.files)"/>
+  <Button class="configElement"  text="clear session" color="red"  @click="clearSession"/>
   <Button text="panic (all to 0)" color="red"  @click="panic"/>
   <Button text="try other ip than default" @click="alertTryIP"/>
   <Button text="go to Backups" @click="goToBackups"/>

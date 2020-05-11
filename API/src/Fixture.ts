@@ -61,14 +61,14 @@ export class FixtureBase implements FixtureBaseI {
   }
 
   public get hasColorChannels(): boolean {
-    return Object.values(this.colorChannels).length > 0;
+    return this.colorChannels && Object.values(this.colorChannels).length > 0;
   }
   public get hasPositionChannels(): boolean {
-    return Object.values(this.positionChannels).length > 0;
+    return this.positionChannels && Object.values(this.positionChannels).length > 0;
   }
 
   public get hasDimmerChannels(): boolean {
-    return Object.values(this.dimmerChannels).length > 0;
+    return this.dimmerChannels && Object.values(this.dimmerChannels).length > 0;
   }
 
 

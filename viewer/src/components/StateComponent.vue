@@ -1,8 +1,9 @@
 <template>
   <div>
+
     <v-row no-gutters>
-      <v-col :style="{maxHeight:maxHeight || 'none'}" >
-        <v-list dense class="overflow-y-auto" >
+      <v-col >
+        <v-list dense class="overflow-y-auto"  :style="{'max-height':maxHeight || 'none'}"> 
           <!-- <v-subheader>Presets</v-subheader> -->
           <v-list-item-group v-model="selectedStateIdx">
             <!-- v-model="item" color="primary"> -->
@@ -14,18 +15,18 @@
           </v-list-item-group>
         </v-list>
       </v-col>
-      <v-col cols=3 v-if="canEditStates" >
+      <v-col cols="3" v-if="canEditStates">
         <div id="stateActions">
-          <Button class="add" v-if="hasOneStatePreseted" @click="saveNewState" text="save" icon="content-save" ></Button>
           <Button
-            v-if="selectedState"
-            class="edit"
-            @click="editState"
-            text="edit"
-            icon="pencil"
+            class="add"
+            @click="saveNewState"
+            text="save"
+            :icon="editedState?'content-save':'plus'"
           ></Button>
-          <Button class="remove" @click="removeStatePrompt" text="-" color="red" icon="delete" ></Button>
-          <v-menu v-if="selectedState && !selectedState.name.startsWith('__')">
+ 
+          <Button v-if="editedState" class="edit" @click="editState" text="edit" icon="pencil"></Button>
+          <Button v-if="editedState"  class="remove" @click="removeStatePrompt" text="-" color="red" icon="delete"></Button>
+          <v-menu v-if="editedState">
             <template v-slot:activator="{ on }">
               <v-btn color="primary" dark v-on="on">linked States</v-btn>
             </template>
@@ -39,13 +40,13 @@
       <h3 slot="header">StateEditor : {{editedState?editedState.name:"no state"}}</h3>
       <StateEditor slot="body" :state="editedState" />
     </Modal>
-    <!-- </v-container> -->
+    
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { Action, Getter, Mutation, namespace } from "vuex-class";
+import { Watch, Component, Prop, Vue } from "vue-property-decorator";
+import {  Action, Getter, Mutation, namespace } from "vuex-class";
 import Button from "@/components/Inputs/Button.vue";
 import Toggle from "@/components/Inputs/Toggle.vue";
 import Modal from "@/components/Utils/Modal.vue";
@@ -53,21 +54,24 @@ import StateEditor from "@/components/Editors/StateEditor.vue";
 import MultiStateChooser from "@/components/MultiStateChooser.vue";
 import { State } from "@API/State";
 import rootState from "@API/RootState";
-
+import ActionList from "@/components/Widgets/ActionList.vue"
 import StateMethods from "../store/states";
 
 const statesModule = namespace("states");
 type ValueOf<T> = T[keyof T];
 // type State = ValueOf<StateMethods['states']>;
 @Component({
-  components: { MultiStateChooser, Button, Toggle, Modal, StateEditor }
+  components: { ActionList,MultiStateChooser, Button, Toggle, Modal, StateEditor },
+  model:{
+    prop:"selectedState",
+    event:"change"
+  }
 })
 export default class StateComponent extends Vue {
-
-  @Prop({default:false})
-  private canEditStates?:boolean
+  @Prop({ default: false })
+  private canEditStates?: boolean;
   @Prop()
-  private maxHeight?:number;
+  private maxHeight?: number;
   get editedState() {
     if (this.selectedState && !this.selectedState.name.startsWith("__")) {
       return this.selectedState;
@@ -77,13 +81,16 @@ export default class StateComponent extends Vue {
 
   set selectedStateIdx(i: number) {
     if (this.selectedState && i === undefined) {
-      this.stateList.recallState(this.selectedState, 0);
+      this.stateList.setLoadedStateName('')
+      return
+      // this.stateList.recallState(this.selectedState, 0);
     }
 
     // if (this.selectedState) {
     if (i >= 0 && i < this.stateNames.length) {
-      this.stateList.recallStateNamed(this.stateNames[i], 1);
+      this.stateList.recallStateNamed(this.stateNames[i], 1,true);
     }
+    
   }
   get selectedStateIdx() {
     return this.stateNames.indexOf(
@@ -121,6 +128,11 @@ export default class StateComponent extends Vue {
 
   get selectedState(): State | undefined {
     return this.stateList.getStateNamed(this.stateList.loadedStateName);
+  }
+
+  @Watch('selectedState')
+  em(){
+    this.$emit('change',this.selectedState)
   }
 
   @statesModule.Mutation("saveCurrentState")
@@ -184,13 +196,13 @@ export default class StateComponent extends Vue {
     }
   }
 
-  get hasOneStatePreseted(){
-    return this.stateList.presetableObjects.length>0
+  get hasOneStatePreseted() {
+    return this.stateList.presetableObjects.length > 0;
   }
 
   public saveNewState() {
     const name = prompt(
-      "save new state",
+      "save or create new state",
       this.selectedState ? this.selectedState.name : ""
     );
     if (name !== null && name !== "") {

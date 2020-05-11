@@ -9,10 +9,10 @@ export default new Vuetify({
   // theme: {
   //   // dark: true,
   // },
-  
-  iconfont: 'md',
-    theme:   {
-      dark:true,
+
+  iconfont: 'mdi',
+  theme: {
+    dark: true,
     // primary: '#ffc107',
     // secondary: '#607d8b',
     // accent: '#ff5722',
@@ -20,7 +20,7 @@ export default new Vuetify({
     // warning: '#ff9800',
     // info: '#9c27b0',
     // success: '#4caf50',
-}
+  }
 
 
 });

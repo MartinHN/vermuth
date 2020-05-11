@@ -9,9 +9,9 @@
             @click="showFixtureExplorer=true"
             color="green"
             text="add Fixture"
-            icon="plus"
+            icon="plus lightbulb"
           />
-          <Button class="removeFixture" color="red" @click="askToRmFixtures()" icon="delete" />
+          <Button text="remove Fixture" color="red" @click="askToRmFixtures()" icon="delete lightbulb" />
           <Modal v-if="showFixtureExplorer" @close="showFixtureExplorer=false">
             <!-- <h3 slot="header">fixture Explorer</h3> -->
             <FixtureExplorer slot="body" @change="addAndQuitFExplorer($event) "></FixtureExplorer>
@@ -20,8 +20,8 @@
         <v-col cols="4">
           <!-- <Button text="Manage Groups" @click="showGroupExplorer=true"/> -->
           <div>Groups</div>
-          <Button text="addGroup" @click="addGroup()" color="green" icon="plus"></Button>
-          <Button text="removeGroup" @click="removeGroup()" color="red" icon="delete"></Button>
+          <Button text="addGroup" @click="addGroup()" color="green" icon="plus lightbulb-group"></Button>
+          <Button text="removeGroup" @click="removeGroup()" color="red" icon="delete lightbulb-group"></Button>
           <!-- <Modal v-if="showGroupExplorer" @close="showGroupExplorer=false">
             <GroupExplorer  slot="body" ></GroupExplorer>
           </Modal>-->
@@ -195,12 +195,14 @@ export default class FixturePatch extends Vue {
     console.log(clickOnRow, ev);
     if (clickOnRow) {
       const rowEl = el.parentElement;
-      const listEl = rowEl.parentElement;
+      const listEl = rowEl?.parentElement;
+      if(rowEl && listEl){
       const idx = Array.from(listEl.childNodes).indexOf(rowEl);
       if (idx >= 0 && idx < this.universe.sortedFixtureList.length) {
         this.selectedFixtures = [this.universe.sortedFixtureList[idx]];
       } else {
         console.warn("wrong list selection",idx);
+      }
       }
     }
   }

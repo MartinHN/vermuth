@@ -1,7 +1,7 @@
 
 <template>
 
-  <div class="main"  style="width:100%;height:100%">
+  <div class="main"  style="width:100%;">
 
     <!-- <div v-if='fixture!==null'> -->
   <!-- 
@@ -36,7 +36,49 @@
 
 
               </td>
-              <td>({{c.roleFam}})</td>
+              <td>
+              {{niceRole(c)}}
+
+
+
+              <v-menu v-if="!readonly" open-on-hover bottom offset-y :close-on-content-click="false" :value="openedMenu===c.name" @input="openedMenu=c.name" >
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    color="primary"
+                    dark
+                    v-on="on"
+                  >
+                    Role
+                  </v-btn>
+                </template>
+
+                <v-list>
+               
+                <v-list-item   @click="setRoleFam(c,'auto','')" >auto</v-list-item>
+                
+                    <v-list-group
+                      v-for="item in Object.keys(channelFamType)"
+                      :key="item"
+                      no-action
+                    >
+                      <template v-slot:activator>
+                        <v-list-item>
+                            {{ item }}
+                        </v-list-item>
+                      </template>
+
+                      <v-list-item
+                        v-for="subItem in channelFamType[item]"
+                        :key="subItem"
+                        @click="setRoleFam(c,item,subItem)"
+                      >
+                     {{ subItem }}
+                      </v-list-item>
+                    </v-list-group>
+                  </v-list>
+              </v-menu>
+ 
+              </td>
 
 
 
@@ -69,8 +111,7 @@ import UniversesMethods from '../../store/universes';
 import {FixtureBase} from '@API/Fixture';
 import { FixtureFactory } from '@API/FixtureFactory';
 const universesModule = namespace('universes');
-
-
+import {ChannelRoles,ChannelBase} from "@API/Channel";
 
 @Component({
   components: {Button, Numbox, Toggle, TextInput},
@@ -106,6 +147,36 @@ export default class FixtureEditor extends Vue {
     // ,{text:"edit",sortable:false},{text:"test",sortable:false}
     ];
   }
+
+  get channelFamType(){
+    const res : {[id:string]:string[]} = {}
+    for(const [k,v ] of Object.entries(ChannelRoles)){
+      res[k] = Array.from(Object.keys(v))
+    }
+    console.log(res)
+    return res
+  }
+
+  setRoleFam(c:ChannelBase,f:string,t:string){
+    c.setCustomFamType(f,t)
+    this.closeAllMenus()
+  }
+
+  closeAllMenus(){
+    this.openedMenu="";
+  }
+
+  
+  niceRole(c:ChannelBase){
+    const trueType =  `${c.roleFam}:${c.roleType}`
+    if(!c.hasCustomFamType){
+      return `(${trueType})`
+    }
+    return trueType
+  }
+
+  openedMenu = ""
+
 
 
 }
