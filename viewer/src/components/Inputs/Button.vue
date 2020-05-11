@@ -4,30 +4,26 @@
     :for="_uid"
     class="buttonPH unselectable"
     :tabindex="focusable?-1:''"
-    @click="$emit('click')"
-    @mousedown="$emit('mousedown')"
-    @mouseenter="showTT=true"
-    @mouseleave="showTT=false"
-    id="b"
-    ref="b"
-  >
-    <v-icon v-for="i of iconList" :key="i.id">mdi-{{i}}</v-icon>
-    <div v-if="iconList.length===0">{{text}}</div>
-    <input
-      :id="_uid"
-      type="button"
-      class="button"
-      @click="$emit('click')"
-      @mousedown="$emit('mousedown')"
-      :tabindex="focusable?-1:''"
-    />
 
-    <v-tooltip  v-model="showTT" :attach="$refs.b" :absolute="false" >{{tooltip}}</v-tooltip>
+    @click.prevent="$emit('click')"
+    @mousedown.prevent="$emit('mousedown')"
+  >
+    <input :id="_uid" type="button" class="button" :tabindex="focusable?-1:''" />
+
+    <v-tooltip bottom>
+      <template v-slot:activator="{ on }">
+        <div v-on="tooltip?on:{}" style="width:100%;height:100%;display: flex;justify-content:center;" class>
+          <v-icon v-for="i of iconList" :key="i.id">mdi-{{i}}</v-icon>
+          <div v-if="iconList.length===0" class="nonClickable">{{text}}</div>
+        </div>
+      </template>
+      <span>{{tooltip}}</span>
+    </v-tooltip>
   </label>
 </template>
 
-<script lang="ts">
-import {Watch, Component, Prop, Vue } from "vue-property-decorator";
+  <script lang="ts">
+import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component({})
 export default class Button extends Vue {
@@ -40,12 +36,6 @@ export default class Button extends Vue {
   @Prop()
   icon?: string | string[];
 
-  public showTT = false;
-
-@Watch('showTT')
-ll(){
-  console.log(this.showTT)
-}
   get iconList() {
     if (Array.isArray(this.icon)) {
       return this.icon;
@@ -79,6 +69,9 @@ input {
   text-decoration: none;
   display: inline-block;
   font-size: 16px;*/
+}
+.nonClickable {
+  pointer-events: none;
 }
 /*.buttonPH{
   

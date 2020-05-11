@@ -20,7 +20,7 @@
           <Button
             class="add"
             @click="saveNewState"
-            text="save"
+            :text="editedState?'save':'add'"
             :icon="editedState?'content-save':'plus'"
           ></Button>
  

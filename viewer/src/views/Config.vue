@@ -62,6 +62,7 @@ export default class Config extends Vue {
   }
 
   public clearSession() {
+    debugger
     const res = confirm('are you sure to delete all your session');
     if (res) {
       this.SET_SESSION_STATE({});
