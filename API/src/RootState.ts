@@ -141,18 +141,18 @@ export class RootStateType {
 
 const rootState = new RootStateType();
 
-import {ActionFactory} from "./Actions"
-function testActions(){
+// import {ActionFactory} from "./Actions"
+// function testActions(){
 
-  const fkAction = ActionFactory.generateActionFromObj({ atype: "setDimmer" ,input:0.5})
-  debugger
-  if(fkAction){
-  const validT = fkAction?.filterTarget(rootState.universe.fixtureList);
-  console.log("valid +++++ ",validT)
-  fkAction.targets = validT || [];
-  fkAction.apply();
-  }
-}
+//   const fkAction = ActionFactory.generateActionFromObj({ atype: "setDimmer" ,input:0.5})
+//   debugger
+//   if(fkAction){
+//   const validT = fkAction?.filterTarget(rootState.universe.fixtureList);
+//   console.log("valid +++++ ",validT)
+//   fkAction.targets = validT || [];
+//   fkAction.apply();
+//   }
+// }
 
 
 

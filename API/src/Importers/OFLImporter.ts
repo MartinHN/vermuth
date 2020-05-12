@@ -69,7 +69,6 @@ function getAllFilePaths(dirPath: string, arrayOfFiles: string[]) {
 let OFLfactory: {[id: string]: FixtureDef} = {};
 let _inited = false;
 export async function initFactory(ressourceDir= '') {
-  debugger
 
   if (!ressourceDir) {
     ressourceDir = path.join(__dirname, '../../ressources');

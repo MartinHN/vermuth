@@ -2,7 +2,7 @@ import { ChannelBase, ChannelGroup } from './Channel';
 import { FixtureBase, FixtureGroup } from './Fixture';
 import { Universe } from './Universe';
 import { sequencePlayer } from './Sequence';
-import { nonEnumerable, RemoteFunction, AccessibleClass, setChildAccessible, RemoteValue, ClientOnly, doSharedFunction } from './ServerSync';
+import { nonEnumerable, RemoteFunction, AccessibleClass, setChildAccessible, RemoteValue, ClientOnly, doSharedFunction, SetAccessible } from './ServerSync';
 import { addProp, deleteProp, Proxyfiable } from './MemoryUtils';
 
 import { CurvePlayer, CurveLink, CurveLinkStore } from './CurvePlayer';
@@ -242,6 +242,8 @@ class LinkedState extends Proxyfiable {
   public dimMaster: number;
 }
 
+
+@AccessibleClass()
 export class State {
 
   public static createFromObj(o: any, sl: StateList) {
@@ -252,8 +254,9 @@ export class State {
 
   public fixtureStates: FixtureState[] = [];
   public linkedStates: LinkedState[] = [];
+  @SetAccessible()
   public actions: ActionList = new ActionList();
-  
+
   constructor(private __stateList: StateList | undefined, public name: string, public __validChNames: string[], fixtures: FixtureBase[], public full?: boolean) {
     // if(__validChNames.length===0 && !name.startsWith('__') && !name.startsWith('current')){debugger;}
     this.updateFromFixtures(fixtures);
@@ -641,10 +644,10 @@ export class StateList {
   }
 
   @RemoteFunction({ sharedFunction: true })
-  public saveCurrentState(name: string, linkedStates?: LinkedState[]) {
+  public saveCurrentState(name: string, linkedStates?: LinkedState[], actions?: ActionList) {
 
     if (name !== this.currentState.name) {
-      this.saveFromPresetableNames(name, this.presetableNames, linkedStates);
+      this.saveFromPresetableNames(name, this.presetableNames, linkedStates,actions);
 
     } else {
       this.updateCurrentState();
@@ -652,11 +655,12 @@ export class StateList {
     }
   }
   @RemoteFunction({ sharedFunction: true })
-  public saveFromPresetableNames(name: string, presetableNames: string[], linkedStates?: LinkedState[]) {
+  public saveFromPresetableNames(name: string, presetableNames: string[], linkedStates?: LinkedState[], actions?: ActionList) {
 
     const fl = this.getCurrentFullFixtureList();
     const st = new State(this, name, presetableNames || this.presetableNames, fl);
     if (linkedStates) { st.linkedStates = linkedStates; }
+    if(actions){st.actions = actions}
     this.addState(st);
     this.setLoadedStateName(st.name);
   }

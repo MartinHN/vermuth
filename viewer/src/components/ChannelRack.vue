@@ -60,7 +60,7 @@
             </v-menu>
           </v-col>
           <v-col cols>
-            <Button @click="disableAllPresetable()" text="disable All"></Button>
+            <Button @click="disableAllPresetable()" style="height:100%" text="disable All"></Button>
           </v-col>
         </v-row>
 

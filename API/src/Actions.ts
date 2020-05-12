@@ -2,7 +2,7 @@ import { ChannelBase, ChannelGroup } from './Channel';
 import { FixtureBase, FixtureGroup } from './Fixture';
 import { Universe } from './Universe';
 import { sequencePlayer, Sequence } from './Sequence';
-import { nonEnumerable, RemoteFunction, AccessibleClass, setChildAccessible, RemoteValue, ClientOnly, doSharedFunction, buildAddressFromObj, resolveAccessible } from './ServerSync';
+import { nonEnumerable, RemoteFunction, AccessibleClass,RemoteArray, setChildAccessible, RemoteValue, ClientOnly, doSharedFunction, buildAddressFromObj, resolveAccessible,Ref, SetAccessible } from './ServerSync';
 import { addProp, deleteProp, Proxyfiable } from './MemoryUtils';
 
 import { CurvePlayer, CurveLink, CurveLinkStore } from './CurvePlayer';
@@ -46,7 +46,7 @@ export interface ActionType {
 export abstract class ActionInstance {
   getATYPE(): ActionType{return "non" as unknown as ActionType}
   abstract filterTarget(l: any[]): any[];
-  abstract targets: any[];
+  abstract targets: RemoteArray<Ref<any>>;
   abstract inputs: any;
   abstract apply(): void;
   abstract configureFromObj(ob: any): void;
@@ -62,34 +62,47 @@ export abstract class TypedActionInstance<I, O extends { name: string }> extends
   filterTarget(potential: O[]): O[] {
     return potential.slice();
   }
+  constructor(ob:any){
+    super()
+    if(ob)this.configureFromObj(ob)
+  }
 
-  targets = new Array<O>();
+  // @RemoteValue((parent,k)=>{
+  //   console.log('target change',parent,k)
+  // })
+  @SetAccessible()
+  targets = new RemoteArray<Ref<O>>((s:string)=>{
+    return  new Ref<O>(s)
+  } )
 
-  set inputs(v: I) {
-    this.pinput = v
+  @RemoteFunction()
+  setInputs(v: I) {
+    this.pinputs = v
     this.apply()
   }
-  get inputs() { return this.pinput }
-  pinput!: I;
+  get inputs() { return this.pinputs }
+
+  get inputValues(){return Object.assign({},this.pinputs)} // removes object address nefast when called on remotes
+  
+  pinputs!: I;
+
   filterRule = ""
 
   toJSON() {
     return {
       atype: this.getATYPE().atype,
-      targets: this.targets.map(f => buildAddressFromObj(f)),
-      inputs: this.pinput
+      targets: this.targets.toJSON(),
+      inputs: this.pinputs
     }
   }
 
   configureFromObj(ob: any) {
     if (ob.targets) {
-      this.targets = []
-      Object.values(ob.targets as Array<string>).map((v) => {
-        this.targets.push(resolveAccessible(rootState, v.split('/')).accessible)
-      })
+      this.targets.configureFromObj(ob.targets)
+      
     }
     if (ob.inputs) {
-      this.inputs = ob.inputs
+      this.pinputs = ob.inputs
     }
   }
 }
@@ -140,8 +153,6 @@ export const ActionFactory = new ActionFactoryClass()
 
 
 
-
-
 ///////////////::
 // Implementations
 //////////////:
@@ -152,13 +163,13 @@ class SetDimmerAction extends TypedActionInstance<DimmerIn, FixtureBase>{
   static inputCaps = { dimmer: InputCapType.Number }
   static targetCaps = TargetCapType.FixtureBase
   getATYPE() { return SetDimmerAction; }
-  constructor(ob: any) {
-    super()
-    this.inputs = ob?.inputs || { dimmer: 1 }
+  constructor(ob?: any) {
+    super(ob)
+    this.pinputs = ob?.inputs || { dimmer: 1 }
   }
   apply() {
     for (const f of this.targets) {
-      f.setMaster(this.inputs.dimmer);
+      f.get()?.setMaster(this.inputs.dimmer);
     }
 
   }
@@ -177,13 +188,14 @@ class SetColorAction extends TypedActionInstance<ColorIn, ColorTarget>{
   getATYPE() { return SetColorAction; }
 
   constructor(ob: any) {
-    super()
-    this.inputs = ob.inputs || { color: { r: 0, g: 0, b: 0 }, setWhiteToZero: false }
+    super(ob)
+    this.pinputs = ob.inputs || { color: { r: 0, g: 0, b: 0 }, setWhiteToZero: false }
   }
 
   apply() {
+    const v= this.inputValues // avoid sending ref
     for (const f of this.targets) {
-      f.setColor(this.inputs.color, this.inputs.setWhiteToZero)
+      f.get()?.setColor(v.color, v.setWhiteToZero)
     }
   }
   filterTarget(fl: FixtureBase[]) { return fl.filter(f => f.hasColorChannels) }
@@ -202,13 +214,14 @@ class SetPosAction extends TypedActionInstance<PosIn, PosTarget>{
   getATYPE() { return SetPosAction; }
 
   constructor(ob: any) {
-    super()
-    this.inputs = ob.inputs || { x: 0, y: 0 }
+    super(ob)
+    this.pinputs = ob.inputs || { x: 0, y: 0 }
   }
 
   apply() {
+    const v = this.inputValues
     for (const f of this.targets) {
-      f.setPosition({ x: this.inputs.x, y: this.inputs.y })
+      f.get()?.setPosition(v)
     }
   }
   filterTarget(fl: FixtureBase[]) { return fl.filter(f => f.hasPositionChannels) }
@@ -228,7 +241,7 @@ ActionFactory.register(SetPosAction)
 //   getATYPE() { return SetOtherAction; }
 
 //   constructor(ob: any) {
-//     super()
+//     super(ob)
 //     this.inputs = ob.inputs || { x: 0, y: 0 }
 //   }
 
@@ -248,6 +261,7 @@ ActionFactory.register(SetPosAction)
 
 
 import {State} from './State'
+import { buildEscapedObject } from './SerializeUtils';
 type PresetIn = { dimMaster: number }
 type PresetTarget = State
 class SetPresetAction extends TypedActionInstance<PresetIn, PresetTarget>{
@@ -258,12 +272,12 @@ class SetPresetAction extends TypedActionInstance<PresetIn, PresetTarget>{
   getATYPE() { return SetPresetAction; }
 
   constructor(ob: any) {
-    super()
-    this.inputs = ob.inputs || { dimMaster: 1 }
+    super(ob)
+    this.pinputs = ob.inputs || { dimMaster: 1 }
   }
 
   apply() {
-    for (const s of this.targets) {
+    for (const s of this.targets.map(t=>t.get()).filter(u=>u!==undefined) as Array<PresetTarget>) {
       rootState.stateList.recallState(s, this.inputs.dimMaster,false )
   }
 }
@@ -274,56 +288,51 @@ class SetPresetAction extends TypedActionInstance<PresetIn, PresetTarget>{
 ActionFactory.register(SetPresetAction)
 
 
-@AccessibleClass()
-export class ActionList{
 
-  
-  public readonly list: ActionInstance[] = []
+export class ActionList extends  RemoteArray<ActionInstance> {
+  constructor(){
+    super(ActionFactory.generateActionFromObj.bind(ActionFactory))
+    // debugger;
+    // setChildAccessible(this,"plist")
+  }
 
+  // public get list(){return this.l}
+  // list = new RemoteArray<ActionInstance>(ActionFactory.generateActionFromObj)
   forbiddenNames: string[]=[]
 
-  @RemoteFunction({sharedFunction:true})
-  addActionFromObj(ob:any){
-    const a = ActionFactory.generateActionFromObj(ob)
-    if(a){
-      this.list.push(a)
-    }
-    return a;
-    
-  }
 
-  @RemoteFunction({sharedFunction:true})
-  removeAction(a:ActionInstance){
-    const i= this.list.indexOf(a)
-    if(i>=0){
-      this.list.splice(i,1)
-    }
-    return i>=0;
-    
-  }
-
-  configureFromObj(ob:any){
-    while(this.list.length){
-      this.removeAction(this.list[0])
-    }
-    this.forbiddenNames = []
-    ob.list?.map((l:any)=>this.addActionFromObj(l))
+  configureFromObj(ob: any){
+    super.configureFromObj(ob?.list)
     this.forbiddenNames = ob.forbiddenNames || []
-    
-
   }
 
   @RemoteFunction({sharedFunction:true})
-  addFromName(e:string){
+  addFromName(e: string){
     const a = ActionFactory.generateFromName(e);
     if(a){
-      this.list.push(a)
+      this.push(a)
     }
     return a;
 
+  }
+
+  toJSON(){
+    return {list:super.toJSON(),forbiddenNames:this.forbiddenNames}
   }
 
 
 
 
 }
+
+
+
+// function test(){
+//   const a = new SetDimmerAction()
+//   a.targets.push(new Ref("/?/universe/f"))
+
+//   const o = buildEscapedObject(a)
+//     debugger
+
+// }
+// test()

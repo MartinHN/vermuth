@@ -8,7 +8,7 @@
         <v-list-item v-for="i in availableTypes" :key="i.id" @click="addAction(i)">{{i}}</v-list-item>
       </v-list>
     </v-menu>
-    <draggable style="width:100%" handle=".handle">
+    <draggable @end="reorderActions" style="width:100%" handle=".handle">
       <v-row v-for="a of actions.list" :key="a.id" style="width:100%">
         <v-icon class="handle" style="width:10%">mdi-{{getIcon(a)}}</v-icon>
         <ActionComponent style="width:90%" :action="a"></ActionComponent>
@@ -68,7 +68,6 @@ export default class ActionListComp extends Vue {
     this.actions.addFromName(e)
   }
   public getIcon(a:ActionInstance){
-    debugger;
     const type = a.getATYPE().atype
     if(type ==="setDimmer"){
       return 'car-light-high'
@@ -81,6 +80,10 @@ export default class ActionListComp extends Vue {
     }
 
     return 'drag'
+  }
+
+  public reorderActions(e:{newIndex:number,oldIndex:number}){
+   this.actions.swapIndexes(e.newIndex,e.oldIndex)
   }
 }
 </script>

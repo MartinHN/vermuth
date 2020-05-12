@@ -125,6 +125,9 @@ export default class StateComponent extends Vue {
   get linkedStateList() {
     return this.selectedState ? this.selectedState.linkedStates : [];
   }
+    get actions() {
+    return this.selectedState?.actions;
+  }
 
   get selectedState(): State | undefined {
     return this.stateList.getStateNamed(this.stateList.loadedStateName);
@@ -206,7 +209,7 @@ export default class StateComponent extends Vue {
       this.selectedState ? this.selectedState.name : ""
     );
     if (name !== null && name !== "") {
-      this.stateList.saveCurrentState(name, this.linkedStateList);
+      this.stateList.saveCurrentState(name, this.linkedStateList,this.actions);
       // this.selectedState = this.stateList.getStateNamed(name);
     }
   }

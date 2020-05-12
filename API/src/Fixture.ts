@@ -276,7 +276,7 @@ export class FixtureBase implements FixtureBaseI {
     this.dimmerValue = v;
   }
 
-  @RemoteFunction({ sharedFunction: true })
+  @RemoteFunction({ sharedFunction: true ,allowRawObj:true})
   public setColor(c: { r: number; g: number; b: number }, setWhiteToZero: boolean) {
     const cch = this.colorChannels;
     if (cch !== {}) {

@@ -1,6 +1,7 @@
 <template>
   <label
     :style="{ 'background-color':color }"
+    
     :for="_uid"
     class="buttonPH unselectable"
     :tabindex="focusable?-1:''"
@@ -12,12 +13,12 @@
 
     <v-tooltip bottom>
       <template v-slot:activator="{ on }">
-        <div v-on="tooltip?on:{}" style="width:100%;height:100%;display: flex;justify-content:center;" class>
+        <div v-on="tooltipText?on:{}" style="width:100%;height:100%;display: flex;justify-content:center;" class>
           <v-icon v-for="i of iconList" :key="i.id">mdi-{{i}}</v-icon>
           <div v-if="iconList.length===0" class="nonClickable">{{text}}</div>
         </div>
       </template>
-      <span>{{tooltip}}</span>
+      <span>{{tooltipText}}</span>
     </v-tooltip>
   </label>
 </template>
@@ -33,13 +34,15 @@ export default class Button extends Vue {
   public focusable?: boolean;
   @Prop({ default: "transparent" })
   public color?: string;
-  @Prop()
+  @Prop({default:""})
   icon?: string | string[];
+  @Prop({default:""})
+  tooltip!:string;
 
   get iconList() {
     if (Array.isArray(this.icon)) {
       return this.icon;
-    } else if (typeof this.icon === "string") {
+    } else if (typeof this.icon === "string" && this.icon) {
       if (this.icon.includes(" ")) {
         return this.icon.split(" ");
       }
@@ -48,8 +51,8 @@ export default class Button extends Vue {
     return [];
   }
 
-  get tooltip() {
-    return this.text; //this.icon ? this.text : "";
+  get tooltipText() {
+    return this.tooltip || (this.icon ? this.text : "");
   }
 }
 </script>

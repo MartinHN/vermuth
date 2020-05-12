@@ -15,7 +15,7 @@
       <v-col>
         <div v-if="true">
           <v-select
-            :value="(action.targets || []).map(t=>t.name)"
+            :value="(action.targets || []).map(t=>t.get().name)"
             :items="availableTargetNames"
             multiple
             @change="setTargetNames"
@@ -49,6 +49,7 @@ import { ActionFactory, ActionInstance, InputCapType } from "@API/Actions";
 import rootState from "@API/RootState";
 import ColorPicker from "@/components/Inputs/ColorPicker.vue";
 import { TargetCapType } from "../../../../API/gen/client/Actions";
+import { buildAddressFromObj } from "../../../../API/gen/client/ServerSync";
 const universesModule = namespace("universes");
 const statesModule = namespace("states");
 
@@ -104,16 +105,16 @@ export default class ActionComponent extends Vue {
     if (originT) {
       return this.action?.filterTarget(originT);
     }
+    return []
   }
 
   get availableTargetNames(){
     return this.availableTargets?.map(t=>t.name)
   }
   setTargetNames(ns: string[]) {
-    const f = this.availableTargets?.filter(f => ns.includes(f.name));
-    if (f) {
-          debugger;
-      this.action.targets = f;
+    const addrL = this.availableTargets?.filter(f => ns.includes(f.name)).map(f=>buildAddressFromObj(f,true));
+    if (addrL) {     
+      this.action.targets.setFromList( addrL);
       this.action.apply();
     }
   }
