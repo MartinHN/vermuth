@@ -209,6 +209,7 @@ ioServer.on('connection', (socket) => {
         if (!evt || !evt.endsWith('/_time')) {
           let a = JSON.stringify(args);
           if (evt === 'SET_STATE') {a = ''; }
+          else if(evt === '/fixtureFactory/__fixtureDefs'){a='';}
           debugMsg('server >> ' + (isBroadCasting ? ' to any but ' : '') + socket.id +" "+ evt + a + '\n');
         }
       // }

@@ -2,7 +2,7 @@
 <template>
   <div class="main" style="width:100%;height:100%;text-align: left;">
     <!-- <div v-if='fixture!==null'> -->
-    <v-row no-gutters style='height:10%;'>
+    <v-row no-gutters style='height:10%;flex-wrap:nowrap'>
     
         <v-select
           label="manufacturer"

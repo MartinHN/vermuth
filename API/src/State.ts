@@ -2,7 +2,7 @@ import { ChannelBase, ChannelGroup } from './Channel';
 import { FixtureBase, FixtureGroup } from './Fixture';
 import { Universe } from './Universe';
 import { sequencePlayer } from './Sequence';
-import { nonEnumerable, RemoteFunction, AccessibleClass, setChildAccessible, RemoteValue, ClientOnly, doSharedFunction, SetAccessible } from './ServerSync';
+import { nonEnumerable, RemoteFunction, AccessibleClass, setChildAccessible, RemoteValue, ClientOnly, doSharedFunction, SetAccessible, findLocationInParent } from './ServerSync';
 import { addProp, deleteProp, Proxyfiable } from './MemoryUtils';
 
 import { CurvePlayer, CurveLink, CurveLinkStore } from './CurvePlayer';
@@ -254,7 +254,7 @@ export class State {
 
   public fixtureStates: FixtureState[] = [];
   public linkedStates: LinkedState[] = [];
-  @SetAccessible()
+
   public actions: ActionList = new ActionList();
 
   constructor(private __stateList: StateList | undefined, public name: string, public __validChNames: string[], fixtures: FixtureBase[], public full?: boolean) {
@@ -439,7 +439,7 @@ export class State {
 }
 
 
-@AccessibleClass()
+// @AccessibleClass()
 export class StateList {
   get universe() {
     return this.__universe;
@@ -479,6 +479,18 @@ export class StateList {
     }
     return rsl;
   }
+
+  @SetAccessible({onChange:(parent,el)=>{
+    console.log('state change ',el)
+    debugger
+    const path = findLocationInParent(el,"states")
+    if(path?.length && path[0].__accessibleName===parent.loadedStateName){
+      const aPath = findLocationInParent(el,"actions")
+      if(aPath?.length && aPath.length>1)
+        aPath[1].apply()
+    }
+   
+}})
   public states: { [key: string]: State } = {};
 
   @ClientOnly()
@@ -553,6 +565,7 @@ export class StateList {
       if (!s) { debugger; console.error("invalid state"); return; }
     }
     const rs = s.resolveState(fl, this.states, dimMaster);
+    
     this.applyResolvedState(rs);
     const channelList = s.getSavedChannels(fl);
     if (setLoaded) {

@@ -6,8 +6,8 @@
           <div
             :is="inputComponents[e]"
             v-model="action.inputs[e]"
+            v-bind="currentInputProps"
             :text="e"
-            @input="apply"
             style="width:100%;height:100%;minHeight:40px"
           ></div>
         </div>
@@ -22,6 +22,7 @@
           ></v-select>
         </div>
       </v-col>
+
     </v-row>
   </v-container>
 </template>
@@ -53,6 +54,8 @@ import { buildAddressFromObj } from "../../../../API/gen/client/ServerSync";
 const universesModule = namespace("universes");
 const statesModule = namespace("states");
 
+
+
 @Component({
   components: {
     Slider,
@@ -82,11 +85,23 @@ export default class ActionComponent extends Vue {
     });
     return res;
   }
+
+  get currentInputProps(){
+    return {mini:false,RGBW:this.shouldBeRGBW}
+  }
+  get shouldBeRGBW(){
+    return this.action.inputs["setWhiteToZero"]?false:true;
+  }
   get atype() {
     return this.action.getATYPE();
   }
   apply() {
     this.action.apply();
+  }
+
+  changeInputs(n:string,i:any){
+    // debugger
+    this.action.inputs[n] = Object.assign({},i)
   }
 
   get availableTargets() {

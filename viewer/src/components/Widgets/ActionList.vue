@@ -12,6 +12,8 @@
       <v-row v-for="a of actions.list" :key="a.id" style="width:100%">
         <v-icon class="handle" style="width:10%">mdi-{{getIcon(a)}}</v-icon>
         <ActionComponent style="width:90%" :action="a"></ActionComponent>
+      <Button @click="deleteAction(a)" icon="delete" />
+      
       </v-row>
     </draggable>
   </v-container>
@@ -39,6 +41,7 @@ import { ActionFactory ,ActionList,ActionInstance} from "@API/Actions";
 import ActionComponent from "./ActionComponent.vue";
 import { State } from "@API/State";
 import draggable from "vuedraggable";
+
 const universesModule = namespace("universes");
 const statesModule = namespace("states");
 
@@ -66,6 +69,10 @@ export default class ActionListComp extends Vue {
   }
   public addAction(e: string) {
     this.actions.addFromName(e)
+  }
+
+  public deleteAction(a:ActionInstance){
+    this.actions.splice(this.actions.indexOf(a),1)
   }
   public getIcon(a:ActionInstance){
     const type = a.getATYPE().atype

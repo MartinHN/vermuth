@@ -5,13 +5,16 @@
 const debugM = require('debug')
 
 // const debugMode =  process.env.NODE_ENV !== 'production';
-const colorLut = [
-    32, 34, 35, // normal
-    92, 94, // pastel
-    100, 102, 103, 104, 106, // pastel bg
-    43, 45, 46, 47 // normal bg
-]
+// const colorLut = [
+//     32, 34, 35, // normal
+//     92, 94, // pastel
+//     100, 102, 103, 104, 106, // pastel bg
+//     43, 45, 46, 47 // normal bg
+// ]
+const colorLut = [...Array(8).keys()].map(x=>x+30).concat([...Array(8).keys()].map(x=>x+40)).concat([90,92,94])
 
+// let colorLut =Array.from(Array(100).keys())
+// console.debug('lut',colorLut)
 function formatArgs(this: any, args: any[]) {
 
     const { namespace: name, useColors } = (this as any);
@@ -20,7 +23,7 @@ function formatArgs(this: any, args: any[]) {
     const colorCode = `\u001B[${c}m`;
     const endCode = "\u001B[0m"
     const prefix = `${colorCode}${name}${endCode} `;
-    args[0] = prefix + args[0].trim();
+    args.unshift(prefix);// + 
 
 
 }
@@ -34,6 +37,7 @@ if (typeof window === "undefined") {
 }
 
 const testF = () => {
+   
     const test = debugM("test")
     test.enabled = true
     for (let i = 0; i < colorLut.length; i++) {
@@ -42,7 +46,7 @@ const testF = () => {
     }
 }
 
-// testF()
+testF()
 
 const vermuthDBG = (ns:string)=>{
     return debugM("vermuth:"+ns)
@@ -72,6 +76,7 @@ vermuthDBG.assert = function(v: boolean,...args: any[]){
     if(!v){
         this.error(args)
     }
+    return v
 }
 
 export default vermuthDBG

@@ -249,6 +249,7 @@ const store: StoreOptions<RootVueState> = {
 
   strict: false,
   plugins: [autosaverPlugin],
+  devtools: false, // trigger random rebuild of rootstate messing up with accessible... 
   // plugins: debug ? [createLogger()] : []
 };
 

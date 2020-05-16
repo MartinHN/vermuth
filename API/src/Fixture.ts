@@ -277,14 +277,14 @@ export class FixtureBase implements FixtureBaseI {
   }
 
   @RemoteFunction({ sharedFunction: true ,allowRawObj:true})
-  public setColor(c: { r: number; g: number; b: number }, setWhiteToZero: boolean) {
+  public setColor(c: { r: number; g: number; b: number;w?: number }, setWhiteToZero: boolean) {
     const cch = this.colorChannels;
     if (cch !== {}) {
       if (c) {
         if (cch.r) { this.setCoarseAndFine(c.r, cch.r, cch.r_fine); }
         if (cch.g) { this.setCoarseAndFine(c.g, cch.g, cch.g_fine); }
         if (cch.b) { this.setCoarseAndFine(c.b, cch.b, cch.b_fine); }
-        if (setWhiteToZero && cch.w) { this.setCoarseAndFine(0, cch.w, cch.w_fine); }
+        if (cch.w && (c.w!==undefined || setWhiteToZero) )  { this.setCoarseAndFine(c.w || 0, cch.w, cch.w_fine); }
       }
       else {
         console.error('color not valid')

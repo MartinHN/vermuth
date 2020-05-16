@@ -1,1 +1,1 @@
-concurrently -i -r "cd server && npm run start:watch" "cd viewer && npm run serve" "cd API && node gen.js"
+concurrently -i -r "cd server && DEBUG=vermuth:* npm run start:watch" "cd viewer && npm run serve" "cd API && node gen.js"

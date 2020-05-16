@@ -8,7 +8,7 @@ export function rgbToHex(r: number, g: number, b: number) {
   return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
-export function hexToRgb(hex: string, normalize: boolean = false) {
+export function hexToRgb(hex: string, normalize = false) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   const normF = normalize ? 255 : 1;
   return result ? {
