@@ -891,11 +891,12 @@ function isChildOfRoot(o: any) {
   let insp = o;
   let maxDepth = 1000;
 
-  while (insp) {
+  while (insp && maxDepth>0) {
     maxDepth--;
     if (insp.__isRoot) { return true; }
     insp = insp.__accessibleParent;
   }
+  dbg.assert(maxDepth>0,"infinite child recursion")
   return false;
 }
 
@@ -1176,6 +1177,8 @@ function updateChildAccessible(childAcc: any, ob: any, doSend: boolean, opts?: C
   }
 
   for (const [k, v] of Object.entries(ob)) {
+    if(isHiddenMember(k,ob)){continue;}
+    
     if (!currentMembers.includes(k)) {
       if (typeof v === "object") {
         setChildAccessible(childAcc, k, { ...opts, immediate: true, defaultValue: v })

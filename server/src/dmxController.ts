@@ -173,7 +173,7 @@ class DMXController implements DMXControllerI {
 
     } else {
 
-      this.dmx.update(this.universeName, this.arrayToObj(msg, 255));
+      this.dmx.update(this.universeName, this.arrayToObj(msg, 255,true));
     }
 
     if (fromSocket) {
@@ -190,7 +190,7 @@ class DMXController implements DMXControllerI {
 
 
 
-  public arrayToObj(a: Array<{c: number; v: number}>, mult= 1) {
+  public arrayToObj(a: Array<{c: number; v: number}>, mult= 1, castInt = false) {
     const res = {};
     for (const e of a ) {
       if (isNaN(e.c) || isNaN(e.v)) {
@@ -198,6 +198,7 @@ class DMXController implements DMXControllerI {
         continue;
       }
       res[e.c] = e.v * mult;
+      if(castInt){res[e.c] = parseInt(res[e.c])}
     }
     // debug(res)
     return res;
