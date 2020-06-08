@@ -3,7 +3,7 @@
     <!-- <label :for="_uid"> -->
     <input type="color" style="height:40px;display:inherit;left:inherit;position:inherit" v-if="mini" @change="sendEv('change',$event)" @input="sendEv('input',$event)"  :value="hexValue" />
 
-    <v-color-picker v-else @change="sendEv('change',$event)" :hide-mode-switch="RGBW" @input="sendEv('input',$event)" />
+    <v-color-picker v-else @change="sendEv('change',$event)" :value=hexValue :hide-mode-switch="RGBW" @input="sendEv('input',$event)" />
 
   </div>
 </template>
@@ -36,7 +36,7 @@ export default class ColorPicker extends Vue {
   }
   private sendEv(type: string, ev: any) {
   
-    let v = ev.target?.value || ev.rgba;
+    let v = ev.target?.value || ev.rgba || ev;
     if(v.r===undefined){
     v = hexToRgb(v);
     }

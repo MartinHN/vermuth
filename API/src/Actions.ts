@@ -3,7 +3,7 @@ import { FixtureBase, FixtureGroup } from './Fixture';
 import { Universe } from './Universe';
 import { sequencePlayer, Sequence } from './Sequence';
 import { nonEnumerable, RemoteFunction, AccessibleClass, RemoteArray, AutoAccessible, setChildAccessible, RemoteValue, ClientOnly, doSharedFunction, buildAddressFromObj, resolveAccessible, Ref, SetAccessible, AccessibleMap, RemoteMap } from './ServerSync';
-import { addProp, deleteProp, Proxyfiable } from './MemoryUtils';
+import { addProp, deleteProp, Proxyfiable, nextTick } from './MemoryUtils';
 
 import { CurvePlayer, CurveLink, CurveLinkStore } from './CurvePlayer';
 import rootState from './RootState';
@@ -31,6 +31,7 @@ export enum InputCapType {
 
 export enum TargetCapType {
   FixtureBase,
+  ChannelBase,
   State,
   Sequence
 }
@@ -50,6 +51,9 @@ export abstract class ActionInstance extends Proxyfiable {
   abstract inputs: any;
   abstract apply(): void;
   abstract configureFromObj(ob: any): void;
+  internalState: any =  {}
+  hasInternalState(){return Object.keys(this.internalState).length>0}
+
 
   // filterTarget<T>(potential: T[]): T[]{
   //   return potential;
@@ -73,10 +77,7 @@ export class TypedActionInstance<I, O extends { name: string }> extends ActionIn
 
   apply() { }
 
-  @RemoteFunction({sharedFunction:true})
-  doApply(){
-    return this.apply()
-  }
+
   @SetAccessible()
   targets = new RemoteArray<Ref<O>>((s: string) => {
     return new Ref<O>(s)
@@ -310,37 +311,55 @@ class SetPosAction extends TypedActionInstance<PosIn, PosTarget>{
 ActionFactory.register(SetPosAction)
 
 
-// type OtherIn = { dimmer: number;}
-// type OtherTarget = ChannelBase
-// class SetOtherAction extends TypedActionInstance<OtherIn, OtherTarget>{
-//   static atype = 'setPos';
-//   public static inputCaps = { dimmer: InputCapType.Number};
-//   static targetCaps = TargetCapType.ChannelBase
 
-//   getATYPE() { return SetOtherAction; }
+import { State, FixtureState } from './State'
 
-//   constructor(ob: any) {
-//     super(ob)
-//     this.inputs = ob.inputs || { x: 0, y: 0 }
-//   }
+type SetFixtureIn = { dimmer: number}
+type SetFixtureTarget = ChannelBase
+class SetFixtureAction extends TypedActionInstance<SetFixtureIn, SetFixtureTarget>{
+  static atype = 'setFixture';
+  public static inputCaps = { dimmer: InputCapType.Number};
+  static targetCaps = TargetCapType.ChannelBase
+  static SCount = 0
+  getATYPE() { return SetFixtureAction; }
 
-//   apply() {
-//     for (const f of this.targets) {
-//       f.setPosition({ x: this.inputs.x, y: this.inputs.y })
-//     }
-//   }
-//   filterTarget(fl: FixtureBase[]) { return fl.filter(f => f.hasPositionChannels) }
-// }
+  constructor(ob: any) {
+    super(ob)
+
+  }
+  get defaultInputs() { return { dimmer: 1 } }
+  apply() {
+    debugger
+    for ( const [fName,v] of Object.entries(this.internalState)){
+      const fixture=rootState.universe.fixtureAndGroupList.find(f=>f.name===fName)
+      if(fixture){
+      for ( const [chName,vv] of Object.entries(v)){
+        if(vv.preseted){
+          const ch = fixture.getChannelForName(chName)
+          if(ch){
+            ch.setValue(vv.value,true)
+          }
+        }
+      }
+    }
+    }
+    rootState.universe.fixtureAndGroupList
+    // rootState.stateList.recallState(this.internalState,this.inputs.dimmer,false)
+    // const v = this.internalState?.apply()
+    
+  }
+  filterTarget(fl: ChannelBase[]) { return fl }
+  @SetAccessible({autoAddRemoteValue:true,noRef:true})
+  internalState: {[id: string]: {[id: string]: {preseted: boolean; value: number}}} = {};//Array<FixtureState>()
+  hasInternalState(){return true;}
+}
 
 
-// ActionFactory.register(SetPosAction)
+ActionFactory.register(SetFixtureAction)
 
 
 
 
-
-import { State } from './State'
-import { buildEscapedObject } from './SerializeUtils';
 type PresetIn = { dimMaster: number }
 type PresetTarget = State
 class SetPresetAction extends TypedActionInstance<PresetIn, PresetTarget>{

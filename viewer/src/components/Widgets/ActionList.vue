@@ -9,10 +9,10 @@
       </v-list>
     </v-menu>
     <draggable @end="reorderActions" style="width:100%" handle=".handle">
-      <v-row v-for="a of actions.list" :key="a.id" style="width:100%">
+      <v-row no-gutters v-for="a of actions.list" :key="a.id" style="width:100%">
         <v-icon class="handle" style="width:10%">mdi-{{getIcon(a)}}</v-icon>
-        <ActionComponent style="width:90%" :action="a"></ActionComponent>
-      <Button @click="deleteAction(a)" icon="delete" />
+        <ActionComponent style="width:80%" :action="a"></ActionComponent>
+        <Button @click="deleteAction(a)" style="width:30px" icon="delete" />
       
       </v-row>
     </draggable>

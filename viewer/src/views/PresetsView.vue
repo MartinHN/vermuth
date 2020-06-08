@@ -4,7 +4,7 @@
     <div v-if="selectedStateIsEditable" >
     <Toggle v-model="showActions" text="show Actions" />
       <ActionList v-if="showActions" :actions="this.selectedState.actions"></ActionList>
-      <ChannelRack v-else-if="allFixture" :displayableFixtureList="allFixture" :showPresetableState="true" />
+      <ChannelRack v-else-if="allFixture" :displayableFixtureList="allFixture" :showPresetableState="true" :presetableState.sync="this.selectedState"/>
     </div>
 
 
@@ -43,7 +43,7 @@ export default class Home extends Vue {
     console.log("getting state",this.selectedState)
     return this.selectedState && !this.selectedState.name.startsWith('__')
   }
-  public showActions=false
+  public showActions=true
   public selectedState:State|null=null
 }
 </script>

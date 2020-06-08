@@ -338,7 +338,7 @@ export default class FixturePatch extends Vue {
   }
 
   private askToRmFixtures(fBase: FixtureBase) {
-    const fl = this.selectedFixtures.includes(fBase)
+    const fl = (this.selectedFixtures.includes(fBase) || !fBase)
       ? this.selectedFixtures
       : [fBase];
     if (

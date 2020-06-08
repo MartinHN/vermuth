@@ -26,7 +26,7 @@
         <v-col cols="2">
           <Numbox
             :value="sequence.timeIn"
-            @change="setSequenceTimeIn({sequence:sequence,value:$event})"
+            @input="setSequenceTimeIn({sequence:sequence,value:$event})"
             hide-details
           />
         </v-col>

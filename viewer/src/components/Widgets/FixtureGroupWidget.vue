@@ -4,12 +4,12 @@
     <Toggle v-if=isGroup :text="(expanded?'collapse':'expand')+' '+groupName" v-model="expanded" iconOn="chevron-down" iconOff="chevron-right" />
     <div v-if="expanded && isGroup" style="width:100%;background-color:inherit">
       <div style="background-color:inherit" v-for="ff of fixtureProp.fixtures" :key="ff.id">
-        <FixtureWidget  :fixtureProp="ff"  :style="{backgroundColor:getFixtureColor(ff)}" :showPresetableState="showPresetableState" />
+        <FixtureWidget  :fixtureProp="ff"  :style="{backgroundColor:getFixtureColor(ff)}" :showPresetableState="showPresetableState" :presetableState.sync="presetableState" />
         <div class=spacer />
       </div>
     </div>
     <div v-else style="display:flex;width:100%">
-      <FixtureWidget  :fixtureProp="fixtureProp" :showPresetableState="showPresetableState" />
+      <FixtureWidget  :fixtureProp="fixtureProp" :showPresetableState="showPresetableState" :presetableState.sync="presetableState" />
 
     </div>
 
@@ -49,7 +49,8 @@ function isNonEmpty(o: any) {
 })
 export default class FixtureGroupWidget extends Vue {
 
-
+  @Prop({required:true})
+  presetableState!: {[id:string]:boolean}
   @Prop({default:false})
   private showPresetableState!:boolean;
 

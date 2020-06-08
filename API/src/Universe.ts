@@ -129,7 +129,7 @@ export class Universe implements UniverseI {
 
 
   }
-  public checkDuplicatedCircDebounced:()=>void;
+  public checkDuplicatedCircDebounced: () => void;
 
   private checkDuplicatedCirc() {
 
@@ -176,7 +176,7 @@ export class Universe implements UniverseI {
     setChildAccessible(this.fixtures, f.name,  {defaultValue: f});
     f.__events.on('nameChanged', (ff: FixtureBase, oldName: string) => {
       const newName = getNextUniqueName(this.fixtureList.filter((fff) => fff !== ff).map((fff) => fff.name), ff.name);
-      deleteProp(this.fixtures, oldName);
+      delete this.fixtures[oldName];
       ff.setName(newName);
       setChildAccessible(this.fixtures, newName, {defaultValue: ff});
     });
@@ -184,8 +184,10 @@ export class Universe implements UniverseI {
   }
   @RemoteFunction({sharedFunction:true})
   public removeFixture(f: FixtureBase) {
-    deleteProp(this.fixtures, f.name);
-  }
+    if(f && f.name){
+      delete this.fixtures[f.name];
+  }}
+  
   public getNextCirc(d: number, forbidden?: number[]): number {
     const circsUsed = this.allChannels.map((ch) => ch.trueCirc).concat(forbidden || []);
     while (circsUsed.indexOf(d) !== -1) {d += 1; }

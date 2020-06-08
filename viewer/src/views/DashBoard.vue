@@ -5,7 +5,7 @@
     <StateComponent  />
   </v-col>
   <v-col>
-    <ChannelRack v-if="allFixture" :displayableFixtureList="allFixture" />
+    <ChannelRack v-if="allFixture" :displayableFixtureList="allFixture" :presetableState="{}" />
   </v-col>
   </v-row>
   </div>

@@ -253,6 +253,7 @@ export class State {
   }
 
   public fixtureStates: FixtureState[] = [];
+
   public linkedStates: LinkedState[] = [];
 
   public actions: ActionList = new ActionList();
@@ -488,7 +489,9 @@ export class StateList {
       const aPath = findLocationInParent(el,"actions")
       if(aPath?.length && aPath.length>1)
         aPath[1].apply()
+        return
     }
+    console.error('cant trace state change ')
    
 }})
   public states: { [key: string]: State } = {};
@@ -532,7 +535,7 @@ export class StateList {
   public removeStateNamed(name: string) {
     if (this.states[name]) {
       if (!(this.states[name] === blackState || this.states[name] === fullState)) {
-        deleteProp(this.states, name);
+        delete this.states[name];
       }
     }
   }
@@ -622,7 +625,7 @@ export class StateList {
     })
     return res
   }
-  public isPreseted(o: any) {
+  public isPreseted(o: {getUID: () => string}) {
     if (o && o.getUID) {
       return this.presetableNames.includes(o.getUID())
     }
@@ -695,7 +698,7 @@ export class StateList {
     const s = this.states[oldName];
     if (s) {
       s.name = newName;
-      deleteProp(this.states, oldName);
+        delete this.states[oldName];
       addProp(this.states, newName, s);
       if (this.loadedStateName === oldName) {
         this.loadedStateName = newName;

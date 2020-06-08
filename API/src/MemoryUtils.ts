@@ -91,23 +91,27 @@ export class Proxyfiable {
   set sourceHandler(v: any) {
     this[sourceHandlerSymbol] = v;
   }
-  constructor(sourceHandler?: any) {
+  get sourceHandler(){
+    return this[sourceHandlerSymbol]
+  }
+  constructor(_sourceHandler?: any) {
+    this[sourceHandlerSymbol] = _sourceHandler
     return new Proxy(this, {
       set(obj: any, prop: symbol | string, value: any, thisProxy: any) {
-        if (sourceHandler && sourceHandler.set) { return sourceHandler.set(obj, prop, value, thisProxy); }
+        if (obj.sourceHandler && obj.sourceHandler.set) { return obj.sourceHandler.set(obj, prop, value, thisProxy); }
         return Reflect.set(obj, prop, value, thisProxy);
       },
-      get: (target: any, k: symbol | string, thisProxy: any) => {
+      get(target: any, k: symbol | string, thisProxy: any) {
         if (k === isProxyfiable) { return true; }
-        if (sourceHandler && sourceHandler.get) { return sourceHandler.get(target, k, thisProxy); }
+        if (target.sourceHandler && target.sourceHandler.get) { return target.sourceHandler.get(target, k, thisProxy); }
         return Reflect.get(target, k, thisProxy);
       },
       deleteProperty(target: any, k: symbol | string) {
-        if (sourceHandler && sourceHandler.deleteProperty) { return sourceHandler.deleteProperty(target, k); }
+        if (target.sourceHandler && target.sourceHandler.deleteProperty) { return target.sourceHandler.deleteProperty(target, k); }
         return Reflect.deleteProperty(target, k);
       },
-      apply: (target, thisArg, argumentsList) => {
-        if (sourceHandler && sourceHandler.apply) { return sourceHandler.apply(target, thisArg, argumentsList); }
+      apply (target, thisArg, argumentsList){
+        if (target.sourceHandler && target.sourceHandler.apply) { return target.sourceHandler.apply(target, thisArg, argumentsList); }
         return Reflect.apply(target, thisArg, argumentsList);
       },
     });

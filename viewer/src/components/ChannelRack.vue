@@ -79,12 +79,13 @@
       :filterList="selectedChannelFilterNames"
       :showProps="showProps"
       :showPresetableState="showPresetableState"
+      :presetableState.sync="lazyPresetableState[f.name]"
     ></FixtureGroupWidget>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue,Watch } from "vue-property-decorator";
 import { rgbToHex, hexToRgb } from "@API/ColorUtils";
 import FixtureWidget from "./Widgets/FixtureWidget.vue";
 import FixtureGroupWidget from "./Widgets/FixtureGroupWidget.vue";
@@ -95,7 +96,9 @@ import Slider from "@/components/Inputs/Slider.vue";
 
 import { State, Action, Getter, Mutation, namespace } from "vuex-class";
 import { DirectFixture, FixtureBase, FixtureGroup } from "@API/Fixture";
+import { FixtureState } from "@API/State";
 import { ChannelRoles } from "@API/Channel";
+import  rootState from "@API/RootState"
 import UniversesMethods from "../store/universes";
 import StatesMethods from "../store/states";
 
@@ -106,6 +109,8 @@ const statesModule = namespace("states");
   components: { FixtureWidget, Button, Toggle, Slider, FixtureGroupWidget }
 })
 export default class ChannelRack extends Vue {
+  @Prop({required:true})
+  presetableState!:{[id:string]:{[id:string]:{preseted:boolean,value:number}}}
   set selectedFixtureNames(l: string[]) {
     this.pselectedFixtureNames = l;
     if (this.pselectedFixtureNames.length > 0) {
@@ -142,6 +147,35 @@ export default class ChannelRack extends Vue {
         this.needDisplay(f) &&
         f.hasChannelMatchingFilters(this.selectedChannelFilterNames)
     );
+  }
+  get lazyPresetableState(){
+    const isValid = (k:string | symbol | number, o:any)=>{
+      return !(typeof k === "symbol") && !(k in o) && !k.toString().startsWith('_')
+    }
+    return new Proxy(this.presetableState,{
+      get(o,k){
+        // debugger;
+        if(isValid(k,o)){
+          const chDic:{[id:string]:{v:number,presetable:boolean}} = {}
+          const lazyChannelDic = new Proxy(chDic,{
+            get(oo,kk){
+              // debugger
+              if(isValid(kk,oo)){
+                Reflect.set(oo,kk.toString(),{v:0,presetable:false})
+              }
+              return Reflect.get(oo,kk)
+            }
+          })
+          Reflect.set(o,k.toString(),lazyChannelDic)
+        }
+        return Reflect.get(o,k)
+      }
+    })
+  }
+  @Watch("presetableState")
+  notif(){
+    console.log("displayableFixture changed")
+    this.$emit("presetable",this.presetableState)
   }
 
   get displayedGroupNames() {
@@ -180,7 +214,9 @@ export default class ChannelRack extends Vue {
       : 0;
   }
 
-  @Prop({ required: true })
+  @Prop({ default: ()=>{
+    return rootState.universe.fixtureAndGroupList
+  } })
   public displayableFixtureList!: FixtureBase[];
 
   @Prop()

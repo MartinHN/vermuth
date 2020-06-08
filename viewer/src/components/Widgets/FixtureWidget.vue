@@ -5,14 +5,14 @@
 
       <div style="display:flex;width:100%;background-color:transparent" >
 
-        <ChannelWidget v-for='d in matchedDimmerChannels' :key='d.id' :channelProp=d :overrideName="matchedDimmerChannels.length==1?fixtureProp.name:d.name" style="width:100%" :showProps="showProps"  :showPresetableState="showPresetableState" ></ChannelWidget>
+        <ChannelWidget v-for='d in matchedDimmerChannels' :key='d.id' :channelProp=d :overrideName="matchedDimmerChannels.length==1?fixtureProp.name:d.name" style="width:100%" :showProps="showProps"  :showPresetableState="showPresetableState" :presetable.sync="presetableState[d.name]"></ChannelWidget>
 
       </div>
 
       <div style="display:flex;width:100%" v-if='(fixtureProp.hasChannelsOfRole("color") && hasFilterType("color"))' >
 
         <input type="color" style="flex:1 1 30%" v-if='!showProps && fixtureProp.hasChannelsOfRole("color") && hasFilterType("color")' v-model="hexColorValue" />
-        <ChannelWidget v-for="c of colorChannels" :key='c.id' :channelProp="c" v-if='c.matchFilterList(filterList)' :showProps="showProps"  :showPresetableState="showPresetableState" />
+        <ChannelWidget v-for="c of matchedColorChannels" :key='c.id' :channelProp="c"  :showProps="showProps"  :showPresetableState="showPresetableState" :presetable.sync="presetableState[c.name]" />
 
       </div>
 
@@ -24,12 +24,12 @@
           <Point2DEditor slot="body" :value="fixturePositionList" @input="setFixturePosition($event)" ></Point2DEditor>
         </modal>
 
-        <ChannelWidget v-for='c of fixtureProp.positionChannels' :key='c.id' :channelProp="c" v-if='c.matchFilterList(filterList)' :showProps="showProps" :showPresetableState="showPresetableState" />
+        <ChannelWidget v-for='c of matchedPositionChannels' :key='c.id' :channelProp="c" :showProps="showProps" :showPresetableState="showPresetableState" :presetable.sync="presetableState[c.name]"/>
 
       </div>
       <div style="width:100%">
 
-        <ChannelWidget style="width:100%" v-for="c of otherChannels" v-if='c && c.matchFilterList(filterList)' :key='c.id' :channelProp="c" :showProps="showProps" :showPresetableState="showPresetableState" />
+        <ChannelWidget style="width:100%" v-for="c of matchedOtherChannels" :key='c.id' :channelProp="c" :showProps="showProps" :showPresetableState="showPresetableState" :presetable.sync="presetableState[c.name]"/>
 
       </div>
 
@@ -60,17 +60,27 @@ const universesModule = namespace('universes');
   components: {Slider, Button, Toggle, ChannelWidget, Modal, Point2DEditor},
 })
 export default class FixtureWidget extends Vue {
-
+  @Prop({required:true})
+  presetableState !:{[id:string]: {preseted:boolean,value:number}};
 
   @Prop({default:false})
   private showPresetableState!:boolean;
 
-
+  get positionChannels():ChannelBase[]{
+    return Object.values(this.fixtureProp.positionChannels)
+  }
+  get matchedPositionChannels(){
+    return this.positionChannels?.filter(c=> c && c.matchFilterList(this.filterList))
+  }
   get colorChannels() {
     return this.fixtureProp.colorChannels;
   }
+
+  get matchedColorChannels(){
+    return this.colorChannels
+  }
   get matchedDimmerChannels() {
-    return Object.values(this.dimmerChannels).filter( (c) => c.matchFilterList(this.filterList));
+    return this.dimmerChannels.filter( (c) => c && c.matchFilterList(this.filterList));
   }
   get dimmerChannels() {
     return this.fixtureProp.dimmerChannels || [];
@@ -81,8 +91,10 @@ export default class FixtureWidget extends Vue {
     if (res && res.other) {
       return res.other;
     }
-
     return [];
+  }
+  get matchedOtherChannels(){
+    return this.otherChannels?.filter(c=> c && c.matchFilterList(this.filterList))
   }
 
   get hexColorValue(): string {
@@ -98,11 +110,10 @@ export default class FixtureWidget extends Vue {
   }
 
 
-
   @universesModule.Mutation('setFixtureColor') public setFixtureColor!: UniversesMethods['setFixtureColor'];
 
 
-  @Prop() public fixtureProp!: DirectFixture;
+  @Prop({required:true}) public fixtureProp!: DirectFixture;
   @Prop({default: false})    public showName?: boolean;
   @Prop({default: false})    public showValue?: boolean;
   @Prop({default: false})    public showProps?: boolean;

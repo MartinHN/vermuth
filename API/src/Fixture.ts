@@ -19,7 +19,9 @@ const fixtureTypes: { [key: string]: FixtureConstructorI } = {};
 export class FixtureBase implements FixtureBaseI {
 
 
-
+  public getUID(){
+    return this.name
+  }
 
 
   public set baseCirc(n: number) {
