@@ -206,7 +206,7 @@ export class FixtureBase implements FixtureBaseI {
     if (ob.name !== undefined) { this.setName(ob.name); }
   }
 
-
+  @RemoteFunction({sharedFunction:true})
   public setName(n: string) {
     const oldName = this.name;
     this.name = n;
@@ -522,26 +522,31 @@ export class FixtureGroup extends FixtureBase {
     return true;
 
   }
-
-  get channels() {
-    if (!arraysEqual(this._cachedChannelNames, this.channelNames)) {
-      if (!this.__updatingChannels) {
-        this.__updatingChannels = true
-        const newChNames = this.channelNames
-        const toAdd = newChNames.filter((v) => !this._cachedChannelNames.includes(v));
-        const toRm = this._cachedChannelNames.filter((v) => !newChNames.includes(v));
-        toRm.map(cn => this.removeChannelNamed(cn))
-        toAdd.map((n) => this.addChannel(new ChannelGroup(n, this)));
-        this._cachedChannelNames = newChNames
-        this.__updatingChannels = false
-      }
-      // else{
+  @RemoteFunction({sharedFunction:true})
+  updateChInternal(){
+    if (!this.__updatingChannels) {
+    this.__updatingChannels = true
+    const newChNames = this.channelNames
+    const toAdd = newChNames.filter((v) => !this._cachedChannelNames.includes(v));
+    const toRm = this._cachedChannelNames.filter((v) => !newChNames.includes(v));
+    toRm.map(cn => this.removeChannelNamed(cn))
+    toAdd.map((n) => this.addChannel(new ChannelGroup(n,this)));
+    this._cachedChannelNames = newChNames
+    this.__updatingChannels = false
+    }
+      //     else{
       //   console.error('weird recursion error')
       //   debugger
       //   // this._cachedChannelGroups.map((cg,i)=>setChildAccessible(this.channels,''+i))
       // }
+  }
+  get channels() {
+    if (!arraysEqual(this._cachedChannelNames, this.channelNames)
+    || !arraysEqual(this.pchannels.map(c=>c.name),this._cachedChannelNames) ) {
+      this.updateChInternal()
     }
     const tCh = this.pchannels;
+
     return tCh as ChannelGroup[]
 
   }

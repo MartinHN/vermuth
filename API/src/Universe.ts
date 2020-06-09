@@ -1,9 +1,10 @@
 import { FixtureBase, FixtureGroup } from './Fixture';
 import { ChannelBase, UniverseListener } from './Channel';
 import { getNextUniqueName , compareValues} from './Utils';
-import { SetAccessible, setChildAccessible, AccessibleClass , RemoteFunction, nonEnumerable} from './ServerSync';
+import { SetAccessible, setChildAccessible, AccessibleClass , RemoteFunction, nonEnumerable, changeAccessibleName} from './ServerSync';
 import {addProp, deleteProp} from './MemoryUtils';
 import {debounce} from 'lodash'
+import vermuthDBG from './dbg';
 
 export interface UniverseI {
 
@@ -178,14 +179,22 @@ export class Universe implements UniverseI {
       const newName = getNextUniqueName(this.fixtureList.filter((fff) => fff !== ff).map((fff) => fff.name), ff.name);
       delete this.fixtures[oldName];
       ff.setName(newName);
-      setChildAccessible(this.fixtures, newName, {defaultValue: ff});
+      
+      this.fixtures[newName] = ff;
+      changeAccessibleName(ff,newName);
+      // setChildAccessible(this.fixtures, newName, {defaultValue: ff});
     });
     f.universe = this;
   }
   @RemoteFunction({sharedFunction:true})
   public removeFixture(f: FixtureBase) {
-    if(f && f.name){
+    if(f && f.name ){
+      if(this.fixtures[f.name]){
       delete this.fixtures[f.name];
+      }
+      else{
+        console.error(`can't remove fixture ${f.name} from ${Object.keys(this.fixtures)}`)
+      }
   }}
   
   public getNextCirc(d: number, forbidden?: number[]): number {

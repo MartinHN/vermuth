@@ -270,7 +270,7 @@ export const rebuildChildAccessibles = (fromParent?: any, buildTypeTree = true, 
     if (o && o.__accessibleMembers) {
       for (const name of Object.keys(o.__accessibleMembers)) {
         const last = curNode;
-        curNode[name] = { type: o.__accessibleTypes[name] };
+        curNode[name] = { type: o.__accessibleTypes?.[name] };
         curNode = curNode[name];
         recurseAccessible(o.__accessibleMembers[name]);
         curNode = last;
@@ -891,12 +891,12 @@ function isChildOfRoot(o: any) {
   let insp = o;
   let maxDepth = 1000;
 
-  while (insp && maxDepth>0) {
+  while (insp && maxDepth > 0) {
     maxDepth--;
     if (insp.__isRoot) { return true; }
     insp = insp.__accessibleParent;
   }
-  dbg.assert(maxDepth>0,"infinite child recursion")
+  dbg.assert(maxDepth > 0, "infinite child recursion")
   return false;
 }
 
@@ -913,7 +913,7 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: Chi
   if (reentrancyLock) {
     return parent[key];
   }
-  if(opts?.autoAddRemoteValue){
+  if (opts?.autoAddRemoteValue) {
     debugger
   }
   if (key === 'Master' || key === 'pinputs') {
@@ -997,7 +997,7 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: Chi
       childAcc.sourceHandler = handler;
       for (const [k, v] of Object.entries(childAcc)) {
 
-        if(!isHiddenMember(k,childAcc))
+        if (!isHiddenMember(k, childAcc))
           if ((v === null || typeof v !== "object" || !(v as any)[isProxySymbol])) {
             if ((!childAcc.__remoteValues || childAcc.__remoteValues[k] === undefined)) {
               handler.set(childAcc, k, v, undefined);
@@ -1012,7 +1012,7 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: Chi
       for (const [k, v] of Object.entries(childAcc)) {
 
         // if (typeof (v) === 'object')
-        if(!isHiddenMember(k,childAcc))
+        if (!isHiddenMember(k, childAcc))
           if ((v === null || typeof v !== "object" || !(v as any)[isProxySymbol])) {
             if ((!childAcc.__remoteValues || childAcc.__remoteValues[k] === undefined)) {
               handler.set(childAcc, k, v, undefined);
@@ -1030,7 +1030,11 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: Chi
     } else {
 
       // debugger;
+      
       console.error('reproxying!!!');
+      childAcc.__undispose?.() // ensure object is redisposed
+      changeAccessibleName(childAcc,key.toString())
+      return;
 
     }
     // const hadProp = parent.hasOwnProperty(key);
@@ -1072,8 +1076,13 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: Chi
         // if (oldDesc.set) {
         // oldDesc.set(v) // Vue reactive setter seems to be called any way...
         // }
+        if( accessibleChildBeingBuilt && accessibleChildBeingBuilt === (parent[key] as any)){
+          childAcc = v;
+        }
+        else{
         updateChildAccessible(childAcc, v, false, opts) // do sync to new object but do not send as it should happen only in constructor
-        // const newAcc = setChildAccessible(parent, key, {...opts,defaultValue:v})
+        }
+        
         return childAcc
       }
 
@@ -1129,12 +1138,12 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: Chi
   } else {
     rebuildChildAccessiblesDebounced(); // debounced
   }
-  if (opts?.autoAddRemoteValue && !isHiddenMember(key,childAcc)) {
+  if (opts?.autoAddRemoteValue && !isHiddenMember(key, childAcc)) {
     const adUp = new AddressUpdater()
     adUp.updateAddr(parent, key, false)
     if (adUp.hasValidAddress) {
       adUp.sendValue(childAcc, { noRef: opts?.noRef });
-      
+
     }
   }
   accessibleChildBeingBuilt = undefined
@@ -1142,23 +1151,40 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: Chi
 }
 
 
+export function changeAccessibleName(a: any,n: string){
+  if(a[isProxySymbol]){
+    a.__accessibleName = n;
+    rebuildChildAccessibles(a);
+  }
+  else{
+    console.error("trying to change name of non accessible")
+    debugger
+  }
+}
 
 
-function removeChildAccessible(target: any, k: string | symbol) {
+function removeChildAccessible(target: any, k: string | symbol, opts?: { doNotDelete?: boolean }) {
   treeEvents.emit('rm', target, k);
   if (target.__accessibleMembers) { delete target.__accessibleMembers[k]; }
   if (target.__accessibleTypes) { delete target.__accessibleTypes[k]; }
   removeRemoteValue(target, k)
-  deleteProp(target, k);
-  delete target[k];
-  dbgStruct(`property removed: ${k.toString()} on `, buildAddressFromObj(target));
+  let action = "deleted"
+  if (!opts?.doNotDelete) {
+    deleteProp(target, k);
+    delete target[k];
+  } else {
+    target[k].__accessibleName = undefined
+    target[k].__accessibleParent = undefined;
+    action = "untagged"
+  }
+  dbgStruct(`property ${action}: ${k.toString()} on `, buildAddressFromObj(target));
 }
 
 function updateChildAccessible(childAcc: any, ob: any, doSend: boolean, opts?: ChildAccOptions) {
   if (
     !dbg.assert(childAcc && childAcc[isProxySymbol], "updating non proxy")
     || !dbg.assert(ob, "invalid object")) {
-      const t = childAcc && childAcc[isProxySymbol]
+    const t = childAcc && childAcc[isProxySymbol]
     return;
   }
 
@@ -1177,8 +1203,8 @@ function updateChildAccessible(childAcc: any, ob: any, doSend: boolean, opts?: C
   }
 
   for (const [k, v] of Object.entries(ob)) {
-    if(isHiddenMember(k,ob)){continue;}
-    
+    if (isHiddenMember(k, ob)) { continue; }
+
     if (!currentMembers.includes(k)) {
       if (typeof v === "object") {
         setChildAccessible(childAcc, k, { ...opts, immediate: true, defaultValue: v })
@@ -1260,7 +1286,7 @@ function generateAccessibleHandler(opts?: { blockRecursion?: boolean; autoAddRem
       if (prop === "inputs") {
         debugger
       }
-      const needRebuild = false;
+      let needRebuild = false;
       if (Array.isArray(obj) && !isNaN(prop as any)) {
         if (value && value.__accessibleName !== undefined) {
           if (obj && obj === value.__accessibleParent) {
@@ -1276,11 +1302,11 @@ function generateAccessibleHandler(opts?: { blockRecursion?: boolean; autoAddRem
                 if (siblings && siblings[prop] && siblings[prop].__accessibleName) {
                   // siblings[prop].__accessibleName = undefined
                   // delete siblings[prop]
-                  removeChildAccessible(obj,prop)
+                  removeChildAccessible(obj, prop, { doNotDelete: true })
                 }
-                // value.__accessibleName = prop
-                // needRebuild = true
-                removeChildAccessible(obj,value.__accessibleName)
+                value.__accessibleName = prop
+                needRebuild = true
+                // removeChildAccessible(obj, value.__accessibleName, { doNotDelete: true })
                 treeEvents.emit('move', obj, value.__accessibleName, prop);
                 // delete obj[value.__accessibleName]
               }
@@ -1331,12 +1357,12 @@ function generateAccessibleHandler(opts?: { blockRecursion?: boolean; autoAddRem
               }
               else {
                 dbgStruct(`auto add child Accessible ${prop.toString()} on `, buildAddressFromObj(obj)); // newAcc, Object.keys(obj.__accessibleMembers));
-                setChildAccessible(obj, prop, { ...opts, immediate: true, defaultValue: newAcc });
+                setChildAccessible(thisProxy || obj, prop, { ...opts, immediate: true, defaultValue: newAcc });
               }
             }
           }
-          else if(opts?.autoAddRemoteValue){
-            addRemoteValue(obj,prop,value)
+          else if (opts?.autoAddRemoteValue) {
+            addRemoteValue(obj, prop, value)
           }
         }
 
@@ -1460,12 +1486,29 @@ export function AccessibleClass() {
         if ((this as any).__isConstructed) {
           Object.defineProperty(this, '__isConstructed', {
             get: () => false,
-            enumerable: false
+            enumerable: false,
+            configurable:true
           })
         }
         else {
           console.warn('accessible removed twice')
         }
+      }
+
+      __undispose(){
+        dbgStruct("undispose", this)
+        if ((Bconstructor as any).__undispose) { (Bconstructor as any).__undispose.call(this); }
+        if (!(this as any).__isConstructed) {
+          Object.defineProperty(this, '__isConstructed', {
+            get: () => true,
+            enumerable: false,
+            configurable:true
+          })
+        }
+        else {
+          // console.warn('accessible redisposed twice')
+        }
+
       }
     }
 
@@ -1517,10 +1560,10 @@ export function resolveAccessible(parent: any, addr: string[]) {
     }
     if (addr.length === 0) {
       if (isClient) {
-        if (!accessibleParent.__ob__) {
+        if (!accessibleParent?.__ob__) {
           debugger;
         }
-        if (!insp.__ob__) {
+        if (!insp?.__ob__) {
           // debugger
         }
       }
