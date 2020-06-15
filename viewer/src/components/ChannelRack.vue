@@ -13,7 +13,7 @@
       <input type="color" @input="setAllColorHex($event.target.value)" />
     </div>
     <div style="display:flex;flex-direction:row;width:100%">
-      <v-menu offset-y :close-on-content-click=false >
+      <v-menu offset-y :close-on-content-click="false">
         <template v-slot:activator="{ on }">
           <v-btn color="primary" dark v-on="on">filters</v-btn>
         </template>
@@ -48,7 +48,7 @@
       <div style="width:100%">
         <v-row no-gutters>
           <v-col cols="6">
-            <v-menu offset-y :close-on-content-click="false" >
+            <v-menu offset-y :close-on-content-click="false">
               <template v-slot:activator="{ on }">
                 <v-btn color="primary" dark v-on="on">visibility</v-btn>
               </template>
@@ -85,7 +85,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue,Watch } from "vue-property-decorator";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { rgbToHex, hexToRgb } from "@API/ColorUtils";
 import FixtureWidget from "./Widgets/FixtureWidget.vue";
 import FixtureGroupWidget from "./Widgets/FixtureGroupWidget.vue";
@@ -98,19 +98,59 @@ import { State, Action, Getter, Mutation, namespace } from "vuex-class";
 import { DirectFixture, FixtureBase, FixtureGroup } from "@API/Fixture";
 import { FixtureState } from "@API/State";
 import { ChannelRoles } from "@API/Channel";
-import  rootState from "@API/RootState"
+import rootState from "@API/RootState";
 import UniversesMethods from "../store/universes";
 import StatesMethods from "../store/states";
+import { addProp } from "@API/MemoryUtils";
 
 const universesModule = namespace("universes");
 const statesModule = namespace("states");
-
+// const dumbState = {};
+// function createDefaultState(rootObj){
+    
+//       function createFakeChild(o: any, n: any, depth: number) {
+//         if (typeof n === "string" && !n.startsWith("_") && !(["state","toJSON","constructor","render"].includes(n))) {
+//           // debugger;
+//           if (!Object.keys(o).includes(n)) {
+//             addProp(
+//               o,
+//               n,
+//               depth == 2
+//                 ? { preseted: false, value: 0 }
+//                 : new Proxy(
+//                     {},
+//                     {
+//                       get(o, k) {
+//                         return createFakeChild(o, k, depth + 1);
+//                       }
+//                     }
+//                   )
+//             );
+//           }
+//         }
+//         return o[n];
+//       }
+//       return new Proxy(rootObj, {
+//         get(o, k) {
+//           return createFakeChild(rootObj, k, 0);
+//         }
+//       });
+    
+// }
 @Component({
   components: { FixtureWidget, Button, Toggle, Slider, FixtureGroupWidget }
 })
 export default class ChannelRack extends Vue {
-  @Prop({required:true})
-  presetableState!:{[id:string]:{[id:string]:{preseted:boolean,value:number}}}
+  dumbState  = {};
+  @Prop({default:undefined})
+  presetableState!: {
+    [id: string]: { [id: string]: { preseted: boolean; value: number } };
+  };
+  
+  mounted() {
+  }
+ 
+
   set selectedFixtureNames(l: string[]) {
     this.pselectedFixtureNames = l;
     if (this.pselectedFixtureNames.length > 0) {
@@ -148,34 +188,49 @@ export default class ChannelRack extends Vue {
         f.hasChannelMatchingFilters(this.selectedChannelFilterNames)
     );
   }
-  get lazyPresetableState(){
-    const isValid = (k:string | symbol | number, o:any)=>{
-      return !(typeof k === "symbol") && !(k in o) && !k.toString().startsWith('_')
+  get hasPresetableState(){
+    debugger
+    return  this.presetableState!==undefined
+  }
+  get lazyPresetableState() {
+    if(this.hasPresetableState){
+      return this.presetableState;
     }
-    return new Proxy(this.presetableState,{
-      get(o,k){
+    const isValidAsNew = (k: string | symbol | number, o: any) => {
+      return (
+        !(typeof k === "symbol") && 
+        !(k in Object.keys(o)) && 
+        !k.toString().startsWith("_") && 
+        !(["state","toJSON","constructor","render"].includes(k.toString()))
+      );
+    };
+    return new Proxy({} , {
+      get(o, k,thisProxy) {
         // debugger;
-        if(isValid(k,o)){
-          const chDic:{[id:string]:{v:number,presetable:boolean}} = {}
-          const lazyChannelDic = new Proxy(chDic,{
-            get(oo,kk){
+        if (isValidAsNew(k, o)) {
+          const chDic: {
+            [id: string]: { v: number; presetable: boolean };
+          } = {};
+          const lazyChannelDic = new Proxy(chDic, {
+            get(oo, kk,thisProxy) {
               // debugger
-              if(isValid(kk,oo)){
-                Reflect.set(oo,kk.toString(),{v:0,presetable:false})
+              if (isValidAsNew(kk, oo)) {
+                Vue.set(oo, kk.toString(), { v: 0, presetable: false });
               }
-              return Reflect.get(oo,kk)
+              return Reflect.get(oo, kk,thisProxy);
             }
-          })
-          Reflect.set(o,k.toString(),lazyChannelDic)
+          });
+          Vue.set(o, k.toString(), lazyChannelDic);
         }
-        return Reflect.get(o,k)
+        return Reflect.get(o, k,thisProxy);
       }
-    })
+    });
   }
   @Watch("presetableState")
-  notif(){
-    console.log("displayableFixture changed")
-    this.$emit("presetable",this.presetableState)
+  notif() {
+    debugger
+    console.log("displayableFixture changed");
+    this.$emit("presetable", this.presetableState);
   }
 
   get displayedGroupNames() {
@@ -214,9 +269,11 @@ export default class ChannelRack extends Vue {
       : 0;
   }
 
-  @Prop({ default: ()=>{
-    return rootState.universe.fixtureAndGroupList
-  } })
+  @Prop({
+    default: () => {
+      return rootState.universe.fixtureAndGroupList;
+    }
+  })
   public displayableFixtureList!: FixtureBase[];
 
   @Prop()
@@ -227,7 +284,6 @@ export default class ChannelRack extends Vue {
   public showProps = false;
   public showPresetable = false;
   public showActive = false;
-
 
   private pselectedFixtureNames: string[] = [];
   private pselectedGroupNames: string[] = ["all"];
@@ -271,9 +327,7 @@ export default class ChannelRack extends Vue {
       needDisplay =
         needDisplay &&
         (this.stateList.isPreseted(f) ||
-          f.channels.some(c =>
-            this.stateList.isPreseted(c)
-          ));
+          f.channels.some(c => this.stateList.isPreseted(c)));
     }
     if (this.showActive) {
       needDisplay = needDisplay && f.hasActiveChannels();

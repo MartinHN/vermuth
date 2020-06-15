@@ -12,6 +12,7 @@ module.exports = {
   "vuetify"
   ],
   chainWebpack(config) {
+    config.optimization.delete('splitChunks')
     config.resolve.alias.delete("@")
     
     config.resolve

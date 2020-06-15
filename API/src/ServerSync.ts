@@ -266,7 +266,18 @@ export const rebuildChildAccessibles = (fromParent?: any, buildTypeTree = true, 
 
   const recurseAccessible = (o: any) => {
     if (!assert(o !== undefined, 'accessible parsing error')) { return }
-
+    const adUp = new AddressUpdater()
+    if (adUp.updateAddr(o, "", false)) {
+      Object.defineProperty(o, "__accessibleAddress", {
+        value: adUp.registeredAddr,
+        enumerable: false
+        , configurable: true
+      })
+    }
+    else {
+      debugger
+      console.error("can't update address")
+    }
     if (o && o.__accessibleMembers) {
       for (const name of Object.keys(o.__accessibleMembers)) {
         const last = curNode;
@@ -382,7 +393,19 @@ function safeBindSocket(s: any) {
 }
 
 export function buildAddressFromObj(o: any, errorIfEmpty = true) {
+
   let insp = o;
+  if(insp &&!insp[isProxySymbol] && insp.__accessibleParent){
+    // debugger
+    if(Object.keys(insp.__accessibleParent.__accessibleMembers).includes(insp.__accessibleName)){
+      insp = insp.__accessibleParent.__accessibleMembers[insp.__accessibleName]
+      if(insp!=o){
+        // replace by registered proxy version to use when comparing objects
+        // debugger;
+      }
+    }
+
+  }
   let addr = new Array<string>();
   let found;
   let maxDepth = 100;
@@ -849,6 +872,7 @@ export function ClientOnly() {
             return v;
           }
           , set: (nv) => {
+            debugger;
             dbg.warn('setting server instance of client only :', key)
             // v = nv; // ensure value is not changed on server...
           },
@@ -913,12 +937,12 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: Chi
   if (reentrancyLock) {
     return parent[key];
   }
-  if (opts?.autoAddRemoteValue) {
-    debugger
-  }
-  if (key === 'Master' || key === 'pinputs') {
-    debugger;
-  }
+  // if (opts?.autoAddRemoteValue) {
+  //   debugger
+  // }
+  // if (key === 'Master' || key === 'pinputs') {
+  //   debugger;
+  // }
 
   const { defaultValue, immediate, blockRecursion } = opts || {};
   let { readonly } = opts || {};
@@ -1030,10 +1054,10 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: Chi
     } else {
 
       // debugger;
-      
+
       console.error('reproxying!!!');
       childAcc.__undispose?.() // ensure object is redisposed
-      changeAccessibleName(childAcc,key.toString())
+      changeAccessibleName(childAcc, key.toString())
       return;
 
     }
@@ -1076,13 +1100,17 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: Chi
         // if (oldDesc.set) {
         // oldDesc.set(v) // Vue reactive setter seems to be called any way...
         // }
-        if( accessibleChildBeingBuilt && accessibleChildBeingBuilt === (parent[key] as any)){
+        if (v[isProxySymbol]) {
+          if (!(accessibleChildBeingBuilt && accessibleChildBeingBuilt === (parent[key] as any))) {
+            console.error("dangerously changing childAccessible layout")
+            debugger
+          }
           childAcc = v;
         }
-        else{
-        updateChildAccessible(childAcc, v, false, opts) // do sync to new object but do not send as it should happen only in constructor
+        else {
+          updateChildAccessible(childAcc, v, parent[key].__isConstructed !== false, opts) // do sync to new object but do not send as it should happen only in constructor
         }
-        
+
         return childAcc
       }
 
@@ -1151,12 +1179,12 @@ export function setChildAccessible(parent: any, key: string | symbol, opts?: Chi
 }
 
 
-export function changeAccessibleName(a: any,n: string){
-  if(a[isProxySymbol]){
+export function changeAccessibleName(a: any, n: string) {
+  if (a[isProxySymbol]) {
     a.__accessibleName = n;
     rebuildChildAccessibles(a);
   }
-  else{
+  else {
     console.error("trying to change name of non accessible")
     debugger
   }
@@ -1170,14 +1198,20 @@ function removeChildAccessible(target: any, k: string | symbol, opts?: { doNotDe
   removeRemoteValue(target, k)
   let action = "deleted"
   if (!opts?.doNotDelete) {
+
     deleteProp(target, k);
     delete target[k];
+
   } else {
     target[k].__accessibleName = undefined
     target[k].__accessibleParent = undefined;
     action = "untagged"
   }
-  dbgStruct(`property ${action}: ${k.toString()} on `, buildAddressFromObj(target));
+  const addr = buildAddressFromObj(target)
+  if (addr === "/stateList/states/pp/fixtureStates") {
+    debugger
+  }
+  dbgStruct(`property ${action}: ${k.toString()} on `, addr);
 }
 
 function updateChildAccessible(childAcc: any, ob: any, doSend: boolean, opts?: ChildAccOptions) {
@@ -1195,12 +1229,44 @@ function updateChildAccessible(childAcc: any, ob: any, doSend: boolean, opts?: C
   }
   const oldNotified = notifiedAccessible
   notifiedAccessible = childAcc
+
+  const isArray = childAcc.length!== undefined ; //Array.isArray(childAcc);
+  const delMember = (o: Array<string>,n: string,assertIfNull = false)=>{
+    const i = o.indexOf(n);
+    if(i>=0){
+      o.splice(i,1)
+      return true
+    }
+    else if(assertIfNull){
+      console.error("member not found",n, "in" , o);
+      debugger
+      return false
+    }
+  }
+  if (isArray) { // nasty hack to handle array updates
+    childAcc.splice(0,childAcc.length-1)
+    let idx = 0
+    while(ob[idx]!==undefined){
+      childAcc.push(ob[idx])
+      delMember( newMembers,""+idx,true)
+      idx++
+    }
+    idx = 0
+    while(delMember( currentMembers,""+idx,false)){
+      idx++
+    }
+
+  }
+
   for (const k of currentMembers) {
+
     if (!newMembers.includes(k)) {
       //removeChildAccessible(childAcc, k)
       delete childAcc[k]
     }
   }
+
+
 
   for (const [k, v] of Object.entries(ob)) {
     if (isHiddenMember(k, ob)) { continue; }
@@ -1257,7 +1323,7 @@ export function getParentWithName(childAcc: any, n: string) {
 
 export function findLocationInParent(childAcc: any, n: string) {
   let insp = childAcc?.__accessibleParent
-  const path = new Array<any>()
+  const path = new Array<any>(childAcc)
 
   while (insp) {
     if (insp.__accessibleName === n) { return path }
@@ -1413,6 +1479,7 @@ function generateAccessibleHandler(opts?: { blockRecursion?: boolean; autoAddRem
     , deleteProperty(target: any, k: symbol | string) {
       if (Array.isArray(target)) {
         dbgStruct('removing prop', k)
+
       }
       if (k in target) { // TODO lockCallbacks? for deleted objects?
         removeChildAccessible(target, k)
@@ -1487,7 +1554,7 @@ export function AccessibleClass() {
           Object.defineProperty(this, '__isConstructed', {
             get: () => false,
             enumerable: false,
-            configurable:true
+            configurable: true
           })
         }
         else {
@@ -1495,14 +1562,14 @@ export function AccessibleClass() {
         }
       }
 
-      __undispose(){
+      __undispose() {
         dbgStruct("undispose", this)
         if ((Bconstructor as any).__undispose) { (Bconstructor as any).__undispose.call(this); }
         if (!(this as any).__isConstructed) {
           Object.defineProperty(this, '__isConstructed', {
             get: () => true,
             enumerable: false,
-            configurable:true
+            configurable: true
           })
         }
         else {

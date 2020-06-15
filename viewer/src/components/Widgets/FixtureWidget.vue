@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue,Watch } from 'vue-property-decorator';
 import { mapState, mapActions } from 'vuex';
 import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
 import Slider from '@/components/Inputs/Slider.vue';
@@ -65,7 +65,10 @@ export default class FixtureWidget extends Vue {
 
   @Prop({default:false})
   private showPresetableState!:boolean;
-
+  @Watch("presetableState")
+  dd(){
+    console.log("presetableState changed");
+  }
   get positionChannels():ChannelBase[]{
     return Object.values(this.fixtureProp.positionChannels)
   }
@@ -141,8 +144,6 @@ export default class FixtureWidget extends Vue {
     return [this.fixtureProp.getPosition()];
   }
 
-  public mounted() {
-  }
 
 
 

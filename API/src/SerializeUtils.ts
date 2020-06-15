@@ -1,7 +1,7 @@
 export function buildEscapedJSON(content: any, indent?: number) {
   function filterPrivate(key: string, value: any) {
 
-    if (key.startsWith('__') || key.startsWith('_events')) {
+    if (key.startsWith('__') || key.startsWith('_events') && !["state","toJSON","constructor","render"].includes(key)) {
       // console.log('ignoring', key);
       return undefined;
     } else { return value; }

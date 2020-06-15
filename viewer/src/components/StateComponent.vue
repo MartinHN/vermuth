@@ -76,7 +76,7 @@ export default class StateComponent extends Vue {
     if (this.selectedState && !this.selectedState.name.startsWith("__")) {
       return this.selectedState;
     }
-    return undefined;
+    return this.stateList.currentState;
   }
 
   set selectedStateIdx(i: number) {

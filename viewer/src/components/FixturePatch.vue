@@ -316,7 +316,7 @@ export default class FixturePatch extends Vue {
       : [f];
     fixtureList.map(ff => {
       this.universe.setGroupNamesForFixture(ff, event);
-      debugger;
+      // debugger;
     });
   }
 

@@ -92,7 +92,7 @@ export default class ChannelWidget extends Vue {
   }
 
   set enabledV(v: boolean) {
-    debugger
+    this.presetable.preseted = v
     // this.presetable = v;
     this.$emit("update:presetable",{preseted:v,value:this.channelProp.floatValue});
     
