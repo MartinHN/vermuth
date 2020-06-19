@@ -349,7 +349,7 @@ export function callAnyAccessibleFromRemote(root: any, saddr: string, args: any[
 
     const { accessible, parent, key } = resolveAccessible(root, addr);
 
-    if (accessible !== undefined) {
+    if (accessible !== undefined || parent?.[optsSymbol]?.autoAddRemoteValue) {
       if (AccessibleSettedByServer === addr) {
         console.warn('avoid feedback');
         return;
@@ -366,6 +366,9 @@ export function callAnyAccessibleFromRemote(root: any, saddr: string, args: any[
       } else if ((args !== undefined && args !== null)) { // set value
         if (parent && key) {
           if (accessible !== args) {
+            if (!accessible && parent[optsSymbol]?.autoAddRemoteValue) {
+              debugger
+            }
             AccessibleNotifierId = notifierId;
             AccessibleSettedByServer = saddr;
             parent[key] = args;
@@ -381,6 +384,7 @@ export function callAnyAccessibleFromRemote(root: any, saddr: string, args: any[
       }
     } else {
       console.error('not found accessible for :', saddr);
+
     }
   }
 }
@@ -395,11 +399,11 @@ function safeBindSocket(s: any) {
 export function buildAddressFromObj(o: any, errorIfEmpty = true) {
 
   let insp = o;
-  if(insp &&!insp[isProxySymbol] && insp.__accessibleParent){
+  if (insp && !insp[isProxySymbol] && insp.__accessibleParent) {
     // debugger
-    if(Object.keys(insp.__accessibleParent.__accessibleMembers).includes(insp.__accessibleName)){
+    if (Object.keys(insp.__accessibleParent.__accessibleMembers).includes(insp.__accessibleName)) {
       insp = insp.__accessibleParent.__accessibleMembers[insp.__accessibleName]
-      if(insp!=o){
+      if (insp != o) {
         // replace by registered proxy version to use when comparing objects
         // debugger;
       }
@@ -928,6 +932,7 @@ const allAccessibleSet = new WeakSet();
 const accessibleNameSymbol = Symbol('name');
 const accessibleAddressSymbol = Symbol('address');
 const setContextSymbol = Symbol('context');
+const optsSymbol = Symbol('opts')
 export const isProxySymbol = Symbol('isProxy');
 let accessibleChildBeingBuilt: any | undefined = undefined
 let reentrancyLock = false;
@@ -1198,9 +1203,12 @@ function removeChildAccessible(target: any, k: string | symbol, opts?: { doNotDe
   removeRemoteValue(target, k)
   let action = "deleted"
   if (!opts?.doNotDelete) {
-
-    deleteProp(target, k);
-    delete target[k];
+    if (typeof (k) !== "string" || Object.keys(target).includes(k)) {
+      deleteProp(target, k);
+    }
+    if (typeof (k) !== "string" || Object.keys(target).includes(k)) {
+      delete target[k];
+    }
 
   } else {
     target[k].__accessibleName = undefined
@@ -1230,29 +1238,29 @@ function updateChildAccessible(childAcc: any, ob: any, doSend: boolean, opts?: C
   const oldNotified = notifiedAccessible
   notifiedAccessible = childAcc
 
-  const isArray = childAcc.length!== undefined ; //Array.isArray(childAcc);
-  const delMember = (o: Array<string>,n: string,assertIfNull = false)=>{
+  const isArray = childAcc.length !== undefined; //Array.isArray(childAcc);
+  const delMember = (o: Array<string>, n: string, assertIfNull = false) => {
     const i = o.indexOf(n);
-    if(i>=0){
-      o.splice(i,1)
+    if (i >= 0) {
+      o.splice(i, 1)
       return true
     }
-    else if(assertIfNull){
-      console.error("member not found",n, "in" , o);
+    else if (assertIfNull) {
+      console.error("member not found", n, "in", o);
       debugger
       return false
     }
   }
   if (isArray) { // nasty hack to handle array updates
-    childAcc.splice(0,childAcc.length-1)
+    childAcc.splice(0, childAcc.length)
     let idx = 0
-    while(ob[idx]!==undefined){
+    while (ob[idx] !== undefined) {
       childAcc.push(ob[idx])
-      delMember( newMembers,""+idx,true)
+      delMember(newMembers, "" + idx, true)
       idx++
     }
     idx = 0
-    while(delMember( currentMembers,""+idx,false)){
+    while (delMember(currentMembers, "" + idx, false)) {
       idx++
     }
 
@@ -1349,33 +1357,36 @@ function generateAccessibleHandler(opts?: { blockRecursion?: boolean; autoAddRem
 
   return {
     set(obj: any, prop: symbol | string, value: any, thisProxy: any) {
-      if (prop === "inputs") {
+      if (prop === "fixtureStates") {
         debugger
       }
       let needRebuild = false;
       if (Array.isArray(obj) && !isNaN(prop as any)) {
         if (value && value.__accessibleName !== undefined) {
-          if (obj && obj === value.__accessibleParent) {
-            if ((obj as any).__accessibleMembers &&
-              Object.keys((obj as any).__accessibleMembers).includes(value.__accessibleName)) {
+          if (obj && (obj === value.__accessibleParent || thisProxy === value.__accessibleParent)) {
+            if ((obj as any).__accessibleMembers) {
+              if (!Object.keys((obj as any).__accessibleMembers).includes(value.__accessibleName)) {
+                console.warn("unattached array element")
+              }
               if ((obj as any).__accessibleMembers[prop] === value) {
                 console.warn('double array assign');
                 debugger;
               }
-              else {
-                // rename
-                const siblings = (obj as any).__accessibleMembers
-                if (siblings && siblings[prop] && siblings[prop].__accessibleName) {
-                  // siblings[prop].__accessibleName = undefined
-                  // delete siblings[prop]
-                  removeChildAccessible(obj, prop, { doNotDelete: true })
-                }
-                value.__accessibleName = prop
-                needRebuild = true
-                // removeChildAccessible(obj, value.__accessibleName, { doNotDelete: true })
-                treeEvents.emit('move', obj, value.__accessibleName, prop);
-                // delete obj[value.__accessibleName]
+
+              // rename
+              const siblings = (obj as any).__accessibleMembers
+              if (siblings && siblings[prop] && siblings[prop].__accessibleName) {
+                // siblings[prop].__accessibleName = undefined
+                // delete siblings[prop]
+                removeChildAccessible(obj, prop, { doNotDelete: true })
               }
+              value.__accessibleName = prop
+              siblings[prop] = value
+              needRebuild = true
+              // removeChildAccessible(obj, value.__accessibleName, { doNotDelete: true })
+              treeEvents.emit('move', obj, value.__accessibleName, prop);
+              // delete obj[value.__accessibleName]
+
 
             } else {
               console.error('incomplete parent')
@@ -1397,7 +1408,8 @@ function generateAccessibleHandler(opts?: { blockRecursion?: boolean; autoAddRem
       const wasChildAccessible = obj.__accessibleMembers[prop] !== undefined
       const res = Reflect.set(obj, prop, value, thisProxy);
 
-      if (needRebuild) {
+      if (needRebuild || wasChildAccessible) {
+
         rebuildChildAccessibles(obj[prop]);
       }
       // const res = true;
@@ -1450,7 +1462,17 @@ function generateAccessibleHandler(opts?: { blockRecursion?: boolean; autoAddRem
       //     dbg.assert(false,"calling set on remote value")
       //     obj[prop] = value
       //   }
-
+      if (opts?.autoAddRemoteValue && !isHidden) {
+        debugger
+        opts.noRef = true;
+        const adUp = new AddressUpdater()
+        adUp.updateAddr(obj, prop, false)
+        if (adUp.hasValidAddress) {
+          adUp.sendValue(value, opts)
+        } else {
+          debugger
+        }
+      }
 
 
       // }
@@ -1473,7 +1495,9 @@ function generateAccessibleHandler(opts?: { blockRecursion?: boolean; autoAddRem
       } else if ((target instanceof Map || target instanceof Set) && typeof ((target as any)[k]) === 'function') {
         return (target as any)[k].bind(target);
       }
-
+      else if (k === optsSymbol) {
+        return opts
+      }
       return Reflect.get(target, k, thisProxy);
     }
     , deleteProperty(target: any, k: symbol | string) {
@@ -1640,6 +1664,7 @@ export function resolveAccessible(parent: any, addr: string[]) {
           console.error('accessing a non updated accessible from', addr, ' to ', regAddr)
         }
       }
+
       return { accessible: insp, parent: accessibleParent, key: inspA };
     }
 
@@ -1648,6 +1673,7 @@ export function resolveAccessible(parent: any, addr: string[]) {
   console.error("can't find accessible for ", oriAddr, 'stopped at ', addr);
   return { accessible: undefined, parent: undefined };
 }
+
 
 
 export class RemoteMap<T>  {

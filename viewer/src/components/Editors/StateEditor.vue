@@ -36,7 +36,7 @@
       <v-col>
         <ChannelRack
           :displayableFixtureList="state?state.getSavedFixtureList(universe.fixtureAndGroupList):[]"
-          :presetableState.sync="state"
+          :presetableState.sync="state.presetableState"
         />
         <div v-for="z of zombies" :key="z.id" >
         {{z}}

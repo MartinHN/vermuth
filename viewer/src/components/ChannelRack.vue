@@ -60,7 +60,12 @@
             </v-menu>
           </v-col>
           <v-col cols>
-            <Button @click="disableAllPresetable()" style="height:100%" text="disable All"></Button>
+            <Button
+              v-if="showPresetableState"
+              @click="disableAllPresetable()"
+              style="height:100%"
+              text="disable All"
+            ></Button>
           </v-col>
         </v-row>
 
@@ -107,7 +112,7 @@ const universesModule = namespace("universes");
 const statesModule = namespace("states");
 // const dumbState = {};
 // function createDefaultState(rootObj){
-    
+
 //       function createFakeChild(o: any, n: any, depth: number) {
 //         if (typeof n === "string" && !n.startsWith("_") && !(["state","toJSON","constructor","render"].includes(n))) {
 //           // debugger;
@@ -135,21 +140,19 @@ const statesModule = namespace("states");
 //           return createFakeChild(rootObj, k, 0);
 //         }
 //       });
-    
+
 // }
 @Component({
   components: { FixtureWidget, Button, Toggle, Slider, FixtureGroupWidget }
 })
 export default class ChannelRack extends Vue {
-  dumbState  = {};
-  @Prop({default:undefined})
+  dumbState = {};
+  @Prop({ default: undefined })
   presetableState!: {
     [id: string]: { [id: string]: { preseted: boolean; value: number } };
   };
-  
-  mounted() {
-  }
- 
+
+  mounted() {}
 
   set selectedFixtureNames(l: string[]) {
     this.pselectedFixtureNames = l;
@@ -188,47 +191,55 @@ export default class ChannelRack extends Vue {
         f.hasChannelMatchingFilters(this.selectedChannelFilterNames)
     );
   }
-  get hasPresetableState(){
-    debugger
-    return  this.presetableState!==undefined
+  get hasPresetableState() {
+    debugger;
+    return this.presetableState !== undefined;
   }
   get lazyPresetableState() {
-    if(this.hasPresetableState){
+    debugger;
+    if (this.hasPresetableState) {
       return this.presetableState;
     }
     const isValidAsNew = (k: string | symbol | number, o: any) => {
       return (
-        !(typeof k === "symbol") && 
-        !(k in Object.keys(o)) && 
-        !k.toString().startsWith("_") && 
-        !(["state","toJSON","constructor","render"].includes(k.toString()))
+        !(typeof k === "symbol") &&
+        !(k in Object.keys(o)) &&
+        !k.toString().startsWith("_") &&
+        !["state", "toJSON", "constructor", "render"].includes(k.toString())
       );
     };
-    return new Proxy({} , {
-      get(o, k,thisProxy) {
-        // debugger;
-        if (isValidAsNew(k, o)) {
-          const chDic: {
-            [id: string]: { v: number; presetable: boolean };
-          } = {};
-          const lazyChannelDic = new Proxy(chDic, {
-            get(oo, kk,thisProxy) {
-              // debugger
-              if (isValidAsNew(kk, oo)) {
-                Vue.set(oo, kk.toString(), { v: 0, presetable: false });
+    return new Proxy(
+      {},
+      {
+        get(o, k, thisProxy) {
+          // debugger;
+          if (isValidAsNew(k, o)) {
+            const chDic: {
+              [id: string]: { v: number; presetable: boolean };
+            } = {};
+            const lazyChannelDic = new Proxy(chDic, {
+              get(oo, kk, thisProxy) {
+                // debugger
+                if (isValidAsNew(kk, oo)) {
+                  Vue.set(oo, kk.toString(), { v: 0, presetable: false });
+                }
+                return Reflect.get(oo, kk, thisProxy);
               }
-              return Reflect.get(oo, kk,thisProxy);
-            }
-          });
-          Vue.set(o, k.toString(), lazyChannelDic);
+            });
+            Vue.set(o, k.toString(), lazyChannelDic);
+          }
+          return Reflect.get(o, k, thisProxy);
         }
-        return Reflect.get(o, k,thisProxy);
       }
-    });
+    );
+  }
+  set lazyPresetableState(v: any) {
+    debugger;
+    console.error("cant set lazy!!!");
   }
   @Watch("presetableState")
   notif() {
-    debugger
+    debugger;
     console.log("displayableFixture changed");
     this.$emit("presetable", this.presetableState);
   }
@@ -307,6 +318,17 @@ export default class ChannelRack extends Vue {
   }
 
   public disableAllPresetable() {
+    if (this.hasPresetableState) {
+      let insp = this.presetableState;
+      for (const v of Object.values(insp)) {
+        for (const l of Object.values(v)) {
+          if (l.preseted) {
+            l.preseted = false;
+          }
+        }
+      }
+      // this.$emit("presetableState:update",{});
+    }
     this.stateList.setPresetableNames([]);
   }
 

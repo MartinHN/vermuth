@@ -87,7 +87,7 @@ export default class FixtureGroupWidget extends Vue {
 
   @Watch("presetableState")
   wPresState() {
-    debugger;
+    // debugger;
   }
   get hasMainPreseted() {
     return this.fixtureProp?.channels.some(c =>

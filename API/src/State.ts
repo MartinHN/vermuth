@@ -2,7 +2,7 @@ import { ChannelBase, ChannelGroup } from './Channel';
 import { FixtureBase, FixtureGroup } from './Fixture';
 import { Universe } from './Universe';
 import { sequencePlayer } from './Sequence';
-import { nonEnumerable, RemoteFunction, AccessibleClass, setChildAccessible, RemoteValue, RemoteArray, ClientOnly, doSharedFunction, SetAccessible, findLocationInParent, isProxySymbol } from './ServerSync';
+import { nonEnumerable, RemoteFunction, AccessibleClass, setChildAccessible, RemoteValue, RemoteArray, ClientOnly, doSharedFunction, SetAccessible, findLocationInParent, isProxySymbol, AccessibleMap, RemoteMap } from './ServerSync';
 import { addProp, deleteProp, Proxyfiable } from './MemoryUtils';
 
 import { CurvePlayer, CurveLink, CurveLinkStore } from './CurvePlayer';
@@ -11,6 +11,7 @@ import { isPlainObject } from 'lodash';
 
 
 interface ChannelsValuesDicTypes { [id: string]: number }
+// type ChannelsValuesDicTypes = RemoteMap<number>
 interface ChannelsCurveLinkDicTypes { [id: string]: { uid: string } }
 const isValidChannelName = (k: string | symbol | number) => {
   return (
@@ -30,12 +31,13 @@ export class FixtureState {
 
       get: (o: any, k: string) => {
         const self = this;
-        if(!(self.pChannelValues as any)[isProxySymbol]){
-          debugger
+        if (!(self.pChannelValues as any)[isProxySymbol]) {
+          // debugger
         }
-        
+
         if (isValidChannelName(k) && !(Object.keys(o).includes(k))) {
-          debugger
+
+          // debugger
           let cachedValue = self.pChannelValues?.[k] || 0
           addProp(o, k, {
             get preseted() {
@@ -63,10 +65,11 @@ export class FixtureState {
         // const fakeTouch =self.pChannelValues;
         return Reflect.get(o, k)
       },
+      
       set: (o: any, k: string | number | symbol, v: any, thisProxy: any) => {
         const self = this
         if (isValidChannelName(k)) {
-          debugger;
+          // debugger;
           // const fakeTouch =self.pChannelValues;
           if (v.preseted) {
             self.pChannelValues[k.toString()] = v.value
@@ -87,10 +90,10 @@ export class FixtureState {
 
         return Reflect.set(o, k, v, thisProxy)
       }
-      ,deleteProperty:(o,k)=>{
+      , deleteProperty: (o, k) => {
         const self = this
         delete self.pChannelValues[k.toString()]
-        return Reflect.deleteProperty(o,k);
+        return Reflect.deleteProperty(o, k);
       }
 
     });
@@ -100,7 +103,7 @@ export class FixtureState {
   }
 
   set presetableState(v: { [channelName: string]: { preseted: boolean; value: number } }) {
-    debugger
+    // debugger
     this.pChannelValues = {}
     for (const [k, s] of Object.entries(v)) {
       if (s.preseted) {
@@ -109,6 +112,8 @@ export class FixtureState {
 
     }
   }
+
+
   get channelValues(): ChannelsValuesDicTypes {
     return Object.assign({}, this.pChannelValues);
   }
@@ -122,8 +127,9 @@ export class FixtureState {
     return res;
   }
   public name = '';
-
-  private pChannelValues: ChannelsValuesDicTypes = {};
+  // @SetAccessible({autoAddRemoteValue:true})
+  // @AccessibleMap()
+  private pChannelValues: ChannelsValuesDicTypes ={};//= new RemoteMap<number>(-1);
   private pChannelCurveLinks: ChannelsCurveLinkDicTypes = {};
   constructor(fixtureOrName?: FixtureBase | string, options?: { overrideValue?: number; channelFilter?: (c: ChannelBase) => boolean; full?: boolean; channelNames?: string[] }) {
     if (fixtureOrName === undefined) { return; }
@@ -140,7 +146,7 @@ export class FixtureState {
       validChs = channels.filter((c) => vNames.includes(c.getUID()));
     } else {
       validChs = [];
-      debugger;
+      // debugger;
       console.error('old way of creating state');
     }
     validChs.map((c) => {
@@ -158,7 +164,8 @@ export class FixtureState {
 
   public configureFromObj(o: any) {
     this.name = o.name;
-    this.pChannelValues = o.pChannelValues; // .map( (oo: any) => res.pChannelValues[oo.channelName]= oo.value)) );
+    this.pChannelValues = o.pChannelValues;
+   
     this.pChannelCurveLinks = o.pChannelCurveLinks;
   }
   public isEmpty() {
@@ -209,10 +216,14 @@ export class ResolvedFixtureState {
     }
   }
   public applyState() {
+    debugger
     Object.values(this.channels).map((cv) => {
       CurvePlayer.removeChannel(cv.channel);
 
       if (typeof (cv.value) === 'number') {
+        if(cv.channel.parentFixture?.name==="Lazer" && cv.channel.name==="dim"){
+          debugger
+        }
         cv.channel.setValue(cv.value, true);
       } else {
         const curveLink = cv.value as CurveLink;
@@ -348,7 +359,7 @@ export class State {
     return res;
   }
 
-  public fixtureStates: FixtureState[] = [];//new  RemoteArray<FixtureState>();
+  public fixtureStates: FixtureState[] = [];//= new  RemoteArray<FixtureState>();
 
   public linkedStates: LinkedState[] = [];
 
@@ -373,7 +384,7 @@ export class State {
         let f = ss.fixtureStates.find(e => e.name === k)
         if (!f) {
           ss.fixtureStates.push(new FixtureState(k.toString()))
-          ss.checkDups();
+          // ss.checkDups();
           f = ss.fixtureStates.find(e => e.name === k)
           if (!f) {
             console.error('wwww', k)
@@ -389,13 +400,13 @@ export class State {
       set(o, k, v, thisProxy) {
         // const o = ss.cachedPState
         if (!isValidStateName(k)) { return Reflect.set(o, k, v, thisProxy); }
-        debugger
+        // debugger
         // if(!Object.keys(o).includes(k))){addProp(o, k.toString(), v)}
         let f = ss.fixtureStates.find(e => e.name === k)
-        ss.checkDups();
+        // ss.checkDups();
         if (!f) {
           ss.fixtureStates.push(new FixtureState(k.toString()))
-          ss.checkDups();
+          // ss.checkDups();
           f = ss.fixtureStates.find(e => e.name === k)
           if (!f) {
             console.error('wwww', k)
@@ -404,7 +415,7 @@ export class State {
           }
         }
         else {
-          debugger
+          // debugger
           f.presetableState = v
         }
         return Reflect.set(o, k, v, thisProxy)
@@ -430,19 +441,21 @@ export class State {
   }
 
   constructor(private __stateList: StateList | undefined, public name: string, public __validChNames: string[], fixtures: FixtureBase[], public full?: boolean) {
-    // if(__validChNames.length===0 && !name.startsWith('__') && !name.startsWith('current')){debugger;}
+    if(__validChNames.length===0 && !name.startsWith('__') && !name.startsWith('current')){debugger;}
+
     this.updateFromFixtures(fixtures);
     this.full = full ? true : false;
 
   }
   public toJSON() {
+    
     const result: any = {};
     for (const key in this) {
       if (this.hasOwnProperty(key) && key !== "cachedPState") {
         result[key] = this[key];
       }
     }
-
+    result.fixtureStates = this.fixtureStates.filter(e=>!e.isEmpty())
     return result;
 
   }
@@ -452,12 +465,21 @@ export class State {
     if (hasDups) {
       console.error("duplicate states ", l)
       const existing = new Array<string>()
-      this.fixtureStates = l.filter(e => {
+      
+      const newL = l.filter(e => {
         const res = !existing.includes(e.name);
         existing.push(e.name);
         return res;
       });
+      this.fixtureStates = newL
+
     }
+    // for(const f of Object.values(this.fixtureStates)){
+    //  if(!Object.keys(this.presetableState).includes(f.name)){
+    //    debugger
+    //   this.presetableState[f.name]= f.presetableState
+    //  }
+    // }
     return hasDups
   }
   public configureFromObj(o: any) {
@@ -469,6 +491,7 @@ export class State {
     o?.fixtureStates.map((oo: any) => {
       const fs = FixtureState.createFromObj(oo);
       if (fs) {
+       
         this.fixtureStates.push(fs);
       }
     });
@@ -547,6 +570,7 @@ export class State {
   }
   public updateFromFixtures(fixtures: FixtureBase[]) {
     this.fixtureStates = [];
+    
     const opts: { full: boolean; channelNames?: string[] } = { full: !!this.full };
     if (this.__validChNames) {
       opts.channelNames = this.__validChNames;
@@ -576,12 +600,19 @@ export class State {
     const res: ResolvedFixtureState[] = [];
 
     for (const f of this.fixtureStates) {
-      const fix = context.find((ff) => ff.name === f.name);
-      if (fix) {
-        res.push(new ResolvedFixtureState(f, fix, dimMaster));
+      if (f) {
+        const fix = context.find((ff) => ff?.name === f.name);
+        if (fix) {
+          res.push(new ResolvedFixtureState(f, fix, dimMaster));
+        }
+        else {
+          console.error("fixture not defined in context : ",f.name)
+        }
+      } else {
+        console.error("fixture not defined in fixtureState")
       }
     }
-    let otherRs: ResolvedFixtureState[] = [];
+    const otherRs: ResolvedFixtureState[] = [];
     if (!forbiddenStateNames) {
       forbiddenStateNames = []
     }
@@ -589,7 +620,10 @@ export class State {
     this.linkedStates.map((s) => {
       if (forbiddenStateNames && forbiddenStateNames.includes(s.name)) { console.warn('prevent circular state ref'); return; }
       const os = sl[s.name];
-      if (os) { otherRs = otherRs.concat(os.resolveState(context, sl, s.dimMaster, forbiddenStateNames)); } else { console.error('fuck states'); }
+      if (os) { 
+        // otherRs = otherRs.concat(os.resolveState(context, sl, s.dimMaster, forbiddenStateNames)); 
+        StateList.mergeResolvedFixtureList(otherRs,os.resolveState(context, sl, s.dimMaster, forbiddenStateNames));
+      } else { console.error('fuck states'); }
     });
 
     StateList.mergeResolvedFixtureList(otherRs, res); // this state should override linked
@@ -777,6 +811,7 @@ export class StateList {
     if (setLoaded) {
       this.setLoadedStateName(dimMaster > 0 ? s.name : "");
     }
+
     this.setPresetableNames(channelList.map((c) => c.getUID()));
     return channelList;
   }
@@ -800,6 +835,9 @@ export class StateList {
     }
 
     this.checkPresetableIntegrity("");
+  }
+  public getPresetableNames(){
+    return Object.assign({},this.presetableNames);
   }
 
 
@@ -869,10 +907,11 @@ export class StateList {
     return (this.universe.groupList as Array<FixtureGroup | FixtureBase>).concat(this.universe.fixtureList);
   }
 
-  @RemoteFunction({ sharedFunction: true })
+  // @RemoteFunction({ sharedFunction: true })
   public saveCurrentState(name: string, linkedStates?: LinkedState[], actions?: ActionList) {
 
     if (name !== this.currentState.name) {
+
       this.saveFromPresetableNames(name, this.presetableNames, linkedStates, actions);
 
     } else {
@@ -880,7 +919,7 @@ export class StateList {
 
     }
   }
-  @RemoteFunction({ sharedFunction: true })
+  @RemoteFunction({ sharedFunction: true ,noRef:true})
   public saveFromPresetableNames(name: string, presetableNames: string[], linkedStates?: LinkedState[], actions?: ActionList) {
 
     const fl = this.getCurrentFullFixtureList();
@@ -890,10 +929,23 @@ export class StateList {
     this.addState(st);
     this.setLoadedStateName(st.name);
   }
+  // @RemoteFunction({ sharedFunction: true ,noRef:true})
+  // public saveFromPresetableObject(name: string, ob: any) {
+
+  //   const fl = this.getCurrentFullFixtureList();
+  //   const st = new State(this, name,[], fl);
+  //   st.configureFromObj(ob);
+  //   st.updateFromFixtures(fl);
+  //   this.addState(st);
+  //   this.setLoadedStateName(st.name);
+  // }
 
 
   public setLoadedStateName(n: string) {
-    this.loadedStateName = n;
+    if (n !== this.currentState.name) {
+      this.loadedStateName = n;
+    }
+    else { console.error("can't set current to loaded") }
   }
   public updateCurrentState() {
     const fl = this.getCurrentFullFixtureList();
@@ -925,7 +977,9 @@ export class StateList {
     rs.map((r) => r.applyFunction(
       (channel, value) => {
         CurvePlayer.removeChannel(channel);
-
+        if(channel.parentFixture?.name==="Lazer" && channel.name==="shutter"){
+          debugger
+        }
         if (typeof (value) === 'number') {
           channel.setValue(value, true);
         } else {

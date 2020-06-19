@@ -112,15 +112,16 @@ function backupFiles() {
   fs.readdir(bDir, (err, files) => {
 
     if (!files) {return; }
-    // const shortBkTime = 5* 60 * 1000 ;// 60 * 60  * 1000
-    // const longBkTime = 60 * 60 * 1000;
-    const shortBkTime = 5 * 1000 ; // 60 * 60  * 1000
-    const longBkTime = 20 * 1000;
+    const shortBkTime = 5* 60 * 1000 ;// 60 * 60  * 1000
+    const longBkTime = 60 * 60 * 1000;
+    // const shortBkTime = 5 * 1000 ; // 60 * 60  * 1000
+    // const longBkTime = 20 * 1000;
     const now = Date.now();
     const filesWithDate = files.map((e) => ({path: path.join(bDir, e), date: new Date(e.replace(/_/g,':'))})).sort((a, b) => b.date - a.date);
     debugFile('backups : ', filesWithDate);
     let lastHourBackup: any;
     const filesToRm = new Array<string>();
+    debugger
     for (const e of filesWithDate) {
       const l =  e.date.getTime();
       const diff = (now - l);
@@ -128,7 +129,7 @@ function backupFiles() {
         continue;
       } else if (!lastHourBackup) {
         lastHourBackup = e;
-      } else if (lastHourBackup.date.getTime() - e.date.getTime() > longBkTime) {
+      } else if (lastHourBackup.date.getTime() - l > longBkTime) {
         lastHourBackup = e;
       } else {
         filesToRm.push(e.path);
