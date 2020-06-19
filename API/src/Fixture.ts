@@ -277,6 +277,10 @@ export class FixtureBase implements FixtureBaseI {
   public setMaster(v: ChannelValueType) {
     this.dimmerValue = v;
   }
+  @RemoteFunction({ sharedFunction: true })
+  public setAll(v: ChannelValueType) {
+    this.channels?.map(c=>c.setValue(v,true));
+  }
 
   @RemoteFunction({ sharedFunction: true ,allowRawObj:true})
   public setColor(c: { r: number; g: number; b: number;w?: number }, setWhiteToZero: boolean) {

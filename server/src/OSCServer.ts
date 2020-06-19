@@ -76,6 +76,8 @@ class OSCServer {
     if (msg.address === '/ping') {
       this.udpPort.send({address: '/pong'});
       return;
+    }else if(msg.address.startsWith("/node")){
+      // ignore LGML
     } else if (msg.address === '/allColors') {
       dmxController.setAllColor({r: msg.args[0], g: msg.args[1], b: msg.args[2]}, true);
     } else {

@@ -82,7 +82,7 @@ export class ChannelBase implements ChannelI {
   get floatValue() { return this.__value; }
 
   get trueValue() {
-    return this.__value;
+    return this.__value * this.universeMaster;
   }
   public get reactToMaster() { return this.roleFam === 'dim'; }
   public get parentFixture() { return this.__parentFixture; }
@@ -115,7 +115,7 @@ export class ChannelBase implements ChannelI {
   private __value: ChannelValueType = 0;
 
   private __isDisposed = false;
-
+  private __lastNotifiedValue = -1;
   @RemoteValue()
   public name: string
   constructor(_name: string, __value: ChannelValueType, private _circ: number = 0) {
@@ -210,18 +210,35 @@ export class ChannelBase implements ChannelI {
   get hasCustomFamType() {
     return Object.getOwnPropertyDescriptor(this, "roleFam")?.enumerable
   }
-
-
+  get universeMaster() {
+    if(!this.reactToMaster){return 1;}
+    const mV = this.__parentFixture?.universe?.grandMaster;
+    if (mV === undefined) {
+      console.error('grand master not found');
+      debugger;
+    }
+    return mV !== undefined ? mV : 1;
+  }
+  public updateTrueValue() {
+    this.setValue(this.__value,true);
+  }
   @RemoteFunction()
   public setValue(v: number, doNotify: boolean) {
     if (Number.isNaN(v)) {
       console.error('Nan error');
       return false;
     }
-    if (this.__value !== v) {
-
+    if(v!==this.__value){
       this.setValueChecking(v);
-      if (doNotify) { UniverseListener.notify(this.trueCirc, this.__value); }
+    }
+    const newTrueVal = v * this.universeMaster
+    if (this.__lastNotifiedValue !== newTrueVal) {
+
+      
+      if (doNotify) {
+        UniverseListener.notify(this.trueCirc, this.trueValue);
+        this.__lastNotifiedValue = this.trueValue
+      }
       return true;
     } else {
       return false;

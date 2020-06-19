@@ -3,10 +3,10 @@
     <div style="display:flex;width:100%;padding:5px">
       <slider
         style="flex:1 0 75%"
-        class="displayedMaster"
-        @input="displayedMaster=$event"
-        :value="displayedMaster"
-        name="displayedMaster"
+        class="grandMaster"
+        @input="grandMaster=$event"
+        :value="grandMaster"
+        name="grandMaster"
         showName="1"
         showValue="1"
       ></slider>
@@ -267,18 +267,22 @@ export default class ChannelRack extends Vue {
     return this.selectedGroupNames.length > 0 ? this.selectedGroupNames[0] : "";
   }
 
-  public set displayedMaster(v: number) {
-    for (const f of this.displayedFixtures) {
-      if (this.fixtureInPreset(f)) {
-        f.setMaster(v);
-      }
-    }
+  public set grandMaster(v: number) {
+    this.universe.grandMaster = v;
+    // for (const f of this.displayedFixtures) {
+    //   if (this.fixtureInPreset(f)) {
+    //     f.setMaster(v);
+    //   }
+    // }
   }
-  public get displayedMaster() {
-    return this.displayedFixtures.length
-      ? this.displayedFixtures[0].dimmerValue
-      : 0;
+  public get grandMaster() {
+    return this.universe.grandMaster
+    // return this.displayedFixtures.length
+    //   ? this.displayedFixtures[0].dimmerValue
+    //   : 0;
   }
+
+
 
   @Prop({
     default: () => {

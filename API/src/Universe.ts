@@ -37,6 +37,16 @@ export class Universe implements UniverseI {
 
 
   public get grandMaster() {return this._master; }
+  public set grandMaster(v: number){
+    this.setGrandMaster(v)
+  }
+  @RemoteFunction({sharedFunction:true})
+  public setGrandMaster(n: number) {
+    this._master = n;
+    for(const c of this.allChannels){
+      if(c.reactToMaster){c.updateTrueValue()}
+    }
+  }
   public get groupNames() { return Object.keys(this.groups); }
 
   @RemoteFunction({sharedFunction: true})
@@ -158,12 +168,7 @@ export class Universe implements UniverseI {
   public setDriverName(n: string) {
     this.driverName  = n;
   }
-  public setGrandMaster(n: number) {
-    this._master = n;
-    for ( const f of this.fixtureList) {
-      f.setMaster(this._master);
-    }
-  }
+
   @RemoteFunction({sharedFunction:true})
   public addFixture(f: FixtureBase) {
     if(f && !(f instanceof FixtureBase)){
@@ -244,6 +249,10 @@ export class Universe implements UniverseI {
   @RemoteFunction({sharedFunction: true})
   public setAllColor(color: {r: number; g: number; b: number}, setWhiteToZero: boolean) {
     this.fixtureList.map((f) => f.setColor(color, setWhiteToZero));
+  }
+  @RemoteFunction({sharedFunction: true})
+  public setAllMaster(m: number) {
+    this.fixtureList.map((f) => f.setMaster(m));
   }
 
   @RemoteFunction({sharedFunction: true})
