@@ -82,9 +82,9 @@ export class ChannelBase implements ChannelI {
   get floatValue() { return this.__value; }
 
   get trueValue() {
-    return this.__value * this.universeMaster;
+    return this.valueToTrue(this.__value);
   }
-  public get reactToMaster() { return this.roleFam === 'dim'; }
+  public get reactToMaster() { return this.roleFam === 'dim'  }
   public get parentFixture() { return this.__parentFixture; }
 
   public static createFromObj(ob: any, parent: FixtureBase): ChannelBase | undefined {
@@ -113,7 +113,7 @@ export class ChannelBase implements ChannelI {
   private __parentFixture: FixtureBase | null = null;
 
   private __value: ChannelValueType = 0;
-
+  private __flashValue = 0;
   private __isDisposed = false;
   private __lastNotifiedValue = -1;
   @RemoteValue()
@@ -222,6 +222,14 @@ export class ChannelBase implements ChannelI {
   public updateTrueValue() {
     this.setValue(this.__value,true);
   }
+  @RemoteFunction({sharedFunction:true})
+  public flash(n: number){
+    this.__flashValue = n;
+    this.updateTrueValue()
+  }
+  public valueToTrue(v: number){
+    return Math.min(1,Math.max(0,v*this.universeMaster + this.__flashValue));
+  }
   @RemoteFunction()
   public setValue(v: number, doNotify: boolean) {
     if (Number.isNaN(v)) {
@@ -231,10 +239,8 @@ export class ChannelBase implements ChannelI {
     if(v!==this.__value){
       this.setValueChecking(v);
     }
-    const newTrueVal = v * this.universeMaster
+    const newTrueVal = this.valueToTrue(v);
     if (this.__lastNotifiedValue !== newTrueVal) {
-
-      
       if (doNotify) {
         UniverseListener.notify(this.trueCirc, this.trueValue);
         this.__lastNotifiedValue = this.trueValue
@@ -243,6 +249,10 @@ export class ChannelBase implements ChannelI {
     } else {
       return false;
     }
+  }
+
+  public isSlow(){
+    return this.roleFam == "position"  
   }
 
   public isSameAs(c: ChannelBase) {

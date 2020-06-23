@@ -183,7 +183,10 @@ export class ResolvedFixtureState {
   constructor(public state: FixtureState, public fixture: FixtureBase, public dimMaster = 1) {
     Object.entries(this.state.channelValues).forEach(([k, cv]) => {
       const c = this.fixture.getChannelForName(k);
-      if (c) { this.channels[c.name] = { channel: c, value: cv * dimMaster }; }
+      if (c) { 
+        const tV = c.reactToMaster?cv*dimMaster:cv;
+        this.channels[c.name] = { channel: c, value: tV }; 
+      }
     });
     Object.entries(this.state.channelCurveLinks).forEach(([k, cv]) => {
       const c = this.fixture.getChannelForName(k);
@@ -1007,9 +1010,12 @@ class WholeState extends State {
   public resolveState(context: FixtureBase[], sl: { [id: string]: State }, dimMaster = 1): ResolvedFixtureState[] {
     const res: ResolvedFixtureState[] = [];
     const opt = {};
+    const isIncluded=(c: ChannelBase)=>{
+      return (this.name==="__black" && c.roleFam==='fog') || c.reactToMaster
+    }
     for (const f of context) {
-      f.channels.map((c) => { if (c.reactToMaster) { CurvePlayer.removeChannel(c); } });
-      const fs = new FixtureState(f, { overrideValue: this.value, channelFilter: (c: ChannelBase) => c.reactToMaster });
+      f.channels.map((c) => { if (isIncluded(c)) { CurvePlayer.removeChannel(c); } });
+      const fs = new FixtureState(f, { overrideValue: this.value, channelFilter: (c: ChannelBase)=> isIncluded(c)});
       res.push(new ResolvedFixtureState(fs, f, dimMaster));
     }
     return res;

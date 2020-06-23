@@ -1,5 +1,6 @@
 <template>
   <div class="fixtureGroupWidget" :style="{backgroundColor:getFixtureColor(fixtureProp)}">
+  {{fixtureProp.name}}
     <Toggle
       v-if="isGroup"
       :text="(expanded?'collapse':'expand')+' '+groupName"
