@@ -31,6 +31,9 @@ export class Sequence extends Proxyfiable {
   @RemoteValue()
   public name: string;
 
+  @RemoteValue()
+  public doNotPrepareNext = false;
+
   @nonEnumerable()
   public __state?: State;
 
@@ -315,7 +318,9 @@ export class SequencePlayerClass {
         (...args: any[]) => {
           doSharedFunction(() => {
             this.pisPlaying = false;
-            // this.resolveSlowChanges(nIdx+1)
+            if (!this.nextSeq.doNotPrepareNext) {
+              this.resolveSlowChanges(nIdx + 1)
+            }
             if (cb) { cb(...args); }
           });
         });
@@ -336,27 +341,29 @@ export class SequencePlayerClass {
       }
     }
     const seq = this.sequenceList.getAtIdx(toIdx)
-    const resolvedStates = seq?.resolveState(stateResolver)?.resolveState(this.universe.fixtureList,this.stateList.states,1);
+    const resolvedStates = seq?.resolveState(stateResolver)?.resolveState(this.universe.fixtureList, this.stateList.states, 1);
     if (resolvedStates) {
       for (const b of blackFixtures) {
-        const match = resolvedStates.find(r=>r.fixture==b)
-        if(match){
+        const match = resolvedStates.find(r => r.fixture == b)
+        if (match) {
           let isLit = false
-          if(b.dimmerChannels.map(d=>{
-            const tV = match.state.channelValues[d.name]
-            if(tV !==undefined && tV>0){
-              isLit=true;
+          if (b.dimmerChannels.map(d => {
+            const tV = match.channels[d.name]?.value
+            if (tV !== undefined && tV > 0) {
+              isLit = true;
             }
           }))
-          if(isLit){
-          for(const [k,v] of Object.entries(match.state.channelValues)){
-            const c = b.getChannelForName(k);
-            if(c && !(c.roleFam==="dim")){
-              c.setValue(v,true);
+            if (isLit) { // wil be lit on the next state so prepare other channels
+              for (const [k, v] of Object.entries(match.channels)) {
+                if (typeof (v.value) === "number") {
+                  const c = b.getChannelForName(k);
+                  if (c && !(c.reactToMaster)) {
+                    c.setValue(v.value, true);
+                  }
+                }
+
+              }
             }
-            
-          }
-        }
 
         }
       }

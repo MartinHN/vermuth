@@ -23,13 +23,22 @@
           </div>
         </v-col>
         <!-- <Button text="Black" @click="goToSequenceNamed({name:sequence.name,dimMaster:0})" style="width:20%" /> -->
-        <v-col cols="2">
-          <Numbox
+       
+          <v-col v-if="editMode" cols="2">
+            <Toggle
+              :value="sequence.doNotPrepareNext"
+              @input="sequence.doNotPrepareNext = $event"
+              text="noPrepare"
+            />
+          </v-col>
+           <v-col v-else cols="2">
+           <Numbox
             :value="sequence.timeIn"
             @input="setSequenceTimeIn({sequence:sequence,value:$event})"
             hide-details
           />
         </v-col>
+
         <v-col>
           <v-select
             :active="editMode"
@@ -50,13 +59,14 @@ import { State, Action, Getter, Mutation, namespace } from "vuex-class";
 import Button from "@/components/Inputs/Button.vue";
 import Numbox from "@/components/Inputs/Numbox.vue";
 import TextInput from "@/components/Inputs/TextInput.vue";
+import Toggle from "@/components/Inputs/Toggle.vue";
 import { Sequence } from "@API/Sequence";
 import rootState from "@API/RootState";
 import SequenceMethods from "../store/sequence";
 const sequenceModule = namespace("sequence");
 const stateModule = namespace("states");
 @Component({
-  components: { Button, Numbox, TextInput }
+  components: { Button, Numbox, TextInput, Toggle }
 })
 export default class SequenceComponent extends Vue {
   @sequenceModule.Mutation("setSequenceName")
@@ -115,7 +125,7 @@ export default class SequenceComponent extends Vue {
   }
 
   go() {
-    debugger
+    debugger;
     this.seqPlayer.curPlayedIdx = this.seqNumber;
   }
 }
