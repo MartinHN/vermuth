@@ -4,7 +4,7 @@ import { FixtureFactory } from './FixtureFactory';
 import { Sequence, sequencePlayer, SequencePlayerClass, SequenceList } from './Sequence';
 import { StateList } from './State';
 import { DMXControllerI } from './DMXControllerI';
-import { bindClientSocket, RemoteFunction, SetAccessible, setChildAccessible, AccessibleClass, rebuildChildAccessibles,resolveAccessible, RemoteValue , treeEvents} from './ServerSync';
+import { bindClientSocket, RemoteFunction, SetAccessible, setChildAccessible, AccessibleClass, rebuildChildAccessibles,resolveAccessible, RemoteValue , treeEvents, nonEnumerable} from './ServerSync';
 import { buildEscapedJSON, buildEscapedObject } from './SerializeUtils';
 import {GlobalTransport} from './Time';
 import {CurvePlayer} from './CurvePlayer';
@@ -45,7 +45,7 @@ export class RootStateType {
 
   public  dmxController?: DMXControllerI;
 
-
+  @nonEnumerable()
   public meta = {loadingJSONName:""};
   private __isConfigured = false;
   private __isRoot = true;
@@ -66,7 +66,7 @@ export class RootStateType {
     bindClientSocket('auto');
   }
 
-  public async init(ob?:any) {
+  public async init(ob?: any) {
     await this.fixtureFactory.init(ob?.ressourceDir);
   }
 

@@ -6,7 +6,7 @@
       :showActions="showActions"
       :maxHeight="'140px'"
       style="max-height:200px;over"
-      
+      :presetableState="presetableState"
       
     />
     <div v-if="allFixture">

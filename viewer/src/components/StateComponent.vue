@@ -57,7 +57,7 @@ import Toggle from "@/components/Inputs/Toggle.vue";
 import Modal from "@/components/Utils/Modal.vue";
 import StateEditor from "@/components/Editors/StateEditor.vue";
 import MultiStateChooser from "@/components/MultiStateChooser.vue";
-import { State } from "@API/State";
+import { State,StateList } from "@API/State";
 import rootState from "@API/RootState";
 import ActionList from "@/components/Widgets/ActionList.vue";
 import StateMethods from "../store/states";
@@ -175,7 +175,7 @@ export default class StateComponent extends Vue {
   @statesModule.Getter("loadedStateName")
   private ploadedStateName!: StateMethods["loadedStateName"];
 
-  private stateList = rootState.stateList;
+  private stateList = rootState.stateList as StateList;
 
   public mounted() {
     window.addEventListener("keydown", this.processKey);
@@ -220,12 +220,7 @@ export default class StateComponent extends Vue {
   get hasOneStatePreseted() {
     return this.stateList.presetableObjects.length > 0;
   }
-  get presetableNames() {
-    let insp = this.presetableState;
-    debugger;
-    const names = Object.keys(insp);
-    return names;
-  }
+
 
   public saveNewState() {
     const name = prompt(
@@ -233,9 +228,13 @@ export default class StateComponent extends Vue {
       this.selectedState ? this.selectedState.name : ""
     );
     if (name !== null && name !== "") {
+      
+      
       this.stateList.saveFromPresetableNames(
+        // this.stateList.saveFromPresetableObjects(
         name,
-        this.stateList.getPresetableNames(),
+        this.stateList.namesFromPresetableState(this.presetableState),
+        // this.stateList.getPresetableNames(),
         this.linkedStateList,
         this.actions
       );
