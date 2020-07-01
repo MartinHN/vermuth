@@ -16,6 +16,6 @@ PKG_APP=1 npm run build
 
 cd ../server
 
-npm run build
+npm run buildFast
 
 
