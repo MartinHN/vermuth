@@ -23,7 +23,7 @@
             :icon="editedState?'content-save':'plus'"
           ></Button>
 
-          <Button v-if="editedState" class="edit" @click="editState" text="edit" icon="pencil"></Button>
+     <!--     <Button v-if="editedState" class="edit" @click="editState" text="edit" icon="pencil"></Button> -->
           <Button
             v-if="editedState"
             class="remove"
