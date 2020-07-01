@@ -8,7 +8,11 @@ cd $DIR
 echo "GIT PULL"
 git pull
 #git reset --soft HEAD
-sudo pkill x # Build process need Ram to avoid heap out of memory errors on poor Pi3s
+arch=$(uname -m)
+if [ "$arch" == 'armv*' ];
+then
+sudo systemctl stop lightdm # Build process need Ram to avoid heap out of memory errors on poor Pi3s
+fi
 echo "BUILD "
 ./build.sh
 echo "UPDATE IS DONE"
