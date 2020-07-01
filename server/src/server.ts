@@ -10,7 +10,7 @@ const debugFile = dbg('FILE')
 const debugMsg = dbg('MSG')
 const debugState = dbg('STATE')
 
-const PORT = process.env.PORT?parseInt(process.env.PORT) : 3000;
+const PORT = process.env.PORT?parseInt(process.env.PORT) : 3003;
 
 
 import express from 'express';
