@@ -1,6 +1,6 @@
 const path = require("path")
 const CompressionPlugin = require('compression-webpack-plugin');
-const packageApp =!!process.env["PKG_APP"]
+const packageApp = !!process.env["PKG_APP"]
 
 const os = require('os')
 
@@ -12,7 +12,7 @@ module.exports = {
     disableHostCheck: true
   },
   transpileDependencies: [
-  "vuetify"
+    "vuetify"
   ],
   chainWebpack(config) {
     config.optimization.delete('splitChunks')
@@ -27,15 +27,27 @@ module.exports = {
     //     return args
     // })
     config.resolve
-    .plugin("tsconfig-paths")
-    .use(require("tsconfig-paths-webpack-plugin"))
-    config.plugin('CompressionPlugin').use(CompressionPlugin,[{deleteOriginalAssets:!!packageApp}]);
+      .plugin("tsconfig-paths")
+      .use(require("tsconfig-paths-webpack-plugin"))
 
-    const totalmem =Math.floor(os.totalmem()/1024/1024)
-    const isLowMemPlatform = totalmem< 2048
-    if(isLowMemPlatform){
+    const totalmem = Math.floor(os.totalmem() / 1024 / 1024)
+    const isLowMemPlatform = true;//totalmem < 2048
+    if (isLowMemPlatform) {
       console.warn("low mem platform, disabling ts check")
       config.plugins.delete("fork-ts-checker")
+
+      config.module
+        .rule('ts')
+        .use('ts-loader')
+        .loader('ts-loader')
+        .tap(options => {
+          console.warn("transpile only")
+          Object.assign(options || {}, { transpileOnly: true, happyPackMode: true })
+          return options
+        })
+    }
+    else {
+      config.plugin('CompressionPlugin').use(CompressionPlugin, [{ deleteOriginalAssets: !!packageApp }]);
     }
     // // disable splitting of type checking in type script to enable preprocessing files
     // const allM = config.module.rules.store
@@ -52,34 +64,19 @@ module.exports = {
     //         console.log('!!!!!!!!!')
     //       }
     //     }
-        
+
     //     childMap.delete("thread-loader")
 
     //     for(const o of childMap.keys()){rmThread(childMap.get(o),addr+"/"+o);}
-          
+
     //   }
-    
+
     // }
 
     // for(const o of allM.keys()){rmThread(allM.get(o),o)};
 
 
-    // config.module
-    // .rule('ts')
-    // .use('ts-loader')
-    // .loader('ts-loader')
-    // .tap(options => {
-    //   Object.assign(options || {}, {transpileOnly: false, happyPackMode: false})
-    //   return options
-    // })
-    // config.module
-    // .rule('tsx')
-    // .use('ts-loader')
-    // .loader('ts-loader')
-    // .tap(options => {
-    //   Object.assign(options || {}, {transpileOnly: false, happyPackMode: false})
-    //   return options
-    // })
+
 
     // const tsLoader = config.module.rule('ts').uses.get("ts-loader")
     // if(!tsLoader)throw "not found ts loader in "+ config.module.rule('ts').uses;
