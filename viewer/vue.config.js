@@ -17,14 +17,19 @@ module.exports = {
   chainWebpack(config) {
     config.optimization.delete('splitChunks')
     config.resolve.alias.delete("@")
-    config
-    .plugin('fork-ts-checker')
-    .tap(args => {
-        let totalmem=Math.floor(os.totalmem()/1024/1024); //get OS mem size
-        let allowUseMem= totalmem>2500? 2048:600;
-        args[0].memoryLimit = allowUseMem;
-        return args
-    })
+    const totalmem =Math.floor(os.totalmem()/1024/1024)
+    const isLowMemPlatform = totalmem< 2048
+    if(isLowMemPlatform){
+      config.resolve.plugins.delete("fork-ts-checker")
+    }
+    // config
+    // .plugin('fork-ts-checker')
+    // .tap(args => {
+    //     let totalmem; //get OS mem size
+    //     let allowUseMem= totalmem>2500? 2048:600;
+    //     args[0].memoryLimit = allowUseMem;
+    //     return args
+    // })
     config.resolve
     .plugin("tsconfig-paths")
     .use(require("tsconfig-paths-webpack-plugin"))
