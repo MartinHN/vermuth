@@ -10,6 +10,7 @@
     "build": "webpack src/server.ts",
     "buildNrun": "NODE_ENV=production ts-node src/server.ts -P . --files",
     "run": "NODE_ENV=production node dist/server/src/server.js",
+    "runTs":"node  -r tsconfig-paths/register -r ts-node/register ./src/server.ts",
     "lint": "eslint src/**/* --fix",
     "buildApp": "node pkg.js"
   },
@@ -41,8 +42,7 @@
     "socket.io": "^2.3.0"
   },
   "optionalDependencies": {
-    "pigpio": "^3",
-    "localtunnel": "^2.0.0"
+    "pigpio": "^3"
   },
   "nodemonConfig": {
     "ignore": [
