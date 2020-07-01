@@ -6,7 +6,7 @@ import { getCircular } from '@API/SerializeUtils';
 
 
 let hasRemoteState = false;
-const IOPort = 3000;
+const IOPort = 3003;
 class Server {
   @nonEnumerable()
   public __serverIP: string = '';
