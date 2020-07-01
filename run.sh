@@ -6,6 +6,6 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 cd $DIR/server
 
-npm run start
-# NODE_ENV=production node dist/server/src/server.js
+npm run runTs
+# NODE_ENV=production node dist/server/src/server.js not ready yet....
 
