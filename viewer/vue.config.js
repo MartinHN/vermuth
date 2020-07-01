@@ -1,6 +1,9 @@
 const path = require("path")
 const CompressionPlugin = require('compression-webpack-plugin');
 const packageApp =!!process.env["PKG_APP"]
+
+const os = require('os')
+
 module.exports = {
   runtimeCompiler: true,
   productionSourceMap: false,
@@ -14,7 +17,14 @@ module.exports = {
   chainWebpack(config) {
     config.optimization.delete('splitChunks')
     config.resolve.alias.delete("@")
-    
+    config
+    .plugin('fork-ts-checker')
+    .tap(args => {
+        let totalmem=Math.floor(os.totalmem()/1024/1024); //get OS mem size
+        let allowUseMem= totalmem>2500? 2048:600;
+        args[0].memoryLimit = allowUseMem;
+        return args
+    })
     config.resolve
     .plugin("tsconfig-paths")
     .use(require("tsconfig-paths-webpack-plugin"))

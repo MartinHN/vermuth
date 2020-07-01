@@ -447,13 +447,13 @@ export class State {
     })
     for (const fs of this.fixtureStates) {
       
-      const ps = {}
+      const ps: {[cname: string]: {preseted: boolean;value: number}} = {}
       if (!Object.keys(this.cachedPState).includes(fs.name)) {
         for (const [cn, cv] of Object.entries(fs.channelValues)) {
           ps[cn] = { preseted: true, value: cv }
         }
       }
-      res[fs.name] = ps
+      (res as any)[fs.name] = ps
     }
     return res;
   }
