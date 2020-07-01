@@ -17,11 +17,7 @@ module.exports = {
   chainWebpack(config) {
     config.optimization.delete('splitChunks')
     config.resolve.alias.delete("@")
-    const totalmem =Math.floor(os.totalmem()/1024/1024)
-    const isLowMemPlatform = totalmem< 2048
-    if(isLowMemPlatform){
-      config.resolve.plugins.delete("fork-ts-checker")
-    }
+
     // config
     // .plugin('fork-ts-checker')
     // .tap(args => {
@@ -35,7 +31,13 @@ module.exports = {
     .use(require("tsconfig-paths-webpack-plugin"))
     config.plugin('CompressionPlugin').use(CompressionPlugin,[{deleteOriginalAssets:!!packageApp}]);
 
-    // // disable splitting of type checking in type script to anable preprocessing files
+    const totalmem =Math.floor(os.totalmem()/1024/1024)
+    const isLowMemPlatform = totalmem< 2048
+    if(isLowMemPlatform){
+      console.warn("low mem platform, disabling ts check")
+      config.plugins.delete("fork-ts-checker")
+    }
+    // // disable splitting of type checking in type script to enable preprocessing files
     // const allM = config.module.rules.store
     // // console.log(allM)
     // config.resolve.plugins.delete("fork-ts-checker")
