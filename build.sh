@@ -12,7 +12,7 @@ cd ../viewer
 #normal build
 PKG_APP=1 npm run build
 # # Raspberry3 build
-# npx --max_old_space_size=512 vue-cli-service build
+# npx --max_old_space_size=700 vue-cli-service build
 
 cd ../server
 

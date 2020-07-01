@@ -9,17 +9,15 @@ const isLowMemPlatform = !!process.env["LOWMEM"] || totalmem < 2048
 
 function rmThread(o, addr) {
   // console.log(o)
-  console.log(addr)
+  // console.log(addr)
   const childMap = o.uses ? o.uses.store : undefined
   if (childMap) {
     for (const o of childMap.keys()) {
       if (o === "thread-loader") {
-        console.log('!!!!!!!!!')
+        // console.log('!!!!!!!!!')
       }
     }
-
     childMap.delete("thread-loader")
-
     for (const o of childMap.keys()) { rmThread(childMap.get(o), addr + "/" + o); }
 
   }
@@ -39,14 +37,6 @@ module.exports = {
     config.optimization.delete('splitChunks')
     config.resolve.alias.delete("@")
 
-    // config
-    // .plugin('fork-ts-checker')
-    // .tap(args => {
-    //     let totalmem; //get OS mem size
-    //     let allowUseMem= totalmem>2500? 2048:600;
-    //     args[0].memoryLimit = allowUseMem;
-    //     return args
-    // })
     config.resolve
       .plugin("tsconfig-paths")
       .use(require("tsconfig-paths-webpack-plugin"))
@@ -64,12 +54,12 @@ module.exports = {
           Object.assign(options || {}, { transpileOnly: true, happyPackMode: true })
           return options
         })
-      // disable splitting of type checking in type script to enable preprocessing files
+      // disable thread-loaders
       const allM = config.module.rules.store
       // console.log(allM)
       config.resolve.plugins.delete("fork-ts-checker")
-      console.log('>>>>>>>>>>>')
       for (const o of allM.keys()) { rmThread(allM.get(o), o) }
+
     }
     else {
       config.plugin('CompressionPlugin').use(CompressionPlugin, [{ deleteOriginalAssets: !!packageApp }]);
