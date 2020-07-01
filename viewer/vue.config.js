@@ -4,6 +4,27 @@ const packageApp = !!process.env["PKG_APP"]
 
 const os = require('os')
 
+const totalmem = Math.floor(os.totalmem() / 1024 / 1024)
+const isLowMemPlatform = !!process.env["LOWMEM"] || totalmem < 2048
+
+function rmThread(o, addr) {
+  // console.log(o)
+  console.log(addr)
+  const childMap = o.uses ? o.uses.store : undefined
+  if (childMap) {
+    for (const o of childMap.keys()) {
+      if (o === "thread-loader") {
+        console.log('!!!!!!!!!')
+      }
+    }
+
+    childMap.delete("thread-loader")
+
+    for (const o of childMap.keys()) { rmThread(childMap.get(o), addr + "/" + o); }
+
+  }
+
+}
 module.exports = {
   runtimeCompiler: true,
   productionSourceMap: false,
@@ -30,8 +51,6 @@ module.exports = {
       .plugin("tsconfig-paths")
       .use(require("tsconfig-paths-webpack-plugin"))
 
-    const totalmem = Math.floor(os.totalmem() / 1024 / 1024)
-    const isLowMemPlatform = true;//totalmem < 2048
     if (isLowMemPlatform) {
       console.warn("low mem platform, disabling ts check")
       config.plugins.delete("fork-ts-checker")
@@ -45,35 +64,17 @@ module.exports = {
           Object.assign(options || {}, { transpileOnly: true, happyPackMode: true })
           return options
         })
+      // disable splitting of type checking in type script to enable preprocessing files
+      const allM = config.module.rules.store
+      // console.log(allM)
+      config.resolve.plugins.delete("fork-ts-checker")
+      console.log('>>>>>>>>>>>')
+      for (const o of allM.keys()) { rmThread(allM.get(o), o) }
     }
     else {
       config.plugin('CompressionPlugin').use(CompressionPlugin, [{ deleteOriginalAssets: !!packageApp }]);
     }
-    // // disable splitting of type checking in type script to enable preprocessing files
-    // const allM = config.module.rules.store
-    // // console.log(allM)
-    // config.resolve.plugins.delete("fork-ts-checker")
-    // console.log('>>>>>>>>>>>')
-    // function rmThread(o,addr){
-    //   // console.log(o)
-    //   console.log(addr)
-    //   const childMap = o.uses ?o.uses.store:undefined
-    //   if(childMap){
-    //     for(const o of childMap.keys()){
-    //       if(o==="thread-loader"){
-    //         console.log('!!!!!!!!!')
-    //       }
-    //     }
 
-    //     childMap.delete("thread-loader")
-
-    //     for(const o of childMap.keys()){rmThread(childMap.get(o),addr+"/"+o);}
-
-    //   }
-
-    // }
-
-    // for(const o of allM.keys()){rmThread(allM.get(o),o)};
 
 
 
