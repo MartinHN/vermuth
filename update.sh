@@ -13,6 +13,9 @@ if [ "$arch" == 'armv*' ];
 then
 sudo systemctl stop lightdm # Build process need Ram to avoid heap out of memory errors on poor Pi3s
 fi
+
+echo "INSTALL"
+./install.sh
 echo "BUILD "
 ./build.sh
 echo "UPDATE IS DONE"
