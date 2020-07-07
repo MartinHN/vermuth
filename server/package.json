@@ -10,7 +10,7 @@
     "build": "NODE_ENV=production webpack src/server.ts",
     "buildNrun": "NODE_ENV=production ts-node src/server.ts -P . --files",
     "run": "NODE_ENV=production node distPacked/mainServer.js",
-    "runTs":"node  -r tsconfig-paths/register -r ts-node/register ./src/server.ts",
+    "runTs": "node  -r tsconfig-paths/register -r ts-node/register ./src/server.ts",
     "lint": "eslint src/**/* --fix",
     "buildApp": "node pkg.js"
   },

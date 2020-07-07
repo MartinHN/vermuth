@@ -452,8 +452,9 @@ export class State {
         for (const [cn, cv] of Object.entries(fs.channelValues)) {
           ps[cn] = { preseted: true, value: cv }
         }
+        (res as any)[fs.name] = ps
       }
-      (res as any)[fs.name] = ps
+      
     }
     return res;
   }
