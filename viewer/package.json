@@ -18,7 +18,7 @@
     "@types/vuedraggable": "^2.23.0",
     "debug": "^4.1.1",
     "json-diff": "^0.5.4",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "register-service-worker": "^1.7.1",
     "socket.io-client": "^2.3.0",
     "vue": "^2.6.11",
