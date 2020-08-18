@@ -1,9 +1,10 @@
 const osc = require('osc');
 
 import rootState from '@API/RootState';
-import { callAnyAccessibleFromRemote } from '@API/ServerSync';
+import {callAnyAccessibleFromRemote} from '@API/ServerSync';
 const logClientMessages = process.env.LOG_MSG;
-const clientLogger = logClientMessages ? require('@API/Logger').default : undefined;
+const clientLogger =
+    logClientMessages ? require('@API/Logger').default : undefined;
 /****************
  * OSC Over UDP *
  ****************/
@@ -13,7 +14,7 @@ const getIPAddresses = () => {
   const interfaces = os.networkInterfaces();
   const ipAddresses = new Array<string>();
 
-  for (const deviceName of Object.keys(interfaces) ) {
+  for (const deviceName of Object.keys(interfaces)) {
     const addresses = interfaces[deviceName];
     for (const addressInfo of addresses) {
       if (addressInfo.family === 'IPv4' && !addressInfo.internal) {
@@ -41,11 +42,11 @@ class OSCServer {
       ip = '10.31.15.255';
     }
     const udpPort = new osc.UDPPort({
-      localAddress: ip, // broadcast//0.0.0.0",
+      localAddress: ip,  // broadcast//0.0.0.0",
       localPort: port,
       broadcast,
     });
-    console.log(`listening on ${ ip } : ${ port }`);
+    console.log(`listening on ${ip} : ${port}`);
 
     udpPort.on('ready', () => {
       const ipAddresses = getIPAddresses();
@@ -64,7 +65,6 @@ class OSCServer {
 
 
     udpPort.open();
-
   }
 
   public processMsg(msg: any, time: any, info: any) {
@@ -76,24 +76,35 @@ class OSCServer {
     if (msg.address === '/ping') {
       this.udpPort.send({address: '/pong'});
       return;
-    }else if(msg.address.startsWith("/node")){
+    } else if (msg.address.startsWith('/node')) {
       // ignore LGML
     } else if (msg.address === '/allColors') {
-      dmxController.setAllColor({r: msg.args[0], g: msg.args[1], b: msg.args[2]}, true);
+      dmxController.setAllColor(
+          {r: msg.args[0], g: msg.args[1], b: msg.args[2]}, true);
+    } else if (msg.address === '/fixture') {
+      const fName = msg.args[0];
+      const fixt = rootState.universe.getFixtureNamed(fName);
+      if (fixt) {
+        fixt.setMaster(msg.args[1]);
+      } else {
+        console.error('OSC not found fixture for ', fName);
+      }
     } else {
-
-      callAnyAccessibleFromRemote(rootState, msg.address, msg.args, info.address + ':' + info.port);
+      callAnyAccessibleFromRemote(
+          rootState, msg.address, msg.args, info.address + ':' + info.port);
     }
-
   }
 
   public processBundle(b: any, time: any, info: any) {
     for (const i of Object.keys(b.packets)) {
       const p = b.packets[i];
-      if (p.packets) {this.processBundle(p, time, info); } else {this.processMsg(p, time, info); }
+      if (p.packets) {
+        this.processBundle(p, time, info);
+      } else {
+        this.processMsg(p, time, info);
+      }
     }
   }
-
 }
 
 export default new OSCServer();

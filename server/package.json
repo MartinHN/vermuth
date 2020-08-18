@@ -5,7 +5,7 @@
   "main": "app.js",
   "bin": "app.js",
   "scripts": {
-    "start": "node --inspect=0.0.0.0:9222 -r tsconfig-paths/register -r ts-node/register ./src/server.ts",
+    "start": "node --inspect=0.0.0.0:9222 -r tsconfig-paths/register -r ts-node/register ./src/server.ts $(echo $VERMUTH_ARGS)",
     "start:watch": "nodemon",
     "build": "NODE_ENV=production webpack src/server.ts",
     "buildNrun": "NODE_ENV=production ts-node src/server.ts -P . --files",
@@ -24,6 +24,7 @@
     "@babel/core": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
     "adm-zip": "^0.4.14",
+    "amd-loader": "0.0.8",
     "babel-loader": "^8.1.0",
     "bezier-easing": "^2.1.0",
     "chrome-launcher": "^0.13.2",
@@ -39,7 +40,8 @@
     "osc": "^2.4.1",
     "serialport": "^9",
     "serve-index": "^1.9.1",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.3.0",
+    "yargs": "^15.4.1"
   },
   "optionalDependencies": {
     "pigpio": "^3"

@@ -1,108 +1,142 @@
 import {EventEmitter} from 'events';
-import {RemoteValue, RemoteFunction, doSharedFunction, nonEnumerable, AccessibleClass} from './ServerSync';
 
-const timers: {[key: string]: {timeout: any, endCB?: () => void}} = {};
+import {AccessibleClass, doSharedFunction, nonEnumerable, RemoteFunction, RemoteValue} from './ServerSync';
+
+const timers: {[key: string]: {timeout: any; endCB?: () => void}} = {};
 const CONSTANT_TIME_INC = true
-export function  doTimer(name: string, length: number, resolution: number, oninstance: (steps: number, count: number) => void, oncomplete?: () => void ) {
+export function doTimer(
+    name: string, length: number, resolution: number,
+    oninstance: (steps: number, count: number) => void,
+    oncomplete?: () => void) {
   const steps = length / resolution;
   const speed = resolution;
   let count = 0;
   const start = new Date().getTime();
-
+  let lastTime = start;
   const instance = () => {
-    if (++count >= steps) {
-      oninstance(steps, Math.min(steps, count));
+    const trueCount = count
+    if (++count > steps) {
+      oninstance(steps, steps);
       stopTimer(name);
       // if (oncomplete) {oncomplete(); }
-    } else {
-      oninstance(steps, count);
-
-      const diff =CONSTANT_TIME_INC?0:(new Date().getTime() - start) - (count * speed);
-      timers[name].timeout  =  setTimeout(instance, Math.max(0, speed - diff));
+    }
+    else {
+      const now = new Date().getTime()
+      const elapsedTime = (now - start)
+      const estimatedCount = Math.min(steps, elapsedTime * steps / length)
+      oninstance(steps, CONSTANT_TIME_INC ? trueCount : estimatedCount);
+      const diffRunningTime = elapsedTime - (trueCount * speed)
+      // console.log(
+      //     'diff running time', diffRunningTime, trueCount, estimatedCount,
+      //     (now - lastTime) - speed);
+      const diff = CONSTANT_TIME_INC ? 0 : diffRunningTime;
+      timers[name].timeout = setTimeout(instance, Math.max(0, speed - diff));
+      lastTime = now
     }
   };
   stopTimer(name);
-  timers[name] = {timeout : null, endCB: () => {console.log('end timer'); if (oncomplete) {oncomplete(); }}};
-  console.log('timer', name);
+  timers[name] = {
+    timeout: null,
+    endCB: () => {
+      console.log('end timer');
+      if (oncomplete) {
+        oncomplete();
+      }
+    }
+  };
+  console.log('timer', name, speed, 'ms');
   instance();
   // oninstance(steps, count);
+}
 
-  }
-
-export function stopTimer(name: string) {
-    if (timers[name]) {
-      clearTimeout(timers[name].timeout);
-      const endCB = timers[name].endCB;
-      if (endCB) {endCB(); }
-      delete timers[name];
+export function
+stopTimer(name: string) {
+  if (timers[name]) {
+    clearTimeout(timers[name].timeout);
+    const endCB = timers[name].endCB;
+    if (endCB) {
+      endCB();
     }
+    delete timers[name];
+  }
+}
+
+function
+getMs() {
+  return new Date().getTime();
+}
+
+// @ts-ignore
+@AccessibleClass() export class GlobalTransportClass extends EventEmitter {
+  static get i(): GlobalTransportClass {
+    if (!GlobalTransportClass._instance) {
+      GlobalTransportClass._instance = new GlobalTransportClass();
+    }
+    return GlobalTransportClass._instance;
   }
 
-function getMs() {
-    return  new Date().getTime();
+  get isPlaying() {
+    return this._isPlaying;
+  }
+  get time() {
+    return this._time;
+  }
+  get bpm() {
+    return this._bpm;
+  }
+  set bpm(v: number) {
+    this._bpm = v;
+  }
+  get beatInterval() {
+    return 60000 / this._bpm;
+  }
+  get beat() {
+    return this._time * this._bpm / 60000;
   }
 
-  // @ts-ignore
-@AccessibleClass()
-export class GlobalTransportClass extends EventEmitter {
-    static get i(): GlobalTransportClass {
-     if (!GlobalTransportClass._instance) {GlobalTransportClass._instance = new GlobalTransportClass(); }
-     return GlobalTransportClass._instance;
-   }
+  @nonEnumerable() public static timeGranularityMs = 20;
+  private static _instance: GlobalTransportClass|undefined;
 
-   get isPlaying() {return this._isPlaying; }
-   get time() {return this._time; }
-  get bpm() {return this._bpm; }
-  set bpm(v: number) {this._bpm = v; }
-  get beatInterval() {return 60000 / this._bpm; }
-  get beat() {return this._time * this._bpm / 60000; }
+  @nonEnumerable() private _startMs = getMs();
+  @nonEnumerable() private _interval?: any;
+  @nonEnumerable()
+  private _timeListeners =
+      new Map<TimeListener, Map<string, (...args: any[]) => void>>();
 
-   @nonEnumerable()
-   public static timeGranularityMs = 20;
-    private static _instance: GlobalTransportClass|undefined;
+  @RemoteValue() private _bpm = 60;
 
-   @nonEnumerable()
-   private _startMs = getMs();
-   @nonEnumerable()
-   private _interval?: any;
-   @nonEnumerable()
-   private _timeListeners = new Map<TimeListener, Map<string, (...args: any[]) => void>>();
-
-   @RemoteValue()
-   private _bpm = 60;
-
-   @RemoteValue((parent: any, t: any) => {
+  @RemoteValue((parent: any, t: any) => {
     doSharedFunction(
-      () => {
-       parent.emit('time', t);
-     },
-     );
+        () => {
+          parent.emit('time', t);
+        },
+    );
   })
-   private _time = 0;
+  private _time = 0;
 
 
 
-   @RemoteValue((parent: any, v: any) => {
+  @RemoteValue((parent: any, v: any) => {
     doSharedFunction(() => parent.emit('isPlaying', v));
   })
-   private _isPlaying = false;
-    protected constructor() {
-      super();
-      // this.start();
-    }
+  private _isPlaying = false;
+  protected constructor() {
+    super();
+    // this.start();
+  }
 
-   @RemoteFunction({skipClientApply: true})
-   public start() {
+  @RemoteFunction({skipClientApply: true})
+  public start() {
     this.stop();
     this._startMs = getMs();
     this._isPlaying = true;
-    this._interval  = setInterval(this._updateTime.bind(this), GlobalTransportClass.timeGranularityMs);
+    this._interval = setInterval(
+        this._updateTime.bind(this), GlobalTransportClass.timeGranularityMs);
   }
 
   @RemoteFunction({skipClientApply: true})
   public stop() {
     if (this._interval) {
-
       clearInterval(this._interval);
       this._time = 0;
       this._isPlaying = false;
@@ -118,16 +152,19 @@ export class GlobalTransportClass extends EventEmitter {
     functions.set('time', l.timeChanged.bind(l));
     functions.set('isPlaying', l.playStateChanged.bind(l));
 
-    for ( const [k, v] of functions.entries()) {this.on(k, v); }
+    for (const [k, v] of functions.entries()) {
+      this.on(k, v);
+    }
     this._timeListeners.set(l, functions);
   }
   public removeTimeListener(l: TimeListener) {
     const functions = this._timeListeners.get(l);
     if (functions) {
-      for ( const [k, v] of functions.entries()) {this.off(k, v); }
+      for (const [k, v] of functions.entries()) {
+        this.off(k, v);
+      }
     }
-}
-
+  }
 }
 export const GlobalTransport = GlobalTransportClass.i;
 
@@ -135,13 +172,11 @@ export class TimeListener {
   constructor(public name: string) {
     GlobalTransport.addTimeListener(this);
   }
-  public timeChanged(t: number) {console.log('base time changed'); }
+  public timeChanged(t: number) {
+    console.log('base time changed');
+  }
   public playStateChanged(s: boolean) {}
   public __dispose() {
     GlobalTransport.removeTimeListener(this);
   }
-
-
 }
-
-

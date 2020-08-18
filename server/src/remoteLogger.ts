@@ -4,7 +4,6 @@ import * as io from 'socket.io';
 
 
 const debug =  process.env.NODE_ENV !== 'production';
-const PORT = process.env.PORT || 3000;
 
 class Logger {
   public sock?: io.Socket;
