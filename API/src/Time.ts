@@ -1,6 +1,7 @@
 import {EventEmitter} from 'events';
-
-import {AccessibleClass, doSharedFunction, nonEnumerable, RemoteFunction, RemoteValue} from './ServerSync';
+import dbg from './dbg'
+const debugTime = dbg('TIMER')
+import{AccessibleClass, doSharedFunction, nonEnumerable, RemoteFunction, RemoteValue} from './ServerSync';
 
 const timers: {[key: string]: {timeout: any; endCB?: () => void}} = {};
 const CONSTANT_TIME_INC = true
@@ -15,22 +16,25 @@ export function doTimer(
   let lastTime = start;
   const instance = () => {
     const trueCount = count
-    if (++count > steps) {
+    count++;
+    const now = new Date().getTime()
+    const elapsedTime = (now - start)
+    const estimatedCount = Math.min(steps, elapsedTime * steps / length)
+    const estimatedOrTrueCount = CONSTANT_TIME_INC ? trueCount : estimatedCount;
+    if (trueCount >= steps ||
+        (!CONSTANT_TIME_INC && (estimatedCount >= steps))) {
       oninstance(steps, steps);
       stopTimer(name);
       // if (oncomplete) {oncomplete(); }
-    }
-    else {
-      const now = new Date().getTime()
-      const elapsedTime = (now - start)
-      const estimatedCount = Math.min(steps, elapsedTime * steps / length)
-      oninstance(steps, CONSTANT_TIME_INC ? trueCount : estimatedCount);
+    } else {
+      oninstance(steps, estimatedOrTrueCount);
       const diffRunningTime = elapsedTime - (trueCount * speed)
-      // console.log(
-      //     'diff running time', diffRunningTime, trueCount, estimatedCount,
-      //     (now - lastTime) - speed);
       const diff = CONSTANT_TIME_INC ? 0 : diffRunningTime;
-      timers[name].timeout = setTimeout(instance, Math.max(0, speed - diff));
+      const deltaNext = speed - diff;
+      debugTime(
+          'timer', diffRunningTime, estimatedOrTrueCount,
+          (now - lastTime) - speed, 'ms', deltaNext, 'ms');
+      timers[name].timeout = setTimeout(instance, Math.max(0, deltaNext));
       lastTime = now
     }
   };

@@ -1,44 +1,35 @@
-import { State, StateList, blackState, ResolvedFixtureState, MergedState } from './State';
-import { DirectFixture, FixtureBaseI, FixtureBase } from './Fixture';
-import { ChannelBase } from './Channel';
-import { doTimer, stopTimer } from './Time';
-import { RemoteFunction, doSharedFunction, RemoteValue, nonEnumerable, AccessibleClass, SetAccessible } from './ServerSync';
-import { Proxyfiable } from './MemoryUtils'
-import { Universe } from './Universe';
-import { isArrayLikeObject } from 'lodash';
+import {isArrayLikeObject} from 'lodash';
+
+import {ChannelBase} from './Channel';
+import {DirectFixture, FixtureBase, FixtureBaseI} from './Fixture';
+import {Proxyfiable} from './MemoryUtils'
+import {AccessibleClass, doSharedFunction, nonEnumerable, RemoteFunction, RemoteValue, SetAccessible} from './ServerSync';
+import {blackState, MergedState, ResolvedFixtureState, State, StateList} from './State';
+import {doTimer, stopTimer} from './Time';
+import {Universe} from './Universe';
 
 
 @AccessibleClass()
 export class Sequence extends Proxyfiable {
-
-
   public static createFromObj(o: any): any {
-
     const seq = new Sequence(o.name || 'no name', o.stateName);
     seq.configureFromObj(o);
     return seq;
-    // o.pChannelValues.map( (oo: any) => res.pChannelValues.push(new ChannelWithValue(oo.channelName, oo.value)) );
-    // return res;
+    // o.pChannelValues.map( (oo: any) => res.pChannelValues.push(new
+    // ChannelWithValue(oo.channelName, oo.value)) ); return res;
   }
-  @RemoteValue()
-  public timeIn = 0;
-  @RemoteValue()
-  public hold = 0;
-  @RemoteValue()
-  public timeOut = 0;
-  @RemoteValue()
-  public stateName = 'none';
-  @RemoteValue()
-  public name: string;
+  @RemoteValue() public timeIn = 0;
+  @RemoteValue() public hold = 0;
+  @RemoteValue() public timeOut = 0;
+  @RemoteValue() public stateName = 'none';
+  @RemoteValue() public name: string;
 
-  @RemoteValue()
-  public doNotPrepareNext = false;
+  @RemoteValue() public doNotPrepareNext = false;
 
-  @nonEnumerable()
-  public __state?: State;
+  @nonEnumerable() public __state?: State;
 
-  constructor(_name: string, state: string | State) {
-    super()
+  constructor(_name: string, state: string|State) {
+    super();
     this.name = _name;
     // debugger
     if (typeof state === 'string') {
@@ -57,13 +48,12 @@ export class Sequence extends Proxyfiable {
         this[key] = o[key];
       }
     }
-
-
   }
 
 
   public resolveState(stateResolver: (n: string) => State | undefined) {
-    if (this.__state && this.stateName && this.__state.name === this.stateName) {
+    if (this.__state && this.stateName &&
+        this.__state.name === this.stateName) {
       return this.__state;
     }
     const rs = stateResolver(this.stateName);
@@ -71,23 +61,16 @@ export class Sequence extends Proxyfiable {
       this.__state = rs;
     }
     return rs;
-
   }
-
-
-
 }
 
 const blackSeq = new Sequence('black', blackState);
 
 @AccessibleClass()
 export class SequenceList {
+  @SetAccessible({readonly: true}) private list = new Array<Sequence>();
 
-  @SetAccessible({ readonly: true })
-  private list = new Array<Sequence>();
-
-  constructor() {
-  }
+  constructor() {}
   public configureFromObj(ob: any) {
     this.clearSequences();
     (ob.list || []).map((e: any) => this.list.push(Sequence.createFromObj(e)));
@@ -118,24 +101,23 @@ export class SequenceList {
   public indexOf(s: Sequence) {
     return this.list.indexOf(s);
   }
-  @RemoteFunction({ sharedFunction: true })
+  @RemoteFunction({sharedFunction: true})
   public insertNewSequence(name: string, stateName: string, idx: number) {
     const s = new Sequence(name, stateName)
     return this.insertAt(s, idx)
-
   }
   public appendSequence(s: Sequence) {
     this.insertAt(s, this.list.length);
   }
 
-  @RemoteFunction({ sharedFunction: true })
+  @RemoteFunction({sharedFunction: true})
   public remove(s: Sequence) {
     const i = this.list.indexOf(s);
     if (i >= 0) {
       this.list.splice(i, 1);
     }
   }
-  @RemoteFunction({ sharedFunction: true })
+  @RemoteFunction({sharedFunction: true})
   public setSeqIdx(s: Sequence, i: number) {
     const ii = this.list.indexOf(s);
     if (ii >= 0) {
@@ -144,7 +126,7 @@ export class SequenceList {
       this.insertAt(s, i);
     }
   }
-  @RemoteFunction({ sharedFunction: true })
+  @RemoteFunction({sharedFunction: true})
   public swap(a: Sequence, b: Sequence) {
     const ia = this.list.indexOf(a);
     const ib = this.list.indexOf(b);
@@ -153,11 +135,15 @@ export class SequenceList {
 
   public up(s: Sequence) {
     const prev = this.list.indexOf(s) - 1;
-    if (prev >= 0) { this.swap(s, this.list[prev]); }
+    if (prev >= 0) {
+      this.swap(s, this.list[prev]);
+    }
   }
   public down(s: Sequence) {
     const next = this.list.indexOf(s) + 1;
-    if (next < this.list.length) { this.swap(s, this.list[next]); }
+    if (next < this.list.length) {
+      this.swap(s, this.list[next]);
+    }
   }
   public find(f: (s: Sequence) => boolean) {
     return this.list.find(f);
@@ -169,7 +155,6 @@ export class SequenceList {
   get length() {
     return this.list.length;
   }
-
 }
 
 interface RootProvider {
@@ -189,16 +174,29 @@ export class SequencePlayerClass {
   }
 
   get stateList() {
-    if (this._rootProvider === undefined) { console.error('stateListNotInited'); debugger; }
-    return this._rootProvider ? this._rootProvider.stateList : { states: {} as { [key: string]: State }, getCurrentFullFixtureList: () => [] };
+    if (this._rootProvider === undefined) {
+      console.error('stateListNotInited');
+      debugger;
+    }
+    return this._rootProvider ? this._rootProvider.stateList : {
+      states: {} as {[key: string]: State},
+      getCurrentFullFixtureList: () => []
+    };
   }
   get sequenceList() {
-    if (this._rootProvider === undefined) { console.error('stateListNotInited'); debugger; }
-    return this._rootProvider ? this._rootProvider.sequenceList : new SequenceList();
+    if (this._rootProvider === undefined) {
+      console.error('stateListNotInited');
+      debugger;
+    }
+    return this._rootProvider ? this._rootProvider.sequenceList :
+                                new SequenceList();
   }
 
   get universe() {
-    if (this._rootProvider === undefined) { console.error('stateListNotInited'); debugger; }
+    if (this._rootProvider === undefined) {
+      console.error('stateListNotInited');
+      debugger;
+    }
     return this._rootProvider ? this._rootProvider.universe : new Universe();
   }
 
@@ -216,39 +214,36 @@ export class SequencePlayerClass {
     }
   }
 
-  @RemoteFunction({ sharedFunction: true })
+  @RemoteFunction({sharedFunction: true})
   next() {
-    this.curPlayedIdx = Math.min(this.sequenceList.length - 1, this.curPlayedIdx + 1);
+    this.curPlayedIdx =
+        Math.min(this.sequenceList.length - 1, this.curPlayedIdx + 1);
   }
-  @RemoteFunction({ sharedFunction: true })
+  @RemoteFunction({sharedFunction: true})
   prev() {
     this.curPlayedIdx = Math.max(0, this.curPlayedIdx - 1);
   }
-  private static _instance: SequencePlayerClass | undefined;
+  private static _instance: SequencePlayerClass|undefined;
 
 
-  @nonEnumerable()
-  public curSeq: Sequence = blackSeq;
-  @nonEnumerable()
-  public nextSeq: Sequence = blackSeq;
+  @nonEnumerable() public curSeq: Sequence = blackSeq;
+  @nonEnumerable() public nextSeq: Sequence = blackSeq;
 
   public pctDone = 0;
 
-  @RemoteValue()
-  public playState = 'stopped';
-  @RemoteValue()
-  private pcurPlayedIdx = -1;
+  @RemoteValue() public playState = 'stopped';
+  @RemoteValue() private pcurPlayedIdx = -1;
 
-  @RemoteValue()
-  private pisPlaying = false;
+  @RemoteValue() private pisPlaying = false;
 
-  @nonEnumerable()
-  private _rootProvider?: RootProvider = undefined;
+  @nonEnumerable() private _rootProvider?: RootProvider = undefined;
 
   // private constructor() {}
 
-  @RemoteFunction({ sharedFunction: true })
-  public goToStateNamed(name: string, timeIn: number, opts?: { dimMaster?: number }, cb?: () => void): void {
+  @RemoteFunction({sharedFunction: true})
+  public goToStateNamed(
+      name: string, timeIn: number, opts?: {dimMaster?: number},
+      cb?: () => void): void {
     const seq = new Sequence('tmp', '' + name);
     if (!timeIn) {
       timeIn = 0;
@@ -257,8 +252,9 @@ export class SequencePlayerClass {
     this.goToSequence(seq, opts, cb);
   }
 
-  @RemoteFunction({ sharedFunction: true })
-  public goToSequenceNamed(name: string, opts?: { dimMaster?: number }, cb?: () => void): void {
+  @RemoteFunction({sharedFunction: true})
+  public goToSequenceNamed(
+      name: string, opts?: {dimMaster?: number}, cb?: () => void): void {
     name = '' + name;
     const tSeq = this.sequenceList.find((s) => s.name === name);
     if (!tSeq) {
@@ -266,10 +262,9 @@ export class SequencePlayerClass {
       return;
     }
     this.goToSequence(tSeq, opts, cb);
-
   }
 
-  @RemoteFunction({ skipClientApply: true })
+  @RemoteFunction({skipClientApply: true})
   public stopIfPlaying() {
     stopTimer('seqTransition');
   }
@@ -286,8 +281,8 @@ export class SequencePlayerClass {
     this._rootProvider = rootProvider;
   }
 
-  @RemoteFunction({ sharedFunction: true })
-  private goToSequence(seq: Sequence, opts?: { dimMaster?: number }, cb?: any) {
+  @RemoteFunction({sharedFunction: true})
+  private goToSequence(seq: Sequence, opts?: {dimMaster?: number}, cb?: any) {
     if (!seq) {
       console.error('go to null sequence')
       debugger;
@@ -306,119 +301,132 @@ export class SequencePlayerClass {
     const nIdx = this.sequenceList.indexOf(seq);
     if (nIdx >= 0) {
       this.pcurPlayedIdx = nIdx;
-
     }
 
     // const timeOut =  this.curSeq.timeOut*1000;
     const timeIn = this.nextSeq.timeIn;
     const nextState = this.nextSeq.resolveState(stateResolver);
     if (nextState) {
-      const dimMaster = opts ? opts.dimMaster !== undefined ? opts.dimMaster : 1 : 1;
-      this.goToStates([nextState], this.nextSeq.timeIn, { dimMasters: [dimMaster] },
-        (...args: any[]) => {
-          doSharedFunction(() => {
-            this.pisPlaying = false;
-            if (!this.nextSeq.doNotPrepareNext) {
-              this.resolveSlowChanges(nIdx + 1)
-            }
-            if (cb) { cb(...args); }
+      const dimMaster =
+          opts ? opts.dimMaster !== undefined ? opts.dimMaster : 1 : 1;
+      this.goToStates(
+          [nextState], this.nextSeq.timeIn, {dimMasters: [dimMaster]},
+          (...args: any[]) => {
+            doSharedFunction(() => {
+              this.pisPlaying = false;
+              if (!this.nextSeq.doNotPrepareNext) {
+                this.resolveSlowChanges(nIdx + 1)
+              }
+              if (cb) {
+                cb(...args);
+              }
+            });
           });
-        });
     }
   }
 
   private resolveSlowChanges(toIdx: number) {
-    const stateResolver = (n: string) => { return this.stateList.states[n]; };
+    const stateResolver = (n: string) => {
+      return this.stateList.states[n];
+    };
 
     const blackFixtures = new Array<FixtureBase>()
     for (const f of Object.values(this.universe.fixtureList)) {
       if (f.hasDimmerChannels) {
         let isLit = false;
-        f.dimmerChannels.map(c => { isLit = isLit || c.floatValue > 0 })
+        f.dimmerChannels.map(c => {isLit = isLit || c.floatValue > 0})
         if (!isLit) {
           blackFixtures.push(f);
         }
       }
     }
     const seq = this.sequenceList.getAtIdx(toIdx)
-    const resolvedStates = seq?.resolveState(stateResolver)?.resolveState(this.universe.fixtureList, this.stateList.states, 1);
+    const resolvedStates =
+        seq?.resolveState(stateResolver)
+            ?.resolveState(this.universe.fixtureList, this.stateList.states, 1);
     if (resolvedStates) {
       for (const b of blackFixtures) {
         const match = resolvedStates.find(r => r.fixture == b)
         if (match) {
           let isLit = false
           if (b.dimmerChannels.map(d => {
-            const tV = match.channels[d.name]?.value
-            if (tV !== undefined && tV > 0) {
-              isLit = true;
-            }
-          }))
-            if (isLit) { // wil be lit on the next state so prepare other channels
-              for (const [k, v] of Object.entries(match.channels)) {
-                if (typeof (v.value) === "number") {
-                  const c = b.getChannelForName(k);
-                  if (c && !(c.reactToMaster)) {
-                    c.setValue(v.value, true);
-                  }
+                const tV = match.channels[d.name]?.value
+                if (tV !== undefined && tV > 0) {
+                  isLit = true;
                 }
-
+              }))
+          if (isLit) {  // wil be lit on the next state so prepare other
+                        // channels
+            for (const [k, v] of Object.entries(match.channels)) {
+              if (typeof (v.value) === 'number') {
+                const c = b.getChannelForName(k);
+                if (c && !(c.reactToMaster)) {
+                  c.setValue(v.value, true);
+                }
               }
             }
-
+          }
         }
       }
     }
     // this.sequenceList.getAtIdx()
   }
 
-  @RemoteFunction({ sharedFunction: true })
-  private goToStates(nextStates: State[], timeIn: number, opts?: { dimMasters?: number[] }, cb?: any) {
-    const res = 25; // ms between steps
+  @RemoteFunction({sharedFunction: true})
+  private goToStates(
+      nextStates: State[], timeIn: number, opts?: {dimMasters?: number[]},
+      cb?: any) {
+    const res = 10;  // ms between steps
 
 
     if (nextStates && nextStates.length) {
-      const dimMasters = opts ? opts.dimMasters !== undefined ? opts.dimMasters : [] : [];
+      const dimMasters =
+          opts ? opts.dimMasters !== undefined ? opts.dimMasters : [] : [];
       for (let i = dimMasters.length; i < nextStates.length; i++) {
         dimMasters.push(1);
       }
-      const transitionTime = Math.max((res + 1) / 1000, Math.max(this.curSeq.timeOut, timeIn));
-      stopTimer('seqTransition'); // will remove any unused curves from merged states
-      const rsl = StateList.mergeStateList(nextStates, this.stateList.getCurrentFullFixtureList(), this.stateList.states, dimMasters);
+      const transitionTime =
+          Math.max((res + 1) / 1000, Math.max(this.curSeq.timeOut, timeIn));
+      stopTimer(
+          'seqTransition');  // will remove any unused curves from merged states
+      const rsl = StateList.mergeStateList(
+          nextStates, this.stateList.getCurrentFullFixtureList(),
+          this.stateList.states, dimMasters);
       const mergedState = new MergedState(rsl);
       mergedState.checkIntegrity();
       this.pisPlaying = true;
-      doTimer('seqTransition', transitionTime * 1000.0, res,
-        (total: number, t: number) => {
-
-          let pct = t * 1.0 / total;
-          pct = Math.max(0, Math.min(1, pct));
-          // const time = t * res;
-          // const pctIn = timeIn > 0 ? (1 - Math.max(0, (timeIn - time) / timeIn)) : 1;
-          // const pctOut = timeOut>0?Math.max(0,(timeOut-time)/timeOut):0;
-          doSharedFunction(() => {
-            mergedState.applyCrossfade(pct);
-            this.pctDone = pct;
+      doTimer(
+          'seqTransition',
+          transitionTime * 1000.0,
+          res,
+          (total: number, t: number) => {
+            let pct = t * 1.0 / total;
+            pct = Math.max(0, Math.min(1, pct));
+            // const time = t * res;
+            // const pctIn = timeIn > 0 ? (1 - Math.max(0, (timeIn - time) /
+            // timeIn)) : 1; const pctOut =
+            // timeOut>0?Math.max(0,(timeOut-time)/timeOut):0;
+            doSharedFunction(
+                () => {
+                  mergedState.applyCrossfade(pct);
+                  this.pctDone = pct;
+                },
+            );
           },
-          );
-        },
 
-        () => {
-          doSharedFunction(() => {
+          () => {
+            doSharedFunction(() => {
+              mergedState.endCB();
+              if (cb) {
+                cb();
+              }
 
-            mergedState.endCB();
-            if (cb) { cb(); }
-
-            this.pisPlaying = false;
-
-          });
-        },
+              this.pisPlaying = false;
+            });
+          },
       );
-
     }
   }
-
-
-
 }
 
 export const sequencePlayer = SequencePlayerClass.i;
