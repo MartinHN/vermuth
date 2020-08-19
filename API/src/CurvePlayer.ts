@@ -1,21 +1,26 @@
-import {CurveBaseI, CurveStore, Curve} from './Curve';
 import {ChannelBase} from './Channel';
-import {GlobalTransport, TimeListener} from './Time';
-import { SetAccessible, nonEnumerable, RemoteValue , RemoteFunction, AccessibleClass, isProxySymbol} from './ServerSync';
-import {Ref, Refable, Factory, Proxyfiable, generateFromUIDList} from './MemoryUtils';
+import {Curve, CurveBaseI, CurveStore} from './Curve';
+import {Factory, generateFromUIDList, Proxyfiable, Ref, Refable} from './MemoryUtils';
 import rootState from './RootState';
+import {AccessibleClass, isProxySymbol, nonEnumerable, RemoteFunction, RemoteValue, SetAccessible} from './ServerSync';
+import {GlobalTransport, TimeListener} from './Time';
 import {uuidv4} from './Utils';
 
-
+const DEACTIVATE_CURVE = true;
 type CurveBaseType = CurveBaseI;
 
 export class CurveLink extends Proxyfiable implements Refable {
-
-  get curve() {return this.pcurve; }
+  get curve() {
+    return this.pcurve;
+  }
   set curve(c: CurveBaseType) {
-    if (this.pcurve) {this.pcurve.removeConsumer(this); }
+    if (this.pcurve) {
+      this.pcurve.removeConsumer(this);
+    }
     this.pcurve = c;
-    if (this.pcurve) {this.pcurve.addConsumer(this); }
+    if (this.pcurve) {
+      this.pcurve.addConsumer(this);
+    }
   }
 
   public get master() {
@@ -27,7 +32,9 @@ export class CurveLink extends Proxyfiable implements Refable {
   }
 
   public set time(t: number) {
-    if (this.doPause) {return; }
+    if (this.doPause) {
+      return;
+    }
     this._curTime = (t - (this.startTime || 0) + (this.offset || 0));
     if (this._curTime === undefined || isNaN(this._curTime)) {
       debugger;
@@ -35,7 +42,7 @@ export class CurveLink extends Proxyfiable implements Refable {
     if (this._curTime < 0) {
       return;
     }
-    if (this.doLoop ) {
+    if (this.doLoop) {
       if (this.curve.span > 0) {
         this._curTime %= this.curve.span;
       } else {
@@ -43,10 +50,8 @@ export class CurveLink extends Proxyfiable implements Refable {
         debugger;
       }
     } else {
-
     }
     this.updateValue();
-
   }
 
 
@@ -63,14 +68,15 @@ export class CurveLink extends Proxyfiable implements Refable {
       debugger;
       return undefined;
     }
-    const cu = (o.pcurve.uid ? o.pcurve : CurveStore.getForUID( o.pcurve ) )   as CurveBaseType;
+    const cu = (o.pcurve.uid ? o.pcurve : CurveStore.getForUID(o.pcurve)) as
+        CurveBaseType;
     const ch = rootState.universe.getChannelFromUID(o.channel) as ChannelBase;
-    if (!cu ) {
+    if (!cu) {
       console.error('curve not found');
       debugger;
       return undefined;
     }
-    if (!ch ) {
+    if (!ch) {
       console.error('ch not found');
       debugger;
       return undefined;
@@ -79,30 +85,28 @@ export class CurveLink extends Proxyfiable implements Refable {
     c.configureFromObj(o);
     return c;
   }
-  public __references: Array<Ref<CurveLink>> = new Array<Ref<CurveLink>>(); // for refable
-  @RemoteValue()
-  public doLoop = true;
-  @RemoteValue()
-  public doPause = false;
-  @RemoteValue()
-  public offset = 0;
+  public __references: Array<Ref<CurveLink>> =
+      new Array<Ref<CurveLink>>();  // for refable
+  @RemoteValue() public doLoop = true;
+  @RemoteValue() public doPause = false;
+  @RemoteValue() public offset = 0;
 
   public _curValue = 0;
   public uid: string;
 
   @nonEnumerable()
-  public autoSetChannelValue = true; // used when merging curves in sequence player
+  public autoSetChannelValue =
+      true;  // used when merging curves in sequence player
   public __disposed = false;
 
-  @RemoteValue()
-  private startTime = 0;
+  @RemoteValue() private startTime = 0;
   private pmaster = 1;
 
   private _curTime = 0;
 
 
-  constructor(private pcurve: CurveBaseType, public channel: ChannelBase, uid: string) {
-
+  constructor(
+      private pcurve: CurveBaseType, public channel: ChannelBase, uid: string) {
     super();
 
     if (!this.pcurve.addConsumer) {
@@ -114,20 +118,23 @@ export class CurveLink extends Proxyfiable implements Refable {
 
     this.pcurve.addConsumer(this);
     channel.externalController = this;
-    if (!uid) {console.error('no uid given'); debugger; }
+    if (!uid) {
+      console.error('no uid given');
+      debugger;
+    }
     this.uid = 'cl_' + channel.getUID() + '_' + (uid || uuidv4());
-    if (CurvePlayer.hasCurveLinkWithUID(uid)) {console.error('double curvelink'); debugger; }
+    if (CurvePlayer.hasCurveLinkWithUID(uid)) {
+      console.error('double curvelink');
+      debugger;
+    }
     CurveLinkStore.add(this);
   }
 
-  public __onceProxyfied() {
-
-  }
+  public __onceProxyfied() {}
 
 
 
   public configureFromObj(o: any) {
-
     CurveLinkStore.remove(this, false);
     // this.pcurve = null
     for (const [k, v] of Object.entries(this)) {
@@ -143,7 +150,7 @@ export class CurveLink extends Proxyfiable implements Refable {
         } else if (k === 'channel') {
           const ch = rootState.universe.getChannelFromUID(o[k]);
           if (ch) {
-            this.channel =  ch;
+            this.channel = ch;
           } else {
             console.error('conf error');
             debugger;
@@ -159,7 +166,9 @@ export class CurveLink extends Proxyfiable implements Refable {
   public toJSON() {
     const o: any = {uid: this.uid};
     for (const [k, v] of Object.entries(this)) {
-      if (k.startsWith('_')) {continue; } else if (k === 'channel') {
+      if (k.startsWith('_')) {
+        continue;
+      } else if (k === 'channel') {
         o[k] = this.channel.getUID();
       } else {
         o[k] = v;
@@ -170,7 +179,7 @@ export class CurveLink extends Proxyfiable implements Refable {
   }
 
   public updateValue() {
-    const nv = (this.curve.getValueAt(this._curTime) as number ) * this.pmaster;
+    const nv = (this.curve.getValueAt(this._curTime) as number) * this.pmaster;
     if (nv !== this._curValue) {
       this._curValue = nv;
       if (this.autoSetChannelValue) {
@@ -199,10 +208,11 @@ export class CurveLink extends Proxyfiable implements Refable {
       debugger;
     }
     this.__disposed = true;
-    if (this.pcurve) {this.pcurve.removeConsumer(this); }
+    if (this.pcurve) {
+      this.pcurve.removeConsumer(this);
+    }
     this.channel.externalController = null;
   }
-
 }
 
 
@@ -210,7 +220,8 @@ export class CurveLink extends Proxyfiable implements Refable {
 // class CurveLinkStoreClass extends RefFactory<CurveLink>{
 
 
-//   public get  allLinks(){ return this.factory}// {[uid: string]: CurveLink} = {};
+//   public get  allLinks(){ return this.factory}// {[uid: string]: CurveLink}
+//   = {};
 
 //   public configureFromObj(o: any) {
 //     for (const v of Object.values(this.allLinks)) {
@@ -250,8 +261,6 @@ export class CurveLink extends Proxyfiable implements Refable {
 
 
 
-
-
 // }
 
 
@@ -261,7 +270,9 @@ export const CurveLinkStore = new Factory<CurveLink>(CurveLink.createFromObj);
 @AccessibleClass()
 export class CurvePlayerClass extends TimeListener {
   static get i(): CurvePlayerClass {
-    if (!CurvePlayerClass._instance) {CurvePlayerClass._instance = new CurvePlayerClass(); }
+    if (!CurvePlayerClass._instance) {
+      CurvePlayerClass._instance = new CurvePlayerClass();
+    }
     return CurvePlayerClass._instance;
   }
 
@@ -270,8 +281,11 @@ export class CurvePlayerClass extends TimeListener {
   public curveLinkStore = CurveLinkStore;
 
 
-  private readonly  curveLinkRefList = new Array< Ref<CurveLink> >();  // not accessible
-  get curveLinkList() {return this.curveLinkRefList.map((e) => e.getPointed()); }
+  private readonly curveLinkRefList =
+      new Array<Ref<CurveLink>>();  // not accessible
+  get curveLinkList() {
+    return this.curveLinkRefList.map((e) => e.getPointed());
+  }
 
   private constructor() {
     super('CurvePlayer');
@@ -286,7 +300,7 @@ export class CurvePlayerClass extends TimeListener {
     this.curveLinkStore.configureFromObj(o.curveLinkStore);
 
     if (o && o.curveLinkRefList) {
-      o.curveLinkRefList = [...new Set(o.curveLinkList)]; // avoid duplicates
+      o.curveLinkRefList = [...new Set(o.curveLinkList)];  // avoid duplicates
       const cls = generateFromUIDList(o.curveLinkRefList, this.curveLinkStore);
       cls.map((e) => this.addCurveLink(e));
       // o.curveLinkRefList.map((uid: string) => {
@@ -302,7 +316,6 @@ export class CurvePlayerClass extends TimeListener {
   //     curveLinkList: this.curveLinkList.map((e) => e.uid),
   //   };
   // }
-
 
 
 
@@ -322,21 +335,33 @@ export class CurvePlayerClass extends TimeListener {
 
 
   public getAssignedChannels() {
+    if (DEACTIVATE_CURVE) {
+      return;
+    }
     const res = new Set<ChannelBase>();
-    this.curveLinkList.map((e)  => res.add(e.channel));
+    this.curveLinkList.map((e) => res.add(e.channel));
     return res;
   }
 
 
   public getCurveLinkForChannel(ch: ChannelBase) {
+    if (DEACTIVATE_CURVE) {
+      return;
+    }
     return this.curveLinkList.find((e) => e.channel === ch);
   }
   public getCurveForChannel(ch: ChannelBase) {
+    if (DEACTIVATE_CURVE) {
+      return;
+    }
     const cl = this.getCurveLinkForChannel(ch);
     return cl ? cl.curve : undefined;
   }
   @RemoteFunction({sharedFunction: true})
   public removeChannel(ch: ChannelBase) {
+    if (DEACTIVATE_CURVE) {
+      return;
+    }
     const cl = this.getCurveLinkForChannel(ch);
     if (cl) {
       this.removeCurveLink(cl);
@@ -348,42 +373,47 @@ export class CurvePlayerClass extends TimeListener {
 
   @RemoteFunction({sharedFunction: true})
   public removeCurveLink(cl: CurveLink) {
+    if (DEACTIVATE_CURVE) {
+      return;
+    }
     const i = this.curveLinkList.indexOf(cl);
     this.curveLinkRefList.splice(i, 1);
   }
 
   @RemoteFunction({sharedFunction: true})
-  public addCurveLink(cl: CurveLink, doRestart =  true) {
-
-    if (this.curveLinkList.indexOf(cl) < 0 || cl.autoSetChannelValue === false) {
-      if (this.hasCurveLinkWithUID(cl.uid)) {
-      console.error('adding existing');
-      debugger;
+  public addCurveLink(cl: CurveLink, doRestart = true) {
+    if (DEACTIVATE_CURVE) {
+      return;
     }
+    if (this.curveLinkList.indexOf(cl) < 0 ||
+        cl.autoSetChannelValue === false) {
+      if (this.hasCurveLinkWithUID(cl.uid)) {
+        console.error('adding existing');
+        debugger;
+      }
       this.curveLinkRefList.push(new Ref<CurveLink>(cl));
       if (!cl.playNow) {
         debugger;
       }
-      if (doRestart) {cl.playNow(); }
+      if (doRestart) {
+        cl.playNow();
+      }
     } else {
-    console.error('re-add curve link');
-  }
+      console.error('re-add curve link');
+    }
     return cl;
-}
-
-@RemoteFunction({sharedFunction: true})
-public createCurveLink(c: CurveBaseType, ch: ChannelBase, uid: string) {
-  if (this.removeChannel(ch)) {
-    console.warn('reassingn channel curveLink');
   }
-  return this.addCurveLink(new CurveLink(c, ch, uid));
-}
 
-
-
-
-
-
+  @RemoteFunction({sharedFunction: true})
+  public createCurveLink(c: CurveBaseType, ch: ChannelBase, uid: string) {
+    if (DEACTIVATE_CURVE) {
+      return;
+    }
+    if (this.removeChannel(ch)) {
+      console.warn('reassingn channel curveLink');
+    }
+    return this.addCurveLink(new CurveLink(c, ch, uid));
+  }
 }
 
 export const CurvePlayer = CurvePlayerClass.i;

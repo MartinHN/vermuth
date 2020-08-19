@@ -4,7 +4,12 @@ const debugTime = dbg('TIMER')
 import{AccessibleClass, doSharedFunction, nonEnumerable, RemoteFunction, RemoteValue} from './ServerSync';
 
 const timers: {[key: string]: {timeout: any; endCB?: () => void}} = {};
-const CONSTANT_TIME_INC = true
+const CONSTANT_TIME_INC =
+    // #if IS_CLIENT
+    false
+// #else
+true
+// #endif
 export function doTimer(
     name: string, length: number, resolution: number,
     oninstance: (steps: number, count: number) => void,

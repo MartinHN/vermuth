@@ -1,111 +1,117 @@
-import { ChannelBase, ChannelGroup } from './Channel';
-import { FixtureBase, FixtureGroup } from './Fixture';
-import { Universe } from './Universe';
-import { sequencePlayer } from './Sequence';
-import { nonEnumerable, RemoteFunction, AccessibleClass, setChildAccessible, RemoteValue, RemoteArray, ClientOnly, doSharedFunction, SetAccessible, findLocationInParent, isProxySymbol, AccessibleMap, RemoteMap } from './ServerSync';
-import { addProp, deleteProp, Proxyfiable } from './MemoryUtils';
+import {resolve} from 'dns';
+import {isPlainObject} from 'lodash';
 
-import { CurvePlayer, CurveLink, CurveLinkStore } from './CurvePlayer';
-import { ActionList } from './Actions';
-import { isPlainObject } from 'lodash';
-import { resolve } from 'dns';
+import {ActionList} from './Actions';
+import {ChannelBase, ChannelGroup} from './Channel';
+import {CurveLink, CurveLinkStore, CurvePlayer} from './CurvePlayer';
+import {FixtureBase, FixtureGroup} from './Fixture';
+import {addProp, deleteProp, Proxyfiable} from './MemoryUtils';
+import {sequencePlayer} from './Sequence';
+import {AccessibleClass, AccessibleMap, ClientOnly, doSharedFunction, findLocationInParent, isProxySymbol, nonEnumerable, RemoteArray, RemoteFunction, RemoteMap, RemoteValue, SetAccessible, setChildAccessible} from './ServerSync';
+import {Universe} from './Universe';
 
 
-interface ChannelsValuesDicTypes { [id: string]: number }
+interface ChannelsValuesDicTypes {
+  [id: string]: number;
+}
 // type ChannelsValuesDicTypes = RemoteMap<number>
-interface ChannelsCurveLinkDicTypes { [id: string]: { uid: string } }
+interface ChannelsCurveLinkDicTypes {
+  [id: string]: {uid: string};
+}
 
-const isValidChannelName = (k: string | symbol | number) => {
+const isValidChannelName = (k: string|symbol|number) => {
   return (
-    !(typeof k === "symbol") &&
-    !k.toString().startsWith("_") &&
-    !(["state", "toJSON", "constructor", "render"].includes(k.toString()))
-  );
+      !(typeof k === 'symbol') && !k.toString().startsWith('_') &&
+      !(['state', 'toJSON', 'constructor', 'render'].includes(k.toString())));
 };
 
-type SavedValueType = number | CurveLink;
+type SavedValueType = number|CurveLink;
 
-type FixtureStateObject = { [channelName: string]: { preseted: boolean; value: number } }
-type FixtureStateObjectOnlyValues = { [channelName: string]: number }
+type FixtureStateObject = {
+  [channelName: string]: {preseted: boolean; value: number};
+};
+type FixtureStateObjectOnlyValues = {
+  [channelName: string]: number;
+}
 
-type FullStateObject = { [fixtureName: string]: FixtureStateObject }
-type FullStateObjectOnlyValues = { [fixtureName: string]: FixtureStateObjectOnlyValues }
+type FullStateObject = {
+  [fixtureName: string]: FixtureStateObject;
+};
+type FullStateObjectOnlyValues = {
+  [fixtureName: string]: FixtureStateObjectOnlyValues;
+}
 
 export class FixtureState {
-
   // @nonEnumerable()
 
-  private pState = new Proxy({},
-    {
+  private pState = new Proxy({}, {
 
-      get: (o: any, k: string) => {
-        const self = this;
-        if (!(self.pChannelValues as any)[isProxySymbol]) {
-          // debugger
-        }
+    get: (o: any, k: string) => {
+      const self = this;
+      if (!(self.pChannelValues as any)[isProxySymbol]) {
+        // debugger
+      }
 
-        if (isValidChannelName(k) && !(Object.keys(o).includes(k))) {
-
-          // debugger
-          let cachedValue = self.pChannelValues?.[k] || 0
-          addProp(o, k, {
-            get preseted() {
-              return Object.keys(self.pChannelValues).includes(k)
-            },
-            set preseted(v: boolean) {
-              if (v) {
-                self.pChannelValues[k] = cachedValue;
-                // addProp(self.pChannelValues, k, cachedValue)
-                // cachedValue = self.pChannelValues[k]
-              }
-              else {
-                deleteProp(self.pChannelValues, k)
-              }
-            },
-            get value() {
-              return self.pChannelValues?.[k] || cachedValue;
-            },
-            set value(v: number) {
-              if (this.preseted) self.pChannelValues[k] = v
+      if (isValidChannelName(k) && !(Object.keys(o).includes(k))) {
+        // debugger
+        let cachedValue = self.pChannelValues?.[k] || 0
+        addProp(o, k, {
+          get preseted() {
+            return Object.keys(self.pChannelValues).includes(k)
+          },
+          set preseted(v: boolean) {
+            if (v) {
+              self.pChannelValues[k] = cachedValue;
+              // addProp(self.pChannelValues, k, cachedValue)
+              // cachedValue = self.pChannelValues[k]
+            } else {
+              deleteProp(self.pChannelValues, k)
+            }
+          },
+          get value() {
+            return self.pChannelValues?.[k] || cachedValue;
+          },
+          set value(v: number) {
+            if (this.preseted) self.pChannelValues[k] = v
               cachedValue = v
-            }
-          })
-        }
-        // const fakeTouch =self.pChannelValues;
-        return Reflect.get(o, k)
-      },
-
-      set: (o: any, k: string | number | symbol, v: any, thisProxy: any) => {
-        const self = this
-        if (isValidChannelName(k)) {
-          // debugger;
-          // const fakeTouch =self.pChannelValues;
-          if (v.preseted) {
-            self.pChannelValues[k.toString()] = v.value
           }
-          else if (v.preseted !== undefined) {
-            if (Object.keys(self.pChannelValues).includes(k.toString())) {
-              self.pChannelValues[k.toString()] = -1
-              // deleteProp(self.pChannelValues, k.toString())
-              delete self.pChannelValues[k.toString()]
-            }
-          }
-          else {
-            console.error("presetable not handled", k, v)
-            debugger
-          }
-
-        }
-
-        return Reflect.set(o, k, v, thisProxy)
+        })
       }
-      , deleteProperty: (o, k) => {
-        const self = this
-        delete self.pChannelValues[k.toString()]
-        return Reflect.deleteProperty(o, k);
-      }
+      // const fakeTouch =self.pChannelValues;
+      return Reflect.get(o, k)
+    },
 
-    });
+    set:
+        (o: any, k: string|number|symbol, v: any, thisProxy: any) => {
+          const self = this;
+          if (isValidChannelName(k)) {
+            // debugger;
+            // const fakeTouch =self.pChannelValues;
+            if (v.preseted) {
+              self.pChannelValues[k.toString()] = v.value
+            } else if (v.preseted !== undefined) {
+              if (Object.keys(self.pChannelValues).includes(k.toString())) {
+                self.pChannelValues[k.toString()] =
+                    -1
+                     // deleteProp(self.pChannelValues, k.toString())
+                     delete self.pChannelValues[k.toString()]
+              }
+            } else {
+              console.error('presetable not handled', k, v)
+              debugger
+            }
+          }
+
+          return Reflect.set(o, k, v, thisProxy)
+        },
+    deleteProperty:
+        (o, k) => {
+          const self = this;
+          delete self.pChannelValues[k.toString()];
+          return Reflect.deleteProperty(o, k);
+        }
+
+  });
 
   get presetableState(): FixtureStateObject {
     return this.pState;
@@ -113,12 +119,11 @@ export class FixtureState {
 
   set presetableState(v: FixtureStateObject) {
     // debugger
-    this.pChannelValues = {}
+    this.pChannelValues = {};
     for (const [k, s] of Object.entries(v)) {
       if (s.preseted) {
         this.pChannelValues[k] = s.value
       }
-
     }
   }
 
@@ -138,12 +143,21 @@ export class FixtureState {
   public name = '';
   // @SetAccessible({autoAddRemoteValue:true})
   // @AccessibleMap()
-  private pChannelValues: ChannelsValuesDicTypes = {};//= new RemoteMap<number>(-1);
+  private pChannelValues:
+      ChannelsValuesDicTypes = {};  //= new RemoteMap<number>(-1);
   private pChannelCurveLinks: ChannelsCurveLinkDicTypes = {};
-  constructor(fixtureOrName?: FixtureBase | string, options?: { overrideValue?: number; channelFilter?: (c: ChannelBase) => boolean; full?: boolean; channelNames?: string[] }) {
-    if (fixtureOrName === undefined) { return; }
-    const hasName = typeof (fixtureOrName) === "string"
-    this.name = hasName ? (fixtureOrName as string) : (fixtureOrName as FixtureBase).getUID();
+  constructor(fixtureOrName?: FixtureBase|string, options?: {
+    overrideValue?: number;
+    channelFilter?: (c: ChannelBase) => boolean;
+    full?: boolean;
+    channelNames?: string[];
+  }) {
+    if (fixtureOrName === undefined) {
+      return;
+    }
+    const hasName = typeof (fixtureOrName) === 'string';
+    this.name = hasName ? (fixtureOrName as string) :
+                          (fixtureOrName as FixtureBase).getUID();
     let validChs: ChannelBase[];
     const channels = hasName ? [] : (fixtureOrName as FixtureBase).channels;
     if (options && options.full) {
@@ -161,12 +175,12 @@ export class FixtureState {
     validChs.map((c) => {
       const curveLink = CurvePlayer.getCurveLinkForChannel(c);
 
-      addProp(curveLink ? this.pChannelCurveLinks : this.pChannelValues,
-        c.name,
-        (options && options.overrideValue !== undefined) ?
-          options.overrideValue :
-          (curveLink && { uid: curveLink.uid }) ||
-          c.floatValue,
+      addProp(
+          curveLink ? this.pChannelCurveLinks : this.pChannelValues,
+          c.name,
+          (options && options.overrideValue !== undefined) ?
+              options.overrideValue :
+              (curveLink && {uid: curveLink.uid}) || c.floatValue,
       );
     });
   }
@@ -178,30 +192,36 @@ export class FixtureState {
     this.pChannelCurveLinks = o.pChannelCurveLinks;
   }
   public isEmpty() {
-    return (Object.keys(this.pChannelCurveLinks).length == 0) && Object.keys(this.pChannelValues).length == 0;
+    return (Object.keys(this.pChannelCurveLinks).length == 0) &&
+        Object.keys(this.pChannelValues).length == 0;
   }
 
   public setAllValues(v: number) {
-    Object.keys(this.pChannelValues).forEach((k) => { this.pChannelValues[k] = v; });
+    Object.keys(this.pChannelValues).forEach((k) => {
+      this.pChannelValues[k] = v;
+    });
   }
 }
 
 export class ResolvedFixtureState {
-  public channels: { [id: string]: { channel: ChannelBase; value: SavedValueType } } = {};
+  public channels:
+      {[id: string]: {channel: ChannelBase; value: SavedValueType}} = {};
 
-  constructor(public state: FixtureState, public fixture: FixtureBase, public dimMaster = 1) {
+  constructor(
+      public state: FixtureState, public fixture: FixtureBase,
+      public dimMaster = 1) {
     Object.entries(this.state.channelValues).forEach(([k, cv]) => {
       const c = this.fixture.getChannelForName(k);
       if (c) {
         const tV = c.reactToMaster ? cv * dimMaster : cv;
-        this.channels[c.name] = { channel: c, value: tV };
+        this.channels[c.name] = {channel: c, value: tV};
       }
     });
     Object.entries(this.state.channelCurveLinks).forEach(([k, cv]) => {
       const c = this.fixture.getChannelForName(k);
       const curveLink = CurveLinkStore.getForUID(cv.uid);
       if (c && curveLink) {
-        this.channels[c.name] = { channel: c, value: curveLink };
+        this.channels[c.name] = {channel: c, value: curveLink};
       }
     });
   }
@@ -233,7 +253,8 @@ export class ResolvedFixtureState {
       CurvePlayer.removeChannel(cv.channel);
 
       if (typeof (cv.value) === 'number') {
-        if (cv.channel.parentFixture?.name === "Lazer" && cv.channel.name === "dim") {
+        if (cv.channel.parentFixture?.name === 'Lazer' &&
+            cv.channel.name === 'dim') {
           debugger
         }
         cv.channel.setValue(cv.value, true);
@@ -243,22 +264,25 @@ export class ResolvedFixtureState {
       }
     });
   }
-  public applyFunction(cb: (channel: ChannelBase, value: SavedValueType) => void) {
-    Object.values(this.channels).map((cv) => { cb(cv.channel, cv.value); });
+  public applyFunction(
+      cb: (channel: ChannelBase, value: SavedValueType) => void) {
+    Object.values(this.channels).map((cv) => {
+      cb(cv.channel, cv.value);
+    });
   }
 }
 
 
 class MergedChannel {
-  constructor(public channel: ChannelBase, public sourcev: SavedValueType, public targetv: SavedValueType) {
+  constructor(
+      public channel: ChannelBase, public sourcev: SavedValueType,
+      public targetv: SavedValueType) {
     const sourceCurveLink = this.sourceCurveLink();
     if (sourceCurveLink) {
       sourceCurveLink.autoSetChannelValue = false;
       this.sourceGetter = () => {
         return sourceCurveLink.value;
-
       };
-
     }
     const targetCurveLink = this.targetCurveLink();
     if (targetCurveLink) {
@@ -268,17 +292,16 @@ class MergedChannel {
       };
       CurvePlayer.addCurveLink(targetCurveLink);
     }
-
-
-
   }
   public sourceCurveLink() {
-    return typeof (this.sourcev) !== 'number' ? this.sourcev as CurveLink : undefined;
+    return typeof (this.sourcev) !== 'number' ? this.sourcev as CurveLink :
+                                                undefined;
   }
   public targetCurveLink() {
-    return typeof (this.targetv) !== 'number' ? this.targetv as CurveLink : undefined;
+    return typeof (this.targetv) !== 'number' ? this.targetv as CurveLink :
+                                                undefined;
   }
-  public sourceGetter(): number { // overriden for complex types as curves
+  public sourceGetter(): number {  // overriden for complex types as curves
     return this.sourcev as number;
   }
   public targetGetter(): number {
@@ -303,7 +326,6 @@ class MergedChannel {
     if (targetCurveLink) {
       targetCurveLink.autoSetChannelValue = true;
     }
-
   }
 }
 export class MergedState {
@@ -313,12 +335,12 @@ export class MergedState {
       for (const i of Object.keys(rfs.channels)) {
         const channelObj = rfs.channels[i];
         const channel = channelObj.channel;
-        const sourcev = CurvePlayer.getCurveLinkForChannel(channel) || channel.floatValue;
+        const sourcev =
+            CurvePlayer.getCurveLinkForChannel(channel) || channel.floatValue;
         const targetv = channelObj.value;
         this.channels.push(new MergedChannel(channel, sourcev, targetv));
       }
     }
-
   }
 
   public applyCrossfade(pct: number) {
@@ -330,14 +352,14 @@ export class MergedState {
   }
   public checkIntegrity() {
     const dupl = this.channels.filter((c, i) => {
-      return i < this.channels.length - 1 && this.channels.slice(i + 1).find((cc) => c.channel === cc.channel) !== undefined;
+      return i < this.channels.length - 1 &&
+          this.channels.slice(i + 1).find((cc) => c.channel === cc.channel) !==
+          undefined;
     });
     if (dupl.length) {
       console.error(dupl);
     }
   }
-
-
 }
 
 
@@ -353,9 +375,7 @@ class LinkedState extends Proxyfiable {
 
   @RemoteValue((parent, value) => {
     if (parent.__owner) {
-      doSharedFunction(() => {
-        parent.__owner.linkedStateChanged(parent)
-      })
+      doSharedFunction(() => {parent.__owner.linkedStateChanged(parent)})
     }
   })
   public dimMaster: number;
@@ -364,34 +384,35 @@ class LinkedState extends Proxyfiable {
 
 @AccessibleClass()
 export class State {
-
   public static createFromObj(o: any, sl: StateList) {
     const res = new State(sl, o.name, [], []);
     res.configureFromObj(o);
     return res;
   }
 
-  public fixtureStates: FixtureState[] = [];//= new  RemoteArray<FixtureState>();
+  public fixtureStates: FixtureState[] =
+      [];  //= new  RemoteArray<FixtureState>();
 
   public linkedStates: LinkedState[] = [];
 
   public actions: ActionList = new ActionList();
 
-  @nonEnumerable()
-  private cachedPState = {}
+  @nonEnumerable() private cachedPState = {};
   get presetableState() {
-
     const ss = this
-    // const fake = this.fixtureStates.length ? this.fixtureStates[0] : null;
-    const isValidStateName = (k: string | number | symbol) => {
-      return (!k.toString().startsWith('_') &&
-        typeof (k) == "string")
-    }
+        // const fake = this.fixtureStates.length ? this.fixtureStates[0] :
+        // null;
+        const isValidStateName =
+            (k: string|number|symbol) => {
+              return (!k.toString().startsWith('_') && typeof (k) == 'string')
+            }
 
     const res = new Proxy(this.cachedPState, {
       get(o, k, thisProxy) {
         // const o = ss.cachedPState
-        if (!isValidStateName(k)) { return Reflect.get(o, k); }
+        if (!isValidStateName(k)) {
+          return Reflect.get(o, k);
+        }
         ss.checkDups();
         let f = ss.fixtureStates.find(e => e.name === k)
         if (!f) {
@@ -407,11 +428,12 @@ export class State {
 
 
         return f.presetableState
-
       },
       set(o, k, v, thisProxy) {
         // const o = ss.cachedPState
-        if (!isValidStateName(k)) { return Reflect.set(o, k, v, thisProxy); }
+        if (!isValidStateName(k)) {
+          return Reflect.set(o, k, v, thisProxy);
+        }
         // debugger
         // if(!Object.keys(o).includes(k))){addProp(o, k.toString(), v)}
         let f = ss.fixtureStates.find(e => e.name === k)
@@ -423,7 +445,6 @@ export class State {
           if (!f) {
             console.error('wwww', k)
             debugger;
-
           }
         }
         else {
@@ -442,19 +463,16 @@ export class State {
           }
         }
         return Reflect.deleteProperty(o, k)
-
       }
     })
     for (const fs of this.fixtureStates) {
-      
-      const ps: {[cname: string]: {preseted: boolean;value: number}} = {}
+      const ps: {[cname: string]: {preseted: boolean; value: number}} = {};
       if (!Object.keys(this.cachedPState).includes(fs.name)) {
         for (const [cn, cv] of Object.entries(fs.channelValues)) {
           ps[cn] = { preseted: true, value: cv }
         }
         (res as any)[fs.name] = ps
       }
-      
     }
     return res;
   }
@@ -462,30 +480,33 @@ export class State {
     this.cachedPState = v;
   }
 
-  constructor(private __stateList: StateList | undefined, public name: string, public __validChNames: string[], fixtures: FixtureBase[], public full?: boolean) {
-    if (__validChNames.length === 0 && !name.startsWith('__') && !name.startsWith('current')) { debugger; }
+  constructor(
+      private __stateList: StateList|undefined, public name: string,
+      public __validChNames: string[], fixtures: FixtureBase[],
+      public full?: boolean) {
+    if (__validChNames.length === 0 && !name.startsWith('__') &&
+        !name.startsWith('current')) {
+      debugger;
+    }
 
     this.updateFromFixtures(fixtures);
     this.full = full ? true : false;
-
   }
   public toJSON() {
-
     const result: any = {};
     for (const key in this) {
-      if (this.hasOwnProperty(key) && key !== "cachedPState") {
+      if (this.hasOwnProperty(key) && key !== 'cachedPState') {
         result[key] = this[key];
       }
     }
     result.fixtureStates = this.fixtureStates.filter(e => !e.isEmpty())
     return result;
-
   }
   checkDups() {
     const l = this.fixtureStates;
     const hasDups = l.length !== Array.from(new Set(l.map(e => e.name))).length;
     if (hasDups) {
-      console.error("duplicate states ", l)
+      console.error('duplicate states ', l)
       const existing = new Array<string>()
 
       const newL = l.filter(e => {
@@ -494,7 +515,6 @@ export class State {
         return res;
       });
       this.fixtureStates = newL
-
     }
     // for(const f of Object.values(this.fixtureStates)){
     //  if(!Object.keys(this.presetableState).includes(f.name)){
@@ -513,20 +533,19 @@ export class State {
     o?.fixtureStates.map((oo: any) => {
       const fs = FixtureState.createFromObj(oo);
       if (fs) {
-
         this.fixtureStates.push(fs);
       }
     });
 
     this.setLinkedStates(o.linkedStates);
-    this.actions.configureFromObj(o.actions)
+    this.actions.configureFromObj(o.actions);
     this.full = o.full;
     this.checkDups()
   }
   public get hasLinked() {
     return this.linkedStates.length > 0;
   }
-  @RemoteFunction({ sharedFunction: true })
+  @RemoteFunction({sharedFunction: true})
   public addLinkedState(n: string, dimMaster: number) {
     if (dimMaster == 0) {
       return;
@@ -534,25 +553,24 @@ export class State {
     if (!this.linkedStates.find(ls => n == ls.name)) {
       this.linkedStates.push(new LinkedState(this, n, dimMaster));
       this.linkedStateChanged(this.linkedStates[this.linkedStates.length - 1])
-    }
-    else {
+    } else {
       console.error('duplicate linked state')
     }
   }
 
-  @RemoteFunction({ sharedFunction: true })
+  @RemoteFunction({sharedFunction: true})
   public removeLinkedStateNamed(name: string) {
     const i = this.linkedStates.findIndex(e => e.name === name)
     if (i >= 0) {
       this.linkedStates.splice(i, 1)
     }
   }
-  setLinkedStates(v: { name: string; dimMaster?: number }[]) {
+  setLinkedStates(v: {name: string; dimMaster?: number}[]) {
     if (!Array.isArray(v)) {
-      console.error("trying to set bad linked states", v)
+      console.error('trying to set bad linked states', v)
     }
     for (let i = this.linkedStates.length - 1; i >= 0; i--) {
-      const e = this.linkedStates[i]
+      const e = this.linkedStates[i];
       if (!v.some(s => s.name === e.name)) {
         this.removeLinkedStateNamed(e.name)
       }
@@ -576,9 +594,7 @@ export class State {
       else if (dM > 0) {
         this.addLinkedState(e.name, dM)
       }
-
     }
-
   }
 
 
@@ -588,12 +604,11 @@ export class State {
         this.__stateList.recallState(this, 1, true)
       }
     }
-
   }
   public updateFromFixtures(fixtures: FixtureBase[]) {
     this.fixtureStates = [];
 
-    const opts: { full: boolean; channelNames?: string[] } = { full: !!this.full };
+    const opts: {full: boolean; channelNames?: string[]} = {full: !!this.full};
     if (this.__validChNames) {
       opts.channelNames = this.__validChNames;
     }
@@ -615,21 +630,22 @@ export class State {
     return this;
   }
 
-  public resolveState(context: FixtureBase[], sl: { [id: string]: State }, dimMaster: number, forbiddenStateNames?: string[]): ResolvedFixtureState[] {
-
+  public resolveState(
+      context: FixtureBase[], sl: {[id: string]: State}, dimMaster: number,
+      forbiddenStateNames?: string[]): ResolvedFixtureState[] {
     const res: ResolvedFixtureState[] = [];
 
     for (const f of this.fixtureStates) {
       if (f) {
-        const fix = context.find((ff) => ff?.name === f.name);
+        const fName = f.name
+        const fix = context.find((ff) => ff?.name === fName);
         if (fix) {
           res.push(new ResolvedFixtureState(f, fix, dimMaster));
-        }
-        else {
-          console.error("fixture not defined in context : ", f.name)
+        } else {
+          console.error('fixture not defined in context : ', f.name)
         }
       } else {
-        console.error("fixture not defined in fixtureState")
+        console.error('fixture not defined in fixtureState')
       }
     }
     const otherRs: ResolvedFixtureState[] = [];
@@ -638,22 +654,36 @@ export class State {
     }
     forbiddenStateNames.push(this.name);
     this.linkedStates.map((s) => {
-      if (forbiddenStateNames && forbiddenStateNames.includes(s.name)) { console.warn('prevent circular state ref'); return; }
+      if (forbiddenStateNames && forbiddenStateNames.includes(s.name)) {
+        console.warn('prevent circular state ref');
+        return;
+      }
       const os = sl[s.name];
       if (os) {
-        // otherRs = otherRs.concat(os.resolveState(context, sl, s.dimMaster, forbiddenStateNames)); 
-        StateList.mergeResolvedFixtureList(otherRs, os.resolveState(context, sl, s.dimMaster, forbiddenStateNames));
-      } else { console.error('fuck states'); }
+        // otherRs = otherRs.concat(os.resolveState(context, sl, s.dimMaster,
+        // forbiddenStateNames));
+        StateList.mergeResolvedFixtureList(
+            otherRs,
+            os.resolveState(context, sl, s.dimMaster, forbiddenStateNames));
+      } else {
+        console.error('fuck states');
+      }
     });
 
-    StateList.mergeResolvedFixtureList(otherRs, res); // this state should override linked
+    StateList.mergeResolvedFixtureList(
+        otherRs, res);  // this state should override linked
 
     return otherRs;
   }
 
   public getSavedFixtureList(context: FixtureBase[]) {
-    if (!context) { console.error('nofixtureL'); debugger; return; }
-    const res = this.fixtureStates.map((fs) => context.find((e) => e.name === fs.name));
+    if (!context) {
+      console.error('nofixtureL');
+      debugger;
+      return;
+    }
+    const res =
+        this.fixtureStates.map((fs) => context.find((e) => e.name === fs.name));
     const defined = res.filter(e => !!e);
     if (defined.length !== res.length) {
       console.error('some saved fixture are deleted')
@@ -667,29 +697,31 @@ export class State {
       const f = context.find((e) => e.name === fs.name);
       if (f) {
         let allChannelNames = Object.keys(fs.channelValues);
-        allChannelNames = allChannelNames.concat(Object.keys(fs.channelCurveLinks));
+        allChannelNames =
+            allChannelNames.concat(Object.keys(fs.channelCurveLinks));
         for (const name of allChannelNames) {
           const c = f.getChannelForName(name);
-          if (c) { res.push(c); }
+          if (c) {
+            res.push(c);
+          }
         }
       }
-
     }
     return res;
   }
 
   public findZombies() {
-    const availableFixtureNames = this.__stateList?.getCurrentFullFixtureList().map(f => f.name) || []
-    const zombieFixtures = this.fixtureStates.filter(f => !availableFixtureNames.includes(f.name))
+    const availableFixtureNames =
+        this.__stateList?.getCurrentFullFixtureList().map(f => f.name) || [];
+    const zombieFixtures =
+        this.fixtureStates.filter(f => !availableFixtureNames.includes(f.name))
     if (zombieFixtures.length) {
-      return { fixtures: zombieFixtures }
+      return {
+        fixtures: zombieFixtures
+      }
     }
     return {}
   }
-
-
-
-
 }
 
 
@@ -699,7 +731,9 @@ export class StateList {
     return this.__universe;
   }
 
-  public static mergeStateList(sl: State[], context: FixtureBase[], otherStates: { [id: string]: State }, dimMasters?: number[]) {
+  public static mergeStateList(
+      sl: State[], context: FixtureBase[], otherStates: {[id: string]: State},
+      dimMasters?: number[]) {
     const rsl = new Array<ResolvedFixtureState>();
     if (!dimMasters) {
       dimMasters = [];
@@ -711,15 +745,16 @@ export class StateList {
     for (let i = 0; i < sl.length; i++) {
       const st = sl[i];
       const dimMaster = dimMasters[i];
-      resolved = resolved.concat(st.resolveState(context, otherStates, dimMaster));
+      resolved =
+          resolved.concat(st.resolveState(context, otherStates, dimMaster));
     }
     StateList.mergeResolvedFixtureList(rsl, resolved);
 
     return rsl;
   }
 
-  public static mergeResolvedFixtureList(rsl: ResolvedFixtureState[], newRsl: ResolvedFixtureState[]) {
-
+  public static mergeResolvedFixtureList(
+      rsl: ResolvedFixtureState[], newRsl: ResolvedFixtureState[]) {
     for (let i = 0; i < newRsl.length; i++) {
       const rs = newRsl[i];
       const stateForFix = rsl.find((e) => e.fixture === rs.fixture);
@@ -728,8 +763,6 @@ export class StateList {
       } else {
         rsl.push(rs);
       }
-
-
     }
     return rsl;
   }
@@ -738,40 +771,39 @@ export class StateList {
     onChange: (parent, el) => {
       console.log('state change ', el)
       debugger
-      const path = findLocationInParent(el, "states")
+      const path = findLocationInParent(el, 'states')
       if (path?.length && path[0].__accessibleName === parent.loadedStateName) {
-        const aPath = findLocationInParent(el, "actions")
-        if (aPath?.length && aPath.length > 1)
-          aPath[1].apply()
+        const aPath = findLocationInParent(el, 'actions')
+        if (aPath?.length && aPath.length > 1) aPath[1].apply();
         return
       }
       console.error('cant trace state change ')
-
     }
   })
-  public states: { [key: string]: State } = {};
+  public states: {[key: string]: State} = {};
 
-  @ClientOnly()
-  private presetableNames: string[] = [];
-  @RemoteValue()
-  public currentState = new State(this, 'current', [], [], true);
-  @RemoteValue()
-  public loadedStateName = '';
-  @nonEnumerable()
-  private __universe: Universe;
+  @ClientOnly() private presetableNames: string[] = [];
+  @RemoteValue() public currentState = new State(this, 'current', [], [], true);
+  @RemoteValue() public loadedStateName = '';
+  @nonEnumerable() private __universe: Universe;
   constructor(uni: Universe) {
     this.__universe = uni;
     this.addState(blackState);
-    // setChildAccessible(this.states,blackState.name) // needed to ensure name is not private (__black)
+    // setChildAccessible(this.states,blackState.name) // needed to ensure name
+    // is not private (__black)
     this.addState(fullState);
     // setChildAccessible(this.states,fullState.name)
   }
 
   public configureFromObj(ob: any) {
-    Object.keys(this.states).filter((e) => !e.startsWith('__')).map((name) => this.removeStateNamed(name));
+    Object.keys(this.states)
+        .filter((e) => !e.startsWith('__'))
+        .map((name) => this.removeStateNamed(name));
     if (ob) {
       if (ob.states) {
-        Object.keys(ob.states).map((name) => this.addState(State.createFromObj(ob.states[name], this)));
+        Object.keys(ob.states).map(
+            (name) =>
+                this.addState(State.createFromObj(ob.states[name], this)));
       }
       if (ob.currentState) {
         ob.currentState.name = this.currentState.name;
@@ -779,17 +811,17 @@ export class StateList {
         this.recallState(this.currentState, 1, true);
       }
     }
-
   }
 
   get stateNames() {
     return Array.from(Object.keys(this.states))
   }
 
-  @RemoteFunction({ sharedFunction: true })
+  @RemoteFunction({sharedFunction: true})
   public removeStateNamed(name: string) {
     if (this.states[name]) {
-      if (!(this.states[name] === blackState || this.states[name] === fullState)) {
+      if (!(this.states[name] === blackState ||
+            this.states[name] === fullState)) {
         delete this.states[name];
       }
     }
@@ -800,7 +832,7 @@ export class StateList {
     // addProp(this.states, s.name,  s);
   }
 
-  @RemoteFunction({ sharedFunction: true })
+  @RemoteFunction({sharedFunction: true})
   public recallStateNamed(n: string, dimMaster = 1, setLoaded = true) {
     if (n === this.currentState.name) {
       return this.recallState(this.currentState, dimMaster, setLoaded);
@@ -810,7 +842,7 @@ export class StateList {
   }
 
 
-  @RemoteFunction({ sharedFunction: true })
+  @RemoteFunction({sharedFunction: true})
   public recallState(s: State, dimMaster: number, setLoaded: boolean) {
     if (!s) {
       console.error('calling null state');
@@ -820,14 +852,18 @@ export class StateList {
     const fl = this.getCurrentFullFixtureList();
     if (!s.resolveState) {
       s = this.getStateNamed(s.name);
-      if (!s) { debugger; console.error("invalid state"); return; }
+      if (!s) {
+        debugger;
+        console.error('invalid state');
+        return;
+      }
     }
     const rs = s.resolveState(fl, this.states, dimMaster);
 
     this.applyResolvedState(rs);
     const channelList = s.getSavedChannels(fl);
     if (setLoaded) {
-      this.setLoadedStateName(dimMaster > 0 ? s.name : "");
+      this.setLoadedStateName(dimMaster > 0 ? s.name : '');
     }
 
     this.setPresetableNames(channelList.map((c) => c.getUID()));
@@ -836,8 +872,8 @@ export class StateList {
 
   public getResolvedStateNamed(n: string, dimMaster = 1) {
     const s = this.states[n];
-    return s.resolveState(this.getCurrentFullFixtureList(), this.states, dimMaster);
-
+    return s.resolveState(
+        this.getCurrentFullFixtureList(), this.states, dimMaster);
   }
 
 
@@ -845,14 +881,14 @@ export class StateList {
     const oriLen = l.length;
     l = Array.from(new Set(l))
     if (l.length !== oriLen) {
-      console.error("duplicated names in ", l)
+      console.error('duplicated names in ', l)
     }
-    if (l.length !== this.presetableNames.length || l.some(e => !this.presetableNames.includes(e))) {
+    if (l.length !== this.presetableNames.length ||
+        l.some(e => !this.presetableNames.includes(e))) {
       this.presetableNames = l;
-
     }
 
-    this.checkPresetableIntegrity("");
+    this.checkPresetableIntegrity('');
   }
   public getPresetableNames() {
     return Object.assign({}, this.presetableNames);
@@ -875,13 +911,13 @@ export class StateList {
     }
   }
   presetableListFromNames(p: string[]) {
-    const res: any[] = []
+    const res: any[] = [];
     this.universe.fixtureList.map(f => {
       const df = f.channels.filter(c => p.includes(c.getUID()))
       if (df && df.length) {
         res.push(df)
       }
-    })
+    });
     this.universe.groupList.map((g: FixtureGroup) => {
       const df = g.channels.filter(c => p.includes(c.getUID()))
       if (df && df.length) {
@@ -889,7 +925,6 @@ export class StateList {
       }
     })
     return res
-
   }
 
   public namesFromPresetableState(p: FullStateObject) {
@@ -912,7 +947,7 @@ export class StateList {
   public get presetableObjects() {
     return this.presetableListFromNames(this.presetableNames);
   }
-  public isPreseted(o: { getUID: () => string }) {
+  public isPreseted(o: {getUID: () => string}) {
     if (o && o.getUID) {
       return this.presetableNames.includes(o.getUID())
     }
@@ -922,61 +957,70 @@ export class StateList {
 
   private checkPresetableIntegrity(fromPresetableName: string) {
     const toRm = new Set<string>()
-    const removeGroup = !!this.universe.fixtureList.find(g => g.channels.find(c => c.getUID() === fromPresetableName))
+    const removeGroup =
+        !!this.universe.fixtureList
+              .find(
+                  g => g.channels.find(c => c.getUID() === fromPresetableName))
 
-    this.universe.groupList.map((g: FixtureGroup) => {
-      g.channels.map((cg: ChannelGroup) => {
-        const gName = cg.getUID();
-        if (this.presetableNames.includes(gName)) {
-          cg.channels.map(c => {
-            const pName = c.getUID()
-            if (this.presetableNames.indexOf(pName) >= 0) {
-              toRm.add(removeGroup ? gName : pName)
-            }
-          })
-        }
-      })
-    })
+                  this.universe.groupList.map(
+                      (g: FixtureGroup) => {
+                          g.channels.map((cg: ChannelGroup) => {
+                            const gName = cg.getUID();
+                            if (this.presetableNames.includes(gName)) {
+                              cg.channels.map(c => {
+                                const pName = c.getUID()
+                                if (this.presetableNames.indexOf(pName) >= 0) {
+                                  toRm.add(removeGroup ? gName : pName)
+                                }
+                              })
+                            }
+                          })})
 
 
     Array.from(toRm).map(n => this.setNamePresetable(n, false))
   }
 
   public getCurrentFullFixtureList() {
-    return (this.universe.groupList as Array<FixtureGroup | FixtureBase>).concat(this.universe.fixtureList);
+    return (this.universe.groupList as Array<FixtureGroup|FixtureBase>)
+        .concat(this.universe.fixtureList);
   }
 
   // @RemoteFunction({ sharedFunction: true })
-  public saveCurrentState(name: string, linkedStates?: LinkedState[], actions?: ActionList) {
-
+  public saveCurrentState(
+      name: string, linkedStates?: LinkedState[], actions?: ActionList) {
     if (name !== this.currentState.name) {
-
-      this.saveFromPresetableNames(name, this.presetableNames, linkedStates, actions);
+      this.saveFromPresetableNames(
+          name, this.presetableNames, linkedStates, actions);
 
     } else {
       this.updateCurrentState();
-
     }
   }
-  @RemoteFunction({ sharedFunction: true, noRef: true })
-  public saveFromPresetableNames(name: string, presetableNames: string[], linkedStates?: LinkedState[], actions?: ActionList) {
-
+  @RemoteFunction({sharedFunction: true, noRef: true})
+  public saveFromPresetableNames(
+      name: string, presetableNames: string[], linkedStates?: LinkedState[],
+      actions?: ActionList) {
     const fl = this.getCurrentFullFixtureList();
-    const st = new State(this, name, presetableNames || this.presetableNames, fl);
-    if (linkedStates) { st.linkedStates = linkedStates; }
-    if (actions) { st.actions = actions }
+    const st =
+        new State(this, name, presetableNames || this.presetableNames, fl);
+    if (linkedStates) {
+      st.linkedStates = linkedStates;
+    }
+    if (actions) {
+      st.actions = actions
+    }
     this.addState(st);
     this.setLoadedStateName(st.name);
   }
   // @RemoteFunction({ sharedFunction: true ,noRef:true})
-  // public saveFromPresetableObjects(name: string, presetableObject: FullStateObject, linkedStates?: LinkedState[], actions?: ActionList) {
+  // public saveFromPresetableObjects(name: string, presetableObject:
+  // FullStateObject, linkedStates?: LinkedState[], actions?: ActionList) {
 
   //   const fl = this.getCurrentFullFixtureList();
 
-  //   const st = new State(this, name, presetableNames || this.presetableNames, fl);
-  //   if (linkedStates) { st.linkedStates = linkedStates; }
-  //   if (actions) { st.actions = actions }
-  //   this.addState(st);
+  //   const st = new State(this, name, presetableNames || this.presetableNames,
+  //   fl); if (linkedStates) { st.linkedStates = linkedStates; } if (actions) {
+  //   st.actions = actions } this.addState(st);
   //   this.setLoadedStateName(st.name);
   // }
   // @RemoteFunction({ sharedFunction: true ,noRef:true})
@@ -994,15 +1038,14 @@ export class StateList {
   public setLoadedStateName(n: string) {
     if (n !== this.currentState.name) {
       this.loadedStateName = n;
+    } else {
+      console.error('can\'t set current to loaded')
     }
-    else { console.error("can't set current to loaded") }
   }
   public updateCurrentState() {
     const fl = this.getCurrentFullFixtureList();
     this.currentState.updateFromFixtures(fl);
   }
-
-
 
 
 
@@ -1015,7 +1058,6 @@ export class StateList {
       if (this.loadedStateName === oldName) {
         this.loadedStateName = newName;
       }
-
     }
   }
 
@@ -1024,29 +1066,23 @@ export class StateList {
   }
 
   private applyResolvedState(rs: ResolvedFixtureState[]) {
-    rs.map((r) => r.applyFunction(
-      (channel, value) => {
-        CurvePlayer.removeChannel(channel);
-        if (channel.parentFixture?.name === "Lazer" && channel.name === "shutter") {
-          debugger
+    rs.map((r) => r.applyFunction((channel, value) => {
+      CurvePlayer.removeChannel(channel);
+      if (channel.parentFixture?.name === 'Lazer' &&
+          channel.name === 'shutter') {
+        debugger
+      }
+      if (typeof (value) === 'number') {
+        channel.setValue(value, true);
+      } else {
+        const cl = value as CurveLink;
+        if (!CurvePlayer.hasCurveLink(cl)) {
+          CurvePlayer.addCurveLink(cl);
         }
-        if (typeof (value) === 'number') {
-          channel.setValue(value, true);
-        } else {
-          const cl = value as CurveLink;
-          if (!CurvePlayer.hasCurveLink(cl)) {
-            CurvePlayer.addCurveLink(cl);
-          }
-        }
-
-      }));
-
+      }
+    }));
   }
-
-
 }
-
-
 
 
 
@@ -1054,15 +1090,24 @@ class WholeState extends State {
   constructor(name: string, public value: number) {
     super(undefined, name, [], []);
   }
-  public resolveState(context: FixtureBase[], sl: { [id: string]: State }, dimMaster = 1): ResolvedFixtureState[] {
+  public resolveState(
+      context: FixtureBase[], sl: {[id: string]: State},
+      dimMaster = 1): ResolvedFixtureState[] {
     const res: ResolvedFixtureState[] = [];
     const opt = {};
     const isIncluded = (c: ChannelBase) => {
-      return (this.name === "__black" && c.roleFam === 'fog') || c.reactToMaster
-    }
+      return (this.name === '__black' && c.roleFam === 'fog') || c.reactToMaster
+    };
     for (const f of context) {
-      f.channels.map((c) => { if (isIncluded(c)) { CurvePlayer.removeChannel(c); } });
-      const fs = new FixtureState(f, { overrideValue: this.value, channelFilter: (c: ChannelBase) => isIncluded(c) });
+      f.channels.map((c) => {
+        if (isIncluded(c)) {
+          CurvePlayer.removeChannel(c);
+        }
+      });
+      const fs = new FixtureState(f, {
+        overrideValue: this.value,
+        channelFilter: (c: ChannelBase) => isIncluded(c)
+      });
       res.push(new ResolvedFixtureState(fs, f, dimMaster));
     }
     return res;

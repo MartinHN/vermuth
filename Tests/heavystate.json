@@ -1,1800 +1,2418 @@
 {
   "universe": {
-    "testedChannel": {
-      "name": "tested",
-      "_circ": -1,
-      "_enabled": false,
-      "ctype": "base",
-      "hasDuplicatedCirc": false,
-      "roleType": "other",
-      "roleFam": "other"
-    },
     "testedFixture": {
-      "name": "testedFixture",
       "ftype": "base",
-      "globalValue": 0,
-      "channels": [
+      "pchannels": [
         {
-          "name": "tested",
           "_circ": -1,
-          "_enabled": false,
-          "ctype": "base",
-          "hasDuplicatedCirc": false,
-          "roleType": "other",
-          "roleFam": "other"
+          "name": "tested"
         }
       ],
-      "_baseCirc": 0
+      "pdimmerValue": 0,
+      "_baseCirc": 0,
+      "name": "testedFixture"
     },
     "driverName": "none",
     "fixtures": {
-      "PAR": {
-        "name": "PAR",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
-          {
-            "name": "dim",
-            "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
-          }
-        ],
-        "_baseCirc": 1
-      },
-      "PAR 1": {
-        "name": "PAR 1",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
-          {
-            "name": "dim",
-            "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
-          }
-        ],
-        "_baseCirc": 2
-      },
-      "PAR 2": {
-        "name": "PAR 2",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
-          {
-            "name": "dim",
-            "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
-          }
-        ],
-        "_baseCirc": 3
-      },
       "PAR:default": {
-        "name": "PAR:default",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 4
+        "pdimmerValue": 0,
+        "_baseCirc": 0,
+        "name": "PAR:default"
       },
       "PAR:default 1": {
-        "name": "PAR:default 1",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 20
+        "pdimmerValue": 0,
+        "_baseCirc": 1,
+        "name": "PAR:default 1"
       },
       "PAR:default 2": {
-        "name": "PAR:default 2",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 21
+        "pdimmerValue": 0,
+        "_baseCirc": 2,
+        "name": "PAR:default 2"
       },
       "PAR:default 3": {
-        "name": "PAR:default 3",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 22
+        "pdimmerValue": 0,
+        "_baseCirc": 3,
+        "name": "PAR:default 3"
       },
       "PAR:default 4": {
-        "name": "PAR:default 4",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 23
+        "pdimmerValue": 0,
+        "_baseCirc": 4,
+        "name": "PAR:default 4"
       },
       "PAR:default 5": {
-        "name": "PAR:default 5",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 24
+        "pdimmerValue": 0,
+        "_baseCirc": 5,
+        "name": "PAR:default 5"
       },
       "PAR:default 6": {
-        "name": "PAR:default 6",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 25
+        "pdimmerValue": 0,
+        "_baseCirc": 6,
+        "name": "PAR:default 6"
       },
       "PAR:default 7": {
-        "name": "PAR:default 7",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 26
+        "pdimmerValue": 0,
+        "_baseCirc": 7,
+        "name": "PAR:default 7"
       },
       "PAR:default 8": {
-        "name": "PAR:default 8",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 27
+        "pdimmerValue": 0,
+        "_baseCirc": 8,
+        "name": "PAR:default 8"
       },
       "PAR:default 9": {
-        "name": "PAR:default 9",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 28
+        "pdimmerValue": 0,
+        "_baseCirc": 9,
+        "name": "PAR:default 9"
       },
       "PAR:default 10": {
-        "name": "PAR:default 10",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 29
+        "pdimmerValue": 0,
+        "_baseCirc": 10,
+        "name": "PAR:default 10"
       },
       "PAR:default 11": {
-        "name": "PAR:default 11",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 30
+        "pdimmerValue": 0,
+        "_baseCirc": 11,
+        "name": "PAR:default 11"
       },
       "PAR:default 12": {
-        "name": "PAR:default 12",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 31
+        "pdimmerValue": 0,
+        "_baseCirc": 12,
+        "name": "PAR:default 12"
       },
       "PAR:default 13": {
-        "name": "PAR:default 13",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 32
+        "pdimmerValue": 0,
+        "_baseCirc": 13,
+        "name": "PAR:default 13"
       },
       "PAR:default 14": {
-        "name": "PAR:default 14",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 33
+        "pdimmerValue": 0,
+        "_baseCirc": 14,
+        "name": "PAR:default 14"
       },
       "PAR:default 15": {
-        "name": "PAR:default 15",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 34
+        "pdimmerValue": 0,
+        "_baseCirc": 15,
+        "name": "PAR:default 15"
       },
       "PAR:default 16": {
-        "name": "PAR:default 16",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 35
+        "pdimmerValue": 0,
+        "_baseCirc": 16,
+        "name": "PAR:default 16"
       },
       "PAR:default 17": {
-        "name": "PAR:default 17",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 36
+        "pdimmerValue": 0,
+        "_baseCirc": 17,
+        "name": "PAR:default 17"
       },
       "PAR:default 18": {
-        "name": "PAR:default 18",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 37
+        "pdimmerValue": 0,
+        "_baseCirc": 18,
+        "name": "PAR:default 18"
       },
       "PAR:default 19": {
-        "name": "PAR:default 19",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 38
+        "pdimmerValue": 0,
+        "_baseCirc": 19,
+        "name": "PAR:default 19"
       },
       "PAR:default 20": {
-        "name": "PAR:default 20",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 39
+        "pdimmerValue": 0,
+        "_baseCirc": 20,
+        "name": "PAR:default 20"
       },
       "PAR:default 21": {
-        "name": "PAR:default 21",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 40
+        "pdimmerValue": 0,
+        "_baseCirc": 21,
+        "name": "PAR:default 21"
       },
       "PAR:default 22": {
-        "name": "PAR:default 22",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 41
+        "pdimmerValue": 0,
+        "_baseCirc": 22,
+        "name": "PAR:default 22"
       },
       "PAR:default 23": {
-        "name": "PAR:default 23",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 42
+        "pdimmerValue": 0,
+        "_baseCirc": 23,
+        "name": "PAR:default 23"
       },
       "PAR:default 24": {
-        "name": "PAR:default 24",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 43
+        "pdimmerValue": 0,
+        "_baseCirc": 24,
+        "name": "PAR:default 24"
       },
       "PAR:default 25": {
-        "name": "PAR:default 25",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 44
+        "pdimmerValue": 0,
+        "_baseCirc": 25,
+        "name": "PAR:default 25"
       },
       "PAR:default 26": {
-        "name": "PAR:default 26",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 45
+        "pdimmerValue": 0,
+        "_baseCirc": 26,
+        "name": "PAR:default 26"
       },
       "PAR:default 27": {
-        "name": "PAR:default 27",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 46
+        "pdimmerValue": 0,
+        "_baseCirc": 27,
+        "name": "PAR:default 27"
       },
       "PAR:default 28": {
-        "name": "PAR:default 28",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 47
+        "pdimmerValue": 0,
+        "_baseCirc": 28,
+        "name": "PAR:default 28"
       },
       "PAR:default 29": {
-        "name": "PAR:default 29",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 48
+        "pdimmerValue": 0,
+        "_baseCirc": 29,
+        "name": "PAR:default 29"
       },
       "PAR:default 30": {
-        "name": "PAR:default 30",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 49
+        "pdimmerValue": 0,
+        "_baseCirc": 30,
+        "name": "PAR:default 30"
       },
       "PAR:default 31": {
-        "name": "PAR:default 31",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 50
+        "pdimmerValue": 0,
+        "_baseCirc": 31,
+        "name": "PAR:default 31"
       },
       "PAR:default 32": {
-        "name": "PAR:default 32",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 51
+        "pdimmerValue": 0,
+        "_baseCirc": 32,
+        "name": "PAR:default 32"
       },
       "PAR:default 33": {
-        "name": "PAR:default 33",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 52
+        "pdimmerValue": 0,
+        "_baseCirc": 33,
+        "name": "PAR:default 33"
       },
       "PAR:default 34": {
-        "name": "PAR:default 34",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 53
+        "pdimmerValue": 0,
+        "_baseCirc": 34,
+        "name": "PAR:default 34"
       },
       "PAR:default 35": {
-        "name": "PAR:default 35",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 54
+        "pdimmerValue": 0,
+        "_baseCirc": 35,
+        "name": "PAR:default 35"
       },
       "PAR:default 36": {
-        "name": "PAR:default 36",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 55
+        "pdimmerValue": 0,
+        "_baseCirc": 36,
+        "name": "PAR:default 36"
       },
       "PAR:default 37": {
-        "name": "PAR:default 37",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 56
+        "pdimmerValue": 0,
+        "_baseCirc": 37,
+        "name": "PAR:default 37"
       },
       "PAR:default 38": {
-        "name": "PAR:default 38",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 57
+        "pdimmerValue": 0,
+        "_baseCirc": 38,
+        "name": "PAR:default 38"
       },
       "PAR:default 39": {
-        "name": "PAR:default 39",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 58
+        "pdimmerValue": 0,
+        "_baseCirc": 39,
+        "name": "PAR:default 39"
       },
       "PAR:default 40": {
-        "name": "PAR:default 40",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 59
+        "pdimmerValue": 0,
+        "_baseCirc": 40,
+        "name": "PAR:default 40"
       },
       "PAR:default 41": {
-        "name": "PAR:default 41",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 60
+        "pdimmerValue": 0,
+        "_baseCirc": 41,
+        "name": "PAR:default 41"
       },
       "PAR:default 42": {
-        "name": "PAR:default 42",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 61
+        "pdimmerValue": 0,
+        "_baseCirc": 42,
+        "name": "PAR:default 42"
       },
       "PAR:default 43": {
-        "name": "PAR:default 43",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 62
+        "pdimmerValue": 0,
+        "_baseCirc": 43,
+        "name": "PAR:default 43"
       },
       "PAR:default 44": {
-        "name": "PAR:default 44",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 63
+        "pdimmerValue": 0,
+        "_baseCirc": 44,
+        "name": "PAR:default 44"
       },
       "PAR:default 45": {
-        "name": "PAR:default 45",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 64
+        "pdimmerValue": 0,
+        "_baseCirc": 45,
+        "name": "PAR:default 45"
       },
       "PAR:default 46": {
-        "name": "PAR:default 46",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 65
+        "pdimmerValue": 0,
+        "_baseCirc": 46,
+        "name": "PAR:default 46"
       },
       "PAR:default 47": {
-        "name": "PAR:default 47",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 66
+        "pdimmerValue": 0,
+        "_baseCirc": 47,
+        "name": "PAR:default 47"
       },
       "PAR:default 48": {
-        "name": "PAR:default 48",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 67
+        "pdimmerValue": 0,
+        "_baseCirc": 48,
+        "name": "PAR:default 48"
       },
       "PAR:default 49": {
-        "name": "PAR:default 49",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 68
+        "pdimmerValue": 0,
+        "_baseCirc": 49,
+        "name": "PAR:default 49"
       },
       "PAR:default 50": {
-        "name": "PAR:default 50",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 69
+        "pdimmerValue": 0,
+        "_baseCirc": 50,
+        "name": "PAR:default 50"
       },
       "PAR:default 51": {
-        "name": "PAR:default 51",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 70
+        "pdimmerValue": 0,
+        "_baseCirc": 51,
+        "name": "PAR:default 51"
       },
       "PAR:default 52": {
-        "name": "PAR:default 52",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 71
+        "pdimmerValue": 0,
+        "_baseCirc": 52,
+        "name": "PAR:default 52"
       },
       "PAR:default 53": {
-        "name": "PAR:default 53",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 72
+        "pdimmerValue": 0,
+        "_baseCirc": 53,
+        "name": "PAR:default 53"
       },
       "PAR:default 54": {
-        "name": "PAR:default 54",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 73
+        "pdimmerValue": 0,
+        "_baseCirc": 54,
+        "name": "PAR:default 54"
       },
       "PAR:default 55": {
-        "name": "PAR:default 55",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 74
+        "pdimmerValue": 0,
+        "_baseCirc": 55,
+        "name": "PAR:default 55"
       },
       "PAR:default 56": {
-        "name": "PAR:default 56",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 75
+        "pdimmerValue": 0,
+        "_baseCirc": 56,
+        "name": "PAR:default 56"
       },
       "PAR:default 57": {
-        "name": "PAR:default 57",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 76
+        "pdimmerValue": 0,
+        "_baseCirc": 57,
+        "name": "PAR:default 57"
       },
       "PAR:default 58": {
-        "name": "PAR:default 58",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 77
+        "pdimmerValue": 0,
+        "_baseCirc": 58,
+        "name": "PAR:default 58"
       },
       "PAR:default 59": {
-        "name": "PAR:default 59",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 78
+        "pdimmerValue": 0,
+        "_baseCirc": 59,
+        "name": "PAR:default 59"
       },
       "PAR:default 60": {
-        "name": "PAR:default 60",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 79
+        "pdimmerValue": 0,
+        "_baseCirc": 60,
+        "name": "PAR:default 60"
       },
       "PAR:default 61": {
-        "name": "PAR:default 61",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 80
+        "pdimmerValue": 0,
+        "_baseCirc": 61,
+        "name": "PAR:default 61"
       },
       "PAR:default 62": {
-        "name": "PAR:default 62",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 81
+        "pdimmerValue": 0,
+        "_baseCirc": 62,
+        "name": "PAR:default 62"
       },
       "PAR:default 63": {
-        "name": "PAR:default 63",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 82
+        "pdimmerValue": 0,
+        "_baseCirc": 63,
+        "name": "PAR:default 63"
       },
       "PAR:default 64": {
-        "name": "PAR:default 64",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 83
+        "pdimmerValue": 0,
+        "_baseCirc": 64,
+        "name": "PAR:default 64"
       },
       "PAR:default 65": {
-        "name": "PAR:default 65",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 84
+        "pdimmerValue": 0,
+        "_baseCirc": 65,
+        "name": "PAR:default 65"
       },
       "PAR:default 66": {
-        "name": "PAR:default 66",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 85
+        "pdimmerValue": 0,
+        "_baseCirc": 66,
+        "name": "PAR:default 66"
       },
       "PAR:default 67": {
-        "name": "PAR:default 67",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 86
+        "pdimmerValue": 0,
+        "_baseCirc": 67,
+        "name": "PAR:default 67"
       },
       "PAR:default 68": {
-        "name": "PAR:default 68",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 87
+        "pdimmerValue": 0,
+        "_baseCirc": 68,
+        "name": "PAR:default 68"
       },
       "PAR:default 69": {
-        "name": "PAR:default 69",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 88
+        "pdimmerValue": 0,
+        "_baseCirc": 69,
+        "name": "PAR:default 69"
       },
       "PAR:default 70": {
-        "name": "PAR:default 70",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 89
+        "pdimmerValue": 0,
+        "_baseCirc": 70,
+        "name": "PAR:default 70"
       },
       "PAR:default 71": {
-        "name": "PAR:default 71",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 90
+        "pdimmerValue": 0,
+        "_baseCirc": 71,
+        "name": "PAR:default 71"
       },
       "PAR:default 72": {
-        "name": "PAR:default 72",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 91
+        "pdimmerValue": 0,
+        "_baseCirc": 72,
+        "name": "PAR:default 72"
       },
       "PAR:default 73": {
-        "name": "PAR:default 73",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 92
+        "pdimmerValue": 0,
+        "_baseCirc": 73,
+        "name": "PAR:default 73"
       },
       "PAR:default 74": {
-        "name": "PAR:default 74",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 93
+        "pdimmerValue": 0,
+        "_baseCirc": 74,
+        "name": "PAR:default 74"
       },
       "PAR:default 75": {
-        "name": "PAR:default 75",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 94
+        "pdimmerValue": 0,
+        "_baseCirc": 75,
+        "name": "PAR:default 75"
       },
       "PAR:default 76": {
-        "name": "PAR:default 76",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 95
+        "pdimmerValue": 0,
+        "_baseCirc": 76,
+        "name": "PAR:default 76"
       },
       "PAR:default 77": {
-        "name": "PAR:default 77",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 96
+        "pdimmerValue": 0,
+        "_baseCirc": 77,
+        "name": "PAR:default 77"
       },
       "PAR:default 78": {
-        "name": "PAR:default 78",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 97
+        "pdimmerValue": 0,
+        "_baseCirc": 78,
+        "name": "PAR:default 78"
       },
       "PAR:default 79": {
-        "name": "PAR:default 79",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 98
+        "pdimmerValue": 0,
+        "_baseCirc": 79,
+        "name": "PAR:default 79"
       },
       "PAR:default 80": {
-        "name": "PAR:default 80",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 99
+        "pdimmerValue": 0,
+        "_baseCirc": 80,
+        "name": "PAR:default 80"
       },
       "PAR:default 81": {
-        "name": "PAR:default 81",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 100
+        "pdimmerValue": 0,
+        "_baseCirc": 81,
+        "name": "PAR:default 81"
       },
       "PAR:default 82": {
-        "name": "PAR:default 82",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 101
+        "pdimmerValue": 0,
+        "_baseCirc": 82,
+        "name": "PAR:default 82"
       },
       "PAR:default 83": {
-        "name": "PAR:default 83",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 102
+        "pdimmerValue": 0,
+        "_baseCirc": 83,
+        "name": "PAR:default 83"
       },
       "PAR:default 84": {
-        "name": "PAR:default 84",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 103
+        "pdimmerValue": 0,
+        "_baseCirc": 84,
+        "name": "PAR:default 84"
       },
       "PAR:default 85": {
-        "name": "PAR:default 85",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 104
+        "pdimmerValue": 0,
+        "_baseCirc": 85,
+        "name": "PAR:default 85"
       },
       "PAR:default 86": {
-        "name": "PAR:default 86",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 105
+        "pdimmerValue": 0,
+        "_baseCirc": 86,
+        "name": "PAR:default 86"
       },
       "PAR:default 87": {
-        "name": "PAR:default 87",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 106
+        "pdimmerValue": 0,
+        "_baseCirc": 87,
+        "name": "PAR:default 87"
       },
       "PAR:default 88": {
-        "name": "PAR:default 88",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 107
+        "pdimmerValue": 0,
+        "_baseCirc": 88,
+        "name": "PAR:default 88"
       },
       "PAR:default 89": {
-        "name": "PAR:default 89",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 108
+        "pdimmerValue": 0,
+        "_baseCirc": 89,
+        "name": "PAR:default 89"
       },
       "PAR:default 90": {
-        "name": "PAR:default 90",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 109
+        "pdimmerValue": 0,
+        "_baseCirc": 90,
+        "name": "PAR:default 90"
       },
       "PAR:default 91": {
-        "name": "PAR:default 91",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 110
+        "pdimmerValue": 0,
+        "_baseCirc": 91,
+        "name": "PAR:default 91"
       },
       "PAR:default 92": {
-        "name": "PAR:default 92",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 111
+        "pdimmerValue": 0,
+        "_baseCirc": 92,
+        "name": "PAR:default 92"
       },
       "PAR:default 93": {
-        "name": "PAR:default 93",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 112
+        "pdimmerValue": 0,
+        "_baseCirc": 93,
+        "name": "PAR:default 93"
       },
       "PAR:default 94": {
-        "name": "PAR:default 94",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 113
+        "pdimmerValue": 0,
+        "_baseCirc": 94,
+        "name": "PAR:default 94"
       },
       "PAR:default 95": {
-        "name": "PAR:default 95",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 114
+        "pdimmerValue": 0,
+        "_baseCirc": 95,
+        "name": "PAR:default 95"
       },
       "PAR:default 96": {
-        "name": "PAR:default 96",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 115
+        "pdimmerValue": 0,
+        "_baseCirc": 96,
+        "name": "PAR:default 96"
       },
       "PAR:default 97": {
-        "name": "PAR:default 97",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 116
+        "pdimmerValue": 0,
+        "_baseCirc": 97,
+        "name": "PAR:default 97"
       },
       "PAR:default 98": {
-        "name": "PAR:default 98",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 117
+        "pdimmerValue": 0,
+        "_baseCirc": 98,
+        "name": "PAR:default 98"
       },
       "PAR:default 99": {
-        "name": "PAR:default 99",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 118
+        "pdimmerValue": 0,
+        "_baseCirc": 99,
+        "name": "PAR:default 99"
       },
       "PAR:default 100": {
-        "name": "PAR:default 100",
-        "ftype": "base",
-        "globalValue": 0,
-        "channels": [
+        "ftype": "PAR:default",
+        "pchannels": [
           {
-            "name": "dim",
             "_circ": 0,
-            "_enabled": true,
-            "ctype": "base",
-            "hasDuplicatedCirc": false,
-            "roleType": "dimmer",
-            "roleFam": "dim"
+            "name": "dim"
           }
         ],
-        "_baseCirc": 119
+        "pdimmerValue": 0,
+        "_baseCirc": 100,
+        "name": "PAR:default 100"
+      },
+      "PAR:default 101": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 101,
+        "name": "PAR:default 101"
+      },
+      "PAR:default 102": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 102,
+        "name": "PAR:default 102"
+      },
+      "PAR:default 103": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 103,
+        "name": "PAR:default 103"
+      },
+      "PAR:default 104": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 104,
+        "name": "PAR:default 104"
+      },
+      "PAR:default 105": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 105,
+        "name": "PAR:default 105"
+      },
+      "PAR:default 106": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 106,
+        "name": "PAR:default 106"
+      },
+      "PAR:default 107": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 107,
+        "name": "PAR:default 107"
+      },
+      "PAR:default 108": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 108,
+        "name": "PAR:default 108"
+      },
+      "PAR:default 109": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 109,
+        "name": "PAR:default 109"
+      },
+      "PAR:default 110": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 110,
+        "name": "PAR:default 110"
+      },
+      "PAR:default 111": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 111,
+        "name": "PAR:default 111"
+      },
+      "PAR:default 112": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 112,
+        "name": "PAR:default 112"
+      },
+      "PAR:default 113": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 113,
+        "name": "PAR:default 113"
+      },
+      "PAR:default 114": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 114,
+        "name": "PAR:default 114"
+      },
+      "PAR:default 115": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 115,
+        "name": "PAR:default 115"
+      },
+      "PAR:default 116": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 116,
+        "name": "PAR:default 116"
+      },
+      "PAR:default 117": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 117,
+        "name": "PAR:default 117"
+      },
+      "PAR:default 118": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 118,
+        "name": "PAR:default 118"
+      },
+      "PAR:default 119": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 119,
+        "name": "PAR:default 119"
+      },
+      "PAR:default 120": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 120,
+        "name": "PAR:default 120"
+      },
+      "PAR:default 121": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 121,
+        "name": "PAR:default 121"
+      },
+      "PAR:default 122": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 122,
+        "name": "PAR:default 122"
+      },
+      "PAR:default 123": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 123,
+        "name": "PAR:default 123"
+      },
+      "PAR:default 124": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 124,
+        "name": "PAR:default 124"
+      },
+      "PAR:default 125": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 125,
+        "name": "PAR:default 125"
+      },
+      "PAR:default 126": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 126,
+        "name": "PAR:default 126"
+      },
+      "PAR:default 127": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 127,
+        "name": "PAR:default 127"
+      },
+      "PAR:default 128": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 128,
+        "name": "PAR:default 128"
+      },
+      "PAR:default 129": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 129,
+        "name": "PAR:default 129"
+      },
+      "PAR:default 130": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 130,
+        "name": "PAR:default 130"
+      },
+      "PAR:default 131": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 131,
+        "name": "PAR:default 131"
+      },
+      "PAR:default 132": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 132,
+        "name": "PAR:default 132"
+      },
+      "PAR:default 133": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 133,
+        "name": "PAR:default 133"
+      },
+      "PAR:default 134": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 134,
+        "name": "PAR:default 134"
+      },
+      "PAR:default 135": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 135,
+        "name": "PAR:default 135"
+      },
+      "PAR:default 136": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 136,
+        "name": "PAR:default 136"
+      },
+      "PAR:default 137": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 137,
+        "name": "PAR:default 137"
+      },
+      "PAR:default 138": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 138,
+        "name": "PAR:default 138"
+      },
+      "PAR:default 139": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 139,
+        "name": "PAR:default 139"
+      },
+      "PAR:default 140": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 140,
+        "name": "PAR:default 140"
+      },
+      "PAR:default 141": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 141,
+        "name": "PAR:default 141"
+      },
+      "PAR:default 142": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 142,
+        "name": "PAR:default 142"
+      },
+      "PAR:default 143": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 143,
+        "name": "PAR:default 143"
+      },
+      "PAR:default 144": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 144,
+        "name": "PAR:default 144"
+      },
+      "PAR:default 145": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 145,
+        "name": "PAR:default 145"
+      },
+      "PAR:default 146": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 146,
+        "name": "PAR:default 146"
+      },
+      "PAR:default 147": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 147,
+        "name": "PAR:default 147"
+      },
+      "PAR:default 148": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 148,
+        "name": "PAR:default 148"
+      },
+      "PAR:default 149": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 149,
+        "name": "PAR:default 149"
+      },
+      "PAR:default 150": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 150,
+        "name": "PAR:default 150"
+      },
+      "PAR:default 151": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 151,
+        "name": "PAR:default 151"
+      },
+      "PAR:default 152": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 152,
+        "name": "PAR:default 152"
+      },
+      "PAR:default 153": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 153,
+        "name": "PAR:default 153"
+      },
+      "PAR:default 154": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 154,
+        "name": "PAR:default 154"
+      },
+      "PAR:default 155": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 155,
+        "name": "PAR:default 155"
+      },
+      "PAR:default 156": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 156,
+        "name": "PAR:default 156"
+      },
+      "PAR:default 157": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 157,
+        "name": "PAR:default 157"
+      },
+      "PAR:default 158": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 158,
+        "name": "PAR:default 158"
+      },
+      "PAR:default 159": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 159,
+        "name": "PAR:default 159"
+      },
+      "PAR:default 160": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 160,
+        "name": "PAR:default 160"
+      },
+      "PAR:default 161": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 161,
+        "name": "PAR:default 161"
+      },
+      "PAR:default 162": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 162,
+        "name": "PAR:default 162"
+      },
+      "PAR:default 163": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 163,
+        "name": "PAR:default 163"
+      },
+      "PAR:default 164": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 164,
+        "name": "PAR:default 164"
+      },
+      "PAR:default 165": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 165,
+        "name": "PAR:default 165"
+      },
+      "PAR:default 166": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 166,
+        "name": "PAR:default 166"
+      },
+      "PAR:default 167": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 167,
+        "name": "PAR:default 167"
+      },
+      "PAR:default 168": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 168,
+        "name": "PAR:default 168"
+      },
+      "PAR:default 169": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 169,
+        "name": "PAR:default 169"
+      },
+      "PAR:default 170": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 170,
+        "name": "PAR:default 170"
+      },
+      "PAR:default 171": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 171,
+        "name": "PAR:default 171"
+      },
+      "PAR:default 172": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 172,
+        "name": "PAR:default 172"
+      },
+      "PAR:default 173": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 173,
+        "name": "PAR:default 173"
+      },
+      "PAR:default 174": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 174,
+        "name": "PAR:default 174"
+      },
+      "PAR:default 175": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 175,
+        "name": "PAR:default 175"
+      },
+      "PAR:default 176": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 176,
+        "name": "PAR:default 176"
+      },
+      "PAR:default 177": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 177,
+        "name": "PAR:default 177"
+      },
+      "PAR:default 178": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 178,
+        "name": "PAR:default 178"
+      },
+      "PAR:default 179": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 179,
+        "name": "PAR:default 179"
+      },
+      "PAR:default 180": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 180,
+        "name": "PAR:default 180"
+      },
+      "PAR:default 181": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 181,
+        "name": "PAR:default 181"
+      },
+      "PAR:default 182": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 182,
+        "name": "PAR:default 182"
+      },
+      "PAR:default 183": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 183,
+        "name": "PAR:default 183"
+      },
+      "PAR:default 184": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 184,
+        "name": "PAR:default 184"
+      },
+      "PAR:default 185": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 185,
+        "name": "PAR:default 185"
+      },
+      "PAR:default 186": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 186,
+        "name": "PAR:default 186"
+      },
+      "PAR:default 187": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 187,
+        "name": "PAR:default 187"
+      },
+      "PAR:default 188": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 188,
+        "name": "PAR:default 188"
+      },
+      "PAR:default 189": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 189,
+        "name": "PAR:default 189"
+      },
+      "PAR:default 190": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 190,
+        "name": "PAR:default 190"
+      },
+      "PAR:default 191": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 191,
+        "name": "PAR:default 191"
+      },
+      "PAR:default 192": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 192,
+        "name": "PAR:default 192"
+      },
+      "PAR:default 193": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 193,
+        "name": "PAR:default 193"
+      },
+      "PAR:default 194": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 194,
+        "name": "PAR:default 194"
+      },
+      "PAR:default 195": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 195,
+        "name": "PAR:default 195"
+      },
+      "PAR:default 196": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 196,
+        "name": "PAR:default 196"
+      },
+      "PAR:default 197": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 197,
+        "name": "PAR:default 197"
+      },
+      "PAR:default 198": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 198,
+        "name": "PAR:default 198"
+      },
+      "PAR:default 199": {
+        "ftype": "PAR:default",
+        "pchannels": [
+          {
+            "_circ": 0,
+            "name": "dim"
+          }
+        ],
+        "pdimmerValue": 0,
+        "_baseCirc": 199,
+        "name": "PAR:default 199"
       }
     },
     "groups": {},
@@ -1803,2279 +2421,172 @@
   "sequenceList": {
     "list": [
       {
-        "name": "gdfsfq",
-        "timeIn": 10,
+        "timeIn": 0,
         "hold": 0,
         "timeOut": 0,
-        "stateName": "cu"
+        "stateName": "__full",
+        "doNotPrepareNext": false,
+        "name": "Full"
       },
       {
-        "name": "gfdsq",
-        "timeIn": 10,
+        "timeIn": 1,
         "hold": 0,
         "timeOut": 0,
-        "stateName": "nocu"
+        "stateName": "Right",
+        "doNotPrepareNext": false,
+        "name": "Right"
       },
       {
-        "name": "fgds.",
         "timeIn": 10,
         "hold": 0,
         "timeOut": 0,
-        "stateName": "__full"
+        "stateName": "Left",
+        "doNotPrepareNext": false,
+        "name": "Left"
       },
       {
-        "name": "dfs.",
-        "timeIn": 10,
+        "timeIn": 2,
         "hold": 0,
         "timeOut": 0,
-        "stateName": "__black"
+        "stateName": "noir",
+        "doNotPrepareNext": false,
+        "name": "vert"
       }
     ]
   },
   "sequencePlayer": {
-    "curSeq": {
-      "name": "black",
-      "timeIn": 0,
-      "hold": 0,
-      "timeOut": 0,
-      "stateName": "__black"
-    },
-    "nextSeq": {
-      "name": "black",
-      "timeIn": 0,
-      "hold": 0,
-      "timeOut": 0,
-      "stateName": "__black"
-    },
+    "pctDone": 0,
     "playState": "stopped",
     "pcurPlayedIdx": -1,
     "pisPlaying": false
   },
   "globalTransport": {
     "_bpm": 60,
-    "_time": 975522,
+    "_time": 0,
     "_isPlaying": false
   },
-  "curveStore": [
-    {
-      "name": "dim",
-      "uid": "5074",
-      "span": 1000,
-      "_frames": [
-        {
-          "_position": 0,
-          "_value": 0,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 1000,
-          "_value": 1,
-          "_easing": {
-            "etype": "l"
-          }
-        }
-      ]
-    },
-    {
-      "name": "dim",
-      "uid": "7731",
-      "span": 1000,
-      "_frames": [
-        {
-          "_position": 0,
-          "_value": 0,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 1000,
-          "_value": 1,
-          "_easing": {
-            "etype": "l"
-          }
-        }
-      ]
-    },
-    {
-      "name": "dim",
-      "uid": "e41c",
-      "span": 1000,
-      "_frames": [
-        {
-          "_position": 0,
-          "_value": 0,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 307.1500503524673,
-          "_value": 0.6997742663656885,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 1000,
-          "_value": 1,
-          "_easing": {
-            "etype": "l"
-          }
-        }
-      ]
-    },
-    {
-      "name": "dim",
-      "uid": "e109",
-      "span": 1000,
-      "_frames": [
-        {
-          "_position": 0,
-          "_value": 0,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 832.8298086606244,
-          "_value": 0.2528216704288939,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 1000,
-          "_value": 1,
-          "_easing": {
-            "etype": "l"
-          }
-        }
-      ]
-    },
-    {
-      "name": "dim",
-      "uid": "631d",
-      "span": 1000,
-      "_frames": [
-        {
-          "_position": 0,
-          "_value": 0,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 1000,
-          "_value": 1,
-          "_easing": {
-            "etype": "l"
-          }
-        }
-      ]
-    },
-    {
-      "name": "dim",
-      "uid": "fc3e",
-      "span": 1000,
-      "_frames": [
-        {
-          "_position": 0,
-          "_value": 0,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 1000,
-          "_value": 1,
-          "_easing": {
-            "etype": "l"
-          }
-        }
-      ]
-    },
-    {
-      "name": "dim",
-      "uid": "8a4d",
-      "span": 1000,
-      "_frames": [
-        {
-          "_position": 0,
-          "_value": 0,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 1000,
-          "_value": 1,
-          "_easing": {
-            "etype": "l"
-          }
-        }
-      ]
-    },
-    {
-      "name": "dim",
-      "uid": "27db",
-      "span": 1000,
-      "_frames": [
-        {
-          "_position": 0,
-          "_value": 0,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 1000,
-          "_value": 1,
-          "_easing": {
-            "etype": "l"
-          }
-        }
-      ]
-    },
-    {
-      "name": "dim",
-      "uid": "addb",
-      "span": 1000,
-      "_frames": [
-        {
-          "_position": 0,
-          "_value": 0,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 1000,
-          "_value": 1,
-          "_easing": {
-            "etype": "l"
-          }
-        }
-      ]
-    },
-    {
-      "name": "dim",
-      "uid": "241e",
-      "span": 1000,
-      "_frames": [
-        {
-          "_position": 0,
-          "_value": 0,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 1000,
-          "_value": 1,
-          "_easing": {
-            "etype": "l"
-          }
-        }
-      ]
-    },
-    {
-      "name": "dim",
-      "uid": "050a",
-      "span": 1000,
-      "_frames": [
-        {
-          "_position": 0,
-          "_value": 0,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 1000,
-          "_value": 1,
-          "_easing": {
-            "etype": "l"
-          }
-        }
-      ]
-    },
-    {
-      "name": "dim",
-      "uid": "888a",
-      "span": 1000,
-      "_frames": [
-        {
-          "_position": 0,
-          "_value": 0,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 1000,
-          "_value": 1,
-          "_easing": {
-            "etype": "l"
-          }
-        }
-      ]
-    },
-    {
-      "name": "dim",
-      "uid": "f009",
-      "span": 1000,
-      "_frames": [
-        {
-          "_position": 0,
-          "_value": 0,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 1000,
-          "_value": 1,
-          "_easing": {
-            "etype": "l"
-          }
-        }
-      ]
-    },
-    {
-      "name": "dim",
-      "uid": "bba4",
-      "span": 1000,
-      "_frames": [
-        {
-          "_position": 0,
-          "_value": 0,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 1000,
-          "_value": 1,
-          "_easing": {
-            "etype": "l"
-          }
-        }
-      ]
-    },
-    {
-      "name": "dim",
-      "uid": "fd6b",
-      "span": 1000,
-      "_frames": [
-        {
-          "_position": 0,
-          "_value": 0,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 1000,
-          "_value": 1,
-          "_easing": {
-            "etype": "l"
-          }
-        }
-      ]
-    },
-    {
-      "name": "dim",
-      "uid": "6d17",
-      "span": 1000,
-      "_frames": [
-        {
-          "_position": 0,
-          "_value": 0,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 1000,
-          "_value": 1,
-          "_easing": {
-            "etype": "l"
-          }
-        }
-      ]
-    },
-    {
-      "name": "dim",
-      "uid": "ece2",
-      "span": 1000,
-      "_frames": [
-        {
-          "_position": 0,
-          "_value": 0,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 1000,
-          "_value": 1,
-          "_easing": {
-            "etype": "l"
-          }
-        }
-      ]
-    },
-    {
-      "name": "dim",
-      "uid": "ccfc",
-      "span": 1000,
-      "_frames": [
-        {
-          "_position": 0,
-          "_value": 0,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 1000,
-          "_value": 1,
-          "_easing": {
-            "etype": "l"
-          }
-        }
-      ]
-    },
-    {
-      "name": "dim",
-      "uid": "0888",
-      "span": 1000,
-      "_frames": [
-        {
-          "_position": 0,
-          "_value": 0,
-          "_easing": {
-            "etype": "l"
-          }
-        },
-        {
-          "_position": 1000,
-          "_value": 1,
-          "_easing": {
-            "etype": "l"
-          }
-        }
-      ]
-    }
-  ],
+  "curveStore": [],
   "curvePlayer": {
     "name": "CurvePlayer",
     "curveLinkStore": {
-      "factory": {
-        "cl_PAR:dim_697d": {
-          "uid": "cl_PAR:dim_697d",
-          "pcurve": "e41c",
-          "channel": "PAR:dim",
-          "doLoop": true,
-          "doPause": false,
-          "offset": 0,
-          "startTime": 940092,
-          "pmaster": 1
-        },
-        "cl_PAR 1:dim_6caa": {
-          "uid": "cl_PAR 1:dim_6caa",
-          "pcurve": "e109",
-          "channel": "PAR 1:dim",
-          "doLoop": true,
-          "doPause": false,
-          "offset": 0,
-          "startTime": 32545,
-          "pmaster": 1
-        },
-        "cl_PAR 1:dim_e6d4": {
-          "uid": "cl_PAR 1:dim_e6d4",
-          "pcurve": "5074",
-          "channel": "PAR 1:dim",
-          "doLoop": true,
-          "doPause": false,
-          "offset": 0,
-          "startTime": 940092,
-          "pmaster": 1
-        },
-        "cl_PAR 2:dim_c2a4": {
-          "uid": "cl_PAR 2:dim_c2a4",
-          "pcurve": "631d",
-          "channel": "PAR 2:dim",
-          "doLoop": true,
-          "doPause": true,
-          "offset": 0,
-          "startTime": 940092,
-          "pmaster": 1
-        },
-        "cl_PAR:default:dim_6129": {
-          "uid": "cl_PAR:default:dim_6129",
-          "pcurve": "fc3e",
-          "channel": "PAR:default:dim",
-          "doLoop": true,
-          "doPause": false,
-          "offset": 0,
-          "startTime": 940092,
-          "pmaster": 1
-        },
-        "cl_PAR:default 1:dim_10a1": {
-          "uid": "cl_PAR:default 1:dim_10a1",
-          "pcurve": "8a4d",
-          "channel": "PAR:default 1:dim",
-          "doLoop": true,
-          "doPause": false,
-          "offset": 0,
-          "startTime": 940092,
-          "pmaster": 1
-        },
-        "cl_PAR:default 10:dim_1ab5": {
-          "uid": "cl_PAR:default 10:dim_1ab5",
-          "pcurve": "7731",
-          "channel": "PAR:default 10:dim",
-          "doLoop": true,
-          "doPause": false,
-          "offset": 0,
-          "startTime": 940092,
-          "pmaster": 1
-        },
-        "cl_PAR:default 100:dim_fc9c": {
-          "uid": "cl_PAR:default 100:dim_fc9c",
-          "pcurve": "27db",
-          "channel": "PAR:default 100:dim",
-          "doLoop": true,
-          "doPause": false,
-          "offset": 0,
-          "startTime": 940092,
-          "pmaster": 1
-        },
-        "cl_PAR:default 11:dim_d992": {
-          "uid": "cl_PAR:default 11:dim_d992",
-          "pcurve": "addb",
-          "channel": "PAR:default 11:dim",
-          "doLoop": true,
-          "doPause": false,
-          "offset": 0,
-          "startTime": 940092,
-          "pmaster": 1
-        },
-        "cl_PAR:default 12:dim_ff63": {
-          "uid": "cl_PAR:default 12:dim_ff63",
-          "pcurve": "241e",
-          "channel": "PAR:default 12:dim",
-          "doLoop": true,
-          "doPause": false,
-          "offset": 0,
-          "startTime": 940092,
-          "pmaster": 1
-        },
-        "cl_PAR:default 13:dim_db1a": {
-          "uid": "cl_PAR:default 13:dim_db1a",
-          "pcurve": "050a",
-          "channel": "PAR:default 13:dim",
-          "doLoop": true,
-          "doPause": false,
-          "offset": 0,
-          "startTime": 940092,
-          "pmaster": 1
-        },
-        "cl_PAR:default 14:dim_4578": {
-          "uid": "cl_PAR:default 14:dim_4578",
-          "pcurve": "888a",
-          "channel": "PAR:default 14:dim",
-          "doLoop": true,
-          "doPause": false,
-          "offset": 0,
-          "startTime": 940092,
-          "pmaster": 1
-        },
-        "cl_PAR:default 15:dim_3a43": {
-          "uid": "cl_PAR:default 15:dim_3a43",
-          "pcurve": "f009",
-          "channel": "PAR:default 15:dim",
-          "doLoop": true,
-          "doPause": false,
-          "offset": 0,
-          "startTime": 940092,
-          "pmaster": 1
-        },
-        "cl_PAR:default 16:dim_a1d6": {
-          "uid": "cl_PAR:default 16:dim_a1d6",
-          "pcurve": "bba4",
-          "channel": "PAR:default 16:dim",
-          "doLoop": true,
-          "doPause": false,
-          "offset": 0,
-          "startTime": 940092,
-          "pmaster": 1
-        },
-        "cl_PAR:default 17:dim_e75d": {
-          "uid": "cl_PAR:default 17:dim_e75d",
-          "pcurve": "fd6b",
-          "channel": "PAR:default 17:dim",
-          "doLoop": true,
-          "doPause": false,
-          "offset": 0,
-          "startTime": 940092,
-          "pmaster": 1
-        },
-        "cl_PAR:default 18:dim_ae55": {
-          "uid": "cl_PAR:default 18:dim_ae55",
-          "pcurve": "6d17",
-          "channel": "PAR:default 18:dim",
-          "doLoop": true,
-          "doPause": false,
-          "offset": 0,
-          "startTime": 940092,
-          "pmaster": 1
-        },
-        "cl_PAR:default 19:dim_7930": {
-          "uid": "cl_PAR:default 19:dim_7930",
-          "pcurve": "ece2",
-          "channel": "PAR:default 19:dim",
-          "doLoop": true,
-          "doPause": false,
-          "offset": 0,
-          "startTime": 940092,
-          "pmaster": 1
-        },
-        "cl_PAR:default 2:dim_8673": {
-          "uid": "cl_PAR:default 2:dim_8673",
-          "pcurve": "ccfc",
-          "channel": "PAR:default 2:dim",
-          "doLoop": true,
-          "doPause": false,
-          "offset": 0,
-          "startTime": 940092,
-          "pmaster": 1
-        },
-        "cl_PAR:default 20:dim_19ac": {
-          "uid": "cl_PAR:default 20:dim_19ac",
-          "pcurve": "0888",
-          "channel": "PAR:default 20:dim",
-          "doLoop": true,
-          "doPause": false,
-          "offset": 0,
-          "startTime": 940092,
-          "pmaster": 1
-        }
-      }
+      "factory": {}
     },
-    "curveLinkRefList": [
-      "cl_PAR:dim_697d",
-      "cl_PAR 1:dim_e6d4",
-      "cl_PAR 2:dim_c2a4",
-      "cl_PAR:default:dim_6129",
-      "cl_PAR:default 1:dim_10a1",
-      "cl_PAR:default 2:dim_8673",
-      "cl_PAR:default 10:dim_1ab5",
-      "cl_PAR:default 11:dim_d992",
-      "cl_PAR:default 12:dim_ff63",
-      "cl_PAR:default 13:dim_db1a",
-      "cl_PAR:default 14:dim_4578",
-      "cl_PAR:default 15:dim_3a43",
-      "cl_PAR:default 16:dim_a1d6",
-      "cl_PAR:default 17:dim_e75d",
-      "cl_PAR:default 18:dim_ae55",
-      "cl_PAR:default 19:dim_7930",
-      "cl_PAR:default 20:dim_19ac",
-      "cl_PAR:default 100:dim_fc9c"
-    ]
+    "curveLinkRefList": []
   },
   "fixtureFactory": {},
   "stateList": {
     "states": {
-      "cu": {
-        "name": "cu",
+      "bleu": {
+        "name": "bleu",
         "full": false,
         "fixtureStates": [
           {
-            "name": "PAR",
-            "pChannelValues": {},
-            "pChannelCurveLinks": {
-              "dim": {
-                "uid": "cl_PAR:dim_697d"
-              }
-            }
-          },
-          {
-            "name": "PAR 1",
+            "pState": {},
+            "name": "amb",
             "pChannelValues": {
-              "dim": 0.1520882845062657
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR 2",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default",
-            "pChannelValues": {
-              "dim": 0
+              "R": 0,
+              "G": 0,
+              "B": 1,
+              "W": 0,
+              "Dim": 1
             },
             "pChannelCurveLinks": {}
           }
         ],
-        "linkedStates": []
+        "linkedStates": [],
+        "actions": {
+          "list": [],
+          "forbiddenNames": []
+        }
       },
-      "cuF": {
-        "name": "cuF",
+      "vert": {
+        "name": "vert",
         "full": false,
         "fixtureStates": [
           {
-            "name": "PAR",
-            "pChannelValues": {},
-            "pChannelCurveLinks": {
-              "dim": {
-                "uid": "cl_PAR:dim_697d"
-              }
-            }
-          },
-          {
-            "name": "PAR 1",
-            "pChannelValues": {},
-            "pChannelCurveLinks": {
-              "dim": {
-                "uid": "cl_PAR 1:dim_e6d4"
-              }
-            }
-          },
-          {
-            "name": "PAR 2",
-            "pChannelValues": {},
-            "pChannelCurveLinks": {
-              "dim": {
-                "uid": "cl_PAR 2:dim_c2a4"
-              }
-            }
-          },
-          {
-            "name": "PAR:default",
-            "pChannelValues": {},
-            "pChannelCurveLinks": {
-              "dim": {
-                "uid": "cl_PAR:default:dim_6129"
-              }
-            }
-          },
-          {
-            "name": "PAR:default 1",
-            "pChannelValues": {},
-            "pChannelCurveLinks": {
-              "dim": {
-                "uid": "cl_PAR:default 1:dim_10a1"
-              }
-            }
-          },
-          {
-            "name": "PAR:default 2",
-            "pChannelValues": {},
-            "pChannelCurveLinks": {
-              "dim": {
-                "uid": "cl_PAR:default 2:dim_8673"
-              }
-            }
-          },
-          {
-            "name": "PAR:default 3",
+            "pState": {},
+            "name": "amb",
             "pChannelValues": {
-              "dim": 0
+              "R": 0,
+              "G": 1,
+              "B": 0,
+              "W": 0
             },
             "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 4",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 5",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 6",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 7",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 8",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 9",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 10",
-            "pChannelValues": {},
-            "pChannelCurveLinks": {
-              "dim": {
-                "uid": "cl_PAR:default 10:dim_1ab5"
-              }
-            }
-          },
-          {
-            "name": "PAR:default 11",
-            "pChannelValues": {},
-            "pChannelCurveLinks": {
-              "dim": {
-                "uid": "cl_PAR:default 11:dim_d992"
-              }
-            }
-          },
-          {
-            "name": "PAR:default 12",
-            "pChannelValues": {},
-            "pChannelCurveLinks": {
-              "dim": {
-                "uid": "cl_PAR:default 12:dim_ff63"
-              }
-            }
-          },
-          {
-            "name": "PAR:default 13",
-            "pChannelValues": {},
-            "pChannelCurveLinks": {
-              "dim": {
-                "uid": "cl_PAR:default 13:dim_db1a"
-              }
-            }
-          },
-          {
-            "name": "PAR:default 14",
-            "pChannelValues": {},
-            "pChannelCurveLinks": {
-              "dim": {
-                "uid": "cl_PAR:default 14:dim_4578"
-              }
-            }
-          },
-          {
-            "name": "PAR:default 15",
-            "pChannelValues": {},
-            "pChannelCurveLinks": {
-              "dim": {
-                "uid": "cl_PAR:default 15:dim_3a43"
-              }
-            }
-          },
-          {
-            "name": "PAR:default 16",
-            "pChannelValues": {},
-            "pChannelCurveLinks": {
-              "dim": {
-                "uid": "cl_PAR:default 16:dim_a1d6"
-              }
-            }
-          },
-          {
-            "name": "PAR:default 17",
-            "pChannelValues": {},
-            "pChannelCurveLinks": {
-              "dim": {
-                "uid": "cl_PAR:default 17:dim_e75d"
-              }
-            }
-          },
-          {
-            "name": "PAR:default 18",
-            "pChannelValues": {},
-            "pChannelCurveLinks": {
-              "dim": {
-                "uid": "cl_PAR:default 18:dim_ae55"
-              }
-            }
-          },
-          {
-            "name": "PAR:default 19",
-            "pChannelValues": {},
-            "pChannelCurveLinks": {
-              "dim": {
-                "uid": "cl_PAR:default 19:dim_7930"
-              }
-            }
-          },
-          {
-            "name": "PAR:default 20",
-            "pChannelValues": {},
-            "pChannelCurveLinks": {
-              "dim": {
-                "uid": "cl_PAR:default 20:dim_19ac"
-              }
-            }
-          },
-          {
-            "name": "PAR:default 21",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 22",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 23",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 24",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 25",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 26",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 27",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 28",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 29",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 30",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 31",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 32",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 33",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 34",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 35",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 36",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 37",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 38",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 39",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 40",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 41",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 42",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 43",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 44",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 45",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 46",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 47",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 48",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 49",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 50",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 51",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 52",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 53",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 54",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 55",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 56",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 57",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 58",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 59",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 60",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 61",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 62",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 63",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 64",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 65",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 66",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 67",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 68",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 69",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 70",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 71",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 72",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 73",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 74",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 75",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 76",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 77",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 78",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 79",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 80",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 81",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 82",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 83",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 84",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 85",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 86",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 87",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 88",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 89",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 90",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 91",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 92",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 93",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 94",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 95",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 96",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 97",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 98",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 99",
-            "pChannelValues": {
-              "dim": 0
-            },
-            "pChannelCurveLinks": {}
-          },
-          {
-            "name": "PAR:default 100",
-            "pChannelValues": {},
-            "pChannelCurveLinks": {
-              "dim": {
-                "uid": "cl_PAR:default 100:dim_fc9c"
-              }
-            }
           }
         ],
-        "linkedStates": []
+        "linkedStates": [],
+        "actions": {
+          "list": [],
+          "forbiddenNames": []
+        }
+      },
+      "rouge": {
+        "name": "rouge",
+        "full": false,
+        "fixtureStates": [
+          {
+            "pState": {},
+            "name": "amb",
+            "pChannelValues": {
+              "R": 1,
+              "G": 0,
+              "B": 0,
+              "W": 0,
+              "Dim": 1
+            },
+            "pChannelCurveLinks": {}
+          }
+        ],
+        "linkedStates": [],
+        "actions": {
+          "list": [],
+          "forbiddenNames": []
+        }
+      },
+      "vert2": {
+        "name": "vert2",
+        "full": false,
+        "fixtureStates": [],
+        "linkedStates": [],
+        "actions": {
+          "list": [],
+          "forbiddenNames": []
+        }
       }
     },
+    "presetableNames": [],
     "currentState": {
       "name": "current",
       "full": true,
       "fixtureStates": [
         {
-          "name": "PAR",
-          "pChannelValues": {},
-          "pChannelCurveLinks": {
-            "dim": {
-              "uid": "cl_PAR:dim_697d"
-            }
-          }
-        },
-        {
-          "name": "PAR 1",
-          "pChannelValues": {},
-          "pChannelCurveLinks": {
-            "dim": {
-              "uid": "cl_PAR 1:dim_e6d4"
-            }
-          }
-        },
-        {
-          "name": "PAR 2",
-          "pChannelValues": {},
-          "pChannelCurveLinks": {
-            "dim": {
-              "uid": "cl_PAR 2:dim_c2a4"
-            }
-          }
-        },
-        {
-          "name": "PAR:default",
-          "pChannelValues": {},
-          "pChannelCurveLinks": {
-            "dim": {
-              "uid": "cl_PAR:default:dim_6129"
-            }
-          }
-        },
-        {
-          "name": "PAR:default 1",
-          "pChannelValues": {},
-          "pChannelCurveLinks": {
-            "dim": {
-              "uid": "cl_PAR:default 1:dim_10a1"
-            }
-          }
-        },
-        {
-          "name": "PAR:default 2",
-          "pChannelValues": {},
-          "pChannelCurveLinks": {
-            "dim": {
-              "uid": "cl_PAR:default 2:dim_8673"
-            }
-          }
-        },
-        {
-          "name": "PAR:default 3",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 4",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 5",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 6",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 7",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 8",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 9",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 10",
-          "pChannelValues": {},
-          "pChannelCurveLinks": {
-            "dim": {
-              "uid": "cl_PAR:default 10:dim_1ab5"
-            }
-          }
-        },
-        {
-          "name": "PAR:default 11",
-          "pChannelValues": {},
-          "pChannelCurveLinks": {
-            "dim": {
-              "uid": "cl_PAR:default 11:dim_d992"
-            }
-          }
-        },
-        {
-          "name": "PAR:default 12",
-          "pChannelValues": {},
-          "pChannelCurveLinks": {
-            "dim": {
-              "uid": "cl_PAR:default 12:dim_ff63"
-            }
-          }
-        },
-        {
-          "name": "PAR:default 13",
-          "pChannelValues": {},
-          "pChannelCurveLinks": {
-            "dim": {
-              "uid": "cl_PAR:default 13:dim_db1a"
-            }
-          }
-        },
-        {
-          "name": "PAR:default 14",
-          "pChannelValues": {},
-          "pChannelCurveLinks": {
-            "dim": {
-              "uid": "cl_PAR:default 14:dim_4578"
-            }
-          }
-        },
-        {
-          "name": "PAR:default 15",
-          "pChannelValues": {},
-          "pChannelCurveLinks": {
-            "dim": {
-              "uid": "cl_PAR:default 15:dim_3a43"
-            }
-          }
-        },
-        {
-          "name": "PAR:default 16",
-          "pChannelValues": {},
-          "pChannelCurveLinks": {
-            "dim": {
-              "uid": "cl_PAR:default 16:dim_a1d6"
-            }
-          }
-        },
-        {
-          "name": "PAR:default 17",
-          "pChannelValues": {},
-          "pChannelCurveLinks": {
-            "dim": {
-              "uid": "cl_PAR:default 17:dim_e75d"
-            }
-          }
-        },
-        {
-          "name": "PAR:default 18",
-          "pChannelValues": {},
-          "pChannelCurveLinks": {
-            "dim": {
-              "uid": "cl_PAR:default 18:dim_ae55"
-            }
-          }
-        },
-        {
-          "name": "PAR:default 19",
-          "pChannelValues": {},
-          "pChannelCurveLinks": {
-            "dim": {
-              "uid": "cl_PAR:default 19:dim_7930"
-            }
-          }
-        },
-        {
-          "name": "PAR:default 20",
-          "pChannelValues": {},
-          "pChannelCurveLinks": {
-            "dim": {
-              "uid": "cl_PAR:default 20:dim_19ac"
-            }
-          }
-        },
-        {
-          "name": "PAR:default 21",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 22",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 23",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 24",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 25",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 26",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 27",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 28",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 29",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 30",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 31",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 32",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 33",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 34",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 35",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 36",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 37",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 38",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 39",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 40",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 41",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 42",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 43",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 44",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 45",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 46",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 47",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 48",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 49",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 50",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 51",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 52",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 53",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 54",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 55",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 56",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 57",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 58",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 59",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 60",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 61",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 62",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 63",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 64",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 65",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 66",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 67",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 68",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 69",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 70",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 71",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 72",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 73",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 74",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 75",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 76",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 77",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 78",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 79",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 80",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 81",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 82",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 83",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 84",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 85",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 86",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 87",
+          "pState": {},
+          "name": "Left",
           "pChannelValues": {
-            "dim": 0
+            "dim": 1
           },
           "pChannelCurveLinks": {}
         },
         {
-          "name": "PAR:default 88",
+          "pState": {},
+          "name": "Right",
           "pChannelValues": {
-            "dim": 0
+            "Dim": 0.195
           },
           "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 89",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 90",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 91",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 92",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 93",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 94",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 95",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 96",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 97",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 98",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 99",
-          "pChannelValues": {
-            "dim": 0
-          },
-          "pChannelCurveLinks": {}
-        },
-        {
-          "name": "PAR:default 100",
-          "pChannelValues": {},
-          "pChannelCurveLinks": {
-            "dim": {
-              "uid": "cl_PAR:default 100:dim_fc9c"
-            }
-          }
         }
       ],
-      "linkedStates": []
+      "linkedStates": [],
+      "actions": {
+        "list": [],
+        "forbiddenNames": []
+      }
     },
-    "loadedStateName": "current"
+    "loadedStateName": ""
   },
-  "testValue": 1,
   "dmxController": {
-    "selectedPortName": "/dev/tty.usbserial-EN132891",
-    "selectedDriverName": "QLC"
+    "selectedPortName": "/dev/ttyUSB1",
+    "selectedDriverName": "enttec-usb-dmx-pro"
   }
 }

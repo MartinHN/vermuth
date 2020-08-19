@@ -376,8 +376,11 @@ export class SequencePlayerClass {
   private goToStates(
       nextStates: State[], timeIn: number, opts?: {dimMasters?: number[]},
       cb?: any) {
+    // #if IS_CLIENT
+    const res = 50;  // ms between steps
+    // #else
     const res = 10;  // ms between steps
-
+    // #endif
 
     if (nextStates && nextStates.length) {
       const dimMasters =
