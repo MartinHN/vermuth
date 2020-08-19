@@ -8,7 +8,7 @@ const CONSTANT_TIME_INC =
     // #if IS_CLIENT
     false
 // #else
-true
+false
 // #endif
 export function doTimer(
     name: string, length: number, resolution: number,
@@ -24,7 +24,7 @@ export function doTimer(
     count++;
     const now = new Date().getTime()
     const elapsedTime = (now - start)
-    const estimatedCount = Math.min(steps, elapsedTime * steps / length)
+    const estimatedCount = Math.min(steps, elapsedTime / resolution)
     const estimatedOrTrueCount = CONSTANT_TIME_INC ? trueCount : estimatedCount;
     if (trueCount >= steps ||
         (!CONSTANT_TIME_INC && (estimatedCount >= steps))) {
@@ -34,11 +34,10 @@ export function doTimer(
     } else {
       oninstance(steps, estimatedOrTrueCount);
       const diffRunningTime = elapsedTime - (trueCount * speed)
-      const diff = CONSTANT_TIME_INC ? 0 : diffRunningTime;
-      const deltaNext = speed - diff;
+      const deltaNext = speed - (CONSTANT_TIME_INC ? 0 : diffRunningTime);
       debugTime(
-          'timer', diffRunningTime, estimatedOrTrueCount,
-          (now - lastTime) - speed, 'ms', deltaNext, 'ms');
+          'diff', diffRunningTime, 'estCount', estimatedOrTrueCount, 'err',
+          (now - lastTime) - speed, 'ms', 'nextDelta', deltaNext, 'ms');
       timers[name].timeout = setTimeout(instance, Math.max(0, deltaNext));
       lastTime = now
     }

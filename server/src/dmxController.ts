@@ -1,7 +1,8 @@
 const DMX = require('dmx');
 const SerialPort = require('serialport');
 import dbg from '@API/dbg'
-const debug = dbg('DMX')
+const debugDMX = dbg('DMX')
+
 const OSCDriver = require('./dmxOSCDriver');
 const needCustomPiLibs = process.env.CUSTOM_PI_DRIVERS;
 const isPi = require('detect-rpi')();
@@ -15,30 +16,25 @@ const _ = require('lodash');
 const io = require('socket.io');
 import log from './remoteLogger';
 
-import { Universe } from '@API/Universe';
-import { UniverseListener } from '@API/Channel';
+import {Universe} from '@API/Universe';
+import {UniverseListener} from '@API/Channel';
 import rootState from '@API/RootState';
-import { DMXControllerI, needSerialPort } from '@API/DMXControllerI';
-import { AccessibleClass, nonEnumerable, RemoteValue } from '@API/ServerSync';
+import {DMXControllerI, needSerialPort} from '@API/DMXControllerI';
+import {AccessibleClass, nonEnumerable, RemoteValue} from '@API/ServerSync';
 
-
-
-
+let lastCircUpdate = 0;
 
 @AccessibleClass()
 class DMXController implements DMXControllerI {
-
   get activeChannels() {
     return rootState.universe.allChannels;
   }
   @RemoteValue((self, n: string) => {
     self.connectToDevice();
-
   })
   public selectedPortName = '';
 
-  @RemoteValue()
-  public __portNameList = new Array<string>();
+  @RemoteValue() public __portNameList = new Array<string>();
 
   @RemoteValue((self, n: string) => {
     if (n) {
@@ -47,45 +43,42 @@ class DMXController implements DMXControllerI {
   })
   public selectedDriverName = isPi ? 'dmxGPIODriver' : 'enttec-usb-dmx-pro';
 
-  @RemoteValue()
-  public __driverNameList = new Array<string>();
+  @RemoteValue() public __driverNameList = new Array<string>();
 
-  @RemoteValue()
-  public __connected = false;
+  @RemoteValue() public __connected = false;
 
-  @nonEnumerable()
-  private dmx: any;
+  @nonEnumerable() private dmx: any;
 
   private universeName = 'main';
-  @nonEnumerable()
-  private __availableDevices: any;
-  @nonEnumerable()
-  private __sockets: any = {};
-  @nonEnumerable()
-  private __ioServer: any;
-  @nonEnumerable()
-  private __universe?: Universe;
+  @nonEnumerable() private __availableDevices: any;
+  @nonEnumerable() private __sockets: any = {};
+  @nonEnumerable() private __ioServer: any;
+  @nonEnumerable() private __universe?: Universe;
 
-  @nonEnumerable()
-  private __portWatch: any;
+  @nonEnumerable() private __portWatch: any;
 
-  private __debouncedQueue: { [id: string]: number } = {}
+  private __debouncedQueue: {[id: string]: number} = {}
 
   postToQueue(c: any, v: number) {
+    if (Object.keys(this.__debouncedQueue).length > 0) {
+      debugDMX('coalescing circs', Object.keys(this.__debouncedQueue).length);
+    }
     this.__debouncedQueue[c.toString()] = v;
     this.updateCircs()
   }
   updateCircs = _.debounce(() => {
-    const circsV: { c: number; v: number }[] = [];
-    Object.entries(this.__debouncedQueue).map((kv) => {
-      circsV.push({c: parseInt(kv[0]), v:kv[1]})
-    })
-    this.setCircs(circsV,null)
-    this.__debouncedQueue = {}
-  },  10,
-  {maxWait: 10})
+    if (Object.keys(this.__debouncedQueue).length > 0) {
+      const now = new Date().getTime();
+      debugDMX('sending circs', now - lastCircUpdate);
+      lastCircUpdate = now;
+    }
+    const circsV: {c: number; v: number}[] = [];
+    Object.entries(this.__debouncedQueue)
+        .map((kv) => {circsV.push({c: parseInt(kv[0]), v: kv[1]})});
+    this.setCircs(circsV, null);
+    this.__debouncedQueue = {};
+  }, 2, {maxWait: 10})
   constructor() {
-
     this.dmx = new DMX();
     this.dmx.registerDriver('QLC', OSCDriver);
     this.dmx.registerDriver('Logger', LoggerDriver);
@@ -97,33 +90,33 @@ class DMXController implements DMXControllerI {
     delete this.dmx.drivers.null;
     this.watchSerialPorts();
     this.__driverNameList = Object.keys(this.dmx.drivers);
-    //debug('drivers : ', this.__driverNameList);
-    UniverseListener.on('channelChanged', (c: any, v: number) => { 
-      // this.setCircs([{ c, v }], null);
-      this.postToQueue(c,v) 
-    });
-
+    // debug('drivers : ', this.__driverNameList);
+    UniverseListener.on(
+        'channelChanged',
+        (c: any, v: number) => {// this.setCircs([{ c, v }], null);
+                                this.postToQueue(c, v)});
   }
   // @nonEnumerable()
   // private fixtures : {[id:string] : {[id:string]:number}} = {};
 
   public registerAvailableDevices() {
     return new Promise((resolve, reject) => {
-      SerialPort.list().then((l: any) => {
-        this.__availableDevices = l;
-        if (l.length !== this.__portNameList.length) {
-          // broadcast(this.__portNameList)
-          // debugger
-        }
-        this.__portNameList = l.map((c: any) => c.path);
+      SerialPort.list()
+          .then((l: any) => {
+            this.__availableDevices = l;
+            if (l.length !== this.__portNameList.length) {
+              // broadcast(this.__portNameList)
+              // debugger
+            }
+            this.__portNameList = l.map((c: any) => c.path);
 
-        resolve(l);
-        // debug(this.__portNameList);
-      }).
-        catch((e: any) => {
-          console.error(e);
-          reject(e);
-        });
+            resolve(l);
+            // debug(this.__portNameList);
+          })
+          .catch((e: any) => {
+            console.error(e);
+            reject(e);
+          });
     });
   }
 
@@ -132,7 +125,8 @@ class DMXController implements DMXControllerI {
   }
   public configureFromObj(o: any) {
     for (const k in this) {
-      if (o[k] && k !== '__driverNameList' && k !== '__portNameList' && o.propertyIsEnumerable(k)) {
+      if (o[k] && k !== '__driverNameList' && k !== '__portNameList' &&
+          o.propertyIsEnumerable(k)) {
         this[k] = o[k];
       }
     }
@@ -142,16 +136,15 @@ class DMXController implements DMXControllerI {
     if (!this.__portWatch) {
       const fn = () => {
         this.registerAvailableDevices().then(() => {
-          if (!this.__connected && this.selectedPortName in this.__portNameList) {
+          if (!this.__connected &&
+              this.selectedPortName in this.__portNameList) {
             this.connectToDevice();
           }
-
         });
       };
       fn();
       this.__portWatch = setInterval(fn, 2000);
     }
-
   }
   public stopWatchSerialPorts() {
     if (this.__portWatch) {
@@ -172,42 +165,39 @@ class DMXController implements DMXControllerI {
     });
   }
 
-  public setAllColor(color: { r: number; g: number; b: number }, setWhiteToZero: boolean) {
+  public setAllColor(
+      color: {r: number; g: number; b: number}, setWhiteToZero: boolean) {
     if (this.__universe) {
       this.__universe.setAllColor(color, setWhiteToZero);
     }
   }
 
-  public setCircs(msg: Array<{ c: number; v: number }>, fromSocket) {
-
-
+  public setCircs(msg: Array<{c: number; v: number}>, fromSocket) {
     // const allC = this.__universe.allChannels;
     // msg.map(m=>{allC.map(cc=>{if(cc.circ === m.c){cc.setValue(m.v,false)}})})
     // this.dmx.updateAll(this.universeName,msg[0].v)
     if (!this.__connected) {
-      _.debounce(() => { console.error('dmx not connected'); }, 500);
+      _.debounce(() => {
+        console.error('dmx not connected');
+      }, 500);
       // debugger
 
     } else {
-
       this.dmx.update(this.universeName, this.arrayToObj(msg, 255, true));
     }
 
     if (fromSocket) {
       fromSocket.broadcast.emit('DMX/SET_CIRC', msg);
-      debug('form_', fromSocket.id);
+      debugDMX('form_', fromSocket.id);
     } else {
       // if(this.__ioServer)this.__ioServer.emit("DMX/SET_CIRC",msg)
     }
-
-
-
   }
 
 
 
-
-  public arrayToObj(a: Array<{ c: number; v: number }>, mult = 1, castInt = false) {
+  public arrayToObj(
+      a: Array<{c: number; v: number}>, mult = 1, castInt = false) {
     const res = {};
     for (const e of a) {
       if (isNaN(e.c) || isNaN(e.v)) {
@@ -215,7 +205,9 @@ class DMXController implements DMXControllerI {
         continue;
       }
       res[e.c] = e.v * mult;
-      if (castInt) { res[e.c] = parseInt(res[e.c]) }
+      if (castInt) {
+        res[e.c] = parseInt(res[e.c])
+      }
     }
     // debug(res)
     return res;
@@ -223,7 +215,8 @@ class DMXController implements DMXControllerI {
 
   public connectToDevice(options?: any) {
     if (!this.__driverNameList.find((e) => e === this.selectedDriverName)) {
-      console.error('can\'t connect to unknown driver ' + this.selectedDriverName);
+      console.error(
+          'can\'t connect to unknown driver ' + this.selectedDriverName);
       return;
     }
     options = options || {};
@@ -232,24 +225,29 @@ class DMXController implements DMXControllerI {
     const successCB = () => {
       this.stopWatchSerialPorts();
       this.__connected = true;
-      debug('successfully connected to ' + uri);
-      this.dmx.update(this.universeName, this.arrayToObj(this.activeChannels.map((c) => ({ c: c.trueCirc, v: c.intValue }))));
+      debugDMX('successfully connected to ' + uri);
+      this.dmx.update(
+          this.universeName,
+          this.arrayToObj(this.activeChannels.map(
+              (c) => ({c: c.trueCirc, v: c.intValue}))));
     };
     const closeCB = () => {
       this.watchSerialPorts();
-      debug('connection closed ' + uri);
+      debugDMX('connection closed ' + uri);
       this.__connected = false;
     };
 
     const errorCB = (e = undefined) => {
       this.watchSerialPorts();
       console.error('cant connect to ' + uri);
-      if (e) { console.error(e); }
+      if (e) {
+        console.error(e);
+      }
       this.__connected = false;
       try {
         const cuni = this.dmx.universes[this.universeName];
         if (cuni && cuni.dev && cuni.dev.removeAllListeners) {
-          cuni.dev.removeAllListeners('error'); // avoid recursion
+          cuni.dev.removeAllListeners('error');  // avoid recursion
         }
         if (this.dmx.universes[this.universeName]) {
           this.dmx.universes[this.universeName].stop();
@@ -271,7 +269,6 @@ class DMXController implements DMXControllerI {
 
       this.dmx.universes[this.universeName].stop();
       const reconnectCB = () => {
-
         this.__connected = false;
         this.connectToDevice(options);
       };
@@ -280,7 +277,6 @@ class DMXController implements DMXControllerI {
       } catch (ex) {
         console.error('can\'t close device', ex);
         reconnectCB();
-
       }
       return false;
     }
@@ -291,12 +287,13 @@ class DMXController implements DMXControllerI {
       this.__connected = false;
       return;
     }
-    if (needSerialPort(this.selectedDriverName) && !this.selectedPortName && this.selectedPortName !== 'none') {
+    if (needSerialPort(this.selectedDriverName) && !this.selectedPortName &&
+        this.selectedPortName !== 'none') {
       console.error('no device selected for enttec');
       this.__connected = false;
       return;
     }
-    debug('trying to connect to ' + uri);
+    debugDMX('trying to connect to ' + uri);
 
 
     // this.selectedDriverName = ""
@@ -304,7 +301,9 @@ class DMXController implements DMXControllerI {
 
 
     try {
-      uni = this.dmx.addUniverse(this.universeName, this.selectedDriverName, this.selectedPortName || '', options);
+      uni = this.dmx.addUniverse(
+          this.universeName, this.selectedDriverName,
+          this.selectedPortName || '', options);
       // log.log("universe "+JSON.stringify(uni))
       if (uni && uni.dev && uni.dev.on) {
         uni.dev.on('open', successCB);
@@ -316,9 +315,7 @@ class DMXController implements DMXControllerI {
     } catch (ex) {
       log.error('can\'t open device ' + ex);
       errorCB();
-
     }
-
   }
 }
 
