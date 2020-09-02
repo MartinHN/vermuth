@@ -2,8 +2,6 @@
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
-export NODE_ENV=production
-
 cd $DIR
 cd API
 GEN_ONCE=1 node gen.js
@@ -17,4 +15,4 @@ PKG_APP=1 npm run buildFast
 
 cd ../server
 
-npm run build
+npm run buildApp

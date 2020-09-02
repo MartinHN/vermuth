@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node --inspect=0.0.0.0:9222 -r tsconfig-paths/register -r ts-node/register ./src/server.ts $(echo $VERMUTH_ARGS)",
     "start:watch": "nodemon",
-    "build": "NODE_ENV=production webpack src/server.ts",
+    "build": "webpack src/server.ts",
     "buildNrun": "NODE_ENV=production ts-node src/server.ts -P . --files",
     "run": "NODE_ENV=production node distPacked/mainServer.js",
     "runTs": "node  -r tsconfig-paths/register -r ts-node/register ./src/server.ts",
