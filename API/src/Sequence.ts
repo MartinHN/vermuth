@@ -244,6 +244,10 @@ export class SequencePlayerClass {
   public goToStateNamed(
       name: string, timeIn: number, opts?: {dimMaster?: number},
       cb?: () => void): void {
+    if (typeof (opts) == 'number') {
+      opts = {dimMaster: opts};
+      console.log('auto fixing opts in stateNamed', opts)
+    }
     const seq = new Sequence('tmp', '' + name);
     if (!timeIn) {
       timeIn = 0;
@@ -255,6 +259,10 @@ export class SequencePlayerClass {
   @RemoteFunction({sharedFunction: true})
   public goToSequenceNamed(
       name: string, opts?: {dimMaster?: number}, cb?: () => void): void {
+    if (typeof (opts) == 'number') {
+      opts = {dimMaster: opts};
+      console.log('auto fixing opts seqNamed', opts)
+    }
     name = '' + name;
     const tSeq = this.sequenceList.find((s) => s.name === name);
     if (!tSeq) {
@@ -309,6 +317,7 @@ export class SequencePlayerClass {
     if (nextState) {
       const dimMaster =
           opts ? opts.dimMaster !== undefined ? opts.dimMaster : 1 : 1;
+
       this.goToStates(
           [nextState], this.nextSeq.timeIn, {dimMasters: [dimMaster]},
           (...args: any[]) => {

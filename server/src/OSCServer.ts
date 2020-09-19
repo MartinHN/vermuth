@@ -81,6 +81,8 @@ class OSCServer {
     } else if (msg.address === '/allColors') {
       dmxController.setAllColor(
           {r: msg.args[0], g: msg.args[1], b: msg.args[2]}, true);
+    } else if (msg.address === '/fog') {
+      rootState.universe.setAllFogs(msg.args[0]);
     } else if (msg.address === '/fixture') {
       const fName = msg.args[0];
       const fixt = rootState.universe.getFixtureNamed(fName);

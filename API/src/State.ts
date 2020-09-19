@@ -337,7 +337,13 @@ export class MergedState {
         const channel = channelObj.channel;
         const sourcev =
             CurvePlayer.getCurveLinkForChannel(channel) || channel.floatValue;
-        const targetv = channelObj.value;
+        const mult = channel.roleFam == 'dim' ? rfs.dimMaster : 1;
+        const targetv = mult * (channelObj.value as number);
+        if (mult !== 1) {
+          console.log('taming', mult, targetv)
+        }
+
+
         this.channels.push(new MergedChannel(channel, sourcev, targetv));
       }
     }
@@ -486,7 +492,7 @@ export class State {
       public full?: boolean) {
     if (__validChNames.length === 0 && !name.startsWith('__') &&
         !name.startsWith('current')) {
-      debugger;
+      // debugger;
     }
 
     this.updateFromFixtures(fixtures);
@@ -749,7 +755,6 @@ export class StateList {
           resolved.concat(st.resolveState(context, otherStates, dimMaster));
     }
     StateList.mergeResolvedFixtureList(rsl, resolved);
-
     return rsl;
   }
 

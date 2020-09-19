@@ -286,12 +286,17 @@ httpServer.listen(PORT, () => {
 });
 
 
-const moduleFilePath = cfg.getConfig('module')
-if (moduleFilePath) {
+import {WiiAdapter} from './adapters/adapters'
+const wii = new WiiAdapter();
+let moduleFilePaths = cfg.getConfig('module')
+if (moduleFilePaths && moduleFilePaths.length === undefined) {
+  moduleFilePaths = [moduleFilePaths]
+}
+for (const moduleFilePath of moduleFilePaths) {
   // const amd = require('amd-loader');
   console.log('loading module ', moduleFilePath);
-  const localModuleDir = path.dirname(moduleFilePath)
+  const localModuleDir = path.dirname(moduleFilePath);
   // eval(fs.readFileSync(moduleFilePath) + '');
-  require(localModuleDir).init()
+  require(localModuleDir).init();
   // amd.require([moduleFilePath], (m: any, d: any) => m.init());
 }

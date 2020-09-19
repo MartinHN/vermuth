@@ -1,36 +1,40 @@
-import { EventEmitter } from 'events';
-import { ChannelBase, ChannelGroup } from './Channel';
-import { Universe } from './Universe';
-import { getNextUniqueName, arraysEqual } from './Utils';
-import { buildEscapedObject } from './SerializeUtils';
+import {EventEmitter} from 'events';
 
-import { RemoteFunction, RemoteValue, SetAccessible, AccessibleClass, setChildAccessible, nonEnumerable } from './ServerSync';
+import {ChannelBase, ChannelGroup} from './Channel';
+import {buildEscapedObject} from './SerializeUtils';
+import {AccessibleClass, nonEnumerable, RemoteFunction, RemoteValue, SetAccessible, setChildAccessible} from './ServerSync';
+import {Universe} from './Universe';
+import {arraysEqual, getNextUniqueName} from './Utils';
 
 type ChannelValueType = ChannelBase['__value'];
 export interface FixtureBaseI {
   name: string;
   baseCirc: number;
-
 }
 type FixtureConstructorI = (...args: any[]) => FixtureBase;
-const fixtureTypes: { [key: string]: FixtureConstructorI } = {};
+const fixtureTypes: {[key: string]: FixtureConstructorI} = {};
 
 @AccessibleClass()
 export class FixtureBase implements FixtureBaseI {
-
-
-  public getUID(){
+  public getUID() {
     return this.name
   }
 
 
   public set baseCirc(n: number) {
-    if (isNaN(n)) { debugger; return; }
-    if (n === 0) { n = 1; debugger; }
+    if (isNaN(n)) {
+      debugger;
+      return;
+    }
+    if (n === 0) {
+      n = 1;
+      debugger;
+    }
     this.__setBaseCirc(n);
   }
-  public get baseCirc(): number { return this._baseCirc; }
-
+  public get baseCirc(): number {
+    return this._baseCirc;
+  }
 
 
 
@@ -38,12 +42,14 @@ export class FixtureBase implements FixtureBaseI {
     return this.__universe;
   }
 
-  public set universe(uni: Universe | null) {
+  public set universe(uni: Universe|null) {
     this.__universe = uni;
     this.channels.map((c) => c.setParentFixture(this));
   }
   get groupNames(): string[] {
-    return this.universe ? this.universe.getGroupsForFixture(this).map(e => e.name) : [];
+    return this.universe ?
+        this.universe.getGroupsForFixture(this).map(e => e.name) :
+        [];
   }
   get channelNames(): string[] {
     return this.channels.map((c) => c.name);
@@ -51,10 +57,10 @@ export class FixtureBase implements FixtureBaseI {
   get channelsState() {
     return this.channels.map((c) => c.getState());
   }
-  public get colorChannels(): { [id: string]: ChannelBase } {
+  public get colorChannels(): {[id: string]: ChannelBase} {
     return this.getUniqueChannelsOfRole('color');
   }
-  public get positionChannels(): { [id: string]: ChannelBase } {
+  public get positionChannels(): {[id: string]: ChannelBase} {
     return this.getUniqueChannelsOfRole('position');
   }
 
@@ -66,15 +72,13 @@ export class FixtureBase implements FixtureBaseI {
     return this.colorChannels && Object.values(this.colorChannels).length > 0;
   }
   public get hasPositionChannels(): boolean {
-    return this.positionChannels && Object.values(this.positionChannels).length > 0;
+    return this.positionChannels &&
+        Object.values(this.positionChannels).length > 0;
   }
 
   public get hasDimmerChannels(): boolean {
     return this.dimmerChannels && Object.values(this.dimmerChannels).length > 0;
   }
-
-
-
 
 
 
@@ -100,7 +104,10 @@ export class FixtureBase implements FixtureBaseI {
 
 
   public set dimmerValue(v: ChannelValueType) {
-    if (isNaN(v)) { debugger; return; }
+    if (isNaN(v)) {
+      debugger;
+      return;
+    }
     this.pdimmerValue = v;
     if (this.channels) {
       for (const c of this.channels) {
@@ -116,12 +123,14 @@ export class FixtureBase implements FixtureBaseI {
 
   public get dimmerInSync(): boolean {
     for (const c of this.channels.filter((cc) => cc.reactToMaster)) {
-      if (c.floatValue !== this.dimmerValue) { return false; }
+      if (c.floatValue !== this.dimmerValue) {
+        return false;
+      }
     }
     return true;
   }
 
-  public static createFromObj(ob: any): FixtureBase | undefined {
+  public static createFromObj(ob: any): FixtureBase|undefined {
     if (ob.pchannels !== undefined) {
       const cstr = fixtureTypes[ob.ftype];
       if (cstr) {
@@ -139,10 +148,9 @@ export class FixtureBase implements FixtureBaseI {
 
 
 
-  @nonEnumerable()
-  public __events = new EventEmitter();
+  @nonEnumerable() public __events = new EventEmitter();
 
-  @SetAccessible({ readonly: true })
+  @SetAccessible({readonly: true})
   protected readonly pchannels = new Array<ChannelBase>();
 
   get channels() {
@@ -151,69 +159,69 @@ export class FixtureBase implements FixtureBaseI {
   set channels(c: Array<ChannelBase>) {
     console.error('readonly')
     debugger;
-
   }
   private pdimmerValue = 0;
 
   // protected ftype = 'base';
 
-  @RemoteValue()
-  private _baseCirc = 0;
+  @RemoteValue() private _baseCirc = 0;
   @RemoteValue()
   public name: string
 
-  @nonEnumerable()
-  private __universe: Universe | null = null;
+      @nonEnumerable() private __universe: Universe|null = null;
 
-  constructor(_name: string, channels: ChannelBase[], protected ftype = 'base') {
+  constructor(
+      _name: string, channels: ChannelBase[], protected ftype = 'base') {
     this.name = _name;
     if (channels && channels.length) {
       channels.map((c) => this.addChannel(c));
     } else {
       // debugger;
     }
-
   }
 
 
 
-
-  @RemoteFunction({sharedFunction:true})
+  @RemoteFunction({sharedFunction: true})
   public clone(circInc: number) {
     const ob = buildEscapedObject(this)
     if (this.__universe) {
-      ob.name = getNextUniqueName(this.__universe.fixtureList.map(f => f.name), ob.name)
-      ob._baseCirc+=circInc;
+      ob.name = getNextUniqueName(
+          this.__universe.fixtureList.map(f => f.name), ob.name)
+      ob._baseCirc += circInc;
     }
-    else{
+    else {
       console.error('bug in clone')
     }
     const res = FixtureBase.createFromObj(ob) as FixtureBase;
     res.ftype = this.ftype;
-    if(this.__universe){
+    if (this.__universe) {
       this.__universe.addFixture(res)
     }
     return res;
   }
 
   public configureFromObj(ob: any) {
-
-    if (ob._baseCirc !== undefined) { this.baseCirc = ob._baseCirc; }
+    if (ob._baseCirc !== undefined) {
+      this.baseCirc = ob._baseCirc;
+    }
     this.channels.map((c: ChannelBase) => this.removeChannel(c));
     if (ob.pchannels !== undefined) {
-      ob.pchannels.map((c: any) => this.addChannel(ChannelBase.createFromObj(c, this)));
+      ob.pchannels.map(
+          (c: any) => this.addChannel(ChannelBase.createFromObj(c, this)));
     }
-    if (ob.name !== undefined) { this.setName(ob.name); }
+    if (ob.name !== undefined) {
+      this.setName(ob.name);
+    }
   }
 
-  @RemoteFunction({sharedFunction:true})
+  @RemoteFunction({sharedFunction: true})
   public setName(n: string) {
     const oldName = this.name;
     this.name = n;
     if (oldName !== n) {
       this.__events.emit('nameChanged', this, oldName);
     }
-
   }
 
   public hasChannelMatchingFilters(fl: string[]) {
@@ -222,16 +230,17 @@ export class FixtureBase implements FixtureBaseI {
     } else if (fl.some((e) => 'all' === e)) {
       return true;
     }
-    return Object.values(this.channels).some((e) => fl.some((f) => e.matchFilter(f)));
+    return Object.values(this.channels)
+        .some((e) => fl.some((f) => e.matchFilter(f)));
   }
   public buildAddress() {
     return '/mainUniverse/' + this.name;
   }
 
-  public getChannelsOfRole(n: string): { [id: string]: ChannelBase[] } {
+  public getChannelsOfRole(n: string): {[id: string]: ChannelBase[]} {
     // @ts-ignore
     // if(this.isGroup){debugger}
-    const cch: { [id: string]: ChannelBase[] } = {};
+    const cch: {[id: string]: ChannelBase[]} = {};
     for (const ch of this.channels) {
       if (ch.roleFam === n) {
         if (Object.keys(cch).includes(ch.roleType)) {
@@ -244,15 +253,14 @@ export class FixtureBase implements FixtureBaseI {
     }
     return cch;
   }
-  
-  public getUniqueChannelsOfRole(n: string): { [id: string]: ChannelBase } {
+
+  public getUniqueChannelsOfRole(n: string): {[id: string]: ChannelBase} {
     // @ts-ignore
     // if(this.isGroup){debugger}
-    const cch: { [id: string]: ChannelBase } = {};
+    const cch: {[id: string]: ChannelBase} = {};
     for (const ch of this.channels) {
       if (ch.roleFam === n) {
         if (Object.keys(cch).includes(ch.roleType)) {
-
           console.error('not unique, ignoring', ch.roleType);
           // cch[ch.roleType].push(ch);
 
@@ -273,76 +281,99 @@ export class FixtureBase implements FixtureBaseI {
     return (this.dimmerChannels || this.channels).some((c) => c.floatValue > 0);
   }
 
-  @RemoteFunction({ sharedFunction: true })
+  @RemoteFunction({sharedFunction: true})
   public setMaster(v: ChannelValueType) {
     this.dimmerValue = v;
   }
-  @RemoteFunction({ sharedFunction: true })
+  @RemoteFunction({sharedFunction: true})
   public setAll(v: ChannelValueType) {
-    this.channels?.map(c=>c.setValue(v,true));
+    this.channels?.map(c => c.setValue(v, true));
   }
 
-  @RemoteFunction({ sharedFunction: true ,allowRawObj:true})
-  public setColor(c: { r: number; g: number; b: number;w?: number }, setWhiteToZero: boolean) {
+  @RemoteFunction({sharedFunction: true, allowRawObj: true})
+  public setColor(
+      c: {r: number; g: number; b: number; w?: number},
+      setWhiteToZero: boolean) {
     const cch = this.colorChannels;
     if (cch !== {}) {
       if (c) {
-        if (cch.r) { this.setCoarseAndFine(c.r, cch.r, cch.r_fine); }
-        if (cch.g) { this.setCoarseAndFine(c.g, cch.g, cch.g_fine); }
-        if (cch.b) { this.setCoarseAndFine(c.b, cch.b, cch.b_fine); }
-        if (cch.w && (c.w!==undefined || setWhiteToZero) )  { this.setCoarseAndFine(c.w || 0, cch.w, cch.w_fine); }
-      }
-      else {
+        if (cch.r) {
+          this.setCoarseAndFine(c.r, cch.r, cch.r_fine);
+        }
+        if (cch.g) {
+          this.setCoarseAndFine(c.g, cch.g, cch.g_fine);
+        }
+        if (cch.b) {
+          this.setCoarseAndFine(c.b, cch.b, cch.b_fine);
+        }
+        if (cch.w && (c.w !== undefined || setWhiteToZero)) {
+          this.setCoarseAndFine(c.w || 0, cch.w, cch.w_fine);
+        }
+      } else {
         console.error('color not valid')
         debugger
       }
     }
   }
 
-  @RemoteFunction({ sharedFunction: true })
+  @RemoteFunction({sharedFunction: true})
   public getColor(includeWhite = true) {
-    const res: { r: number; g: number; b: number; w?: number } = { r: 0, g: 0, b: 0 };
+    const res: {r: number; g: number; b: number;
+                w?: number;} = {r: 0, g: 0, b: 0};
     const cch = this.colorChannels;
     if (cch !== {}) {
-      if (cch.r) { res.r = this.getCoarseAndFine(cch.r, cch.r_fine); }
-      if (cch.g) { res.g = this.getCoarseAndFine(cch.g, cch.g_fine); }
-      if (cch.b) { res.b = this.getCoarseAndFine(cch.b, cch.b_fine); }
-      if (includeWhite && cch.w) { res.w = this.getCoarseAndFine(cch.w, cch.w_fine); }
+      if (cch.r) {
+        res.r = this.getCoarseAndFine(cch.r, cch.r_fine);
+      }
+      if (cch.g) {
+        res.g = this.getCoarseAndFine(cch.g, cch.g_fine);
+      }
+      if (cch.b) {
+        res.b = this.getCoarseAndFine(cch.b, cch.b_fine);
+      }
+      if (includeWhite && cch.w) {
+        res.w = this.getCoarseAndFine(cch.w, cch.w_fine);
+      }
     }
     return res;
   }
 
 
-  @RemoteFunction({ sharedFunction: true })
-  public setPosition(c: { x: number; y: number }) {
+  @RemoteFunction({sharedFunction: true})
+  public setPosition(c: {x: number; y: number}) {
     const pch = this.positionChannels;
     if (pch !== {}) {
-      if (pch.pan) { this.setCoarseAndFine(c.x, pch.pan, pch.pan_fine); }
-      if (pch.tilt) { this.setCoarseAndFine(c.y, pch.tilt, pch.tilt_fine); }
-
+      if (pch.pan) {
+        this.setCoarseAndFine(c.x, pch.pan, pch.pan_fine);
+      }
+      if (pch.tilt) {
+        this.setCoarseAndFine(c.y, pch.tilt, pch.tilt_fine);
+      }
     }
-
   }
   public getPosition() {
-    const res = { x: 0, y: 0 };
+    const res = {x: 0, y: 0};
     const pch = this.positionChannels;
     if (pch !== {}) {
-      if (pch.pan) { res.x = this.getCoarseAndFine(pch.pan, pch.pan_fine); }
-      if (pch.tilt) { res.y = this.getCoarseAndFine(pch.tilt, pch.tilt_fine); }
+      if (pch.pan) {
+        res.x = this.getCoarseAndFine(pch.pan, pch.pan_fine);
+      }
+      if (pch.tilt) {
+        res.y = this.getCoarseAndFine(pch.tilt, pch.tilt_fine);
+      }
     }
     return res;
   }
 
 
 
-  @RemoteFunction({ sharedFunction: true })
-  public addChannel(c: ChannelBase | undefined) {
+  @RemoteFunction({sharedFunction: true})
+  public addChannel(c: ChannelBase|undefined) {
     // @ts-ignore
     // if(this.isGroup){debugger}
     if (c === undefined || c === null) {
       c = new ChannelBase('channel', 0, this.span);
-    }
-    else if (!(c instanceof ChannelBase)) {
+    } else if (!(c instanceof ChannelBase)) {
       debugger
     }
     c.setParentFixture(this);
@@ -356,7 +387,9 @@ export class FixtureBase implements FixtureBaseI {
     c.__dispose();
     c.setParentFixture(null);
     const i = this.channels.indexOf(c);
-    if (i >= 0) { this.channels.splice(i, 1); }// = this.channels.filter((v) => c !== v); // delete?
+    if (i >= 0) {
+      this.channels.splice(i, 1);
+    }  // = this.channels.filter((v) => c !== v); // delete?
   }
   public removeChannelNamed(n: string) {
     const c = this.getChannelForName(n);
@@ -376,20 +409,23 @@ export class FixtureBase implements FixtureBaseI {
     return this.ftype;
   }
 
-  @RemoteFunction({ sharedFunction: true })
+  @RemoteFunction({sharedFunction: true})
   private __setBaseCirc(n: number) {
     const changedDiff = n - this._baseCirc;
     this._baseCirc = n;
 
     if (this.universe && changedDiff !== 0) {
-
       this.universe.checkDuplicatedCircDebounced();
       this.universe.updateChannelsValues();
     }
   }
 
-  private setCoarseAndFine(v: number, c: ChannelBase | undefined, cf: ChannelBase | undefined, doNotify = true) {
-    if (!c) { return; }
+  private setCoarseAndFine(
+      v: number, c: ChannelBase|undefined, cf: ChannelBase|undefined,
+      doNotify = true) {
+    if (!c) {
+      return;
+    }
 
     if (cf !== undefined) {
       const q = 255;
@@ -401,10 +437,12 @@ export class FixtureBase implements FixtureBaseI {
     } else {
       c.setValue(v, doNotify);
     }
-
   }
-  private getCoarseAndFine(c: ChannelBase | undefined, cf: ChannelBase | undefined) {
-    if (!c) { return 0; }
+  private getCoarseAndFine(
+      c: ChannelBase|undefined, cf: ChannelBase|undefined) {
+    if (!c) {
+      return 0;
+    }
 
     if (cf !== undefined) {
       const q = 255;
@@ -412,12 +450,7 @@ export class FixtureBase implements FixtureBaseI {
     } else {
       return c.floatValue;
     }
-
   }
-
-
-
-
 }
 
 
@@ -434,26 +467,26 @@ export class FixtureGroup extends FixtureBase {
   //   return this._cachedChannelGroups.map(e=>e.name)
   // }
   private get channelsMap(): { [id: string]: FixtureBase[] } {
-    const res: { [id: string]: FixtureBase[] } = {}
-    this.fixtures.map(f => {
-      f.channels.map(c => {
-        if (res[c.name] === undefined) { res[c.name] = []; }
-        res[c.name].push(f)
-
-      })
-    })
+    const res: {[id: string]: FixtureBase[]} = {};
+    this.fixtures.map(f => {f.channels.map(c => {
+                        if (res[c.name] === undefined) {
+                          res[c.name] = [];
+                        }
+                        res[c.name].push(f)
+                      })})
 
     return res
   }
-  private __updatingChannels = false
+  private __updatingChannels = false;
   get channelNames() {
-    return Object.keys(this.channelsMap)
+    return Object.keys(this.channelsMap);
   }
 
   // @SetAccessible({readonly: true, blockRecursion: true})
   // public fixtures = new Array<FixtureBase>();
 
-  constructor(public name: string, public fixtureNames: string[], _universe: Universe) {
+  constructor(
+      public name: string, public fixtureNames: string[], _universe: Universe) {
     super(name, [], 'group');
 
     // super.channels.map(c=>super.removeChannel(c))
@@ -461,18 +494,18 @@ export class FixtureGroup extends FixtureBase {
     this.universe = _universe
     if (this.channels && this.channels.length) {
       console.log(name, this.channels)
-      debugger
+      debugger;
     }
     // const newCh = super.channels;
-
-
   }
   get fixtures() {
     if (!this.universe) {
       debugger
       return [] as FixtureBase[]
     }
-    return (this.universe as Universe).getFixtureListFromNames(this.fixtureNames).filter(e => e !== undefined) as FixtureBase[]
+    return (this.universe as Universe)
+               .getFixtureListFromNames(this.fixtureNames)
+               .filter(e => e !== undefined) as FixtureBase[]
   }
   addFixtureName(n: string) {
     if (this.fixtureNames.includes(n)) {
@@ -488,13 +521,15 @@ export class FixtureGroup extends FixtureBase {
       return
     }
     this.fixtureNames.splice(idx, 1)
-
   }
 
 
   public configureFromObj(ob: any) {
     this.fixtureNames.map((f) => this.removeFixtureName(f));
-    if (ob.name && this.name !== ob.name) { console.error('name mismatch in group'); debugger; }
+    if (ob.name && this.name !== ob.name) {
+      console.error('name mismatch in group');
+      debugger;
+    }
     if (this.universe !== undefined && this.universe !== null) {
       ob.fixtureNames.map((e: string) => this.addFixtureName(e))
     } else {
@@ -505,7 +540,7 @@ export class FixtureGroup extends FixtureBase {
   }
 
   public toJSON() {
-    return { fixtureNames: this.fixtureNames, name: this.name };
+    return {fixtureNames: this.fixtureNames, name: this.name};
   }
 
   // get fixtureNames() {return   this.fixtures.map((f) => f.name); }
@@ -521,53 +556,58 @@ export class FixtureGroup extends FixtureBase {
   get dimmerInSync() {
     if (this.fixtures.length) {
       const v = this.fixtures[0].dimmerValue;
-      return this.fixtures.every((f) => f.dimmerInSync && (f.dimmerValue === v));
+      return this.fixtures.every(
+          (f) => f.dimmerInSync && (f.dimmerValue === v));
     }
     return true;
-
   }
-  @RemoteFunction({sharedFunction:true})
-  updateChInternal(){
+  @RemoteFunction({sharedFunction: true})
+  updateChInternal() {
     if (!this.__updatingChannels) {
-    this.__updatingChannels = true
-    const newChNames = this.channelNames
-    const toAdd = newChNames.filter((v) => !this._cachedChannelNames.includes(v));
-    const toRm = this._cachedChannelNames.filter((v) => !newChNames.includes(v));
-    toRm.map(cn => this.removeChannelNamed(cn))
-    toAdd.map((n) => this.addChannel(new ChannelGroup(n,this)));
-    this._cachedChannelNames = newChNames
-    this.__updatingChannels = false
+      this.__updatingChannels = true
+      const newChNames = this.channelNames
+      const toAdd =
+          newChNames.filter((v) => !this._cachedChannelNames.includes(v));
+      const toRm =
+          this._cachedChannelNames.filter((v) => !newChNames.includes(v));
+      toRm.map(cn => this.removeChannelNamed(cn))
+      toAdd.map((n) => this.addChannel(new ChannelGroup(n, this)));
+      this._cachedChannelNames = newChNames;
+      this.__updatingChannels = false
     }
-      //     else{
-      //   console.error('weird recursion error')
-      //   debugger
-      //   // this._cachedChannelGroups.map((cg,i)=>setChildAccessible(this.channels,''+i))
-      // }
+    //     else{
+    //   console.error('weird recursion error')
+    //   debugger
+    //   //
+    //   this._cachedChannelGroups.map((cg,i)=>setChildAccessible(this.channels,''+i))
+    // }
   }
   get channels() {
-    if (!arraysEqual(this._cachedChannelNames, this.channelNames)
-    || !arraysEqual(this.pchannels.map(c=>c.name),this._cachedChannelNames) ) {
+    if (!arraysEqual(this._cachedChannelNames, this.channelNames) ||
+        !arraysEqual(
+            this.pchannels.map(c => c.name), this._cachedChannelNames)) {
       this.updateChInternal()
     }
     const tCh = this.pchannels;
 
     return tCh as ChannelGroup[]
-
   }
   set channels(c: ChannelGroup[]) {
-    if (!c || c.length === 0) { return; }
+    if (!c || c.length === 0) {
+      return;
+    }
     debugger;
-    // return Object.entries(this.channelsMap).map(([k,v])=>f.getChannelNamed(k))
+    // return
+    // Object.entries(this.channelsMap).map(([k,v])=>f.getChannelNamed(k))
   }
 
-  @RemoteFunction({ sharedFunction: true })
-  public addChannel(c: ChannelBase | undefined) {
+  @RemoteFunction({sharedFunction: true})
+  public addChannel(c: ChannelBase|undefined) {
     if (!c || !ChannelGroup.isChannelGroup(c)) {
-      console.error("can't manually add channel on group");
+      console.error('can\'t manually add channel on group');
       debugger
       return new ChannelBase('channel', 0, this.span);
-    }
-    else {
+    } else {
       return super.addChannel(c)
     }
   }
@@ -582,30 +622,20 @@ export class FixtureGroup extends FixtureBase {
   //     return new ChannelGroup(n,this)
   //   }
   // }
-
-
-
 }
 
 export class DirectFixture extends FixtureBase {
-
   constructor(fixtureName: string, circs: number[]) {
     super(fixtureName, circs.map((c) => new ChannelBase('channel', 0, c)));
     this.ftype = 'direct';
-
   }
-
-
 }
 fixtureTypes.direct = (...args: any[]) => new DirectFixture(args[0], args[1]);
 
 
-          // console.log('started')
-          // const f = new DirectFixture('lala',[0])
-          // console.log("setName")
-          // f.setName("lala")
-          // const  allCircs  = new Array(512).fill(0).map((_, idx) => idx);
-          // export const fixtureAll = new DirectFixture('all', allCircs);
-
-
-
+// console.log('started')
+// const f = new DirectFixture('lala',[0])
+// console.log("setName")
+// f.setName("lala")
+// const  allCircs  = new Array(512).fill(0).map((_, idx) => idx);
+// export const fixtureAll = new DirectFixture('all', allCircs);

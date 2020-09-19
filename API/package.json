@@ -5,7 +5,8 @@
   "scripts": {
     "build:server": "webpack ",
     "build:client": "IS_CLIENT=1 webpack ",
-    "lint": "eslint src/**/* --fix"
+    "lint": "eslint src/**/* --fix",
+    "genOnce": "GEN_ONCE=1 node gen.js"
   },
   "dependencies": {
     "adm-zip": "^0.4.x",

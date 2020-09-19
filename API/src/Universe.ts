@@ -1,57 +1,61 @@
-import { FixtureBase, FixtureGroup } from './Fixture';
-import { ChannelBase, UniverseListener } from './Channel';
-import { getNextUniqueName , compareValues} from './Utils';
-import { SetAccessible, setChildAccessible, AccessibleClass , RemoteFunction, nonEnumerable, changeAccessibleName} from './ServerSync';
-import {addProp, deleteProp} from './MemoryUtils';
 import {debounce} from 'lodash'
+
+import {ChannelBase, UniverseListener} from './Channel';
 import vermuthDBG from './dbg';
+import {FixtureBase, FixtureGroup} from './Fixture';
+import {addProp, deleteProp} from './MemoryUtils';
+import {AccessibleClass, changeAccessibleName, nonEnumerable, RemoteFunction, SetAccessible, setChildAccessible} from './ServerSync';
+import {compareValues, getNextUniqueName} from './Utils';
 
-export interface UniverseI {
-
-}
+export interface UniverseI {}
 
 @AccessibleClass()
 export class Universe implements UniverseI {
-
   @nonEnumerable()
   public readonly testedChannel = new ChannelBase('tested', 0, -1);
   @SetAccessible({readonly: true})
-  public  testedFixture = new FixtureBase('testedFixture', [this.testedChannel]);
+  public testedFixture = new FixtureBase('testedFixture', [this.testedChannel]);
   public driverName = 'none';
 
   @SetAccessible({readonly: true})
-  public  fixtures: {[id: string]: FixtureBase} = {};
+  public fixtures: {[id: string]: FixtureBase} = {};
 
   @SetAccessible({readonly: true})
-  public  groups: {[id: string]: FixtureGroup} = {};
-
+  public groups: {[id: string]: FixtureGroup} = {};
 
 
 
   private _master = 1.0;
   constructor() {
-    this.testedChannel.setValue( 1.0, true);
-    this.checkDuplicatedCircDebounced = debounce(this.checkDuplicatedCirc.bind(this),100,{trailing:true})
+    this.testedChannel.setValue(1.0, true);
+    this.checkDuplicatedCircDebounced =
+        debounce(this.checkDuplicatedCirc.bind(this), 100, {trailing: true})
     // this.testedChannel.setParentFixture({baseCirc:0})
   }
 
 
-  public get grandMaster() {return this._master; }
-  public set grandMaster(v: number){
+  public get grandMaster() {
+    return this._master;
+  }
+  public set grandMaster(v: number) {
     this.setGrandMaster(v)
   }
-  @RemoteFunction({sharedFunction:true})
+  @RemoteFunction({sharedFunction: true})
   public setGrandMaster(n: number) {
     this._master = n;
-    for(const c of this.allChannels){
-      if(c.reactToMaster){c.updateTrueValue()}
+    for (const c of this.allChannels) {
+      if (c.reactToMaster) {
+        c.updateTrueValue()
+      }
     }
   }
-  public get groupNames() { return Object.keys(this.groups); }
+  public get groupNames() {
+    return Object.keys(this.groups);
+  }
 
   @RemoteFunction({sharedFunction: true})
   public addGroup(name: string) {
-    this.groups[name] = new FixtureGroup(name,[],this);
+    this.groups[name] = new FixtureGroup(name, [], this);
     this.groups[name].universe = this;
     return this.groups[name] as FixtureGroup;
   }
@@ -59,14 +63,15 @@ export class Universe implements UniverseI {
   @RemoteFunction({sharedFunction: true})
   public removeGroupNamed(name: string) {
     if (this.groups[name] !== undefined) {
-      //this.groups[name].universe = null;
+      // this.groups[name].universe = null;
       delete this.groups[name];
     }
   }
 
 
   public getGroupsForFixture(f: FixtureBase) {
-    return Object.values(this.groups).filter( (v) => v.fixtureNames.includes(f.name));
+    return Object.values(this.groups)
+        .filter((v) => v.fixtureNames.includes(f.name));
   }
   public getGroupNamesForFixture(f: FixtureBase) {
     return this.getGroupsForFixture(f).map((g) => g.name);
@@ -78,8 +83,10 @@ export class Universe implements UniverseI {
   @RemoteFunction({sharedFunction: true})
   public setGroupNamesForFixture(f: FixtureBase, gNames: string[]) {
     const validGNames = gNames.filter((g) => this.groupNames.includes(g));
-    const toAdd  = validGNames.filter((v) => !this.getGroupNamesForFixture(f).includes(v));
-    const toRm = this.getGroupNamesForFixture(f).filter((v) => !validGNames.includes(v));
+    const toAdd =
+        validGNames.filter((v) => !this.getGroupNamesForFixture(f).includes(v));
+    const toRm =
+        this.getGroupNamesForFixture(f).filter((v) => !validGNames.includes(v));
     for (const g of toRm) {
       this.groups[g].removeFixtureName(f.name);
     }
@@ -102,15 +109,24 @@ export class Universe implements UniverseI {
     //   this.groups[k].universe = this
     // });
   }
-  public get fixtureList() {return Object.values(this.fixtures); }
-
-  public get fixtureAndGroupList() {
-    return (this.groupList as Array<FixtureBase | FixtureGroup>).concat(this.fixtureList);
+  public get fixtureList() {
+    return Object.values(this.fixtures);
   }
 
-  public getFixtureListFromNames(n: string[]) {return n.map((e) => this.fixtures[e]).filter((e) => e !== undefined); }
-  public getFixtureNamed(n: string) {return this.fixtures[n]; }
-  public get sortedFixtureList() {return this.fixtureList.slice().sort(compareValues('name', 'asc')); }
+  public get fixtureAndGroupList() {
+    return (this.groupList as Array<FixtureBase|FixtureGroup>)
+        .concat(this.fixtureList);
+  }
+
+  public getFixtureListFromNames(n: string[]) {
+    return n.map((e) => this.fixtures[e]).filter((e) => e !== undefined);
+  }
+  public getFixtureNamed(n: string) {
+    return this.fixtures[n];
+  }
+  public get sortedFixtureList() {
+    return this.fixtureList.slice().sort(compareValues('name', 'asc'));
+  }
 
   // singleton guard
   // public static createFromObj(ob: any): Universe
@@ -121,37 +137,31 @@ export class Universe implements UniverseI {
     }
     this.fixtureList.map((f) => this.removeFixture(f));
     if (ob.fixtures) {
-      for (const f of Object.values(ob.fixtures) ) {
+      for (const f of Object.values(ob.fixtures)) {
         const df = FixtureBase.createFromObj(f);
         if (df) {
           this.addFixture(df);
         }
       }
-
     }
     this.groupNames.map((g) => this.removeGroupNamed(g));
     if (ob.groups) {
-      for ( const [k, v] of Object.entries(ob.groups)) {
+      for (const [k, v] of Object.entries(ob.groups)) {
         const gi = this.addGroup(k);
         gi.configureFromObj(v);
       }
     }
-
-
-
   }
   public checkDuplicatedCircDebounced: () => void;
 
   private checkDuplicatedCirc() {
-
     const allChs = this.allChannels;
-    for ( const c of allChs) {
+    for (const c of allChs) {
       c.hasDuplicatedCirc = false;
     }
-    for ( let i = 0 ; i < allChs.length; i++) {
-
+    for (let i = 0; i < allChs.length; i++) {
       const c = allChs[i];
-      for (let j = i + 1 ; j < allChs.length; j++) {
+      for (let j = i + 1; j < allChs.length; j++) {
         const cc = allChs[j];
         if (c.isSameAs(cc)) {
           console.error('bug in duplicatedCircCheck');
@@ -162,55 +172,60 @@ export class Universe implements UniverseI {
         }
       }
     }
-
-
   }
   public setDriverName(n: string) {
-    this.driverName  = n;
+    this.driverName = n;
   }
 
-  @RemoteFunction({sharedFunction:true})
+  @RemoteFunction({sharedFunction: true})
   public addFixture(f: FixtureBase) {
-    if(f && !(f instanceof FixtureBase)){
+    if (f && !(f instanceof FixtureBase)) {
       const ob = f as any
-      ob.name = getNextUniqueName(this.fixtureList.map((ff) => ff.name), ob.name);
-      f = new FixtureBase(ob.name,[],(f as any).ftype);
+      ob.name =
+          getNextUniqueName(this.fixtureList.map((ff) => ff.name), ob.name);
+      f = new FixtureBase(ob.name, [], (f as any).ftype);
       f.configureFromObj(ob)
     }
     f.name = getNextUniqueName(this.fixtureList.map((ff) => ff.name), f.name);
 
-    setChildAccessible(this.fixtures, f.name,  {defaultValue: f});
+    setChildAccessible(this.fixtures, f.name, {defaultValue: f});
     f.__events.on('nameChanged', (ff: FixtureBase, oldName: string) => {
-      const newName = getNextUniqueName(this.fixtureList.filter((fff) => fff !== ff).map((fff) => fff.name), ff.name);
+      const newName = getNextUniqueName(
+          this.fixtureList.filter((fff) => fff !== ff).map((fff) => fff.name),
+          ff.name);
       delete this.fixtures[oldName];
       ff.setName(newName);
-      
+
       this.fixtures[newName] = ff;
-      changeAccessibleName(ff,newName);
+      changeAccessibleName(ff, newName);
       // setChildAccessible(this.fixtures, newName, {defaultValue: ff});
     });
     f.universe = this;
   }
-  @RemoteFunction({sharedFunction:true})
+  @RemoteFunction({sharedFunction: true})
   public removeFixture(f: FixtureBase) {
-    if(f && f.name ){
-      if(this.fixtures[f.name]){
-      delete this.fixtures[f.name];
+    if (f && f.name) {
+      if (this.fixtures[f.name]) {
+        delete this.fixtures[f.name];
+      } else {
+        console.error(
+            `can't remove fixture ${f.name} from ${Object.keys(this.fixtures)}`)
       }
-      else{
-        console.error(`can't remove fixture ${f.name} from ${Object.keys(this.fixtures)}`)
-      }
-  }}
-  
+    }
+  }
+
   public getNextCirc(d: number, forbidden?: number[]): number {
-    const circsUsed = this.allChannels.map((ch) => ch.trueCirc).concat(forbidden || []);
-    while (circsUsed.indexOf(d) !== -1) {d += 1; }
+    const circsUsed =
+        this.allChannels.map((ch) => ch.trueCirc).concat(forbidden || []);
+    while (circsUsed.indexOf(d) !== -1) {
+      d += 1;
+    }
     return d;
   }
 
   public checkCircsValidity() {
     const usedChannels = new Array<number>();
-    for ( const f of this.fixtureList) {
+    for (const f of this.fixtureList) {
       for (const c of f.channels) {
         c.hasDuplicatedCirc = usedChannels.indexOf(c.trueCirc) !== -1;
         if (!c.hasDuplicatedCirc) {
@@ -239,7 +254,7 @@ export class Universe implements UniverseI {
   }
 
   public getUIDForChannel(c: ChannelBase) {
-    return c.getUID(); // like :: c.parentFixture.name + "/" + c.name
+    return c.getUID();  // like :: c.parentFixture.name + "/" + c.name
   }
 
   public getChannelFromUID(uid: string) {
@@ -247,7 +262,23 @@ export class Universe implements UniverseI {
   }
 
   @RemoteFunction({sharedFunction: true})
-  public setAllColor(color: {r: number; g: number; b: number}, setWhiteToZero: boolean) {
+  public setAllFogs(v: number) {
+    this.fixtureList.map((f) => {
+      const fogTypes = f.getChannelsOfRole('fog');
+      if (fogTypes) {
+        for (const chs of Object.values(fogTypes)) {
+          for (const c of Object.values(chs)) {
+            console.log('c', c, v);
+            c.setValue(v, true);
+          }
+        }
+      }
+    })
+  }
+
+  @RemoteFunction({sharedFunction: true})
+  public setAllColor(
+      color: {r: number; g: number; b: number}, setWhiteToZero: boolean) {
     this.fixtureList.map((f) => f.setColor(color, setWhiteToZero));
   }
   @RemoteFunction({sharedFunction: true})
@@ -256,8 +287,11 @@ export class Universe implements UniverseI {
   }
 
   @RemoteFunction({sharedFunction: true})
-  public setGroupColor(gName: string, color: {r: number; g: number; b: number}, setWhiteToZero: boolean) {
-    this.getFixturesInGroupNamed(gName).map((f) => f.setColor(color, setWhiteToZero));
+  public setGroupColor(
+      gName: string, color: {r: number; g: number; b: number},
+      setWhiteToZero: boolean) {
+    this.getFixturesInGroupNamed(gName).map(
+        (f) => f.setColor(color, setWhiteToZero));
   }
   @RemoteFunction({sharedFunction: true})
   public setGroupMaster(gName: string, v: number) {
@@ -276,10 +310,7 @@ export class Universe implements UniverseI {
     this.updateChannelsValues();
   }
 
-  public setTestedChannelDimmer(dimmerNum: number ) {
-    this.testedChannel.setCirc( dimmerNum);
+  public setTestedChannelDimmer(dimmerNum: number) {
+    this.testedChannel.setCirc(dimmerNum);
   }
-
-
 }
-
