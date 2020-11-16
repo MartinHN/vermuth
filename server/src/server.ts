@@ -286,12 +286,13 @@ httpServer.listen(PORT, () => {
 });
 
 
-import {WiiAdapter} from './adapters/adapters'
-const wii = new WiiAdapter();
+// import {WiiAdapter} from './adapters/adapters'
+// const wii = new WiiAdapter();
 let moduleFilePaths = cfg.getConfig('module')
-if (moduleFilePaths && moduleFilePaths.length === undefined) {
+if (typeof( moduleFilePaths) === "string") {
   moduleFilePaths = [moduleFilePaths]
 }
+console.log("modules",moduleFilePaths)
 for (const moduleFilePath of moduleFilePaths) {
   // const amd = require('amd-loader');
   console.log('loading module ', moduleFilePath);
