@@ -11,6 +11,7 @@ const isPi = require('detect-rpi')();
 // const SolenoidDriver = require('./dmxSolenoidDriver');
 
 const LoggerDriver = require('./dmxLoggerDriver');
+const SACNDriver = require('./dmxSACNDriver');
 const _ = require('lodash');
 
 const io = require('socket.io');
@@ -82,6 +83,8 @@ class DMXController implements DMXControllerI {
     this.dmx = new DMX();
     this.dmx.registerDriver('QLC', OSCDriver);
     this.dmx.registerDriver('Logger', LoggerDriver);
+    this.dmx.registerDriver('SACN', SACNDriver);
+    
     // if (needCustomPiLibs) {
     //   this.dmx.registerDriver('GPIO', GPIODriver);
     //   this.dmx.registerDriver('Solenoid', SolenoidDriver);

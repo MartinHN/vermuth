@@ -33,7 +33,7 @@ LoggerDriver.prototype.log = function(c, v) {
 
 LoggerDriver.prototype.sendUniverse = function() {
   for (const i in this.universe) {
-    const m = this.createMsg(i, this.universe[i]);
+    const m = this.log(i, this.universe[i]);
     this.dev.send(m);
   }
 };
