@@ -1,4 +1,6 @@
-dist/
+# dist/*
+# # Except this file
+# !dist/server/public/.gitignore
 deploy/
 old/
 backups/
