@@ -289,13 +289,13 @@ httpServer.listen(PORT, () => {
 // import {WiiAdapter} from './adapters/adapters'
 // const wii = new WiiAdapter();
 let moduleFilePaths = cfg.getConfig('module')
-if (typeof( moduleFilePaths) === "string") {
+console.log("Vermuth specific modules",moduleFilePaths)
+if (typeof( moduleFilePaths) === "string" && moduleFilePaths!=="") {
   moduleFilePaths = [moduleFilePaths]
 }
-console.log("modules",moduleFilePaths)
 for (const moduleFilePath of moduleFilePaths) {
   // const amd = require('amd-loader');
-  console.log('loading module ', moduleFilePath);
+  console.log('Vermuth specific modules ', moduleFilePath);
   const localModuleDir = path.dirname(moduleFilePath);
   // eval(fs.readFileSync(moduleFilePath) + '');
   require(localModuleDir).init();
