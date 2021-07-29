@@ -2,6 +2,7 @@ const DMX = require('dmx');
 const SerialPort = require('serialport');
 import dbg from '@API/dbg'
 const debugDMX = dbg('DMX')
+// const debugDMX = console.warn
 
 const OSCDriver = require('./dmxOSCDriver');
 const needCustomPiLibs = process.env.CUSTOM_PI_DRIVERS;
@@ -22,6 +23,7 @@ import {UniverseListener} from '@API/Channel';
 import rootState from '@API/RootState';
 import {DMXControllerI, needSerialPort} from '@API/DMXControllerI';
 import {AccessibleClass, nonEnumerable, RemoteValue} from '@API/ServerSync';
+import { kMaxLength } from 'buffer';
 
 let lastCircUpdate = 0;
 
@@ -93,7 +95,7 @@ class DMXController implements DMXControllerI {
     delete this.dmx.drivers.null;
     this.watchSerialPorts();
     this.__driverNameList = Object.keys(this.dmx.drivers);
-    // debug('drivers : ', this.__driverNameList);
+    console.log('drivers : ', this.__driverNameList);
     UniverseListener.on(
         'channelChanged',
         (c: any, v: number) => {// this.setCircs([{ c, v }], null);
@@ -261,6 +263,9 @@ class DMXController implements DMXControllerI {
         console.error(ex);
       }
     };
+
+
+    let uri =  this.selectedPortName + ':' + this.selectedDriverName;
     if (this.__connected && this.dmx.universes[this.universeName]) {
       const cuni = this.dmx.universes[this.universeName];
 
@@ -269,7 +274,7 @@ class DMXController implements DMXControllerI {
         cuni.dev.removeAllListeners('error');
         cuni.dev.removeAllListeners('close');
       }
-
+      
       this.dmx.universes[this.universeName].stop();
       const reconnectCB = () => {
         this.__connected = false;
@@ -283,36 +288,41 @@ class DMXController implements DMXControllerI {
       }
       return false;
     }
-
-    const uri = this.selectedPortName + ':' + this.selectedDriverName;
+    
     if (!this.selectedDriverName) {
       console.error('no device selected for enttec');
       this.__connected = false;
       return;
     }
     if (needSerialPort(this.selectedDriverName) && !this.selectedPortName &&
-        this.selectedPortName !== 'none') {
+    this.selectedPortName !== 'none') {
       console.error('no device selected for enttec');
       this.__connected = false;
       return;
     }
+    let deviceId = this.selectedPortName || ''
+    if(this.selectedDriverName == "artnet"){
+      deviceId = "2.255.255.255" 
+      // options.dmx_speed = 1;
+    }
+    
+    uri =  deviceId + ':' + this.selectedDriverName;
+     
     debugDMX('trying to connect to ' + uri);
 
 
     // this.selectedDriverName = ""
 
-
-
     try {
       uni = this.dmx.addUniverse(
           this.universeName, this.selectedDriverName,
-          this.selectedPortName || '', options);
-      // log.log("universe "+JSON.stringify(uni))
-      if (uni && uni.dev && uni.dev.on) {
-        uni.dev.on('open', successCB);
-        uni.dev.on('error', errorCB);
-        uni.dev.on('close', closeCB);
-      } else {
+          deviceId, options);
+          debugDMX("universe ",uni.dev && uni.dev.on,JSON.stringify(uni.dev.on))
+          if (uni && uni.dev && uni.dev.on && this.selectedDriverName!=="artnet") {
+            uni.dev.on('open', successCB);
+            uni.dev.on('error', errorCB);
+            uni.dev.on('close', closeCB);
+          } else {
         successCB();
       }
     } catch (ex) {

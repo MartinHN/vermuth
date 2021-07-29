@@ -62,10 +62,10 @@ stopTimer(name: string) {
   if (timers[name]) {
     clearTimeout(timers[name].timeout);
     const endCB = timers[name].endCB;
+    delete timers[name];
     if (endCB) {
       endCB();
     }
-    delete timers[name];
   }
 }
 

@@ -19,7 +19,7 @@ export function needSerialPort(n: string) {
   return ('' + n).startsWith('enttec');
 }
 
-export function needUdpPort(n: string) {
-  n = '' + n;
-  return ['QLC', 'artnet','SACN', /.*OSC*./].some((e) => n.match(e));
-}
+// export function needUdpPort(n: string) {
+//   n = '' + n;
+//   return ['QLC', 'artnet','SACN', /.*OSC*./].some((e) => n.match(e));
+// }

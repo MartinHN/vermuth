@@ -1918,7 +1918,7 @@ export class RemoteArray<T> {
       this.swapIndexes(ia, ib)
     }
     else {
-      console.error(">>>>>>>>>> not found in swap autoSync",JSON.stringify(a),JSON.stringify(b))
+      console.error("not found in swap autoSync",JSON.stringify(a),JSON.stringify(b))
       throw new Error("not found for swap")
     }
   }

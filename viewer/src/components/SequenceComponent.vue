@@ -125,7 +125,6 @@ export default class SequenceComponent extends Vue {
   }
 
   go() {
-    debugger;
     this.seqPlayer.curPlayedIdx = this.seqNumber;
   }
 }

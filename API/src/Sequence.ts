@@ -3,8 +3,9 @@ import {isArrayLikeObject} from 'lodash';
 import {ChannelBase} from './Channel';
 import {DirectFixture, FixtureBase, FixtureBaseI} from './Fixture';
 import {Proxyfiable} from './MemoryUtils'
-import {AccessibleClass, doSharedFunction, nonEnumerable, RemoteFunction, RemoteValue, SetAccessible} from './ServerSync';
+import {AccessibleClass, doSharedFunction, nonEnumerable, RemoteArray, RemoteFunction, RemoteValue, SetAccessible,callOnServerOnly} from './ServerSync';
 import {blackState, MergedState, ResolvedFixtureState, State, StateList} from './State';
+
 import {doTimer, stopTimer} from './Time';
 import {Universe} from './Universe';
 
@@ -151,7 +152,7 @@ export class SequenceList {
     const ib = this.indexOf(b);
     if(ia<0 || ib < 0){
 
-      console.error(">>>>>>>>>> not found in swap",JSON.stringify(a),JSON.stringify(b))
+      console.error("not found in swap",JSON.stringify(a),JSON.stringify(b))
       throw new Error("not found for swap")
     }
     this.list[ia] = this.list.splice(ib, 1, this.list[ia])[0];
@@ -240,9 +241,14 @@ export class SequencePlayerClass {
   }
 
   @RemoteFunction({sharedFunction: true})
-  next() {
-    this.curPlayedIdx =
-        Math.min(this.sequenceList.length - 1, this.curPlayedIdx + 1);
+  next(allowLoop?:boolean) {
+    if(allowLoop){
+      this.curPlayedIdx = (this.curPlayedIdx + 1) % (this.sequenceList.length )
+    }
+    else{
+      this.curPlayedIdx =
+          Math.min(this.sequenceList.length - 1, this.curPlayedIdx + 1);
+    }
   }
   @RemoteFunction({sharedFunction: true})
   prev() {
@@ -257,6 +263,7 @@ export class SequencePlayerClass {
   public pctDone = 0;
 
   @RemoteValue() public playState = 'stopped';
+  @RemoteValue() public numLoops = 0;
   @RemoteValue() private pcurPlayedIdx = -1;
 
   @RemoteValue() private pisPlaying = false;
@@ -346,19 +353,38 @@ export class SequencePlayerClass {
       this.goToStates(
           [nextState], this.nextSeq.timeIn, {dimMasters: [dimMaster]},
           (...args: any[]) => {
+            // console.log(">>>>>>> end seq",this.numLoops)
             doSharedFunction(() => {
               this.pisPlaying = false;
+              
               if (!this.nextSeq.doNotPrepareNext) {
                 this.resolveSlowChanges(nIdx + 1)
               }
+                        
               if (cb) {
                 cb(...args);
               }
             });
+            callOnServerOnly(
+              ()=>setTimeout( 
+                ()=>{
+                this.endLoop(nIdx) }
+                ,1)
+              );
           });
     }
   }
+@RemoteFunction({skipClientApply:true})
+  private endLoop(nIdx:number){
+    debugger;
+    console.log(">>>>>>> end LOOP",nIdx,this.numLoops)
+    if(this.numLoops == -1){
+      this.curPlayedIdx = (this.curPlayedIdx + 1) % (this.sequenceList.length )
+    }
+  
+}
 
+  
   private resolveSlowChanges(toIdx: number) {
     const stateResolver = (n: string) => {
       return this.stateList.states[n];

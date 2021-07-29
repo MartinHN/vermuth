@@ -6,7 +6,7 @@
           <v-col cols="3">
             <div>{{Number.parseFloat(globalTransport.beat).toFixed(2)}}</div>
           </v-col>
-          <v-col cols="3">
+          <v-col cols="1">
             <Toggle
               v-model="togglePlay"
               style="height:40px"
@@ -14,6 +14,16 @@
               iconOn="stop"
               iconOff="play"
             ></Toggle>
+          </v-col>
+           <v-col cols="2">
+            <Numbox
+              :value=numLoops
+              @change="numLoops=$event"
+              style="height:40px"
+              text="shouldLoop"
+              iconOn="stop"
+              iconOff="play"
+            ></Numbox>
           </v-col>
           <v-col>
             <Numbox text="idx" :value="playedIdx" @change="playedIdx=$event"></Numbox>
@@ -101,11 +111,13 @@ const sequenceModule = namespace("sequence");
 const statesModule = namespace("states");
 import draggable from "vuedraggable";
 import dbg from "@API/dbg";
+import {fetchRemote } from '@API/ServerSync'
 
 @Component({
   components: { Button, Numbox, SequenceComponent, Toggle, draggable }
 })
 export default class Sequencer extends Vue {
+  
   get isPlayingSeq() {
     return this.seqPlayer.isPlaying;
   }
@@ -122,6 +134,14 @@ export default class Sequencer extends Vue {
   }
   set playedIdx(n: number) {
     this.seqPlayer.curPlayedIdx = n;
+  }
+   get numLoops() {
+    //  console.log(">>>>>>>>>>",this.seqPlayer,this.seqPlayer.numLoops)
+    return this.seqPlayer.numLoops;
+  }
+  set numLoops(n: number) {
+        //  console.log(n,">>>>>>>>>>",this.seqPlayer,this.seqPlayer.numLoops)
+    this.seqPlayer.numLoops = n;
   }
 
   get seqList() {
@@ -147,10 +167,18 @@ export default class Sequencer extends Vue {
     });
   }
 
+
   get seqPlayer() {
     return rootState.sequencePlayer;
   }
 
+get infiniteLoop(){
+  return this.seqPlayer.numLoops==-1
+}
+
+set infiniteLoop(v:boolean){
+  this.seqPlayer.numLoops= v?-1:0;
+}
   get togglePlay() {
     return this.globalTransport.isPlaying;
   }
@@ -189,6 +217,7 @@ export default class Sequencer extends Vue {
   }
   public mounted() {
     window.addEventListener("keydown", this.processKey);
+    fetchRemote(this.seqPlayer,'numLoops')
   }
   public activated() {
     window.addEventListener("keydown", this.processKey);
