@@ -175,6 +175,8 @@ export default class Sequencer extends Vue {
   @statesModule.State("stateList")
   public stateList!: StatesMethods["stateList"];
 
+    @Action("SAVE_SESSION") public SAVE_SESSION!: () => void;
+
   public editOrder = false;
 
   public seqClicked(i: number) {
@@ -182,7 +184,8 @@ export default class Sequencer extends Vue {
   }
 
   public addSequence(n: string) {
-    this.sequenceList.insertNewSequence(n, n, this.selectedIdx);
+    this.sequenceList.insertNewSequence(n, n, this.selectedIdx+1);
+    setTimeout(this.SAVE_SESSION,500);
   }
   public mounted() {
     window.addEventListener("keydown", this.processKey);

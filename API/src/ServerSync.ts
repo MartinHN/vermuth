@@ -1900,10 +1900,11 @@ export class RemoteArray<T> {
   @SetAccessible()
   private plist = new Array<T>()
 
-      @RemoteFunction({sharedFunction: true}) swapIndexes(
-          a: number, b: number) {
-    this.l[b] = (this.callM('slice', a, 1))[0]
+  @RemoteFunction({sharedFunction: true}) 
+  swapIndexes(a: number, b: number) {
+    this.l[b] = (this.callM('splice', a, 1,this.l[b]))[0]
   }
+
   private callM(name: string, ...args: any[]) {
     // Array.prototype[name].call(this.l,...args);
     //@ts-ignore
@@ -1915,6 +1916,10 @@ export class RemoteArray<T> {
     const ib = this.l.indexOf(b)
     if (this.validIdx(ia) && this.validIdx(ib)) {
       this.swapIndexes(ia, ib)
+    }
+    else {
+      console.error(">>>>>>>>>> not found in swap autoSync",JSON.stringify(a),JSON.stringify(b))
+      throw new Error("not found for swap")
     }
   }
 
@@ -1928,6 +1933,7 @@ export class RemoteArray<T> {
 
   @RemoteFunction({sharedFunction: true})
   splice(i: number, deleteN: number) {
+    debugger;
     return this.callM('splice', i, deleteN)
   }
 

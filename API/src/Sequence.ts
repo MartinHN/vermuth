@@ -68,7 +68,7 @@ const blackSeq = new Sequence('black', blackState);
 
 @AccessibleClass()
 export class SequenceList {
-  @SetAccessible({readonly: true}) private list = new Array<Sequence>();
+  @SetAccessible({readonly: false}) private list = new Array<Sequence>();
 
   constructor() {}
   public configureFromObj(ob: any) {
@@ -80,17 +80,26 @@ export class SequenceList {
     return this.list;
   }
 
-  public insertAt(s: Sequence, i: number) {
-    if (i >= 0 || i <= this.list.length) {
-      while (this.list.findIndex((ss) => ss.name === s.name) != -1) {
-        s.name = s.name + '.';
-      }
+  public insertAt(s: Sequence, i: number) { if (i >= 0 || i <= this.list.length) {
+    let finalName = s.name
+    while (this.list.findIndex((ss) => ss.name === finalName) != -1) {
+      finalName = finalName + '.';
+    }
 
-      if (i === this.list.length) {
-        this.list.push(s);
-      } else {
-        this.list.splice(i, 0, s);
+    // splice dont work...
+    // if (i === this.list.length) {
+    //   this.list.push(s);
+    // } else {
+    //   this.list.splice(i, 0, s);
+    // }
+    
+    this.list.push(s);
+    if (i < this.list.length-1) {
+      for(let j =this.list.length-1 ;j>i ; j--){
+        this.swap(this.list[j],this.list[j-1])
       }
+    }
+    s.name = finalName;
     } else {
       console.error('invalid index', i);
     }
@@ -98,9 +107,18 @@ export class SequenceList {
   public getAtIdx(i: number) {
     return this.list[i];
   }
-  public indexOf(s: Sequence) {
-    return this.list.indexOf(s);
+  public indexOf(s: Sequence) :number{
+    const i = this.list.indexOf(s);
+    if(i<0){
+      for(const [ii,ss] of Object.entries(this.list)){
+        if(s.name===ss.name){
+          return parseInt(ii);
+        }
+      }
+    } 
+    return i;
   }
+
   @RemoteFunction({sharedFunction: true})
   public insertNewSequence(name: string, stateName: string, idx: number) {
     const s = new Sequence(name, stateName)
@@ -112,35 +130,42 @@ export class SequenceList {
 
   @RemoteFunction({sharedFunction: true})
   public remove(s: Sequence) {
-    const i = this.list.indexOf(s);
+    const i = this.indexOf(s);
     if (i >= 0) {
       this.list.splice(i, 1);
     }
   }
   @RemoteFunction({sharedFunction: true})
   public setSeqIdx(s: Sequence, i: number) {
-    const ii = this.list.indexOf(s);
+    const ii = this.indexOf(s);
     if (ii >= 0) {
       this.remove(s);
       i = Math.min(this.list.length - 1, Math.max(0, i));
       this.insertAt(s, i);
     }
   }
+
   @RemoteFunction({sharedFunction: true})
   public swap(a: Sequence, b: Sequence) {
-    const ia = this.list.indexOf(a);
-    const ib = this.list.indexOf(b);
+    const ia = this.indexOf(a);
+    const ib = this.indexOf(b);
+    if(ia<0 || ib < 0){
+
+      console.error(">>>>>>>>>> not found in swap",JSON.stringify(a),JSON.stringify(b))
+      throw new Error("not found for swap")
+    }
     this.list[ia] = this.list.splice(ib, 1, this.list[ia])[0];
+
   }
 
   public up(s: Sequence) {
-    const prev = this.list.indexOf(s) - 1;
+    const prev = this.indexOf(s) - 1;
     if (prev >= 0) {
       this.swap(s, this.list[prev]);
     }
   }
   public down(s: Sequence) {
-    const next = this.list.indexOf(s) + 1;
+    const next = this.indexOf(s) + 1;
     if (next < this.list.length) {
       this.swap(s, this.list[next]);
     }
