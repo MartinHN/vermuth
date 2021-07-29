@@ -285,6 +285,7 @@ export default class FixturePatch extends Vue {
         prompt("how much do you want to add", "1") || "0",
         10
       );
+      if(numFixture==0) return;
       const baseAddr = parseInt(
         prompt("starting dimmer number", "1") || "1",
         10

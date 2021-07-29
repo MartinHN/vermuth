@@ -67,6 +67,7 @@ export class RootStateType {
   }
 
   public async init(ob?: any) {
+    debugger
     await this.fixtureFactory.init(ob?.ressourceDir);
   }
 

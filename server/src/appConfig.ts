@@ -4,7 +4,7 @@ const argsToParse = yargs.help().alias('help', 'h');
 const validArgs = {};
 let argv: any = undefined;
 
-envOrCliArg('PORT', 3003, 'OSCPort to listen to');
+envOrCliArg('PORT', 3005, 'OSCPort to listen to');
 envOrCliArg('module', '', 'loads script file dynamically');
 envOrCliArg('CUSTOM_PI_DRIVERS', true)
 envOrCliArg('LOG_MSG', false);

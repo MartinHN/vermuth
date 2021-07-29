@@ -6,7 +6,7 @@ import { getCircular } from '@API/SerializeUtils';
 
 
 let hasRemoteState = false;
-const IOPort = 3003;
+
 class Server {
   @nonEnumerable()
   public __serverIP: string = '';
@@ -24,6 +24,10 @@ class Server {
   public connect(store: any, serverIP: string) {
     this.__serverIP = serverIP;
     this.__store = store;
+    debugger;
+    const pagePort =  parseInt(window.location.port)
+    const IOPort = pagePort >8000?3005 : pagePort;
+    console.warn('try to connect to',`http://${serverIP}:${IOPort}`)
     const socket = io(`http://${serverIP}:${IOPort}`, { transports: ['websocket'] });
     //@ts-ignore
     const originFunc = socket.io.engine.transport.write
