@@ -44,8 +44,6 @@ function SACNDriver(deviceId = "127.0.0.1", options = {}) {
 
 
 SACNDriver.prototype.sendFrame = function(payload) {
-    console.log("send fr",payload)
-
     this.dev.send({payload,
         // sourceName: "My NodeJS app", // optional. LED lights will use this as the name of the source lighting console.
         //     priority: 100, // optional. value between 0-200, in case there are other consoles broadcasting to the same universe
