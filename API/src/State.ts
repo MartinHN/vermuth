@@ -169,8 +169,9 @@ export class FixtureState {
       validChs = channels.filter((c) => vNames.includes(c.getUID()));
     } else {
       validChs = [];
+      if(!options || options.channelNames===undefined){
       // debugger;
-      console.error('old way of creating state');
+      console.error('old way of creating state');}
     }
     validChs.map((c) => {
       const curveLink = CurvePlayer.getCurveLinkForChannel(c);

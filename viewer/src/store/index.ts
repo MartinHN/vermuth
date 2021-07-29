@@ -292,5 +292,3 @@ rootState.treeEvents.on('call', (parent: any, options: any, ctx: any) => {
 });
 
 export default myVueStore;
-
-

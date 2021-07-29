@@ -59,13 +59,12 @@ export default class PresetView extends Vue {
   public selectedState: State | null = null;
 
   public get presetableState() {
-    
     const curS = rootState.stateList.currentState
-    debugger;
+    // debugger
     return this.selectedState ? this.selectedState.presetableState :curS.presetableState;
   }
   public set presetableState(s: any) {
-    debugger;
+    // debugger;
     if (this.selectedState) {
       this.selectedState.presetableState = s;
     }

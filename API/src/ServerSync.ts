@@ -259,6 +259,11 @@ export const rebuildChildAccessibles =
         if (!assert(o !== undefined, 'accessible parsing error')) {
           return
         }
+        if (o === null){
+          dbgStruct( 'accessible parsing error (null)');
+          o = {}
+        }
+        
         const adUp = new AddressUpdater()
         if (adUp.updateAddr(o, '', false)) {
           Object.defineProperty(o, '__accessibleAddress', {
@@ -1430,6 +1435,10 @@ function generateAccessibleHandler(opts?: {
 }) {
   return {
     set(obj: any, prop: symbol|string, value: any, thisProxy: any) {
+      if(prop==="__proto__"){
+        obj[prop]=value;
+        return true;
+      }
       let needRebuild = false;
       if (Array.isArray(obj) && !isNaN(prop as any)) {
         if (value && value.__accessibleName !== undefined) {

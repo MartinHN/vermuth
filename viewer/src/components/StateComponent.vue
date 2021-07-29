@@ -174,8 +174,12 @@ export default class StateComponent extends Vue {
   private stateNames!: StateMethods["stateNames"];
   @statesModule.Getter("loadedStateName")
   private ploadedStateName!: StateMethods["loadedStateName"];
-
+  
   private stateList = rootState.stateList as StateList;
+
+
+  @Action("SAVE_SESSION") public SAVE_SESSION!: () => void;
+
 
   public mounted() {
     window.addEventListener("keydown", this.processKey);
@@ -238,6 +242,9 @@ export default class StateComponent extends Vue {
         this.linkedStateList,
         this.actions
       );
+
+      // save manually to ensure States are present on server
+      this.SAVE_SESSION();
 
       // this.selectedState = this.stateList.getStateNamed(name);
     }
