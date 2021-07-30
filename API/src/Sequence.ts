@@ -353,7 +353,6 @@ export class SequencePlayerClass {
       this.goToStates(
           [nextState], this.nextSeq.timeIn, {dimMasters: [dimMaster]},
           (...args: any[]) => {
-            // console.log(">>>>>>> end seq",this.numLoops)
             doSharedFunction(() => {
               this.pisPlaying = false;
               
@@ -377,7 +376,6 @@ export class SequencePlayerClass {
 @RemoteFunction({skipClientApply:true})
   private endLoop(nIdx:number){
     debugger;
-    console.log(">>>>>>> end LOOP",nIdx,this.numLoops)
     if(this.numLoops == -1){
       this.curPlayedIdx = (this.curPlayedIdx + 1) % (this.sequenceList.length )
     }

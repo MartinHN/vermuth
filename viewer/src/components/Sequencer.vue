@@ -136,11 +136,13 @@ export default class Sequencer extends Vue {
     this.seqPlayer.curPlayedIdx = n;
   }
    get numLoops() {
-    //  console.log(">>>>>>>>>>",this.seqPlayer,this.seqPlayer.numLoops)
+     fetchRemote(this.seqPlayer,'numLoops')
+    //  console.log(this.seqPlayer,this.seqPlayer.numLoops)
     return this.seqPlayer.numLoops;
   }
   set numLoops(n: number) {
-        //  console.log(n,">>>>>>>>>>",this.seqPlayer,this.seqPlayer.numLoops)
+    // fetchRemote(this.seqPlayer,'numLoops')
+        //  console.log(n,this.seqPlayer,this.seqPlayer.numLoops)
     this.seqPlayer.numLoops = n;
   }
 
@@ -217,7 +219,7 @@ set infiniteLoop(v:boolean){
   }
   public mounted() {
     window.addEventListener("keydown", this.processKey);
-    fetchRemote(this.seqPlayer,'numLoops')
+    
   }
   public activated() {
     window.addEventListener("keydown", this.processKey);
