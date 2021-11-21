@@ -7,7 +7,7 @@
     "build": "vue-cli-service build",
     "buildFast": "vue-cli-service build --skip-plugins @vue/cli-plugin-eslint",
     "lint": "vue-cli-service lint",
-    "deploy": "npm run build && rsync -r -e ssh -avz --delete-after  ../server/public pi@lampignon1.local:vermuth/server/",
+    "deploy": "npm run build && rsync -r -e ssh -avz --delete-after  ../server/dist/server/public pi@rpi.local:raspestrio/Vermuth/server/dist/server/",
     "debug": "vue-cli-service build --mode=debug --watch",
     "deploy2": "npm run build && rsync -r -e ssh -avz --delete-after  ../server/public pi@lampignon2.local:vermuth/server/",
     "deploylogic": "npm run build && rsync -r -e ssh -avz --delete-after  ../server/public pi@radiologic.local:Documents/vermuth/server/dist/server/",

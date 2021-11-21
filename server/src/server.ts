@@ -1,5 +1,6 @@
 const debugMode = process.env.NODE_ENV !== 'production';
 import * as cfg from 'appConfig'
+import * as rw from 'PiROHelpers'
 cfg.parseCliCommands();
 if (!debugMode) {
   require('module-alias/register');
@@ -80,6 +81,7 @@ app.use(express.static(publicDir));
 let states: any = {};
 
 // write empty if non existent
+rw.setRW(true)
 fs.writeFile(
     localStateFile, JSON.stringify({}), {flag: 'wx', encoding: 'utf-8'},
     (ferr: any) => {
@@ -100,8 +102,8 @@ fs.writeFile(
       } else {
         console.log('created file');
       }
-    });
-
+});
+rw.setRW(false)
 
 function backupFiles() {
   const bDir = backupDir;
@@ -184,6 +186,7 @@ function setStateFromObject(msg: any, socket: any) {
     // }
     states = rootState.toJSONObj();  // update persistent changes
 
+    rw.setRW(true)
     backupFiles();
 
     fs.writeFile(
@@ -194,6 +197,7 @@ function setStateFromObject(msg: any, socket: any) {
           if (v) {
             console.error('file write error : ', v);
           }
+          rw.setRW(false)
         },
     );
 
