@@ -13,7 +13,7 @@ function LoggerDriver(deviceId = "127.0.0.1", options = {}) {
    * Allow artnet rate to be set and default to 44Hz
    * @type Number
    */
-
+  this.dev = {}
   this.start();
 }
 
@@ -34,7 +34,6 @@ LoggerDriver.prototype.log = function(c, v) {
 LoggerDriver.prototype.sendUniverse = function() {
   for (const i in this.universe) {
     const m = this.log(i, this.universe[i]);
-    this.dev.send(m);
   }
 };
 
@@ -47,7 +46,6 @@ LoggerDriver.prototype.stop = function() {
 };
 
 LoggerDriver.prototype.close = function(cb) {
-  if (this.dev ) { this.dev.close(); }
   this.stop();
   cb(null);
 };
