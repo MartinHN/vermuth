@@ -317,14 +317,14 @@ class DMXController implements DMXControllerI {
       uni = this.dmx.addUniverse(
           this.universeName, this.selectedDriverName,
           deviceId, options);
-          debugDMX("universe ",uni.dev && uni.dev.on,JSON.stringify(uni.dev.on))
-          if (uni && uni.dev && uni.dev.on && this.selectedDriverName!=="artnet") {
-            uni.dev.on('open', successCB);
-            uni.dev.on('error', errorCB);
-            uni.dev.on('close', closeCB);
-          } else {
-        successCB();
-      }
+        debugDMX("universe ",uni.dev && uni.dev.on,JSON.stringify(uni.dev.on))
+        if (uni && uni.dev && uni.dev.on && this.selectedDriverName!=="artnet") {
+          uni.dev.on('open', successCB);
+          uni.dev.on('error', errorCB);
+          uni.dev.on('close', closeCB);
+        } else {
+         successCB();
+        }
     } catch (ex) {
       log.error('can\'t open device ' + ex);
       errorCB();
