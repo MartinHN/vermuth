@@ -7,16 +7,16 @@ cd $DIR
 
 cd API
 
-npm install
+pnpm install
 
 cd ../viewer
 
-npm install
+pnpm install
 
 
 
 cd ../server
 
-npm install
+pnpm install
 
 

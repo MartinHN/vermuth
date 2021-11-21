@@ -1,0 +1,22 @@
+{
+  "0 debug pnpm:scope": {
+    "selected": 1
+  },
+  "1 error pnpm": {
+    "code": "ERR_PNPM_UNSUPPORTED_ENGINE",
+    "packageId": "/home/pi/raspestrio/Vermuth/server",
+    "wanted": {
+      "node": "14^"
+    },
+    "current": {
+      "node": "v14.18.1",
+      "pnpm": "6.22.2"
+    },
+    "err": {
+      "name": "pnpm",
+      "message": "Unsupported engine for /home/pi/raspestrio/Vermuth/server: wanted: {\"node\":\"14^\"} (current: {\"node\":\"v14.18.1\",\"pnpm\":\"6.22.2\"})",
+      "code": "ERR_PNPM_UNSUPPORTED_ENGINE",
+      "stack": "pnpm: Unsupported engine for /home/pi/raspestrio/Vermuth/server: wanted: {\"node\":\"14^\"} (current: {\"node\":\"v14.18.1\",\"pnpm\":\"6.22.2\"})\n    at checkEngine (/usr/pnpm-global/5/node_modules/.pnpm/pnpm@6.22.2/node_modules/pnpm/dist/pnpm.cjs:36022:16)\n    at checkPackage (/usr/pnpm-global/5/node_modules/.pnpm/pnpm@6.22.2/node_modules/pnpm/dist/pnpm.cjs:38110:104)\n    at packageIsInstallable (/usr/pnpm-global/5/node_modules/.pnpm/pnpm@6.22.2/node_modules/pnpm/dist/pnpm.cjs:38134:61)\n    at tryReadProjectManifest (/usr/pnpm-global/5/node_modules/.pnpm/pnpm@6.22.2/node_modules/pnpm/dist/pnpm.cjs:43278:55)\n    at async handler (/usr/pnpm-global/5/node_modules/.pnpm/pnpm@6.22.2/node_modules/pnpm/dist/pnpm.cjs:117311:48)\n    at async /usr/pnpm-global/5/node_modules/.pnpm/pnpm@6.22.2/node_modules/pnpm/dist/pnpm.cjs:134121:20\n    at async run (/usr/pnpm-global/5/node_modules/.pnpm/pnpm@6.22.2/node_modules/pnpm/dist/pnpm.cjs:134095:34)\n    at async runPnpm (/usr/pnpm-global/5/node_modules/.pnpm/pnpm@6.22.2/node_modules/pnpm/dist/pnpm.cjs:134307:5)\n    at async /usr/pnpm-global/5/node_modules/.pnpm/pnpm@6.22.2/node_modules/pnpm/dist/pnpm.cjs:134299:7"
+    }
+  }
+}
