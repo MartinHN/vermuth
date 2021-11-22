@@ -303,10 +303,10 @@ class DMXController implements DMXControllerI {
       return;
     }
     let deviceId = this.selectedPortName || ''
-    // if(this.selectedDriverName == "artnet"){
-    //   deviceId = "255.255.255.255" 
-    //   options.dmx_speed = 20; // Hz
-    // }
+    if(this.selectedDriverName == "artnet"){
+      deviceId = "255.255.255.255" 
+      options.dmx_speed = 20; // Hz
+    }
     
     uri =  deviceId + ':' + this.selectedDriverName;
      

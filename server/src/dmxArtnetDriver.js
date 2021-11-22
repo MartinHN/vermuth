@@ -6,7 +6,7 @@ const proc =  execSync("uname -a").toString()
 export const isPi = proc.includes("armv")
 
 
-function ArtnetDriver(deviceId = "255.255.255.255", options = {}) {
+function RpiArtnetDriver(deviceId = "255.255.255.255", options = {}) {
   
   if ((!deviceId) || deviceId === "none" || deviceId.startsWith("/")) {
     deviceId = "255.255.255.255";
@@ -33,44 +33,44 @@ function ArtnetDriver(deviceId = "255.255.255.255", options = {}) {
 
 
 
-ArtnetDriver.prototype.sendUniverse = function() {
+RpiArtnetDriver.prototype.sendUniverse = function() {
   for (const i in this.universe) {
     this.artnet.set(i, this.universe[i])
   }
 };
 
-ArtnetDriver.prototype.start = function() {
+RpiArtnetDriver.prototype.start = function() {
   // this.timeout = setInterval(this.sendUniverse.bind(this), this.sleepTime);
 };
 
-ArtnetDriver.prototype.stop = function() {
+RpiArtnetDriver.prototype.stop = function() {
   // clearInterval(this.timeout);
   this.artnet.close();
 };
 
-ArtnetDriver.prototype.close = function(cb) {
+RpiArtnetDriver.prototype.close = function(cb) {
   this.stop();
   cb(null);
 };
 
-ArtnetDriver.prototype.update = function(u) {
+RpiArtnetDriver.prototype.update = function(u) {
   for (const c in u) {
     this.universe[c] = u[c];
     this.artnet.send(c, this.universe[c]);
   }
 };
 
-ArtnetDriver.prototype.updateAll = function(v) {
+RpiArtnetDriver.prototype.updateAll = function(v) {
   for (let i = 1; i <= this.bufSize ; i++) {
     this.universe[i] = v;
     this.artnet.send(i, this.universe[i]);
   }
 };
 
-ArtnetDriver.prototype.get = function(c) {
+RpiArtnetDriver.prototype.get = function(c) {
   return this.universe[c];
 };
 
-util.inherits(ArtnetDriver, EventEmitter);
+util.inherits(RpiArtnetDriver, EventEmitter);
 
-module.exports = ArtnetDriver;
+module.exports = RpiArtnetDriver;
