@@ -13,8 +13,8 @@ function ArtnetDriver(deviceId = "255.255.255.255", options = {}) {
   }
  
   this.bufSize = 512;
-  self.universe = Buffer.alloc(this.bufSize + 1);
-  self.universe.fill(0);
+  this.universe = Buffer.alloc(this.bufSize + 1);
+  this.universe.fill(0);
 
   const opts = {
     host:deviceId,//   host (Default "255.255.255.255")
@@ -24,10 +24,11 @@ function ArtnetDriver(deviceId = "255.255.255.255", options = {}) {
     // sendAll (sends always the full DMX universe instead of only changed values. Default false)
 
   }
+  console.log("starting with opts",options)
   this.artnet = artnetM(options);
   this.dev = {} // backward compat..
 
-  self.start();
+  this.start();
 }
 
 

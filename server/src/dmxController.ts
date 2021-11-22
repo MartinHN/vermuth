@@ -84,7 +84,7 @@ class DMXController implements DMXControllerI {
   }, 2, {maxWait: 10})
   constructor() {
     this.dmx = new DMX();
-    this.dmx.registerDriver('ArtnetRpi', SACNDriver);
+    this.dmx.registerDriver('ArtnetRpi', ArtnetDriver);
     this.dmx.registerDriver('QLC', OSCDriver);
     this.dmx.registerDriver('Logger', LoggerDriver);
     this.dmx.registerDriver('SACN', SACNDriver);
