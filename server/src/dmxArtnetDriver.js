@@ -1,9 +1,9 @@
 const artnetM = require("artnet");
 const util  = require("util");
 const EventEmitter = require("events").EventEmitter;
-const { execSync } = require("child_process");
+const execSync = require("child_process").execSync;
 const proc =  execSync("uname -a").toString()
-export const isPi = proc.includes("armv")
+const isPi = proc.includes("armv")
 
 
 function RpiArtnetDriver(deviceId = "255.255.255.255", options = {}) {
