@@ -5,6 +5,7 @@ const debugDMX = dbg('DMX')
 // const debugDMX = console.warn
 
 const OSCDriver = require('./dmxOSCDriver');
+const ArtnetDriver = require('./dmxArtnetDriver');
 const needCustomPiLibs = process.env.CUSTOM_PI_DRIVERS;
 const isPi = require('detect-rpi')();
 
@@ -72,7 +73,7 @@ class DMXController implements DMXControllerI {
   updateCircs = _.debounce(() => {
     if (Object.keys(this.__debouncedQueue).length > 0) {
       const now = new Date().getTime();
-      debugDMX('sending circs', now - lastCircUpdate);
+      debugDMX('sending circs dt : ', now - lastCircUpdate);
       lastCircUpdate = now;
     }
     const circsV: {c: number; v: number}[] = [];
@@ -83,6 +84,7 @@ class DMXController implements DMXControllerI {
   }, 2, {maxWait: 10})
   constructor() {
     this.dmx = new DMX();
+    this.dmx.registerDriver('ArtnetRpi', SACNDriver);
     this.dmx.registerDriver('QLC', OSCDriver);
     this.dmx.registerDriver('Logger', LoggerDriver);
     this.dmx.registerDriver('SACN', SACNDriver);
@@ -301,10 +303,10 @@ class DMXController implements DMXControllerI {
       return;
     }
     let deviceId = this.selectedPortName || ''
-    if(this.selectedDriverName == "artnet"){
-      deviceId = "2.255.255.255" 
-      options.dmx_speed = 20; // Hz
-    }
+    // if(this.selectedDriverName == "artnet"){
+    //   deviceId = "255.255.255.255" 
+    //   options.dmx_speed = 20; // Hz
+    // }
     
     uri =  deviceId + ':' + this.selectedDriverName;
      
