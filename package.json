@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "artnet": "^1.4.0"
+  }
+}

@@ -1,0 +1,13 @@
+lockfileVersion: 5.3
+
+specifiers:
+  artnet: ^1.4.0
+
+dependencies:
+  artnet: 1.4.0
+
+packages:
+
+  /artnet/1.4.0:
+    resolution: {integrity: sha1-jwDYllrNwzBIbOOfzBI8eeL/fEU=}
+    dev: false

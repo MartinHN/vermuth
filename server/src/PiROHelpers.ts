@@ -23,7 +23,7 @@ export function setRW(isRW) {
     }
     if (isPi) {
         const rwStr = isRW ? "rw" : "ro";
-        const out = execSync(`sudo mount -o remount,${rwStr} /`, { shell: true })
+        const out = execSync(`sudo mount -o remount,${rwStr} /`)
         if (out) console.log("rw out", out.toString());
     }
 }

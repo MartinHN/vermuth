@@ -25,6 +25,7 @@
     "@babel/preset-env": "^7.9.6",
     "adm-zip": "^0.4.14",
     "amd-loader": "0.0.8",
+    "artnet": "^1.4.0",
     "babel-loader": "^8.1.0",
     "bezier-easing": "^2.1.0",
     "chrome-launcher": "^0.13.2",

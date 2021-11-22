@@ -11,6 +11,7 @@ specifiers:
   '@typescript-eslint/parser': ^2.31.0
   adm-zip: ^0.4.14
   amd-loader: 0.0.8
+  artnet: ^1.4.0
   babel-loader: ^8.1.0
   bezier-easing: ^2.1.0
   chrome-launcher: ^0.13.2
@@ -52,6 +53,7 @@ dependencies:
   '@babel/preset-env': 7.16.4_@babel+core@7.16.0
   adm-zip: 0.4.16
   amd-loader: 0.0.8
+  artnet: 1.4.0
   babel-loader: 8.2.3_1bd60a6cd0f7024f034efd75ae733a3f
   bezier-easing: 2.1.0
   chrome-launcher: 0.13.4
@@ -1430,7 +1432,7 @@ packages:
     resolution: {integrity: sha512-ydoLbgVQQPxWrwbe3Fhh4XnZexbkEQAC6M/qgRTzjnKvTjrD61CJNxLc3vyDaAPI9bJIhTiI7eTX3JB5jJv8Hg==}
     engines: {node: '>=10.0.0'}
     dependencies:
-      '@serialport/parser-delimiter': 9.0.7
+      '@serialport/parser-delimiter': 9.2.4
     dev: false
     optional: true
 
@@ -2036,6 +2038,10 @@ packages:
 
   /arraybuffer.slice/0.0.7:
     resolution: {integrity: sha512-wGUIVQXuehL5TCqQun8OW81jGzAWycqzFF8lFp+GOM5BXLYj3bKNsYC4daB7n6XjCqxQA/qgTJ+8ANR3acjrog==}
+    dev: false
+
+  /artnet/1.4.0:
+    resolution: {integrity: sha1-jwDYllrNwzBIbOOfzBI8eeL/fEU=}
     dev: false
 
   /asn1.js/5.4.1:
