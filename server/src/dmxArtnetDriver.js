@@ -56,7 +56,6 @@ RpiArtnetDriver.prototype.close = function(cb) {
 RpiArtnetDriver.prototype.update = function(u) {
   for (const c in u) {
     this.universe[c] = u[c];
-    console.log("sending artnet",c,this.universe[c])
     this.artnet.set(c, this.universe[c]);
   }
 };
