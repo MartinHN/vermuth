@@ -1,7 +1,7 @@
 const artnetM = require("artnet");
 const util  = require("util");
 const EventEmitter = require("events").EventEmitter;
-import { execSync } from "child_process"
+const { execSync } = require("child_process");
 const proc =  execSync("uname -a").toString()
 export const isPi = proc.includes("armv")
 
