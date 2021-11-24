@@ -6,10 +6,10 @@ const proc =  execSync("uname -a").toString()
 const isPi = proc.includes("armv")
 
 
-function RpiArtnetDriver(deviceId = "2.255.255.255", options = {}) {
+function RpiArtnetDriver(deviceId = "255.255.255.255", options = {}) {
   
   if ((!deviceId) || deviceId === "none" || deviceId.startsWith("/")) {
-    deviceId = "2.255.255.255";
+    deviceId = "255.255.255.255";
   }
  
   this.bufSize = 512;
