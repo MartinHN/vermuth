@@ -6,10 +6,10 @@ const proc =  execSync("uname -a").toString()
 const isPi = proc.includes("armv")
 
 
-function RpiArtnetDriver(deviceId = "255.255.255.255", options = {}) {
+function RpiArtnetDriver(deviceId = "2.255.255.255", options = {}) {
   
   if ((!deviceId) || deviceId === "none" || deviceId.startsWith("/")) {
-    deviceId = "255.255.255.255";
+    deviceId = "2.255.255.255";
   }
  
   this.bufSize = 512;
@@ -17,7 +17,7 @@ function RpiArtnetDriver(deviceId = "255.255.255.255", options = {}) {
   this.universe.fill(0);
 
   const opts = {
-    host:deviceId,//   host (Default "255.255.255.255")
+    host:deviceId,//   host (Default "2.255.255.255")
     // port (Default 6454)
     // refresh (millisecond interval for sending unchanged data to the Art-Net node. Default 4000)
     iface:isPi?'eth0':'enp7s0'// iface (optional string IP address - bind udp socket to specific network interface)

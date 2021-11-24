@@ -304,7 +304,7 @@ class DMXController implements DMXControllerI {
     }
     let deviceId = this.selectedPortName || ''
     if(this.selectedDriverName == "artnet"){
-      deviceId = "255.255.255.255" 
+      deviceId = "2.255.255.255" 
       options.dmx_speed = 20; // Hz
     }
     
