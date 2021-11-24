@@ -20,7 +20,7 @@ function RpiArtnetDriver(deviceId = "255.255.255.255", options = {}) {
     host:deviceId,//   host (Default "2.255.255.255")
     // port (Default 6454)
     // refresh (millisecond interval for sending unchanged data to the Art-Net node. Default 4000)
-    iface:isPi?'eth0':'enp7s0'// iface (optional string IP address - bind udp socket to specific network interface)
+    iface:isPi?'2.2.2.100':'enp7s0'// iface (optional string IP address - bind udp socket to specific network interface)
     // sendAll (sends always the full DMX universe instead of only changed values. Default false)
 
   }
