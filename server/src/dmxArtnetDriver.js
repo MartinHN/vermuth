@@ -24,8 +24,8 @@ function RpiArtnetDriver(deviceId = "255.255.255.255", options = {}) {
     // sendAll (sends always the full DMX universe instead of only changed values. Default false)
 
   }
-  console.log("starting with opts",options)
-  this.artnet = artnetM(options);
+  console.log("starting with opts",opts)
+  this.artnet = artnetM(opts);
   this.dev = {} // backward compat..
 
   this.start();
