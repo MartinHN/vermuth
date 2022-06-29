@@ -1,5 +1,5 @@
 const DMX = require('dmx');
-const SerialPort = require('serialport');
+const SerialPort = require('serialport').SerialPort;
 import dbg from '@API/dbg'
 const debugDMX = dbg('DMX')
 // const debugDMX = console.warn
