@@ -42,7 +42,7 @@
     "open": "^7.0.3",
     "osc": "^2.4.1",
     "sacn": "^4.1.0",
-    "serialport": "^9",
+    "serialport": "^10.4.0",
     "serve-index": "^1.9.1",
     "socket.io": "^2.3.0",
     "yargs": "^15.4.1"
