@@ -34,23 +34,20 @@
   "devDependencies": {
     "@types/lodash": "^4.14.150",
     "@types/socket.io-client": "^1.4.32",
-    "@typescript-eslint/eslint-plugin": "^2.31.0",
-    "@typescript-eslint/eslint-plugin-tslint": "^2.31.0",
-    "@typescript-eslint/parser": "^2.31.0",
+    "@typescript-eslint/eslint-plugin": "^5.29.0",
+    "@typescript-eslint/parser": "^5.29.0",
+    "eslint-plugin-import": "^2.26.0",
     "@vue/cli-plugin-pwa": "^4",
     "@vue/cli-plugin-typescript": "^4",
     "@vue/cli-service": "^4",
     "compression-webpack-plugin": "^3",
-    "eslint": "^7",
-    "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-jsdoc": "^25",
     "eslint-plugin-prefer-arrow": "^1.2.1",
     "eslint-plugin-vue": "^6.2.2",
     "fibers": "^5",
     "material-design-icons-iconfont": "^5.0.1",
-    "node-sass": "^4.14.1",
     "sass": "^1.26.5",
-    "sass-loader": "^8.0.2",
+    "sass-loader": "^10",
     "tsconfig-paths-webpack-plugin": "^3.2.0",
     "typescript": "^3.8.3",
     "vue-cli-plugin-vuetify": "^2.0.5",
@@ -61,6 +58,6 @@
     "vuex-module-decorators": "^0.17.0"
   },
   "engines": {
-    "node": ">0.11 <=0.12"
+    "node": "^16"
   }
 }
