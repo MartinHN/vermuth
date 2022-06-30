@@ -3,7 +3,7 @@ import dbg from './dbg'
 const debugTime = dbg('TIMER')
 import{AccessibleClass, doSharedFunction, nonEnumerable, RemoteFunction, RemoteValue} from './ServerSync';
 
-const timers: {[key: string]: {timeout: any; endCB?: () => void}} = {};
+const timers: {[key: string]: {timeout: any; endCB?: (shouldCancel:boolean) => void}} = {};
 const CONSTANT_TIME_INC =
     // #if IS_CLIENT
     false
@@ -13,7 +13,7 @@ false
 export function doTimer(
     name: string, length: number, resolution: number,
     oninstance: (steps: number, count: number) => void,
-    oncomplete?: () => void) {
+    oncomplete?: (shouldCancel:boolean) => void) {
   const steps = length / resolution;
   const speed = resolution;
   let count = 0;
@@ -29,7 +29,7 @@ export function doTimer(
     if (trueCount >= steps ||
         (!CONSTANT_TIME_INC && (estimatedCount >= steps))) {
       oninstance(steps, steps);
-      stopTimer(name);
+      stopTimer(name,false);
       // if (oncomplete) {oncomplete(); }
     } else {
       oninstance(steps, estimatedOrTrueCount);
@@ -42,13 +42,13 @@ export function doTimer(
       lastTime = now
     }
   };
-  stopTimer(name);
+  stopTimer(name,true);
   timers[name] = {
     timeout: null,
-    endCB: () => {
+    endCB: (shouldCancel:boolean) => {
       console.log('end timer');
       if (oncomplete) {
-        oncomplete();
+        oncomplete(shouldCancel);
       }
     }
   };
@@ -58,13 +58,13 @@ export function doTimer(
 }
 
 export function
-stopTimer(name: string) {
+stopTimer(name: string, shouldCancel:boolean) {
   if (timers[name]) {
     clearTimeout(timers[name].timeout);
     const endCB = timers[name].endCB;
     delete timers[name];
     if (endCB) {
-      endCB();
+      endCB(shouldCancel);
     }
   }
 }

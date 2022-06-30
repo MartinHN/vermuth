@@ -4,7 +4,7 @@ import {ChannelBase} from './Channel';
 import {DirectFixture, FixtureBase, FixtureBaseI} from './Fixture';
 import {Proxyfiable} from './MemoryUtils'
 import {AccessibleClass, doSharedFunction, nonEnumerable, RemoteArray, RemoteFunction, RemoteValue, SetAccessible,callOnServerOnly} from './ServerSync';
-import {blackState, MergedState, ResolvedFixtureState, State, StateList} from './State';
+import {blackState,allBlackState, MergedState, ResolvedFixtureState, State, StateList} from './State';
 
 import {doTimer, stopTimer} from './Time';
 import {Universe} from './Universe';
@@ -304,9 +304,29 @@ export class SequencePlayerClass {
     this.goToSequence(tSeq, opts, cb);
   }
 
-  @RemoteFunction({skipClientApply: true})
-  public stopIfPlaying() {
-    stopTimer('seqTransition');
+  @RemoteFunction({/* skipClientApply: true */})
+  public stopIfPlaying(toBlack?:boolean) {
+    this.numLoops = 0;
+    
+    if(toBlack){
+      console.log("blacbbbbbking out to ",toBlack)
+      this.goToStates([allBlackState], 1.0);
+    }
+    else{
+      stopTimer('seqTransition',true);
+    }
+  }
+
+
+
+  
+
+
+
+  @RemoteFunction({/* skipClientApply: true */})
+  public startLoop() {
+    this.numLoops = -1;
+    this.curPlayedIdx = 0;
   }
 
   public linkToRoot(rootProvider: RootProvider) {
@@ -352,7 +372,7 @@ export class SequencePlayerClass {
 
       this.goToStates(
           [nextState], this.nextSeq.timeIn, {dimMasters: [dimMaster]},
-          (...args: any[]) => {
+          (shouldCancel) => {
             doSharedFunction(() => {
               this.pisPlaying = false;
               
@@ -361,19 +381,23 @@ export class SequencePlayerClass {
               }
                         
               if (cb) {
-                cb(...args);
+                cb(shouldCancel);
               }
             });
+          if(!shouldCancel){
             callOnServerOnly(
               ()=>setTimeout( 
                 ()=>{
                 this.endLoop(nIdx) }
                 ,1)
               );
+            }
           });
     }
   }
-@RemoteFunction({skipClientApply:true})
+
+  
+  @RemoteFunction({skipClientApply:true})
   private endLoop(nIdx:number){
     debugger;
     if(this.numLoops == -1){
@@ -433,7 +457,7 @@ export class SequencePlayerClass {
   @RemoteFunction({sharedFunction: true})
   private goToStates(
       nextStates: State[], timeIn: number, opts?: {dimMasters?: number[]},
-      cb?: any) {
+      cb?: (shouldCancel:boolean)=>void) {
     // #if IS_CLIENT
     const res = 50;  // ms between steps
     // #else
@@ -449,7 +473,7 @@ export class SequencePlayerClass {
       const transitionTime =
           Math.max((res + 1) / 1000, Math.max(this.curSeq.timeOut, timeIn));
       stopTimer(
-          'seqTransition');  // will remove any unused curves from merged states
+          'seqTransition',true);  // will remove any unused curves from merged states
       const rsl = StateList.mergeStateList(
           nextStates, this.stateList.getCurrentFullFixtureList(),
           this.stateList.states, dimMasters);
@@ -475,11 +499,11 @@ export class SequencePlayerClass {
             );
           },
 
-          () => {
+          (shouldCancel) => {
             doSharedFunction(() => {
               mergedState.endCB();
               if (cb) {
-                cb();
+                cb(shouldCancel);
               }
 
               this.pisPlaying = false;

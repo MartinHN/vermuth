@@ -794,7 +794,8 @@ export class StateList {
   @nonEnumerable() private __universe: Universe;
   constructor(uni: Universe) {
     this.__universe = uni;
-    this.addState(blackState);
+    // this.addState(blackState);
+    this.addState(allBlackState);
     // setChildAccessible(this.states,blackState.name) // needed to ensure name
     // is not private (__black)
     this.addState(fullState);
@@ -827,7 +828,8 @@ export class StateList {
   public removeStateNamed(name: string) {
     if (this.states[name]) {
       if (!(this.states[name] === blackState ||
-            this.states[name] === fullState)) {
+            this.states[name] === fullState  ||
+            this.states[name] === allBlackState)) {
         delete this.states[name];
       }
     }
@@ -1102,7 +1104,7 @@ class WholeState extends State {
     const res: ResolvedFixtureState[] = [];
     const opt = {};
     const isIncluded = (c: ChannelBase) => {
-      return (this.name === '__black' && c.roleFam === 'fog') || c.reactToMaster
+      return (this.name.startsWith('__all')) || (this.name === '__black' && c.roleFam === 'fog') || c.reactToMaster
     };
     for (const f of context) {
       f.channels.map((c) => {
@@ -1121,6 +1123,7 @@ class WholeState extends State {
 }
 export const blackState = new WholeState('__black', 0);
 export const fullState = new WholeState('__full', 1.0);
+export const allBlackState = new WholeState('__allBlack', 0.0);
 
 
 // ////////////////////////

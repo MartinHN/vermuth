@@ -3,7 +3,7 @@
     <div class="Sequencer">
       <v-container fluid>
         <v-row no-gutters>
-          <v-col cols="3">
+          <!-- <v-col cols="3">
             <div>{{Number.parseFloat(globalTransport.beat).toFixed(2)}}</div>
           </v-col>
           <v-col cols="1">
@@ -14,16 +14,24 @@
               iconOn="stop"
               iconOff="play"
             ></Toggle>
-          </v-col>
-           <v-col cols="2">
-            <Numbox
-              :value=numLoops
-              @change="numLoops=$event"
+          </v-col> -->
+           <v-col cols="1">
+            <!-- <Toggle
+              v-model=toggleLoop
               style="height:40px"
-              text="shouldLoop"
+              text="suldLoopppp"
               iconOn="stop"
               iconOff="play"
-            ></Numbox>
+            ></Toggle> -->
+
+            <Button @click="toggleLoop = true" text="start" icon="play" />
+          </v-col>
+          <v-col cols="1">
+            <Button @click="toggleLoop = false" text="stop" icon="stop" />
+          </v-col>
+
+          <v-col cols="1">
+            <Button @click="pauseLoop" text="pause" icon="pause" />
           </v-col>
           <v-col>
             <Numbox text="idx" :value="playedIdx" @change="playedIdx=$event"></Numbox>
@@ -144,6 +152,25 @@ export default class Sequencer extends Vue {
     // fetchRemote(this.seqPlayer,'numLoops')
         //  console.log(n,this.seqPlayer,this.seqPlayer.numLoops)
     this.seqPlayer.numLoops = n;
+  }
+
+  set  toggleLoop(b:boolean){
+    
+    console.log("toggling loop",b);
+    if(b){
+      this.seqPlayer.startLoop();
+    }
+    else{
+      this.seqPlayer.stopIfPlaying(true);
+    }
+  }
+
+  pauseLoop(){
+    this.seqPlayer.stopIfPlaying(false);
+  }
+
+  get toggleLoop(){
+    return this.numLoops == -1;
   }
 
   get seqList() {
