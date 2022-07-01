@@ -310,7 +310,7 @@ export class SequencePlayerClass {
     
     if(toBlack){
       console.log("blacbbbbbking out to ",toBlack)
-      this.goToStates([allBlackState], 1.0);
+       this.goToStateNamed("__allBlack", 1.0);
     }
     else{
       stopTimer('seqTransition',true);
