@@ -17,12 +17,58 @@
       style="display:flex;width:100%"
       v-if="(fixtureProp.hasChannelsOfRole('color') && hasFilterType('color'))"
     >
-      <input
+      <!-- <input
         type="color"
         style="flex:1 1 30%"
         v-if="!showProps && fixtureProp.hasChannelsOfRole('color') && hasFilterType('color')"
         v-model="hexColorValue"
-      />
+      /> -->
+         <v-dialog
+           v-if="!showProps && fixtureProp.hasChannelsOfRole('color') && hasFilterType('color')"
+      v-model="colorDialog"
+      width="500"
+    >
+ <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          :color="hexColorValue"
+          dark
+          v-bind="attrs"
+          v-on="on"
+        >
+          Color
+        </v-btn>
+
+      </template>
+        <v-card>
+        <v-card-title class="text-h5 black lighten-2">
+       Choose a color
+        </v-card-title>
+
+        <!-- <v-card-text>
+        </v-card-text> -->
+
+        <!-- <v-divider></v-divider> -->
+        <v-color-picker
+  dot-size="25"
+
+  swatches-max-height="100"
+  width="600"
+  v-model="hexColorValue"
+></v-color-picker>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="primary"
+            text
+            @click="colorDialog = false"
+          >Ok
+          </v-btn>
+        </v-card-actions>
+
+        </v-card>
+
+         </v-dialog>
       <ChannelWidget
         v-for="c of matchedColorChannels"
         :key="c.id"
@@ -112,6 +158,8 @@ export default class FixtureWidget extends Vue {
 
   @Prop({ default: false })
   private showPresetableState!: boolean;
+
+  colorDialog = false;
   @Watch("presetableState")
   dd() {
     console.log("presetableState changed");

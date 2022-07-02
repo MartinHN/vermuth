@@ -27,11 +27,16 @@ function transform(filePath,destPath,defines){
 
 function generateOne(is_client,fileList){
   const shouldRebuildAll = !fileList
-  const destPath = path.resolve(srcPath+'/../gen/'+(is_client?'client':'server')+'/')
+  const genFolder = path.resolve(srcPath+'/../gen');
+  if(!fs.existsSync(genFolder)){
+    console.log("creating gen folder ",genFolder)
+    fs.mkdirSync(genFolder,{ recursive: false })
+  }
+  const destPath = path.resolve(genFolder+"/"+(is_client?'client':'server')+'/')
   console.log(destPath)
   if(shouldRebuildAll){
     console.log('cleaning folder ',destPath)
-    if(destPath.length>4 && !dryRun){
+    if(destPath.length>4 && !dryRun && fs.existsSync(destPath)){
       fs.rmdirSync(destPath, { recursive: true });
     }
     fs.mkdirSync(destPath,{ recursive: true })
@@ -136,4 +141,3 @@ function walk(dir, callback) {
     });
   });
 }
-

@@ -5,6 +5,7 @@
   "scripts": {
     "build:server": "webpack ",
     "build:client": "IS_CLIENT=1 webpack ",
+    "watch": "nodemon --exec \"npm run build:server && npm run build:client\"",
     "lint": "eslint src/**/* --fix",
     "genOnce": "GEN_ONCE=1 node gen.js"
   },

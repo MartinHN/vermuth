@@ -1,7 +1,7 @@
 <template>
-  <label :style="{ 'background-color':displayedColor }" :for="_uid" class="slider round">
     <!-- <v-checkbox  v-model=value :tabindex="focusable?-1:''" :disabled="!editable"  ></v-checkbox> -->
     <!-- <label :for="_uid" class="slider round">{{text}}</label> -->
+  <!-- <label :style="{ 'background-color':displayedColor }" :for="_uid" class="slider round">
     <v-icon v-if="iconOn && value">mdi-{{iconOn}}</v-icon>
     <v-icon v-else-if="iconOff && !value">mdi-{{iconOff}}</v-icon>
     <v-icon v-else-if="icon" >mdi-{{icon}}</v-icon>
@@ -17,7 +17,15 @@
       :readonly="!editable"
     />
     {{text}}
-  </label>
+  </label> -->
+
+  <v-btn
+  :value="value"
+  :color="value?'primary':'normal'"
+      @click="sendEv('change', $event)"
+      >
+    {{text}}
+  </v-btn>
 </template>
 
 <script lang="ts">
@@ -58,8 +66,8 @@ export default class Toggle extends Vue {
     // this.value = !!ev.target.checked
     if (type !== "input") {
       // osx webkit don't send input event....
-      this.$emit(type, ev.target.checked);
-      this.$emit("input", ev.target.checked);
+      this.$emit(type, !this.value);
+      this.$emit("input", !this.value);
     }
   }
 }
@@ -100,5 +108,9 @@ label {
 label:hover,
 input:focus + label {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+.v-item--active{
+color:green  
 }
 </style>

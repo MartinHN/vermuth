@@ -65,10 +65,9 @@
         @click.native="tableClicked"
       >
         <template v-slot:item.name="{item:f}">
-          <input
-            :style="{'background-color':'#0003','width':'100%'}"
+          <TextInput
             :value="f.name"
-            @change="setFixtureName({fixture:f,value:$event.target.value})"
+            @change="setFixtureName({fixture:f,value:$event})"
           />
         </template>
 
@@ -140,6 +139,7 @@ import { State, Action, Getter, Mutation, namespace } from "vuex-class";
 import Button from "@/components/Inputs/Button.vue";
 import Numbox from "@/components/Inputs/Numbox.vue";
 import Toggle from "@/components/Inputs/Toggle.vue";
+import TextInput from "@/components/Inputs/TextInput.vue";
 import Modal from "@/components/Utils/Modal.vue";
 import FixtureEditor from "@/components/Editors/FixtureEditor.vue";
 import FixtureExplorer from "@/components/Editors/FixtureExplorer.vue";
@@ -156,6 +156,7 @@ const universesModule = namespace("universes");
     Button,
     Numbox,
     Toggle,
+    TextInput,
     Modal,
     FixtureEditor,
     FixtureExplorer,

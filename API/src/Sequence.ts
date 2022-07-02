@@ -317,12 +317,6 @@ export class SequencePlayerClass {
     }
   }
 
-
-
-  
-
-
-
   @RemoteFunction({/* skipClientApply: true */})
   public startLoop() {
     this.numLoops = -1;
@@ -403,8 +397,7 @@ export class SequencePlayerClass {
     if(this.numLoops == -1){
       this.curPlayedIdx = (this.curPlayedIdx + 1) % (this.sequenceList.length )
     }
-  
-}
+  }
 
   
   private resolveSlowChanges(toIdx: number) {

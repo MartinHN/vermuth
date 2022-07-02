@@ -1,21 +1,20 @@
 <template>
-    
     <v-text-field 
-    v-if=editable
+    
     :value="value" 
-    @input="$emit('input',$event)" 
-    @change="$emit('change',{value:$event})"
+    color="red"
+    @input="sendEv('input',$event)" 
+    @change="sendEv('change',$event)"
 
     :disabled="!editable"
     dense
     full-width
     >
     </v-text-field> 
-    <div class="nonEditableText" v-else>
+    <!-- <div class="nonEditableText" v-else>
       {{value}}
-    </div>
+    </div> -->
     
-   
   
 </template>
  
@@ -36,6 +35,11 @@ export default class TextInput extends Vue {
   @Prop({default: ''}) public value!: string ;
 
   @Prop({default: true}) public editable?: boolean;
+
+  sendEv(type,ev){
+    console.log(ev)
+    this.$emit(type,ev)
+  }
 
 }
 </script>
