@@ -2,11 +2,15 @@
   <div>
     <v-row no-gutters>
       <v-col>
-        <v-list dense class="overflow-y-auto" :style="{'max-height':maxHeight || 'none'}">
+        <v-list
+          dense
+          class="overflow-y-auto"
+          :style="{ 'max-height': maxHeight || 'none' }"
+        >
           <!-- <v-subheader>Presets</v-subheader> -->
           <v-list-item-group v-model="selectedStateIdx">
             <!-- v-model="item" color="primary"> -->
-            <v-list-item v-for="(s) in stateNames" :key="s.id">
+            <v-list-item v-for="s in stateNames" :key="s.id">
               <v-list-item-content>
                 <v-list-item-title v-html="s"></v-list-item-title>
               </v-list-item-content>
@@ -19,11 +23,11 @@
           <Button
             class="add"
             @click="saveNewState"
-            :text="editedState?'save':'add'"
-            :icon="editedState?'content-save':'plus'"
+            :text="editedState ? 'save' : 'add'"
+            :icon="editedState ? 'content-save' : 'plus'"
           ></Button>
 
-     <!--     <Button v-if="editedState" class="edit" @click="editState" text="edit" icon="pencil"></Button> -->
+          <!--     <Button v-if="editedState" class="edit" @click="editState" text="edit" icon="pencil"></Button> -->
           <Button
             v-if="editedState"
             class="remove"
@@ -36,14 +40,16 @@
             <template v-slot:activator="{ on }">
               <v-btn color="primary" dark v-on="on">linked States</v-btn>
             </template>
-            <MultiStateChooser style="width:100%" :state="selectedState" />
+            <MultiStateChooser style="width: 100%" :state="selectedState" />
           </v-menu>
         </div>
       </v-col>
     </v-row>
 
-    <Modal v-if="showStateEditor" @close="showStateEditor=false">
-      <h3 slot="header">StateEditor : {{editedState?editedState.name:"no state"}}</h3>
+    <Modal v-if="showStateEditor" @close="showStateEditor = false">
+      <h3 slot="header">
+        StateEditor : {{ editedState ? editedState.name : "no state" }}
+      </h3>
       <StateEditor slot="body" :state="editedState" />
     </Modal>
   </div>
@@ -57,7 +63,7 @@ import Toggle from "@/components/Inputs/Toggle.vue";
 import Modal from "@/components/Utils/Modal.vue";
 import StateEditor from "@/components/Editors/StateEditor.vue";
 import MultiStateChooser from "@/components/MultiStateChooser.vue";
-import { State,StateList } from "@API/State";
+import { State, StateList } from "@API/State";
 import rootState from "@API/RootState";
 import ActionList from "@/components/Widgets/ActionList.vue";
 import StateMethods from "../store/states";
@@ -72,12 +78,12 @@ type ValueOf<T> = T[keyof T];
     Button,
     Toggle,
     Modal,
-    StateEditor
+    StateEditor,
   },
   model: {
     prop: "selectedState",
-    event: "change"
-  }
+    event: "change",
+  },
 })
 export default class StateComponent extends Vue {
   @Prop({ default: false })
@@ -87,7 +93,7 @@ export default class StateComponent extends Vue {
   @Prop({
     default: () => {
       return {};
-    }
+    },
   })
   private presetableState!: any;
 
@@ -118,7 +124,7 @@ export default class StateComponent extends Vue {
 
   get linkableStateNames() {
     const n = this.selectedState ? this.selectedState.name : "";
-    return this.stateNames.filter(e => e !== n);
+    return this.stateNames.filter((e) => e !== n);
   }
 
   public get linkedStateNames() {
@@ -133,8 +139,8 @@ export default class StateComponent extends Vue {
 
   public set linkedStateNames(v: string[]) {
     if (this.selectedState) {
-      const stateNames = this.selectedState.linkedStates.map(e => ({
-        name: e.name
+      const stateNames = this.selectedState.linkedStates.map((e) => ({
+        name: e.name,
       }));
       this.selectedState.setLinkedStates(stateNames);
     }
@@ -174,12 +180,10 @@ export default class StateComponent extends Vue {
   private stateNames!: StateMethods["stateNames"];
   @statesModule.Getter("loadedStateName")
   private ploadedStateName!: StateMethods["loadedStateName"];
-  
+
   private stateList = rootState.stateList as StateList;
 
-
   @Action("SAVE_SESSION") public SAVE_SESSION!: () => void;
-
 
   public mounted() {
     window.addEventListener("keydown", this.processKey);
@@ -225,15 +229,12 @@ export default class StateComponent extends Vue {
     return this.stateList.presetableObjects.length > 0;
   }
 
-
   public saveNewState() {
     const name = prompt(
       "save or create new state",
       this.selectedState ? this.selectedState.name : ""
     );
     if (name !== null && name !== "") {
-      
-      
       this.stateList.saveFromPresetableNames(
         // this.stateList.saveFromPresetableObjects(
         name,

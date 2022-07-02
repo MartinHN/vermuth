@@ -1,24 +1,38 @@
 <template>
   <label
-    :style="{ 'background-color':color }"
-    
+    :style="{ 'background-color': color }"
     :for="_uid"
     class="buttonPH unselectable"
-    :tabindex="focusable?-1:''"
-
+    :tabindex="focusable ? -1 : ''"
     @click.prevent="$emit('click')"
     @mousedown.prevent="$emit('mousedown')"
   >
-    <input :id="_uid" type="button" class="button" :tabindex="focusable?-1:''" />
+    <input
+      :id="_uid"
+      type="button"
+      class="button"
+      :tabindex="focusable ? -1 : ''"
+    />
 
     <v-tooltip bottom>
       <template v-slot:activator="{ on }">
-        <div v-on="tooltipText?on:{}" style="width:100%;height:100%;display: flex;justify-content:center;" class>
-          <v-icon v-for="i of iconList" :key="i.id">mdi-{{i}}</v-icon>
-          <div v-if="iconList.length===0" class="nonClickable">{{text}}</div>
+        <div
+          v-on="tooltipText ? on : {}"
+          style="
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+          "
+          class
+        >
+          <v-icon v-for="i of iconList" :key="i.id">mdi-{{ i }}</v-icon>
+          <div v-if="iconList.length === 0" class="nonClickable">
+            {{ text }}
+          </div>
         </div>
       </template>
-      <span>{{tooltipText}}</span>
+      <span>{{ tooltipText }}</span>
     </v-tooltip>
   </label>
 </template>
@@ -34,10 +48,10 @@ export default class Button extends Vue {
   public focusable?: boolean;
   @Prop({ default: "transparent" })
   public color?: string;
-  @Prop({default:""})
+  @Prop({ default: "" })
   icon?: string | string[];
-  @Prop({default:""})
-  tooltip!:string;
+  @Prop({ default: "" })
+  tooltip!: string;
 
   get iconList() {
     if (Array.isArray(this.icon)) {

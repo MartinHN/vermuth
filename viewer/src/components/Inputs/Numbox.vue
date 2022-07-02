@@ -1,25 +1,25 @@
 <template>
-  <div class="NumboxPH tooltip " style="display:flex">
-    <span v-if="errMsg" class="tooltiptext">{{errMsg}}</span>
+  <div class="NumboxPH tooltip" style="display: flex">
+    <span v-if="errMsg" class="tooltiptext">{{ errMsg }}</span>
     <v-text-field
       v-if="editable"
       class=""
       type="number"
       :value="value"
-      @input="emitEv('input',$event)"
-      @change="emitEv('change',$event)"
+      @input="emitEv('input', $event)"
+      @change="emitEv('change', $event)"
       :min="min"
       :max="max"
       :error-messages="errMsg"
       hide-details
       dense
-      :label="text||undefined"
-      style="align-items: center;"
+      :label="text || undefined"
+      style="align-items: center"
     />
 
-    <div v-else>{{value}}</div>
+    <div v-else>{{ value }}</div>
 
-    <span v-if="postFix">{{postFix}}</span>
+    <span v-if="postFix">{{ postFix }}</span>
   </div>
 </template>
 

@@ -6,8 +6,8 @@
 
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import FixturePatch from '@/components/FixturePatch.vue'; // @ is an alias to /src
+import { Component, Vue } from "vue-property-decorator";
+import FixturePatch from "@/components/FixturePatch.vue"; // @ is an alias to /src
 
 @Component({
   components: {

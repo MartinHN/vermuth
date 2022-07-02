@@ -1,25 +1,21 @@
 <template>
-    <v-text-field 
-    
-    :value="value" 
+  <v-text-field
+    :value="value"
     color="red"
-    @input="sendEv('input',$event)" 
-    @change="sendEv('change',$event)"
-
+    @input="sendEv('input', $event)"
+    @change="sendEv('change', $event)"
     :disabled="!editable"
     dense
     full-width
-    >
-    </v-text-field> 
-    <!-- <div class="nonEditableText" v-else>
+  >
+  </v-text-field>
+  <!-- <div class="nonEditableText" v-else>
       {{value}}
     </div> -->
-    
-  
 </template>
  
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from "vue-property-decorator";
 
 // var VueSlideBar :any = require( 'vue-slide-bar');
 
@@ -28,28 +24,26 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 })
 export default class TextInput extends Vue {
   @Prop()
- public  name?: string;
-  @Prop({default : false})public  showName?: boolean ; // =false;
+  public name?: string;
+  @Prop({ default: false }) public showName?: boolean; // =false;
 
+  @Prop({ default: "" }) public value!: string;
 
-  @Prop({default: ''}) public value!: string ;
+  @Prop({ default: true }) public editable?: boolean;
 
-  @Prop({default: true}) public editable?: boolean;
-
-  sendEv(type,ev){
-    console.log(ev)
-    this.$emit(type,ev)
+  sendEv(type, ev) {
+    console.log(ev);
+    this.$emit(type, ev);
   }
-
 }
 </script>
 
 
 <style scoped>
-.nonEditableText{
-text-align: left;
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis;
+.nonEditableText {
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

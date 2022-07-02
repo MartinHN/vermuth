@@ -1,16 +1,15 @@
 <template>
-  <div >
-    
+  <div>
     <!-- <CurveEditor /> -->
-    <Sequencer/>
+    <Sequencer />
   </div>
 </template>
 
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue } from "vue-property-decorator";
 // import CurveEditor from '@/components/Editors/CurveEditor.vue';
-import Sequencer from '@/components/Sequencer.vue'; // @ is an alias to /src
+import Sequencer from "@/components/Sequencer.vue"; // @ is an alias to /src
 
 @Component({
   components: {
@@ -18,7 +17,5 @@ import Sequencer from '@/components/Sequencer.vue'; // @ is an alias to /src
     // CurveEditor,
   },
 })
-export default class SequencerView extends Vue {
-
-}
+export default class SequencerView extends Vue {}
 </script>

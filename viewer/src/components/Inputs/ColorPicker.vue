@@ -1,16 +1,28 @@
 <template>
-  <div :style="{ 'background-color':'transparent' }">
+  <div :style="{ 'background-color': 'transparent' }">
     <!-- <label :for="_uid"> -->
-    <input type="color" style="height:40px;display:inherit;left:inherit;position:inherit" v-if="mini" @change="sendEv('change',$event)" @input="sendEv('input',$event)"  :value="hexValue" />
+    <input
+      type="color"
+      style="height: 40px; display: inherit; left: inherit; position: inherit"
+      v-if="mini"
+      @change="sendEv('change', $event)"
+      @input="sendEv('input', $event)"
+      :value="hexValue"
+    />
 
-    <v-color-picker v-else @change="sendEv('change',$event)" :value=hexValue :hide-mode-switch="RGBW" @input="sendEv('input',$event)" />
-
+    <v-color-picker
+      v-else
+      @change="sendEv('change', $event)"
+      :value="hexValue"
+      :hide-mode-switch="RGBW"
+      @input="sendEv('input', $event)"
+    />
   </div>
 </template>
 
   <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import {hexToRgb,rgbToHex} from "@API/ColorUtils"
+import { hexToRgb, rgbToHex } from "@API/ColorUtils";
 @Component({})
 export default class ColorPicker extends Vue {
   @Prop()
@@ -21,40 +33,42 @@ export default class ColorPicker extends Vue {
   @Prop()
   icon?: string;
 
-  @Prop({default:true})
-  mini!:boolean
-  @Prop({default:true})
-  RGBW!: boolean
+  @Prop({ default: true })
+  mini!: boolean;
+  @Prop({ default: true })
+  RGBW!: boolean;
 
-  @Prop({ default: ()=>{return { r: 0, g: 0, b: 0 }} })
+  @Prop({
+    default: () => {
+      return { r: 0, g: 0, b: 0 };
+    },
+  })
   public value!: { r: number; g: number; b: number };
 
   mounted() {
-   if(this.RGBW){
-     Vue.set(this.value,'w',0)
-   } 
+    if (this.RGBW) {
+      Vue.set(this.value, "w", 0);
+    }
   }
   private sendEv(type: string, ev: any) {
-  
     let v = ev.target?.value || ev.rgba || ev;
-    if(v.r===undefined){
-    v = hexToRgb(v);
+    if (v.r === undefined) {
+      v = hexToRgb(v);
     }
-    const nv= {r:v.r/255,g:v.g/255,b:v.b/255}
-    if(this.RGBW && v.a!==undefined){
-      (nv as any).w = v.a
+    const nv = { r: v.r / 255, g: v.g / 255, b: v.b / 255 };
+    if (this.RGBW && v.a !== undefined) {
+      (nv as any).w = v.a;
     }
     if (type !== "input") {
-      this.$emit(type,nv);
+      this.$emit(type, nv);
+      this.$emit("input", nv);
+    } else {
       this.$emit("input", nv);
     }
-    else{
-       this.$emit("input", nv);
-    }
   }
-  get hexValue(){
-    debugger
-    return rgbToHex(this.value.r*255,this.value.g*255,this.value.b*255)
+  get hexValue() {
+    debugger;
+    return rgbToHex(this.value.r * 255, this.value.g * 255, this.value.b * 255);
   }
 }
 </script>

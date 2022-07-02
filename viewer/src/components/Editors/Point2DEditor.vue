@@ -1,6 +1,11 @@
 <template>
-  <div class="main" style="width:100%;height:100%">
-    <canvas ref="my-canvas" @mousedown="mouseDown" @mouseup="mouseUp" @mousemove="mo"></canvas>
+  <div class="main" style="width: 100%; height: 100%">
+    <canvas
+      ref="my-canvas"
+      @mousedown="mouseDown"
+      @mouseup="mouseUp"
+      @mousemove="mo"
+    ></canvas>
   </div>
 </template>
 
@@ -76,7 +81,7 @@ export default class PointEditor extends Vue {
     if (this.snapMouse) {
       this.mousePressedIdx = 0;
     } else {
-      this.mousePressedIdx = this.value.findIndex(el => mp.distSq(el) < pSq);
+      this.mousePressedIdx = this.value.findIndex((el) => mp.distSq(el) < pSq);
     }
   }
   public mouseUp(e: MouseEvent) {

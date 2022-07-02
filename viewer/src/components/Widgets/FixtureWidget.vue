@@ -1,12 +1,14 @@
 <template>
   <div class="fixtureWidget">
-    <div style="display:flex;width:100%;background-color:transparent">
+    <div style="display: flex; width: 100%; background-color: transparent">
       <ChannelWidget
         v-for="d in matchedDimmerChannels"
         :key="d.id"
         :channelProp="d"
-        :overrideName="matchedDimmerChannels.length==1?fixtureProp.name:d.name"
-        style="width:100%"
+        :overrideName="
+          matchedDimmerChannels.length == 1 ? fixtureProp.name : d.name
+        "
+        style="width: 100%"
         :showProps="showProps"
         :showPresetableState="showPresetableState"
         :presetable.sync="presetableState[d.name]"
@@ -14,8 +16,8 @@
     </div>
 
     <div
-      style="display:flex;width:100%"
-      v-if="(fixtureProp.hasChannelsOfRole('color') && hasFilterType('color'))"
+      style="display: flex; width: 100%"
+      v-if="fixtureProp.hasChannelsOfRole('color') && hasFilterType('color')"
     >
       <!-- <input
         type="color"
@@ -23,52 +25,42 @@
         v-if="!showProps && fixtureProp.hasChannelsOfRole('color') && hasFilterType('color')"
         v-model="hexColorValue"
       /> -->
-         <v-dialog
-           v-if="!showProps && fixtureProp.hasChannelsOfRole('color') && hasFilterType('color')"
-      v-model="colorDialog"
-      width="500"
-    >
- <template v-slot:activator="{ on, attrs }">
-        <v-btn
-          :color="hexColorValue"
-          dark
-          v-bind="attrs"
-          v-on="on"
-        >
-          Color
-        </v-btn>
-
-      </template>
+      <v-dialog
+        v-if="
+          !showProps &&
+          fixtureProp.hasChannelsOfRole('color') &&
+          hasFilterType('color')
+        "
+        v-model="colorDialog"
+        width="500"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn :color="hexColorValue" dark v-bind="attrs" v-on="on">
+            Color
+          </v-btn>
+        </template>
         <v-card>
-        <v-card-title class="text-h5 black lighten-2">
-       Choose a color
-        </v-card-title>
+          <v-card-title class="text-h5 black lighten-2">
+            Choose a color
+          </v-card-title>
 
-        <!-- <v-card-text>
+          <!-- <v-card-text>
         </v-card-text> -->
 
-        <!-- <v-divider></v-divider> -->
-        <v-color-picker
-  dot-size="25"
+          <!-- <v-divider></v-divider> -->
+          <v-color-picker
+            dot-size="25"
+            swatches-max-height="100"
+            width="600"
+            v-model="hexColorValue"
+          ></v-color-picker>
 
-  swatches-max-height="100"
-  width="600"
-  v-model="hexColorValue"
-></v-color-picker>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            text
-            @click="colorDialog = false"
-          >Ok
-          </v-btn>
-        </v-card-actions>
-
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" text @click="colorDialog = false">Ok </v-btn>
+          </v-card-actions>
         </v-card>
-
-         </v-dialog>
+      </v-dialog>
       <ChannelWidget
         v-for="c of matchedColorChannels"
         :key="c.id"
@@ -80,10 +72,12 @@
     </div>
 
     <div
-      style="display:flex;width:100%"
-      v-if="(fixtureProp.hasChannelsOfRole('position') && hasFilterType('position'))"
+      style="display: flex; width: 100%"
+      v-if="
+        fixtureProp.hasChannelsOfRole('position') && hasFilterType('position')
+      "
     >
-      <Button text="setPos" @click="showPosModal=true" />
+      <Button text="setPos" @click="showPosModal = true" />
       <modal v-if="showPosModal" @close="showPosModal = false">
         <h3 slot="header">fixtur pos</h3>
         <Point2DEditor
@@ -104,9 +98,9 @@
         :presetable.sync="presetableState[c.name]"
       />
     </div>
-    <div style="width:100%">
+    <div style="width: 100%">
       <ChannelWidget
-        style="width:100%"
+        style="width: 100%"
         v-for="c of matchedFogChannels"
         :key="c.id"
         :channelProp="c"
@@ -114,11 +108,10 @@
         :showPresetableState="showPresetableState"
         :presetable.sync="presetableState[c.name]"
       />
-    
     </div>
-    <div style="width:100%">
+    <div style="width: 100%">
       <ChannelWidget
-        style="width:100%"
+        style="width: 100%"
         v-for="c of matchedOtherChannels"
         :key="c.id"
         :channelProp="c"
@@ -128,7 +121,6 @@
       />
     </div>
   </div>
-  
 </template>
 
 <script lang="ts">
@@ -150,7 +142,7 @@ import { isEqual, debounce } from "lodash";
 const universesModule = namespace("universes");
 
 @Component({
-  components: { Slider, Button, Toggle, ChannelWidget, Modal, Point2DEditor }
+  components: { Slider, Button, Toggle, ChannelWidget, Modal, Point2DEditor },
 })
 export default class FixtureWidget extends Vue {
   @Prop({ required: true })
@@ -169,7 +161,7 @@ export default class FixtureWidget extends Vue {
   }
   get matchedPositionChannels() {
     return this.positionChannels?.filter(
-      c => c && c.matchFilterList(this.filterList)
+      (c) => c && c.matchFilterList(this.filterList)
     );
   }
   get colorChannels() {
@@ -179,14 +171,14 @@ export default class FixtureWidget extends Vue {
   get matchedColorChannels() {
     return this.colorChannels;
   }
-  get matchedFogChannels(){
-        return this.fogChannels.filter(
-      c => c && c.matchFilterList(this.filterList)
+  get matchedFogChannels() {
+    return this.fogChannels.filter(
+      (c) => c && c.matchFilterList(this.filterList)
     );
   }
   get matchedDimmerChannels() {
     return this.dimmerChannels.filter(
-      c => c && c.matchFilterList(this.filterList)
+      (c) => c && c.matchFilterList(this.filterList)
     );
   }
   get dimmerChannels() {
@@ -195,7 +187,7 @@ export default class FixtureWidget extends Vue {
   get fogChannels() {
     const res = this.fixtureProp.getChannelsOfRole("fog");
     if (res && (res.vent || res.heat)) {
-      return (res.vent || []).concat( res.heat || []);
+      return (res.vent || []).concat(res.heat || []);
     }
     return [];
   }
@@ -209,7 +201,7 @@ export default class FixtureWidget extends Vue {
   }
   get matchedOtherChannels() {
     return this.otherChannels?.filter(
-      c => c && c.matchFilterList(this.filterList)
+      (c) => c && c.matchFilterList(this.filterList)
     );
   }
 
@@ -242,7 +234,7 @@ export default class FixtureWidget extends Vue {
       this.setFixtureColor({
         fixture: this.fixtureProp,
         color,
-        setWhiteToZero: true
+        setWhiteToZero: true,
       });
     },
     50,
@@ -253,10 +245,10 @@ export default class FixtureWidget extends Vue {
     if (!this.filterList || !this.filterList.length) {
       return true;
     }
-    if (this.filterList.some(e => e === "all")) {
+    if (this.filterList.some((e) => e === "all")) {
       return true;
     }
-    return this.filterList.some(e => e.startsWith(n));
+    return this.filterList.some((e) => e.startsWith(n));
   }
 
   public setFixturePosition(p: Array<{ x: number; y: number }>) {

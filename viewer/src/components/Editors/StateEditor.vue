@@ -1,12 +1,15 @@
 
 <template>
-  <div class="main" style="width:100%;height:100%">
-    <div style="display:flex;flex-direction:row;width:100%">
-      <v-row style="width:100%">
+  <div class="main" style="width: 100%; height: 100%">
+    <div style="display: flex; flex-direction: row; width: 100%">
+      <v-row style="width: 100%">
         <v-col cols="12">
-          <v-list dense class="overflow-y-auto" style="max-height:200px">
+          <v-list dense class="overflow-y-auto" style="max-height: 200px">
             <v-list-item-group v-model="selectedFixtureIdxs" multiple>
-              <v-list-item v-for="(s,i) in selectableFixtureListNames" :key="s.id">
+              <v-list-item
+                v-for="(s, i) in selectableFixtureListNames"
+                :key="s.id"
+              >
                 <v-list-item-content>
                   <v-list-item-title v-html="s"></v-list-item-title>
                 </v-list-item-content>
@@ -21,7 +24,7 @@
         multiple
         class="selectclass"
         v-model="selectedGroupNames"
-        style="width:100%"
+        style="width: 100%"
         :items="selectableGroupList"
       ></v-select>
       <v-select
@@ -35,40 +38,45 @@
     <v-row>
       <v-col>
         <ChannelRack
-          :displayableFixtureList="state?state.getSavedFixtureList(universe.fixtureAndGroupList):[]"
+          :displayableFixtureList="
+            state ? state.getSavedFixtureList(universe.fixtureAndGroupList) : []
+          "
           :presetableState.sync="state.presetableState"
         />
-        <div v-for="z of zombies" :key="z.id" >
-        {{z}}
+        <div v-for="z of zombies" :key="z.id">
+          {{ z }}
         </div>
       </v-col>
       <v-col cols="5">
-        <MultiStateChooser :state="state" style="height:100px;with:100px"></MultiStateChooser>
+        <MultiStateChooser
+          :state="state"
+          style="height: 100px; with: 100px"
+        ></MultiStateChooser>
       </v-col>
     </v-row>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Action, Getter, Mutation, namespace } from 'vuex-class';
-import Button from '@/components/Inputs/Button.vue';
-import Numbox from '@/components/Inputs/Numbox.vue';
-import Toggle from '@/components/Inputs/Toggle.vue';
-import TextInput from '@/components/Inputs/TextInput.vue';
-import ChannelRack from '@/components/ChannelRack.vue';
-import FixtureWidget from '@/components/Widgets/FixtureWidget.vue';
-import Modal from '@/components/Utils/Modal.vue';
-import MultiStateChooser from '@/components/MultiStateChooser.vue';
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { Action, Getter, Mutation, namespace } from "vuex-class";
+import Button from "@/components/Inputs/Button.vue";
+import Numbox from "@/components/Inputs/Numbox.vue";
+import Toggle from "@/components/Inputs/Toggle.vue";
+import TextInput from "@/components/Inputs/TextInput.vue";
+import ChannelRack from "@/components/ChannelRack.vue";
+import FixtureWidget from "@/components/Widgets/FixtureWidget.vue";
+import Modal from "@/components/Utils/Modal.vue";
+import MultiStateChooser from "@/components/MultiStateChooser.vue";
 
-import UniversesMethods from '../../store/universes';
-import { FixtureBase } from '@API/Fixture';
-import { State, StateList } from '@API/State';
-import rootState from '@API/RootState';
-import { FixtureFactory } from '@API/FixtureFactory';
-import { ChannelRoles } from '@API/Channel';
+import UniversesMethods from "../../store/universes";
+import { FixtureBase } from "@API/Fixture";
+import { State, StateList } from "@API/State";
+import rootState from "@API/RootState";
+import { FixtureFactory } from "@API/FixtureFactory";
+import { ChannelRoles } from "@API/Channel";
 
-const universesModule = namespace('universes');
+const universesModule = namespace("universes");
 
 @Component({
   components: {
@@ -94,16 +102,15 @@ export default class StateEditor extends Vue {
   public showValues = false;
   public showNames = false;
 
-  @universesModule.State('universe')
-  private universe!: UniversesMethods['universe'];
+  @universesModule.State("universe")
+  private universe!: UniversesMethods["universe"];
 
   private pselectedFixtureNames: string[] = [];
-  private pselectedGroupNames: string[] = ['all'];
-  private pselectedChannelFilterNames: string[] = ['all'];
+  private pselectedGroupNames: string[] = ["all"];
+  private pselectedChannelFilterNames: string[] = ["all"];
   private extendedTypeFilter = false;
 
   private isLive = true;
-
 
   get selectedFixtures() {
     return this.universe.getFixtureListFromNames(this.selectedFixtureNames);
@@ -111,7 +118,7 @@ export default class StateEditor extends Vue {
 
   get selectedFixtureNames() {
     return this.selectedFixtureIdxs.map(
-      (i) => this.selectableFixtureListNames[i],
+      (i) => this.selectableFixtureListNames[i]
     );
     // return this.selectedFixtures.map(e=>e.name);
   }
@@ -123,7 +130,7 @@ export default class StateEditor extends Vue {
     return this.universe.sortedFixtureList;
   }
   get selectableGroupList() {
-    return ['all'].concat(this.universe.groupNames);
+    return ["all"].concat(this.universe.groupNames);
   }
   public get selectedGroupNames() {
     return this.pselectedGroupNames;
@@ -144,18 +151,18 @@ export default class StateEditor extends Vue {
     return this.universe.sortedFixtureList.filter(
       (f) =>
         this.needDisplay(f) &&
-        f.hasChannelMatchingFilters(this.selectedChannelFilterNames),
+        f.hasChannelMatchingFilters(this.selectedChannelFilterNames)
     );
   }
 
   get selectableChannelFilterList() {
-    const res: string[] = ['all'];
+    const res: string[] = ["all"];
 
     for (const fam of Object.keys(ChannelRoles)) {
       res.push(fam);
       if (this.extendedTypeFilter) {
         for (const type of Object.keys(ChannelRoles[fam])) {
-          res.push(fam + ':' + type);
+          res.push(fam + ":" + type);
         }
       }
     }
@@ -166,7 +173,7 @@ export default class StateEditor extends Vue {
     if (this.selectedGroupNames.length === 0) {
       return;
     }
-    if (this.selectedGroupNames.find((e) => e === 'all')) {
+    if (this.selectedGroupNames.find((e) => e === "all")) {
       this.pselectedFixtureNames = this.selectableFixtureListNames;
       return;
     }
@@ -200,7 +207,7 @@ export default class StateEditor extends Vue {
   }
 
   public get firstGroupSelected() {
-    return this.selectedGroupNames.length > 0 ? this.selectedGroupNames[0] : '';
+    return this.selectedGroupNames.length > 0 ? this.selectedGroupNames[0] : "";
   }
 
   public mounted() {
@@ -208,7 +215,7 @@ export default class StateEditor extends Vue {
       const resolvedFixtures = this.state.resolveState(
         this.universe.fixtureList,
         rootState.stateList.states,
-        1,
+        1
       );
       for (const rf of Object.values(resolvedFixtures)) {
         const i = this.selectableFixtures.indexOf(rf.fixture);
@@ -219,15 +226,15 @@ export default class StateEditor extends Vue {
     }
   }
 
-  get zombies(){
-    if(this.state){
-      const zObj =  this.state.findZombies()
-      if(zObj && Object.keys(zObj).length){
-        console.log( Object.keys(zObj))
-        return zObj
+  get zombies() {
+    if (this.state) {
+      const zObj = this.state.findZombies();
+      if (zObj && Object.keys(zObj).length) {
+        console.log(Object.keys(zObj));
+        return zObj;
       }
     }
-    return ["no zombies found"]
+    return ["no zombies found"];
   }
 }
 </script>

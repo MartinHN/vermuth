@@ -1,25 +1,35 @@
 <template>
-  <div class="fixtureGroupWidget" :style="{backgroundColor:getFixtureColor(fixtureProp)}">
-  {{fixtureProp.name}}
+  <div
+    class="fixtureGroupWidget"
+    :style="{ backgroundColor: getFixtureColor(fixtureProp) }"
+  >
+    {{ fixtureProp.name }}
     <Toggle
       v-if="isGroup"
-      :text="(expanded?'collapse':'expand')+' '+groupName"
+      :text="(expanded ? 'collapse' : 'expand') + ' ' + groupName"
       v-model="expanded"
       iconOn="chevron-down"
       iconOff="chevron-right"
     />
-    <div v-if="expanded && isGroup" style="width:100%;background-color:inherit">
-      <div style="background-color:inherit" v-for="ff of fixtureProp.fixtures" :key="ff.id">
+    <div
+      v-if="expanded && isGroup"
+      style="width: 100%; background-color: inherit"
+    >
+      <div
+        style="background-color: inherit"
+        v-for="ff of fixtureProp.fixtures"
+        :key="ff.id"
+      >
         <FixtureWidget
           :fixtureProp="ff"
-          :style="{backgroundColor:getFixtureColor(ff)}"
+          :style="{ backgroundColor: getFixtureColor(ff) }"
           :showPresetableState="showPresetableState"
           :presetableState.sync="presetableState[ff.name]"
         />
         <div class="spacer" />
       </div>
     </div>
-    <div v-else style="display:flex;width:100%">
+    <div v-else style="display: flex; width: 100%">
       <FixtureWidget
         :fixtureProp="fixtureProp"
         :showPresetableState="showPresetableState"
@@ -56,7 +66,7 @@ function isNonEmpty(o: any) {
 }
 
 @Component({
-  components: { Slider, Button, Toggle, Modal, Point2DEditor, FixtureWidget }
+  components: { Slider, Button, Toggle, Modal, Point2DEditor, FixtureWidget },
 })
 export default class FixtureGroupWidget extends Vue {
   mounted() {
@@ -69,11 +79,11 @@ export default class FixtureGroupWidget extends Vue {
 
   get hasIndividualPreseted() {
     const channels: ChannelBase[] = [];
-    const subProps = this.fixtureProps?.map(f =>
-      f.channels.map(c => channels.push(c))
+    const subProps = this.fixtureProps?.map((f) =>
+      f.channels.map((c) => channels.push(c))
     );
     if (channels.length) {
-      return channels.some(c => rootState.stateList.isPreseted(c));
+      return channels.some((c) => rootState.stateList.isPreseted(c));
     }
     return false;
   }
@@ -91,7 +101,7 @@ export default class FixtureGroupWidget extends Vue {
     // debugger;
   }
   get hasMainPreseted() {
-    return this.fixtureProp?.channels.some(c =>
+    return this.fixtureProp?.channels.some((c) =>
       rootState.stateList.isPreseted(c)
     );
   }

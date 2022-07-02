@@ -1,28 +1,35 @@
 <template>
   <v-row no-gutters class="ServerState">
-    <v-col cols="2" style="min-width:160px;min-height:60px">
+    <v-col cols="2" style="min-width: 160px; min-height: 60px">
       <div
         ref="connectedState"
-        :style="{'background-color':this.serverConnectionColor,'width':'100%'}"
+        :style="{
+          'background-color': this.serverConnectionColor,
+          width: '100%',
+        }"
       >
-        {{connectedState}}
+        {{ connectedState }}
         <br />
-        {{savedStatus}}
+        {{ savedStatus }}
         <br />
-        {{serverIP}}
+        {{ serverIP }}
       </div>
     </v-col>
     <!-- <div ref="connectedId">{{connectedId}}</div> -->
-    <v-col cols="2" style="min-width:160px;min-height:60px">
-      <Button style="width:100%;height:100%;color:black" text="Save"  @click="SAVE_SESSION()"></Button>
+    <v-col cols="2" style="min-width: 160px; min-height: 60px">
+      <Button
+        style="width: 100%; height: 100%; color: black"
+        text="Save"
+        @click="SAVE_SESSION()"
+      ></Button>
     </v-col>
     <v-col>
       <v-select
         label="driver"
         :items="driverList"
         :value="selectedDriverName"
-        :style="{'background-color':this.dmxConnectionColor}"
-        @change="$store.dispatch('DMXConfig/tryConnectDriver',$event)"
+        :style="{ 'background-color': this.dmxConnectionColor }"
+        @change="$store.dispatch('DMXConfig/tryConnectDriver', $event)"
         hide-details
       ></v-select>
     </v-col>
@@ -31,9 +38,9 @@
         label="serialport"
         v-if="displaySerialPort"
         :items="portListAndNone"
-        :style="{'background-color':this.dmxConnectionColor}"
+        :style="{ 'background-color': this.dmxConnectionColor }"
         :value="displayedPort"
-        @change="$store.dispatch('DMXConfig/tryConnectPort',$event)"
+        @change="$store.dispatch('DMXConfig/tryConnectPort', $event)"
         hide-details
       ></v-select>
     </v-col>
@@ -51,7 +58,7 @@ import Button from "@/components/Inputs/Button.vue";
 const configModule = namespace("DMXConfig");
 
 @Component({
-  components: { Button }
+  components: { Button },
 })
 export default class ServerState extends Vue {
   @State("connectedState") public connectedState!: string;

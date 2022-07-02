@@ -1,10 +1,10 @@
 <template>
   <div class="ChannelRackClass">
-    <div style="display:flex;width:100%;padding:5px">
+    <div style="display: flex; width: 100%; padding: 5px">
       <slider
-        style="flex:1 0 75%"
+        style="flex: 1 0 75%"
         class="grandMaster"
-        @input="grandMaster=$event"
+        @input="grandMaster = $event"
         :value="grandMaster"
         name="grandMaster"
         showName="1"
@@ -12,18 +12,18 @@
       ></slider>
       <input type="color" @input="setAllColorHex($event.target.value)" />
     </div>
-    <div style="display:flex;flex-direction:row;width:100%">
+    <div style="display: flex; flex-direction: row; width: 100%">
       <v-menu offset-y :close-on-content-click="false">
         <template v-slot:activator="{ on }">
           <v-btn color="primary" dark v-on="on">filters</v-btn>
         </template>
-        <div style="background:black">
+        <div style="background: black">
           <v-select
             label="fixtures"
             class="selectclass"
             multiple
             v-model="selectedFixtureNames"
-            style="width:100%"
+            style="width: 100%"
             :items="displayableFixtureNames"
           ></v-select>
 
@@ -32,7 +32,7 @@
             multiple
             class="selectclass"
             v-model="selectedGroupNames"
-            style="width:100%"
+            style="width: 100%"
             :items="selectableGroupList"
           ></v-select>
           <v-select
@@ -45,16 +45,19 @@
           <Toggle v-model="extendedTypeFilter" text="extended Filters"></Toggle>
         </div>
       </v-menu>
-      <div style="width:100%">
+      <div style="width: 100%">
         <v-row no-gutters>
           <v-col cols="6">
             <v-menu offset-y :close-on-content-click="false">
               <template v-slot:activator="{ on }">
                 <v-btn color="primary" dark v-on="on">visibility</v-btn>
               </template>
-              <div style="background:black">
+              <div style="background: black">
                 <Toggle v-model="showProps" text="show props"></Toggle>
-                <Toggle v-model="showPresetable" text="show only presetable"></Toggle>
+                <Toggle
+                  v-model="showPresetable"
+                  text="show only presetable"
+                ></Toggle>
                 <Toggle v-model="showActive" text="show only active"></Toggle>
               </div>
             </v-menu>
@@ -63,7 +66,7 @@
             <Button
               v-if="showPresetableState"
               @click="disableAllPresetable()"
-              style="height:100%"
+              style="height: 100%"
               text="disable All"
             ></Button>
           </v-col>
@@ -75,7 +78,7 @@
     </div>
     <FixtureGroupWidget
       v-for="f in displayedFixtures"
-      style="margin:10px 0 0 0;width:100%;"
+      style="margin: 10px 0 0 0; width: 100%"
       class="channel"
       :key="f.id"
       :fixtureProp="f"
@@ -143,7 +146,7 @@ const statesModule = namespace("states");
 
 // }
 @Component({
-  components: { FixtureWidget, Button, Toggle, Slider, FixtureGroupWidget }
+  components: { FixtureWidget, Button, Toggle, Slider, FixtureGroupWidget },
 })
 export default class ChannelRack extends Vue {
   dumbState = {};
@@ -165,7 +168,7 @@ export default class ChannelRack extends Vue {
     return this.pselectedFixtureNames;
   }
   get displayableFixtureNames() {
-    return (this.displayableFixtureList || []).map(e => e.name);
+    return (this.displayableFixtureList || []).map((e) => e.name);
   }
   get selectableGroupList() {
     return ["all"].concat(this.universe.groupNames);
@@ -186,7 +189,7 @@ export default class ChannelRack extends Vue {
 
   get displayedFixtures() {
     return (this.displayableFixtureList || []).filter(
-      f =>
+      (f) =>
         this.needDisplay(f) &&
         f.hasChannelMatchingFilters(this.selectedChannelFilterNames)
     );
@@ -224,12 +227,12 @@ export default class ChannelRack extends Vue {
                   Vue.set(oo, kk.toString(), { v: 0, presetable: false });
                 }
                 return Reflect.get(oo, kk, thisProxy);
-              }
+              },
             });
             Vue.set(o, k.toString(), lazyChannelDic);
           }
           return Reflect.get(o, k, thisProxy);
-        }
+        },
       }
     );
   }
@@ -276,18 +279,16 @@ export default class ChannelRack extends Vue {
     // }
   }
   public get grandMaster() {
-    return this.universe.grandMaster
+    return this.universe.grandMaster;
     // return this.displayedFixtures.length
     //   ? this.displayedFixtures[0].dimmerValue
     //   : 0;
   }
 
-
-
   @Prop({
     default: () => {
       return rootState.universe.fixtureAndGroupList;
-    }
+    },
   })
   public displayableFixtureList!: FixtureBase[];
 
@@ -344,7 +345,7 @@ export default class ChannelRack extends Vue {
   }
 
   public selectAll() {
-    this.selectedFixtureNames = this.displayableFixtureList.map(e => e.name);
+    this.selectedFixtureNames = this.displayableFixtureList.map((e) => e.name);
   }
 
   public needDisplay(f: FixtureBase) {
@@ -353,7 +354,7 @@ export default class ChannelRack extends Vue {
       needDisplay =
         needDisplay &&
         (this.stateList.isPreseted(f) ||
-          f.channels.some(c => this.stateList.isPreseted(c)));
+          f.channels.some((c) => this.stateList.isPreseted(c)));
     }
     if (this.showActive) {
       needDisplay = needDisplay && f.hasActiveChannels();
@@ -363,7 +364,7 @@ export default class ChannelRack extends Vue {
     ) {
       needDisplay =
         needDisplay &&
-        this.selectedFixtureNames.find(fn => fn === f.name) !== undefined;
+        this.selectedFixtureNames.find((fn) => fn === f.name) !== undefined;
     }
     if (this.universe.getGroupsForFixture(f).length > 0) {
       needDisplay = false;

@@ -15,7 +15,7 @@
               iconOff="play"
             ></Toggle>
           </v-col> -->
-           <v-col cols="1">
+          <v-col cols="1">
             <!-- <Toggle
               v-model=toggleLoop
               style="height:40px"
@@ -34,8 +34,12 @@
             <Button @click="pauseLoop" text="pause" icon="pause" />
           </v-col>
           <v-col>
-            <Numbox text="idx" :value="playedIdx" @change="playedIdx=$event"></Numbox>
-            <div style="display:flex">
+            <Numbox
+              text="idx"
+              :value="playedIdx"
+              @change="playedIdx = $event"
+            ></Numbox>
+            <div style="display: flex">
               <Button @click="prev" text="prev" icon="skip-previous" />
               <Button @click="next" text="next" icon="skip-next" />
             </div>
@@ -58,33 +62,37 @@
                   :key="index"
                   @click="addSequence(item)"
                 >
-                  <v-list-item-title>{{ item}}</v-list-item-title>
+                  <v-list-item-title>{{ item }}</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
           </v-col>
         </v-row>
-        <div :style="{width:'100%', height:'5px'}">
-          <div :style="{width:pctDone,height:'100%',background:'red'}"></div>
+        <div :style="{ width: '100%', height: '5px' }">
+          <div
+            :style="{ width: pctDone, height: '100%', background: 'red' }"
+          ></div>
         </div>
       </v-container>
       <draggable
         v-model="seqList"
         group="people"
-        @start="drag=true"
-        @end="drag=false"
-        style="width:100%"
+        @start="drag = true"
+        @end="drag = false"
+        style="width: 100%"
         handle=".handle"
       >
-        <v-row v-for="(s,i) in seqList" :key="s.id" no-gutters>
+        <v-row v-for="(s, i) in seqList" :key="s.id" no-gutters>
           <v-col
             cols="1"
-            :style="{backgroundColor:(selectedIdx===i?'red':'transparent')}"
+            :style="{
+              backgroundColor: selectedIdx === i ? 'red' : 'transparent',
+            }"
             class="handle ma-0"
           >
             <div @click="seqClicked(i)" class="pa-0 ma-0">
-              <v-icon style="width:10%">mdi-drag</v-icon>
-              {{i}}
+              <v-icon style="width: 10%">mdi-drag</v-icon>
+              {{ i }}
             </div>
           </v-col>
           <v-col>
@@ -93,9 +101,9 @@
               :editMode="editOrder"
               :seqNumber="i"
               :sequence="s"
-              :style="{background:getHighlightedColor(i)}"
+              :style="{ background: getHighlightedColor(i) }"
               @click.native="seqClicked(i)"
-              :selected="selectedIdx===i"
+              :selected="selectedIdx === i"
             />
           </v-col>
         </v-row>
@@ -119,13 +127,12 @@ const sequenceModule = namespace("sequence");
 const statesModule = namespace("states");
 import draggable from "vuedraggable";
 import dbg from "@API/dbg";
-import {fetchRemote } from '@API/ServerSync'
+import { fetchRemote } from "@API/ServerSync";
 
 @Component({
-  components: { Button, Numbox, SequenceComponent, Toggle, draggable }
+  components: { Button, Numbox, SequenceComponent, Toggle, draggable },
 })
 export default class Sequencer extends Vue {
-  
   get isPlayingSeq() {
     return this.seqPlayer.isPlaying;
   }
@@ -143,33 +150,31 @@ export default class Sequencer extends Vue {
   set playedIdx(n: number) {
     this.seqPlayer.curPlayedIdx = n;
   }
-   get numLoops() {
-     fetchRemote(this.seqPlayer,'numLoops')
+  get numLoops() {
+    fetchRemote(this.seqPlayer, "numLoops");
     //  console.log(this.seqPlayer,this.seqPlayer.numLoops)
     return this.seqPlayer.numLoops;
   }
   set numLoops(n: number) {
     // fetchRemote(this.seqPlayer,'numLoops')
-        //  console.log(n,this.seqPlayer,this.seqPlayer.numLoops)
+    //  console.log(n,this.seqPlayer,this.seqPlayer.numLoops)
     this.seqPlayer.numLoops = n;
   }
 
-  set  toggleLoop(b:boolean){
-    
-    console.log("toggling loop",b);
-    if(b){
+  set toggleLoop(b: boolean) {
+    console.log("toggling loop", b);
+    if (b) {
       this.seqPlayer.startLoop();
-    }
-    else{
+    } else {
       this.seqPlayer.stopIfPlaying(true);
     }
   }
 
-  pauseLoop(){
+  pauseLoop() {
     this.seqPlayer.stopIfPlaying(false);
   }
 
-  get toggleLoop(){
+  get toggleLoop() {
     return this.numLoops == -1;
   }
 
@@ -196,18 +201,17 @@ export default class Sequencer extends Vue {
     });
   }
 
-
   get seqPlayer() {
     return rootState.sequencePlayer;
   }
 
-get infiniteLoop(){
-  return this.seqPlayer.numLoops==-1
-}
+  get infiniteLoop() {
+    return this.seqPlayer.numLoops == -1;
+  }
 
-set infiniteLoop(v:boolean){
-  this.seqPlayer.numLoops= v?-1:0;
-}
+  set infiniteLoop(v: boolean) {
+    this.seqPlayer.numLoops = v ? -1 : 0;
+  }
   get togglePlay() {
     return this.globalTransport.isPlaying;
   }
@@ -232,7 +236,7 @@ set infiniteLoop(v:boolean){
   @statesModule.State("stateList")
   public stateList!: StatesMethods["stateList"];
 
-    @Action("SAVE_SESSION") public SAVE_SESSION!: () => void;
+  @Action("SAVE_SESSION") public SAVE_SESSION!: () => void;
 
   public editOrder = false;
 
@@ -241,12 +245,11 @@ set infiniteLoop(v:boolean){
   }
 
   public addSequence(n: string) {
-    this.sequenceList.insertNewSequence(n, n, this.selectedIdx+1);
-    setTimeout(this.SAVE_SESSION,500);
+    this.sequenceList.insertNewSequence(n, n, this.selectedIdx + 1);
+    setTimeout(this.SAVE_SESSION, 500);
   }
   public mounted() {
     window.addEventListener("keydown", this.processKey);
-    
   }
   public activated() {
     window.addEventListener("keydown", this.processKey);
@@ -309,8 +312,7 @@ set infiniteLoop(v:boolean){
         this.selectedIdx =
           (this.selectedIdx + this.sequenceList.length - 1) %
           this.sequenceList.length;
-      }
-       else if (event.key === "ArrowRight") {
+      } else if (event.key === "ArrowRight") {
         event.preventDefault();
         this.next();
       } else if (event.key === "ArrowLeft") {

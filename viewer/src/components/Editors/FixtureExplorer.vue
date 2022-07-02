@@ -1,55 +1,65 @@
 
 <template>
-  <div class="main" style="width:100%;height:100%;text-align: left;">
+  <div class="main" style="width: 100%; height: 100%; text-align: left">
     <!-- <div v-if='fixture!==null'> -->
-    <v-row no-gutters style='height:10%;flex-wrap:nowrap'>
-    
-        <v-select
-          label="manufacturer"
-          v-model="selectedFixtureManufacturer"
-          :items="fixtureManufacturers"
-          dense
-          dark
-          filled
-        ></v-select>
+    <v-row no-gutters style="height: 10%; flex-wrap: nowrap">
+      <v-select
+        label="manufacturer"
+        v-model="selectedFixtureManufacturer"
+        :items="fixtureManufacturers"
+        dense
+        dark
+        filled
+      ></v-select>
 
-        <v-select
-          label="category"
-          v-model="selectedFixtureCategory"
-          :items="fixtureCategoriesByManufacture"
-          dense
-          filled
-        ></v-select>
-   
+      <v-select
+        label="category"
+        v-model="selectedFixtureCategory"
+        :items="fixtureCategoriesByManufacture"
+        dense
+        filled
+      ></v-select>
     </v-row>
-<v-row style='height:100%;'>
-      <v-col cols="4" style='height:100%;'>
-        <v-list style="max-height:100%" class="overflow-y-auto" dense>
+    <v-row style="height: 100%">
+      <v-col cols="4" style="height: 100%">
+        <v-list style="max-height: 100%" class="overflow-y-auto" dense>
           <v-list-item-group v-model="selectedFixtureDefIdx" mandatory>
-            <v-list-item v-for="(fN, i) in filteredFixtureNames" :key="i" dense>{{fN}}</v-list-item>
+            <v-list-item
+              v-for="(fN, i) in filteredFixtureNames"
+              :key="i"
+              dense
+              >{{ fN }}</v-list-item
+            >
           </v-list-item-group>
         </v-list>
       </v-col>
 
-      <v-col cols="8" v-if="selectedFixtureDef" style="height:100%;overflow-y:auto">
+      <v-col
+        cols="8"
+        v-if="selectedFixtureDef"
+        style="height: 100%; overflow-y: auto"
+      >
         <v-select
-          :disabled="Object.keys(selectedFixtureDef.modes).length<=1"
+          :disabled="Object.keys(selectedFixtureDef.modes).length <= 1"
           label="DMX mode"
           class="selectclass"
           v-model="selectedMode"
-          style="width:50%;display:inline-block"
+          style="width: 50%; display: inline-block"
           :items="Object.keys(selectedFixtureDef.modes)"
           dense
           filled
         ></v-select>
         <Button
-          @click="$emit('change',selectedFixtureInstance)"
+          @click="$emit('change', selectedFixtureInstance)"
           text="add"
           color="green"
-          style="width:50%;display:inline-block"
+          style="width: 50%; display: inline-block"
         ></Button>
 
-        <FixtureEditor :readonly="true" :fixture="selectedFixtureInstance"></FixtureEditor>
+        <FixtureEditor
+          :readonly="true"
+          :fixture="selectedFixtureInstance"
+        ></FixtureEditor>
       </v-col>
     </v-row>
 
@@ -71,7 +81,7 @@ import { FixtureFactory, FixtureDef } from "@API/FixtureFactory";
 const universesModule = namespace("universes");
 
 @Component({
-  components: { Button, Numbox, Toggle, FixtureEditor }
+  components: { Button, Numbox, Toggle, FixtureEditor },
 })
 export default class FixtureExplorer extends Vue {
   get selectedMode() {
@@ -95,15 +105,15 @@ export default class FixtureExplorer extends Vue {
     let filtered = FixtureFactory.allFixtureDefsFlatList;
     const manuFilter = this.selectedFixtureManufacturer;
     if (manuFilter !== "All") {
-      filtered = filtered.filter(e => e.manufacturer === manuFilter);
+      filtered = filtered.filter((e) => e.manufacturer === manuFilter);
     }
     return filtered;
   }
 
   get fixtureCategoriesByManufacture() {
     const res = new Set<string>();
-    this.filteredByManufacturer.map(f => {
-      f.categories.map(c => res.add(c));
+    this.filteredByManufacturer.map((f) => {
+      f.categories.map((c) => res.add(c));
     });
 
     return ["All"].concat(Array.from(res));
@@ -114,8 +124,8 @@ export default class FixtureExplorer extends Vue {
     let filtered = this.filteredByManufacturer;
     if (this.selectedFixtureCategory !== "All") {
       const cl = [this.selectedFixtureCategory];
-      filtered = filtered.filter(e =>
-        cl.every(elem => e.categories.indexOf(elem) > -1)
+      filtered = filtered.filter((e) =>
+        cl.every((elem) => e.categories.indexOf(elem) > -1)
       );
     }
     filtered.sort((a, b) => {
@@ -134,7 +144,7 @@ export default class FixtureExplorer extends Vue {
   }
 
   get filteredFixtureNames() {
-    return this.filteredFixtureDefs.map(e => e.name).sort();
+    return this.filteredFixtureDefs.map((e) => e.name).sort();
   }
   get selectedFixtureDef() {
     const fd = this.filteredFixtureDefs[this.selectedFixtureDefIdx];

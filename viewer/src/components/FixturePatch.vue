@@ -6,28 +6,49 @@
           <div>Fixtures</div>
           <Button
             class="button"
-            @click="showFixtureExplorer=true"
+            @click="showFixtureExplorer = true"
             color="green"
             text="add Fixture"
             icon="plus lightbulb"
           />
-          <Button text="remove Fixture" color="red" @click="askToRmFixtures()" icon="delete lightbulb" />
-          <Modal v-if="showFixtureExplorer" @close="showFixtureExplorer=false">
+          <Button
+            text="remove Fixture"
+            color="red"
+            @click="askToRmFixtures()"
+            icon="delete lightbulb"
+          />
+          <Modal
+            v-if="showFixtureExplorer"
+            @close="showFixtureExplorer = false"
+          >
             <!-- <h3 slot="header">fixture Explorer</h3> -->
-            <FixtureExplorer slot="body" @change="addAndQuitFExplorer($event) "></FixtureExplorer>
+            <FixtureExplorer
+              slot="body"
+              @change="addAndQuitFExplorer($event)"
+            ></FixtureExplorer>
           </Modal>
         </v-col>
         <v-col cols="4">
           <!-- <Button text="Manage Groups" @click="showGroupExplorer=true"/> -->
           <div>Groups</div>
-          <Button text="addGroup" @click="addGroup()" color="green" icon="plus lightbulb-group"></Button>
-          <Button text="removeGroup" @click="removeGroup()" color="red" icon="delete lightbulb-group"></Button>
+          <Button
+            text="addGroup"
+            @click="addGroup()"
+            color="green"
+            icon="plus lightbulb-group"
+          ></Button>
+          <Button
+            text="removeGroup"
+            @click="removeGroup()"
+            color="red"
+            icon="delete lightbulb-group"
+          ></Button>
           <!-- <Modal v-if="showGroupExplorer" @close="showGroupExplorer=false">
             <GroupExplorer  slot="body" ></GroupExplorer>
           </Modal>-->
         </v-col>
 
-        <v-col cols="2" style="display:flex">
+        <v-col cols="2" style="display: flex">
           <Numbox
             class="testNum"
             text="testChannel"
@@ -64,42 +85,42 @@
         dense
         @click.native="tableClicked"
       >
-        <template v-slot:item.name="{item:f}">
+        <template v-slot:item.name="{ item: f }">
           <TextInput
             :value="f.name"
-            @change="setFixtureName({fixture:f,value:$event})"
+            @change="setFixtureName({ fixture: f, value: $event })"
           />
         </template>
 
-        <template v-slot:item.baseCirc="{item:f}">
+        <template v-slot:item.baseCirc="{ item: f }">
           <Numbox
             :errMsg="fixtureErrorMsgs[f.name]"
             class="baseCirc pa-0 ma-0"
             :value="f.baseCirc"
             :min="0"
             :max="512"
-            @input="$event && setFixtureBaseCirc({fixture: f, circ:$event})"
+            @input="$event && setFixtureBaseCirc({ fixture: f, circ: $event })"
             :postFix="`(${f.span})`"
           ></Numbox>
         </template>
 
-        <template v-slot:item.groupNames="{item:f}">
+        <template v-slot:item.groupNames="{ item: f }">
           <v-lazy>
             <v-select
               hide-details
               multiple
-              style="width:100%"
+              style="width: 100%"
               :value="assignedGroupsOnFixture(f)"
               :items="universe.groupNames"
-              @change="assignToGroups(f,$event)"
+              @change="assignToGroups(f, $event)"
               class="pa-0"
             >
-              <template v-slot:item="{item:item}">{{item}}</template>
+              <template v-slot:item="{ item: item }">{{ item }}</template>
             </v-select>
           </v-lazy>
         </template>
 
-        <template v-slot:item.actions="{item:f}">
+        <template v-slot:item.actions="{ item: f }">
           <tr class="pa-0">
             <td>
               <Button
@@ -110,22 +131,31 @@
               />
             </td>
             <td>
-              <Button text="clone" class="button pa-0 ma-0" @click="cloneFixture(f)" />
+              <Button
+                text="clone"
+                class="button pa-0 ma-0"
+                @click="cloneFixture(f)"
+              />
             </td>
             <td>
               <Toggle
-                v-if="f.dimmerChannels && f.dimmerChannels.length "
+                v-if="f.dimmerChannels && f.dimmerChannels.length"
                 text="test"
-                :value="universe.testedChannel.circ===f.dimmerChannels[0].trueCirc"
-                @input="testDimmerNum($event?f.dimmerChannels[0].trueCirc:-1)"
-              >T</Toggle>
+                :value="
+                  universe.testedChannel.circ === f.dimmerChannels[0].trueCirc
+                "
+                @input="
+                  testDimmerNum($event ? f.dimmerChannels[0].trueCirc : -1)
+                "
+                >T</Toggle
+              >
             </td>
           </tr>
         </template>
       </v-data-table>
     </v-card>
 
-    <Modal v-if="editedFixture!==null" @close="editedFixture=null">
+    <Modal v-if="editedFixture !== null" @close="editedFixture = null">
       <h3 slot="header">fixture Editor</h3>
       <FixtureEditor slot="body" :fixture="editedFixture"></FixtureEditor>
     </Modal>
@@ -160,8 +190,8 @@ const universesModule = namespace("universes");
     Modal,
     FixtureEditor,
     FixtureExplorer,
-    GroupExplorer
-  }
+    GroupExplorer,
+  },
 })
 export default class FixturePatch extends Vue {
   public get fixtureErrorMsgs() {
@@ -197,13 +227,13 @@ export default class FixturePatch extends Vue {
     if (clickOnRow) {
       const rowEl = el.parentElement;
       const listEl = rowEl?.parentElement;
-      if(rowEl && listEl){
-      const idx = Array.from(listEl.childNodes).indexOf(rowEl);
-      if (idx >= 0 && idx < this.universe.sortedFixtureList.length) {
-        this.selectedFixtures = [this.universe.sortedFixtureList[idx]];
-      } else {
-        console.warn("wrong list selection",idx);
-      }
+      if (rowEl && listEl) {
+        const idx = Array.from(listEl.childNodes).indexOf(rowEl);
+        if (idx >= 0 && idx < this.universe.sortedFixtureList.length) {
+          this.selectedFixtures = [this.universe.sortedFixtureList[idx]];
+        } else {
+          console.warn("wrong list selection", idx);
+        }
       }
     }
   }
@@ -222,7 +252,7 @@ export default class FixturePatch extends Vue {
       { text: "Name", value: "name" },
       { text: "Dimmer", value: "baseCirc" },
       { text: "Group", value: "groupNames", filterable: true },
-      { text: "Actions", value: "actions", sortable: false, filterable: false }
+      { text: "Actions", value: "actions", sortable: false, filterable: false },
       // ,{text:"edit",sortable:false},{text:"test",sortable:false}
     ];
   }
@@ -286,20 +316,20 @@ export default class FixturePatch extends Vue {
         prompt("how much do you want to add", "1") || "0",
         10
       );
-      if(numFixture<=0) return;
+      if (numFixture <= 0) return;
       const baseAddr = parseInt(
         prompt("starting dimmer number", "1") || "1",
         10
       );
       const name = prompt("name of the fixture?", e.fixtureType);
       if (name) {
-        const eObj = JSON.parse(JSON.stringify(e))
+        const eObj = JSON.parse(JSON.stringify(e));
         eObj.name = name;
         eObj._baseCirc = baseAddr;
         this.universe.addFixture(eObj);
-        
+
         for (let i = 1; i < numFixture; i++) {
-          eObj._baseCirc+=e.span
+          eObj._baseCirc += e.span;
           this.universe.addFixture(eObj);
         }
       }
@@ -317,7 +347,7 @@ export default class FixturePatch extends Vue {
     const fixtureList = this.selectedFixtures.includes(f)
       ? this.selectedFixtures
       : [f];
-    fixtureList.map(ff => {
+    fixtureList.map((ff) => {
       this.universe.setGroupNamesForFixture(ff, event);
       // debugger;
     });
@@ -341,13 +371,14 @@ export default class FixturePatch extends Vue {
   }
 
   private askToRmFixtures(fBase: FixtureBase) {
-    const fl = (this.selectedFixtures.includes(fBase) || !fBase)
-      ? this.selectedFixtures
-      : [fBase];
+    const fl =
+      this.selectedFixtures.includes(fBase) || !fBase
+        ? this.selectedFixtures
+        : [fBase];
     if (
-      window.confirm(`areYouSure to DELETE fixture ${fl.map(f => f?.name)}`)
+      window.confirm(`areYouSure to DELETE fixture ${fl.map((f) => f?.name)}`)
     ) {
-      fl.map(f => this.removeFixture({ fixture: f }));
+      fl.map((f) => this.removeFixture({ fixture: f }));
     }
   }
 

@@ -9,8 +9,9 @@
           dark
           :color="serverStatusColor"
           class="mx-2"
-          @click="showDrawer=!showDrawer"
-        >+</v-btn>
+          @click="showDrawer = !showDrawer"
+          >+</v-btn
+        >
         <router-link to="/">Dashboard</router-link>
 
         <router-link to="/Sequencer">Sequencer</router-link>
@@ -35,7 +36,9 @@
         <v-list dense nav class="pt-12">
           <ServerState id="serverState" />
           <v-list-item>
-            <router-link to="/Config" @click.native="showDrawer=false">Config</router-link>
+            <router-link to="/Config" @click.native="showDrawer = false"
+              >Config</router-link
+            >
           </v-list-item>
         </v-list>
       </v-navigation-drawer>
@@ -53,7 +56,7 @@
       ref="fakeSessionFileInput"
       type="file"
       name="name"
-      style="display: none;"
+      style="display: none"
       @change="loadLocally($event.target.files)"
     />
   </v-app>
@@ -73,13 +76,13 @@ let originalFaviconNode: any;
 let redFaviconNode: any;
 
 @Component({
-  components: { ServerState, Modal }
+  components: { ServerState, Modal },
 })
 export default class App extends Vue {
   get routePathList() {
     const routePaths = Array.from((this.$refs.navBar as HTMLElement).childNodes)
       .map((e: any) => e.pathname)
-      .filter(e => !!e);
+      .filter((e) => !!e);
     console.log(routePaths);
     return routePaths;
   }
@@ -145,7 +148,7 @@ export default class App extends Vue {
   }
   public getRouteIdx() {
     const path = (this.$router as any).history.current.path;
-    return this.routePathList.findIndex(e => e === path);
+    return this.routePathList.findIndex((e) => e === path);
   }
   public nav(left: boolean) {
     let nI = this.getRouteIdx();

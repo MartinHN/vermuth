@@ -98,40 +98,41 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue , Watch} from 'vue-property-decorator';
-import { State, Action, Getter , Mutation , namespace} from 'vuex-class';
-import Button from '@/components/Inputs/Button.vue';
-import Numbox from '@/components/Inputs/Numbox.vue';
-import Toggle from '@/components/Inputs/Toggle.vue';
-import TextInput from '@/components/Inputs/TextInput.vue';
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { State, Action, Getter, Mutation, namespace } from "vuex-class";
+import Button from "@/components/Inputs/Button.vue";
+import Numbox from "@/components/Inputs/Numbox.vue";
+import Toggle from "@/components/Inputs/Toggle.vue";
+import TextInput from "@/components/Inputs/TextInput.vue";
 
-import Modal from '@/components/Utils/Modal.vue';
+import Modal from "@/components/Utils/Modal.vue";
 
-import UniversesMethods from '../../store/universes';
-import {FixtureBase} from '@API/Fixture';
-import { FixtureFactory } from '@API/FixtureFactory';
-const universesModule = namespace('universes');
-import {ChannelRoles,ChannelBase} from "@API/Channel";
+import UniversesMethods from "../../store/universes";
+import { FixtureBase } from "@API/Fixture";
+import { FixtureFactory } from "@API/FixtureFactory";
+const universesModule = namespace("universes");
+import { ChannelRoles, ChannelBase } from "@API/Channel";
 
 @Component({
-  components: {Button, Numbox, Toggle, TextInput},
+  components: { Button, Numbox, Toggle, TextInput },
 })
 export default class FixtureEditor extends Vue {
-  @Prop({default: null, required: true})
-  public fixture !: FixtureBase | null;
+  @Prop({ default: null, required: true })
+  public fixture!: FixtureBase | null;
 
-  @Prop({default: false})
-  public readonly ?: boolean;
+  @Prop({ default: false })
+  public readonly?: boolean;
 
+  @universesModule.Mutation("linkChannelToCirc")
+  public linkChannelToCirc!: UniversesMethods["linkChannelToCirc"];
+  @universesModule.Mutation("setChannelName")
+  public setChannelName!: UniversesMethods["setChannelName"];
+  @universesModule.Mutation("removeChannel")
+  public removeChannel!: UniversesMethods["removeChannel"];
+  @universesModule.Mutation("addChannelToFixture")
+  public addChannelToFixture!: UniversesMethods["addChannelToFixture"];
 
- @universesModule.Mutation('linkChannelToCirc') public linkChannelToCirc!: UniversesMethods['linkChannelToCirc'];
-  @universesModule.Mutation('setChannelName') public setChannelName!: UniversesMethods['setChannelName'];
-  @universesModule.Mutation('removeChannel') public removeChannel!: UniversesMethods['removeChannel'];
-  @universesModule.Mutation('addChannelToFixture') public addChannelToFixture!: UniversesMethods['addChannelToFixture'];
-
-  public mounted() {
-
-  }
+  public mounted() {}
 
   get fixtureTypes() {
     return FixtureFactory.getAllFixtureDefsTypeNames();
@@ -141,44 +142,41 @@ export default class FixtureEditor extends Vue {
   //   console.log("setting fixture type",type)
   // }
   get fixtureHeaders() {
-    return [{text: 'Name', value: 'name'},
-    {text: 'Role', value: 'role'},
-    {text: 'Offset', filterable: false},
-    // ,{text:"edit",sortable:false},{text:"test",sortable:false}
+    return [
+      { text: "Name", value: "name" },
+      { text: "Role", value: "role" },
+      { text: "Offset", filterable: false },
+      // ,{text:"edit",sortable:false},{text:"test",sortable:false}
     ];
   }
 
-  get channelFamType(){
-    const res : {[id:string]:string[]} = {}
-    for(const [k,v ] of Object.entries(ChannelRoles)){
-      res[k] = Array.from(Object.keys(v))
+  get channelFamType() {
+    const res: { [id: string]: string[] } = {};
+    for (const [k, v] of Object.entries(ChannelRoles)) {
+      res[k] = Array.from(Object.keys(v));
     }
-    console.log(res)
-    return res
+    console.log(res);
+    return res;
   }
 
-  setRoleFam(c:ChannelBase,f:string,t:string){
-    c.setCustomFamType(f,t)
-    this.closeAllMenus()
+  setRoleFam(c: ChannelBase, f: string, t: string) {
+    c.setCustomFamType(f, t);
+    this.closeAllMenus();
   }
 
-  closeAllMenus(){
-    this.openedMenu="";
+  closeAllMenus() {
+    this.openedMenu = "";
   }
 
-  
-  niceRole(c:ChannelBase){
-    const trueType =  `${c.roleFam}:${c.roleType}`
-    if(!c.hasCustomFamType){
-      return `(${trueType})`
+  niceRole(c: ChannelBase) {
+    const trueType = `${c.roleFam}:${c.roleType}`;
+    if (!c.hasCustomFamType) {
+      return `(${trueType})`;
     }
-    return trueType
+    return trueType;
   }
 
-  openedMenu = ""
-
-
-
+  openedMenu = "";
 }
 </script>
 

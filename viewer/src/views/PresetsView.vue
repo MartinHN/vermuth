@@ -7,11 +7,13 @@
       :maxHeight="'140px'"
       style="max-height:200px;over"
       :presetableState="presetableState"
-      
     />
     <div v-if="allFixture">
       <Toggle v-model="showActions" text="show Actions" />
-      <ActionList v-if="showActions" :actions="selectedState.actions"></ActionList>
+      <ActionList
+        v-if="showActions"
+        :actions="selectedState.actions"
+      ></ActionList>
       <ChannelRack
         v-else
         :displayableFixtureList="allFixture"
@@ -31,8 +33,7 @@ import { State } from "@API/State";
 import UniversesMethods from "../store/universes";
 import Toggle from "@/components/Inputs/Toggle.vue";
 import ActionList from "@/components/Widgets/ActionList.vue";
-import rootState from "@API/RootState"
-
+import rootState from "@API/RootState";
 
 const universesModule = namespace("universes");
 @Component({
@@ -40,8 +41,8 @@ const universesModule = namespace("universes");
     ChannelRack,
     StateComponent,
     Toggle,
-    ActionList
-  }
+    ActionList,
+  },
 })
 export default class PresetView extends Vue {
   @universesModule.State("universe")
@@ -59,9 +60,11 @@ export default class PresetView extends Vue {
   public selectedState: State | null = null;
 
   public get presetableState() {
-    const curS = rootState.stateList.currentState
+    const curS = rootState.stateList.currentState;
     // debugger
-    return this.selectedState ? this.selectedState.presetableState :curS.presetableState;
+    return this.selectedState
+      ? this.selectedState.presetableState
+      : curS.presetableState;
   }
   public set presetableState(s: any) {
     // debugger;

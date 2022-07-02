@@ -6,35 +6,48 @@
           <text-input
             :editable="editMode"
             :value="seqName"
-            @change="setSequenceName({sequence:sequence,value:$event.value})"
+            @change="
+              setSequenceName({ sequence: sequence, value: $event.value })
+            "
           />
         </v-col>
         <v-col v-if="editMode" cols="1">
-          <Button text="-" color="red" @click="seqList.remove(sequence)" icon="delete" />
+          <Button
+            text="-"
+            color="red"
+            @click="seqList.remove(sequence)"
+            icon="delete"
+          />
         </v-col>
         <v-col v-if="editMode" cols="2">
           <Button text="up" @click="seqList.up(sequence)" icon="chevron-up" />
-          <Button text="down" @click="seqList.down(sequence)" icon="chevron-down" />
+          <Button
+            text="down"
+            @click="seqList.down(sequence)"
+            icon="chevron-down"
+          />
         </v-col>
-        <v-col cols="2" v-if="!editMode" style="display:block">
+        <v-col cols="2" v-if="!editMode" style="display: block">
           <Button text="Go" @mousedown="go" icon="play" />
-          <div :style="{width:'100%', height:'5px'}">
-            <div :style="{width:progess,height:'100%',background:'red'}"></div>
+          <div :style="{ width: '100%', height: '5px' }">
+            <div
+              :style="{ width: progess, height: '100%', background: 'red' }"
+            ></div>
           </div>
         </v-col>
         <!-- <Button text="Black" @click="goToSequenceNamed({name:sequence.name,dimMaster:0})" style="width:20%" /> -->
-       
-          <v-col v-if="editMode" cols="2">
-            <Toggle
-              :value="sequence.doNotPrepareNext"
-              @input="sequence.doNotPrepareNext = $event"
-              text="noPrepare"
-            />
-          </v-col>
-           <v-col v-else cols="2">
-           <Numbox
+
+        <v-col v-if="editMode" cols="2">
+          <Toggle
+            :value="sequence.doNotPrepareNext"
+            @input="sequence.doNotPrepareNext = $event"
+            text="noPrepare"
+          />
+        </v-col>
+        <v-col v-else cols="2">
+          <Numbox
             :value="sequence.timeIn"
-            @input="setSequenceTimeIn({sequence:sequence,value:$event})"
+            @input="setSequenceTimeIn({ sequence: sequence, value: $event })"
             hide-details
           />
         </v-col>
@@ -44,7 +57,9 @@
             :active="editMode"
             :items="stateNames"
             :value="seqStateName"
-            @change="setSequenceStateName({sequence:sequence,value:$event})"
+            @change="
+              setSequenceStateName({ sequence: sequence, value: $event })
+            "
             hide-details
           ></v-select>
         </v-col>
@@ -66,7 +81,7 @@ import SequenceMethods from "../store/sequence";
 const sequenceModule = namespace("sequence");
 const stateModule = namespace("states");
 @Component({
-  components: { Button, Numbox, TextInput, Toggle }
+  components: { Button, Numbox, TextInput, Toggle },
 })
 export default class SequenceComponent extends Vue {
   @sequenceModule.Mutation("setSequenceName")

@@ -1,6 +1,6 @@
 <template>
-    <!-- <v-checkbox  v-model=value :tabindex="focusable?-1:''" :disabled="!editable"  ></v-checkbox> -->
-    <!-- <label :for="_uid" class="slider round">{{text}}</label> -->
+  <!-- <v-checkbox  v-model=value :tabindex="focusable?-1:''" :disabled="!editable"  ></v-checkbox> -->
+  <!-- <label :for="_uid" class="slider round">{{text}}</label> -->
   <!-- <label :style="{ 'background-color':displayedColor }" :for="_uid" class="slider round">
     <v-icon v-if="iconOn && value">mdi-{{iconOn}}</v-icon>
     <v-icon v-else-if="iconOff && !value">mdi-{{iconOff}}</v-icon>
@@ -20,11 +20,11 @@
   </label> -->
 
   <v-btn
-  :value="value"
-  :color="value?'primary':'normal'"
-      @click="sendEv('change', $event)"
-      >
-    {{text}}
+    :value="value"
+    :color="value ? 'primary' : 'normal'"
+    @click="sendEv('change', $event)"
+  >
+    {{ text }}
   </v-btn>
 </template>
 
@@ -48,7 +48,6 @@ export default class Toggle extends Vue {
   public iconOff?: string;
   @Prop()
   public icon?: string;
-
 
   // public value: boolean = true;
   @Prop({ default: "transparent" })
@@ -110,7 +109,7 @@ input:focus + label {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
 }
 
-.v-item--active{
-color:green  
+.v-item--active {
+  color: green;
 }
 </style>

@@ -4,16 +4,25 @@
       <template v-slot:activator="{ on }">
         <v-btn color="primary" dark v-on="on">Add Action</v-btn>
       </template>
-      <v-list style="width:100%">
-        <v-list-item v-for="i in availableTypes" :key="i.id" @click="addAction(i)">{{i}}</v-list-item>
+      <v-list style="width: 100%">
+        <v-list-item
+          v-for="i in availableTypes"
+          :key="i.id"
+          @click="addAction(i)"
+          >{{ i }}</v-list-item
+        >
       </v-list>
     </v-menu>
-    <draggable @end="reorderActions" style="width:100%" handle=".handle">
-      <v-row no-gutters v-for="a of actions.list" :key="a.id" style="width:100%">
-        <v-icon class="handle" style="width:10%">mdi-{{getIcon(a)}}</v-icon>
-        <ActionComponent style="width:80%" :action="a"></ActionComponent>
-        <Button @click="deleteAction(a)" style="width:30px" icon="delete" />
-      
+    <draggable @end="reorderActions" style="width: 100%" handle=".handle">
+      <v-row
+        no-gutters
+        v-for="a of actions.list"
+        :key="a.id"
+        style="width: 100%"
+      >
+        <v-icon class="handle" style="width: 10%">mdi-{{ getIcon(a) }}</v-icon>
+        <ActionComponent style="width: 80%" :action="a"></ActionComponent>
+        <Button @click="deleteAction(a)" style="width: 30px" icon="delete" />
       </v-row>
     </draggable>
   </v-container>
@@ -22,7 +31,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { mapState, mapActions } from "vuex";
-import {  Getter, Mutation, namespace } from "vuex-class";
+import { Getter, Mutation, namespace } from "vuex-class";
 import Slider from "@/components/Inputs/Slider.vue";
 import Button from "@/components/Inputs/Button.vue";
 import Numbox from "@/components/Inputs/Numbox.vue";
@@ -37,7 +46,7 @@ import { CurvePlayer, CurveLink } from "@API/CurvePlayer";
 import { uuidv4 } from "@API/Utils";
 
 import { nextTick } from "@API/MemoryUtils";
-import { ActionFactory ,ActionList,ActionInstance} from "@API/Actions";
+import { ActionFactory, ActionList, ActionInstance } from "@API/Actions";
 import ActionComponent from "./ActionComponent.vue";
 import { State } from "@API/State";
 import draggable from "vuedraggable";
@@ -53,8 +62,8 @@ const statesModule = namespace("states");
     Toggle,
     Modal,
     ActionComponent,
-    draggable
-  }
+    draggable,
+  },
 })
 export default class ActionListComp extends Vue {
   @Prop({ required: true })
@@ -68,29 +77,28 @@ export default class ActionListComp extends Vue {
     return ActionFactory.actionNames;
   }
   public addAction(e: string) {
-    this.actions.addFromName(e)
+    this.actions.addFromName(e);
   }
 
-  public deleteAction(a:ActionInstance){
-    this.actions.splice(this.actions.indexOf(a),1)
+  public deleteAction(a: ActionInstance) {
+    this.actions.splice(this.actions.indexOf(a), 1);
   }
-  public getIcon(a:ActionInstance){
-    const type = a.getATYPE().atype
-    if(type ==="setDimmer"){
-      return 'car-light-high'
+  public getIcon(a: ActionInstance) {
+    const type = a.getATYPE().atype;
+    if (type === "setDimmer") {
+      return "car-light-high";
     }
-    if(type==="setColor"){
-      return 'palette'
-    }
-    else if (type==="setPos"){
-      return 'crosshairs-gps'
+    if (type === "setColor") {
+      return "palette";
+    } else if (type === "setPos") {
+      return "crosshairs-gps";
     }
 
-    return 'drag'
+    return "drag";
   }
 
-  public reorderActions(e:{newIndex:number,oldIndex:number}){
-   this.actions.swapIndexes(e.newIndex,e.oldIndex)
+  public reorderActions(e: { newIndex: number; oldIndex: number }) {
+    this.actions.swapIndexes(e.newIndex, e.oldIndex);
   }
 }
 </script>

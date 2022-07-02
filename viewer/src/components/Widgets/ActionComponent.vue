@@ -2,26 +2,33 @@
   <v-container class="ActionComponent pa-0">
     <v-row>
       <v-col cols="6">
-        <div v-for="(i,e) of atype.inputCaps" :key="e.id">
+        <div v-for="(i, e) of atype.inputCaps" :key="e.id">
           <div
             :is="inputComponents[e]"
             v-model="action.inputs[e]"
             v-bind="currentInputProps"
             :text="e"
-            style="width:100%;height:100%;minHeight:40px"
+            style="width: 100%; height: 100%; minheight: 40px"
           ></div>
         </div>
       </v-col>
       <v-col>
         <div v-if="action.hasInternalState()">
-          <Button @click="showEditState=true" icon="pencil" />
-          <Modal v-if="showEditState" @close="showEditState=false" >
-            <div slot="body" :is="editStateComponentAndProps.component" v-bind="editStateComponentAndProps.props" v-bind:[editStateComponentAndProps.sync[0]].sync="editStateComponentAndProps.sync[1]"></div>
+          <Button @click="showEditState = true" icon="pencil" />
+          <Modal v-if="showEditState" @close="showEditState = false">
+            <div
+              slot="body"
+              :is="editStateComponentAndProps.component"
+              v-bind="editStateComponentAndProps.props"
+              v-bind:[editStateComponentAndProps.sync[0]].sync="
+                editStateComponentAndProps.sync[1]
+              "
+            ></div>
           </Modal>
         </div>
         <div v-else>
           <v-select
-            :value="(action.targets || []).map(t=>t.get().name)"
+            :value="(action.targets || []).map((t) => t.get().name)"
             :items="availableTargetNames"
             multiple
             @change="setTargetNames"
@@ -33,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue,Watch } from "vue-property-decorator";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { mapState, mapActions } from "vuex";
 import { Action, Getter, Mutation, namespace } from "vuex-class";
 import Slider from "@/components/Inputs/Slider.vue";
@@ -51,11 +58,16 @@ import { CurvePlayer, CurveLink } from "@API/CurvePlayer";
 import { uuidv4 } from "@API/Utils";
 
 import { nextTick } from "@API/MemoryUtils";
-import { ActionFactory, ActionInstance, InputCapType , TargetCapType} from "@API/Actions";
+import {
+  ActionFactory,
+  ActionInstance,
+  InputCapType,
+  TargetCapType,
+} from "@API/Actions";
 import rootState from "@API/RootState";
 import ColorPicker from "@/components/Inputs/ColorPicker.vue";
 import { buildAddressFromObj } from "@API/ServerSync";
-import  ChannelRack  from "@/components/ChannelRack.vue"
+import ChannelRack from "@/components/ChannelRack.vue";
 const universesModule = namespace("universes");
 const statesModule = namespace("states");
 
@@ -66,16 +78,16 @@ const statesModule = namespace("states");
     Numbox,
     Toggle,
     Modal,
-    FullCurveEditor
-  }
+    FullCurveEditor,
+  },
 })
 export default class ActionComponent extends Vue {
   @Prop({ required: true })
   public action!: ActionInstance;
-  public showEditState = false
+  public showEditState = false;
   get inputComponents() {
     const res: { [id: string]: any } = {};
-    Object.entries(this.atype.inputCaps).map(v => {
+    Object.entries(this.atype.inputCaps).map((v) => {
       const name = v[0];
       const type = v[1];
       if (type === InputCapType.Number) {
@@ -107,17 +119,23 @@ export default class ActionComponent extends Vue {
     this.action.inputs[n] = Object.assign({}, i);
   }
   @Watch("action")
-  notif(){
-    console.log('internal action changed')
+  notif() {
+    console.log("internal action changed");
   }
   get editStateComponentAndProps() {
-    if(this.showEditState){
-      
-    if (this.atype.atype === "setFixture") {
-      return {component:ChannelRack,props:{displayableFixtureList:rootState.universe.fixtureList,showPresetableState:true},sync:["presetableState",this.action.internalState]};
+    if (this.showEditState) {
+      if (this.atype.atype === "setFixture") {
+        return {
+          component: ChannelRack,
+          props: {
+            displayableFixtureList: rootState.universe.fixtureList,
+            showPresetableState: true,
+          },
+          sync: ["presetableState", this.action.internalState],
+        };
+      }
     }
-    }
-    return {component:undefined,props:{}}
+    return { component: undefined, props: {} };
   }
   get availableTargets() {
     const outCap = this.atype.targetCaps;
@@ -141,12 +159,12 @@ export default class ActionComponent extends Vue {
   }
 
   get availableTargetNames() {
-    return this.availableTargets?.map(t => t.name);
+    return this.availableTargets?.map((t) => t.name);
   }
   setTargetNames(ns: string[]) {
     const addrL = this.availableTargets
-      ?.filter(f => ns.includes(f.name))
-      .map(f => buildAddressFromObj(f, true));
+      ?.filter((f) => ns.includes(f.name))
+      .map((f) => buildAddressFromObj(f, true));
     if (addrL) {
       this.action.targets.setFromList(addrL);
       this.action.apply();
