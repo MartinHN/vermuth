@@ -1,22 +1,19 @@
 #!/bin/bash
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
+NPM=npm
 
 cd $DIR
 
 cd API
 
-pnpm install
+$NPM install
 
 cd ../viewer
 
-pnpm install
-
-
+$NPM install
 
 cd ../server
 
-pnpm install
-
-
+$NPM install
