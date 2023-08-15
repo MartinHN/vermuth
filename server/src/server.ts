@@ -62,9 +62,11 @@ const httpServer = new http.Server(app);
 
 const localStateFile = path.join(process.cwd(), 'appSettings.json');
 
+// @ts-ignore
 const ioServer = io({serveClient: false, transports: ['websocket']});
 import {bindClientSocket} from '@API/ServerSync';
 bindClientSocket(ioServer);
+// @ts-ignore
 ioServer.attach(httpServer, {
   pingInterval: debugMode ? 60000 : 10000,
   pingTimeout: debugMode ? 30000 : 5000,
