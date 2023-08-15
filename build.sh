@@ -17,4 +17,4 @@ cd ../viewer
 
 cd ../server
 
-npm run build
+pnpm run build
