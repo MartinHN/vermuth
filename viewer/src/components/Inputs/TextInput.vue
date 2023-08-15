@@ -31,7 +31,7 @@ export default class TextInput extends Vue {
 
   @Prop({ default: true }) public editable?: boolean;
 
-  sendEv(type, ev) {
+  sendEv(type: any, ev: any) {
     console.log(ev);
     this.$emit(type, ev);
   }
