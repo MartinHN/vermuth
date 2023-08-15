@@ -56,9 +56,6 @@ dependencies:
   module-alias:
     specifier: ^2.2.2
     version: 2.2.2
-  node-hid:
-    specifier: ^1.3.1
-    version: 1.3.2
   open:
     specifier: ^7.0.3
     version: 7.4.2
@@ -82,6 +79,9 @@ dependencies:
     version: 15.4.1
 
 optionalDependencies:
+  node-hid:
+    specifier: ^1.3.1
+    version: 1.3.2
   pigpio:
     specifier: ^3.3.1
     version: 3.3.1
@@ -3832,6 +3832,7 @@ packages:
 
   /file-uri-to-path@1.0.0:
     resolution: {integrity: sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw==}
+    requiresBuild: true
 
   /fill-range@4.0.0:
     resolution: {integrity: sha1-1USBHUKPmOsGpj3EAtJAPDKMOPc=}
@@ -5360,6 +5361,7 @@ packages:
       node-abi: 2.30.1
       prebuild-install: 6.1.4
     dev: false
+    optional: true
 
   /node-libs-browser@2.2.1:
     resolution: {integrity: sha512-h/zcD8H9kaDZ9ALUWwlBUDo6TKF8a7qBSCSEGfjTVIYeqsioSKaAX+BN7NgiMGp6iSIXZ3PxgCu8KS3b71YK5Q==}
@@ -5865,6 +5867,7 @@ packages:
     resolution: {integrity: sha512-Z4vpywnK1lBg+zdPCVCsKq0xO66eEV9rWo2zrROGGiRS4JtueBOdlB1FnY8lcy7JsUud/Q3ijUxyWN26Ika0vQ==}
     engines: {node: '>=6'}
     hasBin: true
+    requiresBuild: true
     dependencies:
       detect-libc: 1.0.3
       expand-template: 2.0.3
@@ -5880,6 +5883,7 @@ packages:
       tar-fs: 2.1.1
       tunnel-agent: 0.6.0
     dev: false
+    optional: true
 
   /prelude-ls@1.1.2:
     resolution: {integrity: sha512-ESF23V4SKG6lVSGZgYNpbsiaAkdab6ZgOxe52p7+Kid3W3u3bxR4Vfd/o21dmN7jSt0IwgZ4v5MUd26FEtXE9w==}
