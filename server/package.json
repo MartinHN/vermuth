@@ -11,6 +11,7 @@
     "buildNrun": "NODE_ENV=production ts-node src/server.ts -P . --files",
     "run": "NODE_ENV=production node distPacked/mainServer.js",
     "runTs": "node  -r tsconfig-paths/register -r ts-node/register ./src/server.ts",
+    "deploy": "rsync -r -e ssh -avz --delete-after  distPacked/ pi@lumestrio1.local:raspestrio/Vermuth/server/distPacked/",
     "lint": "eslint src/**/* --fix",
     "buildApp": "node pkg.js"
   },

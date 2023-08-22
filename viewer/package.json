@@ -8,7 +8,7 @@
     "buildFast": "vue-cli-service build --skip-plugins @vue/cli-plugin-eslint",
     "version": "node -v",
     "lint": "vue-cli-service lint",
-    "deploy": "rsync -r -e ssh -avz --delete-after  ../server/dist/server/public pi@lumestrio21.local:raspestrio/Vermuth/server/dist/server/",
+    "deploy": "rsync -r -e ssh -avz --delete-after  ../server/dist/server/public pi@lumestrio1.local:raspestrio/Vermuth/server/dist/server/",
     "debug": "vue-cli-service build --mode=debug --watch",
     "lintAll": "tslint --project ../API --fix && npm run lint"
   },
