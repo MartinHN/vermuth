@@ -7,7 +7,7 @@ const isPi = proc.includes("armv")
 
 function RpiArtnetDriver(deviceId = "none", options = {}) {
   if ((!deviceId) || deviceId === "none" || deviceId.startsWith("/")) {
-    deviceId = "5.5.5.255"//"2.255.255.255"//"2.0.36.0" // for ltech node dmxArtnet last is universe num// "2.255.255.255";
+    deviceId = "2.2.2.255"//"2.255.255.255"//"2.0.36.0" // for ltech node dmxArtnet last is universe num// "2.255.255.255";
   }
   console.log(">>>>>>RpiArtnet",deviceId);
 
@@ -20,7 +20,7 @@ function RpiArtnetDriver(deviceId = "none", options = {}) {
     host: deviceId,
     // port (Default 6454)
     // refresh (millisecond interval for sending unchanged data to the Art-Net node. Default 4000)
-    iface: isPi ? '5.5.5.1' : '2.0.3.3', //'enp7s0'// iface (optional string IP address - bind udp socket to specific network interface)
+    iface: isPi ? '2.2.2.1' : '2.0.3.3', //'enp7s0'// iface (optional string IP address - bind udp socket to specific network interface)
     // sendAll (sends always the full DMX universe instead of only changed values. Default false)
      sendAll:true
 
