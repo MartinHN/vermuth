@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node --inspect=0.0.0.0:9222 -r tsconfig-paths/register -r ts-node/register ./src/server.ts $(echo $VERMUTH_ARGS)",
     "start:watch": "npm run genOnce --prefix ../API && nodemon",
-    "build": "webpack src/server.ts",
+    "build": "NODE_ENV=production webpack src/server.ts",
     "buildNrun": "NODE_ENV=production ts-node src/server.ts -P . --files",
     "run": "NODE_ENV=production node distPacked/mainServer.js",
     "runTs": "node  -r tsconfig-paths/register -r ts-node/register ./src/server.ts",
@@ -31,6 +31,7 @@
     "bezier-easing": "^2.1.0",
     "chrome-launcher": "^0.13.2",
     "connect-history-api-fallback": "^1.6.0",
+    "debug": "^4.3.4",
     "detect-rpi": "^1.4.0",
     "dmx": "^0.2.5",
     "express": "^4.17.1",
