@@ -122,6 +122,7 @@ export class FixtureFactoryClass  {
         // #if !IS_CLIENT
         const basic =  await import('./Importers/BasicImporter');
         this.__fixtureDefs.basic =  await basic.initFactory();
+        this.__fixtureDefs.momo = await basic.initMomoFactory();
         const ofl  = await import('./Importers/OFLImporter');
         this.__fixtureDefs.ofl = await ofl.initFactory(ressourceDir);
         // #endif

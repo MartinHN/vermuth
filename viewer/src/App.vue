@@ -100,7 +100,9 @@ export default class App extends Vue {
   public showDrawer = false;
   public mounted() {
     rootState.meta = this.metaFromRoot; // inject reactiveness in rootState
-    Server.connect(this.$store, window.location.hostname);
+    let loc = 'localhost'
+    if (window.location.hostname) { loc = window.location.hostname }
+    Server.connect(this.$store, loc);
     this.removeOldIco();
     originalFaviconNode = this.loadIconNode("favicon.ico");
     redFaviconNode = this.loadIconNode("favicon_red.ico");
