@@ -13,7 +13,7 @@
     "adm-zip": "^0.4.13",
     "bezier-easing": "^2.1.0",
     "json-diff": "^0.5.4",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "register-service-worker": "^1.5.2",
     "socket.io-client": "^2.3.0",
     "testing": "^2.0.1",
