@@ -41,9 +41,7 @@
     "webpack": "^4.41.6",
     "webpack-cli": "^3.3.11"
   },
-  "engines": {
-    "node": "^16"
-  },
+  
   "nodemonConfig": {
     "watch": [
       "src"

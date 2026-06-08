@@ -54,8 +54,5 @@
     "vue-template-compiler": "^2.6.11",
     "vuetify-loader": "^1.4.3",
     "vuex-module-decorators": "^0.17.0"
-  },
-  "engines": {
-    "node": "^16"
   }
 }

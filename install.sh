@@ -17,3 +17,5 @@ $NPM install
 cd ../server
 
 $NPM install
+
+pnpm approve-builds --all
