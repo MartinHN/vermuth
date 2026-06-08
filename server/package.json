@@ -36,7 +36,7 @@
     "dmx": "^0.2.5",
     "express": "^4.17.1",
     "express-static-gzip": "^2.0.6",
-    "http-proxy": "^1.18.0",
+    "http-proxy": "^1.18.1",
     "json-diff": "^0.6.3",
     "lodash": "^4.17.21",
     "module-alias": "^2.2.2",
